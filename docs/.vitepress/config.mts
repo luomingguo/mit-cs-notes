@@ -1,23 +1,48 @@
 import { defineConfig } from 'vitepress'
+
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 // https://vitepress.dev/reference/site-config
 
+
 export default defineConfig({
-  base: '/reading-notes/',
-  title: "Ron's CS reading notes",
-  description: "Ron's reading notes of Mathematics & EECS from MIT, Stanford",
-  lang: 'en-US',
+  base: '/mit-cs-notes',
+  title: "MIT Notes",
+  description: "TODO",
+  lang: 'cn-zh',
+  locales: {
+    root: {
+      label: '中文',
+      lang: 'zh'
+    },
+    en: {
+      label: 'English',
+      lang: 'en',
+      link: '/en/guide'
+    }
+  },
   head: [
-    ['link' , {rel: 'icon', href: "/reading-notes/logo.png"}],
+    ['link' , {rel: 'icon', href: "/mit-cs-notes/logo.png"}],
   ],
   rewrites :{
-    "packages/:pkg/:subject/(.*)": ":subject/(.*)",
-    "packages/:subject/(.*)": ":subject/(.*)"
+  
+    "zh/:pkg/:subject/(.*)": "zh/:subject/(.*)",
   },
   markdown: {
     math: true,
+
+    codeTransformers: [
+      transformerTwoslash() 
+    ],
+    theme: 'nord', // or any other theme you want
+    languages: ['asm'],
+
+    toc: { level: [1, 2] },
     lineNumbers: true,
     image: {
       lazyLoading: true
+    },
+    config: (md) => {
+      // md.use(<plugins>)
     }
   },
   lastUpdated: true,
@@ -35,8 +60,8 @@ export default defineConfig({
           {text: "English", link: "/index"},
           {text: "中文", link: "/index_zh"},
         ]
-
-      }
+      },
+      { text: 'Changelog', link: 'https://github.com/...' },
     ],
     logo: '/logo.png',
     sidebar: {
@@ -45,12 +70,12 @@ export default defineConfig({
           text: '编程与软件工程',
           collapsed: true,
           items: [
-            { text: "编程基础(Python版)", link: "/fundamentals_of_programming"},
-            { text: "软件构造基础", link: "/element_of_software_construction"},
-            { text: "软件设计", link: "/software_design"},
-            { text: "软件性能工程", link: "/software_performance_engineer"},
-            { text: "算法工程", link: "/algorithm_engineer"},
-            { text: "多核编程", link: "/multicore_programming"},
+            { text: "编程基础(Python版)", link: "/zh/fundamentals_of_programming"},
+            { text: "软件构造基础", link: "zh/element_of_software_construction"},
+            { text: "软件设计", link: "zh/software_design"},
+            { text: "软件性能工程", link: "zh/software_performance_engineer"},
+            { text: "算法工程", link: "zh/algorithm_engineer"},
+            { text: "多核编程", link: "zh/multicore_programming"},
           ]
         },
         {
@@ -58,7 +83,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             {text: "计算机数学"},
-            {text: "算法导论", link: "/introduction_to_algorithms"},
+            {text: "算法导论", link: "zh/introduction_to_algorithms"},
             {text: "算法设计和分析"},
             {text: "可计算性和复杂度理论"},
             {text: "分布式算法"},
@@ -79,12 +104,12 @@ export default defineConfig({
           text: '计算机系统',
           collapsed: true,
           items: [
-            {text: "计算机系统工程", link: "/computer_sys_eng"},
+            {text: "计算机系统工程", link: "zh/computer_sys_eng"},
             {text: "操作系统工程"},
             {text: "计算机网络"},
             {text: "移动和传感计算"},
             {text: "计算机系统与社会"},
-            {text: "数据库系统", link: "/database_systems"},
+            {text: "数据库系统", link: "zh/database_systems"},
             {text: "分布式系统"},
             {text: "计算机系统原理"},
           ]
@@ -110,7 +135,7 @@ export default defineConfig({
           ]
         },
       ],
-      '/fundamentals_of_programming/': [
+      '/zh/fundamentals_of_programming/': [
         {
           text: '软件性能工程',
           collapsed: false,
@@ -123,7 +148,7 @@ export default defineConfig({
           ]
         },
       ],
-      '/software_performance_engineer/': [
+      '/zh/software_performance_engineer/': [
         {
           text: '软件性能工程',
           collapsed: false,
@@ -156,7 +181,7 @@ export default defineConfig({
           ]
         },
       ],
-      '/computer_sys_eng/': [
+      '/zh/computer_sys_eng/': [
         {
           text: '计算机系统工程',
           collapsed: false,
@@ -190,7 +215,7 @@ export default defineConfig({
           ]
         },
       ],
-      '/database_systems/': [
+      '/zh/database_systems/': [
         {
           text: '数据库系统',
           collapsed: false,
@@ -220,7 +245,7 @@ export default defineConfig({
           
         }
       ],
-      '/introduction_to_algorithms/': [
+      '/zsh/introduction_to_algorithms/': [
         {
           text: '算法导论',
           collapsed: false,
@@ -249,9 +274,9 @@ export default defineConfig({
         }
       ],
     },
-
     socialLinks: [
-      { icon: 'github', link: 'https://gitee.com/ron26' },
-    ]
-  }
+      { icon: 'github', link: 'https://github.com/luomingguo' },
+    ],
+  },
+
 });

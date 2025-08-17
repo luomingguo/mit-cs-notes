@@ -1,0 +1,22 @@
+---
+sidebarDepth: 2
+title: 理论计算机
+---
+
+# CS课程6大部分
+
+- 编程与软件工程
+- 编程语言
+- **理论计算机** ✅
+- 计算机系统
+- 计算机架构
+- 计算机安全
+
+## 理论计算机课程
+
+
+- [算法导论](../fundamentals_of_programming/index.md)
+- [算法设计与分析](../element_of_software_construction/index.md)
+- [高级算法](../software_design/index.md)
+- [高级数据结构](../software_performance_engineer/index.md)
+- [分布式算法](../multicore_programming/index.md)
