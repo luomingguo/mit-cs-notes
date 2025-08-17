@@ -12,7 +12,7 @@ hero:
       # link: /teaching/zh/index
     - theme: brand
       text: 读书笔记
-      link: /zh/index/notes/index
+      link: /zh/notes/index
 
 # features:
 #   - title: 读书笔记
