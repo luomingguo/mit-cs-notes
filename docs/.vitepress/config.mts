@@ -135,18 +135,18 @@ export default defineConfig({
           ]
         },
       ],
-      '/zh/fundamentals_of_programming/': [
-        {
-          text: '软件性能工程',
-          collapsed: false,
-          link: "./index",
-          items: [
-            { text: "lec1 环境模型", link: "./lec1"},
-            { text: "lec2 函数的乐趣", link: "./lec2" },
-            { text: "lec3 例子分析：洪流", link: "./lec3" },
-            { text: "lec4 图搜索", link: "./lec4" },
-          ]
-        },
+      'zh/fundamentals_of_programming/': [
+          { "text": "lec0 设计程序指南 & 命令行工具", "link": "./lec0.md" },
+          { "text": "lec1 运行环境模型", "link": "./lec1.md" },
+          { "text": "lec2 函数的乐趣", "link": "./lec2.md" },
+          { "text": "lec3 洪水填充和迷宫路径查找", "link": "./lec3.md" },
+          { "text": "lec4 图搜索", "link": "./lec4.md" },
+          { "text": "lec5 递归", "link": "./lec5.md" },
+          { "text": "lec6 递归和迭代器", "link": "./lec6.md" },
+          { "text": "lec7 递归回溯", "link": "./lec7.md" },
+          { "text": "lec8 自定义类型", "link": "./lec8.md" },
+          { "text": "lec9 继承和面向对象编程", "link": "./lec9.md" },
+          { "text": "lec10 函数式编程", "link": "./lec10.md" }
       ],
       '/zh/software_performance_engineer/': [
         {

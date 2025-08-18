@@ -14,11 +14,11 @@ title: 编程与软件工程
 - 计算机安全
 
 
-## 编程与软件工程 
+## 编程与软件工程
 
-- [编程基础(Python版)](./fundamentals_of_programming/index.md)
-- [软件构造基础](./element_of_software_construction/index.md)
-- [软件设计](./software_design/index.md)
-- [软件性能工程](./software_performance_engineer/index.md)
-- [多核编程](./multicore_programming/index.md)
-- [算法工程](./algorithm_engineer/index.md)
+- [编程基础(Python版)](/zh/fundamentals_of_programming/index.md)
+- [软件构造基础](zh/element_of_software_construction/index.md)
+- [软件设计](zh/software_design/index.md)
+- [软件性能工程](zh/software_performance_engineer/index.md)
+- [多核编程](zh/multicore_programming/index.md)
+- [算法工程](zh/algorithm_engineer/index.md)
