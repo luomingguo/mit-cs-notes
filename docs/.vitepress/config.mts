@@ -112,6 +112,7 @@ export default defineConfig({
             {text: "数据库系统", link: "zh/database_systems"},
             {text: "分布式系统"},
             {text: "计算机系统原理"},
+            {text: "数据中心计算", link: "zh/dc_computing"}
           ]
         },
         {
@@ -124,7 +125,6 @@ export default defineConfig({
             {text: "计算机系统架构"},
             {text: "复杂数字系统设计"},
             {text: "并行计算"},
-            {text: "数据中心计算"}
           ]
         },
         {
@@ -136,19 +136,69 @@ export default defineConfig({
         },
       ],
       'zh/fundamentals_of_programming/': [
-          { "text": "lec0 设计程序指南 & 命令行工具", "link": "./lec0.md" },
-          { "text": "lec1 运行环境模型", "link": "./lec1.md" },
-          { "text": "lec2 函数的乐趣", "link": "./lec2.md" },
-          { "text": "lec3 洪水填充和迷宫路径查找", "link": "./lec3.md" },
-          { "text": "lec4 图搜索", "link": "./lec4.md" },
-          { "text": "lec5 递归", "link": "./lec5.md" },
-          { "text": "lec6 递归和迭代器", "link": "./lec6.md" },
-          { "text": "lec7 递归回溯", "link": "./lec7.md" },
-          { "text": "lec8 自定义类型", "link": "./lec8.md" },
-          { "text": "lec9 继承和面向对象编程", "link": "./lec9.md" },
-          { "text": "lec10 函数式编程", "link": "./lec10.md" }
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
+        {
+          text: '软件构造要素',
+          collapsed: false,
+          link: "../notes/",
+          items: [
+            { "text": "lec0 设计程序指南 & 命令行工具", "link": "./lec0.md" },
+            { "text": "lec1 运行环境模型", "link": "./lec1.md" },
+            { "text": "lec2 函数的乐趣", "link": "./lec2.md" },
+            { "text": "lec3 洪水填充和迷宫路径查找", "link": "./lec3.md" },
+            { "text": "lec4 图搜索", "link": "./lec4.md" },
+            { "text": "lec5 递归", "link": "./lec5.md" },
+            { "text": "lec6 递归和迭代器", "link": "./lec6.md" },
+            { "text": "lec7 递归回溯", "link": "./lec7.md" },
+            { "text": "lec8 自定义类型", "link": "./lec8.md" },
+            { "text": "lec9 继承和面向对象编程", "link": "./lec9.md" },
+            { "text": "lec10 函数式编程", "link": "./lec10.md" }
+          ],
+        }
+      ],
+      "zh/element_of_software_construction/": [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
+        {
+          text: '软件构造要素',
+          collapsed: false,
+          link: "../notes/",
+          items: [
+            { "text": "lec01 静态检查", "link": "./lec01.md" },
+            { "text": "lec02 测试", "link": "./lec02.md" },
+            { "text": "lec03 代码审查", "link": "./lec03.md" },
+            { "text": "lec04 规范", "link": "./lec04.md" },
+            { "text": "lec05 设计规范", "link": "./lec05.md" },
+            { "text": "lec06 抽象数据类型", "link": "./lec06.md" },
+            { "text": "lec07 抽象函数与表示不变式", "link": "./lec07.md" },
+            { "text": "lec08 接口与子类型", "link": "./lec08.md" },
+            { "text": "lec09 函数式编程", "link": "./lec09.md" },
+            { "text": "lec10 相等性", "link": "./lec10.md" },
+            { "text": "lec11 递归数据类型", "link": "./lec11.md" },
+            { "text": "lec12 语法与解析", "link": "./lec12.md" },
+            { "text": "lec13 调试", "link": "./lec13.md" },
+            { "text": "lec14 并发", "link": "./lec14.md" },
+            { "text": "lec15 Promises", "link": "./lec15.md" },
+            { "text": "lec16 互斥", "link": "./lec16.md" },
+            { "text": "lec17 回调与图形用户界面", "link": "./lec17.md" },
+            { "text": "lec18 消息传递与网络", "link": "./lec18.md" },
+            { "text": "lec19 小语言", "link": "./lec19.md" }
+          ],
+        },
       ],
       '/zh/software_performance_engineer/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
         {
           text: '软件性能工程',
           collapsed: false,
@@ -182,6 +232,11 @@ export default defineConfig({
         },
       ],
       '/zh/computer_sys_eng/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
         {
           text: '计算机系统工程',
           collapsed: false,
@@ -217,6 +272,11 @@ export default defineConfig({
       ],
       '/zh/database_systems/': [
         {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
+        {
           text: '数据库系统',
           collapsed: false,
           link: "./index",
@@ -243,6 +303,40 @@ export default defineConfig({
             { text: "lec20 SnowFlake", link: "./lec20" }
           ]
           
+        }
+      ],
+      '/zh/dc_computing/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
+        {
+          text: '数据中心计算',
+          collapsed: false,
+          // link: "/dc_computing/",
+          items: [
+            { "text": "lec1 介绍", "link": "./lec1" },
+            { "text": "lec2 数据中心硬件", "link": "./lec2" },
+            { "text": "lec3 功耗管理", "link": "./lec3" },
+            { "text": "lec4 硬件架构", "link": "./lec4" },
+            { "text": "lec5 能源 & 功耗", "link": "./lec5" },
+            { "text": "lec6 数据中心存储", "link": "./lec6" },
+            { "text": "lec7 可靠性", "link": "./lec7" },
+            { "text": "lec8 数据中心网络", "link": "./lec8" },
+            { "text": "lec9 应用架构", "link": "./lec9" },
+            { "text": "lec10 无服务器计算", "link": "./lec10" },
+            { "text": "lec11 微服务", "link": "./lec11" },
+            { "text": "lec12 性能分析", "link": "./lec12" },
+            { "text": "lec13 尾时延", "link": "./lec13" },
+            { "text": "lec14 安全和隐私", "link": "./lec14" },
+            { "text": "lec15 监控", "link": "./lec15" },
+            { "text": "lec16 性能Debugging", "link": "./lec16" },
+            { "text": "lec17 低时延服务管理", "link": "./lec17" },
+            { "text": "lec18 数据中心管理", "link": "./lec18" },
+            { "text": "lec19 在系统方面的机器学习", "link": "./lec19" },
+            { "text": "lec20 集群管理", "link": "./lec20" }
+          ]
         }
       ],
       '/zsh/introduction_to_algorithms/': [

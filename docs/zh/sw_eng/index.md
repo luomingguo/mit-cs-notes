@@ -1,5 +1,5 @@
 ---
-sidebarDepth: 2
+sidebarDepth: 1
 title: 编程与软件工程
 ---
 

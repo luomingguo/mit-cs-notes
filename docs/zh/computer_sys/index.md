@@ -15,6 +15,7 @@ title: 计算机系统
 ## 计算机系统课程
 
 
-- [计算机系统工程](./computer_sys_eng/index.md)
-- [数据库系统](./database_systems/index.md)
+- [计算机系统工程](/zh/computer_sys_eng/index.md)
+- [数据库系统](/zh/database_systems/index.md)
+- [数据中心计算](/zh/dc_computing/index.md)
 
