@@ -352,7 +352,7 @@ Ex：``STORE 0xF0``、``LOAD -> 0xF0``
 
 思想3： 结合RAM和设备
 
-![image-20240918201427638](/Users/mac/Library/Application%20Support/typora-user-images/image-20240918201427638.png)
+![image-20240918201427638](http://47.115.50.83:49153/i/image-20240918201427638.png)
 
 - 这并不像看起来那么明显；例如，x86最初将I/O放在一个与内存分开的地址空间中。
 

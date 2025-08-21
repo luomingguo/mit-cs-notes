@@ -81,7 +81,7 @@ function find(arr: Array<number>, val: number): number {
 
 
 
-![image-20250819065807250](/Users/mac/Library/Application Support/typora-user-images/image-20250819065807250.png)
+![image-20250819065807250](http://47.115.50.83:49153/i/image-20250819065807250.png)
 
 ## 4. 规范的结构
 
