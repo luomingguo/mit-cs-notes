@@ -105,7 +105,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             {text: "计算机系统工程", link: "zh/computer_sys_eng"},
-            {text: "操作系统工程"},
+            {text: "操作系统工程", link: "zh/os_engineering"},
             {text: "计算机网络"},
             {text: "移动和传感计算"},
             {text: "计算机系统与社会"},
@@ -135,6 +135,7 @@ export default defineConfig({
           ]
         },
       ],
+      // 软件工程 & 编程
       'zh/fundamentals_of_programming/': [
         {
           text: '⮐主页',
@@ -228,6 +229,43 @@ export default defineConfig({
             { text: "lec19 西洋棋代码走读", link: "./lec19" },
             { text: "lec21 旅行商问题", link: "./lec21" },
             { text: "lec22 图优化", link: "./lec22" }
+          ]
+        },
+      ],
+      // 计算机系统
+      '/zh/os_engineering': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
+        {
+          text: '操作系统工程',
+          collapsed: false,
+          link: "./index",
+          items: [
+            { text: "lec01 OS总览", link: "./lec1" },
+            { text: "lec02 C语言和内存抽象", link: "./lec2" },
+            { text: "lec03 OS设计", link: "./lec3" },
+            { text: "lec04 虚拟内存 & 页表", link: "./lec4" },
+            { text: "lec05 系统调用的Entry & Exit", link: "./lec5" },
+            { text: "lec06 RISV-V调用约定", link: "./lec6" },
+            { text: "lec07 页错误", link: "./lec7" },
+            { text: "lec08 xv6介绍", link: "./lec8" },
+            { text: "lec09 设备驱动 & 中断", link: "./lec9" },
+            { text: "lec10 锁", link: "./lec10" },
+            { text: "lec11 调度", link: "./lec11" },
+            { text: "lec13 协调(Sleep & wakeup)", link: "./lec13" },
+            { text: "lec12 文件系统", link: "./lec12" },
+            { text: "lec14 崩溃恢复 & 日志记录", link: "./lec14" },
+            { text: "lec15 Linux Ext3的崩溃恢复", link: "./lec15" },
+            { text: "lec16 用户级虚拟内存", link: "./lec16" },
+            { text: "lec17 OS的组织 & 微内核", link: "./lec17" },
+            { text: "lec18 虚拟机", link: "./lec18" },
+            { text: "lec19 内核与高级语言", link: "./lec19" },
+            { text: "lec20 网络与OS", link: "./lec20" },
+            { text: "lec21 熔断", link: "./lec21" },
+            { text: "lec22 多核可扩展性 & RCU", link: "./lec22" },
           ]
         },
       ],
@@ -339,7 +377,8 @@ export default defineConfig({
           ]
         }
       ],
-      '/zsh/introduction_to_algorithms/': [
+      // TCS
+      '/zh/introduction_to_algorithms/': [
         {
           text: '算法导论',
           collapsed: false,
@@ -367,6 +406,11 @@ export default defineConfig({
           ]
         }
       ],
+      // 安全
+
+      // 编程语言
+
+      // 计算机架构
     },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/luomingguo' },
