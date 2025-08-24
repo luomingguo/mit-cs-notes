@@ -39,7 +39,7 @@ export default defineConfig({
     toc: { level: [1, 2] },
     lineNumbers: true,
     image: {
-      lazyLoading: true
+      lazyLoading: false,
     },
     config: (md) => {
       // md.use(<plugins>)
