@@ -34,7 +34,7 @@ AWS Lambda 是一种无服务器、事件驱动的计算服务，属于一种被
 
 ### 1.1 现有架构概述
 
-![image-20250711145314855](/Users/mac/Library/Application Support/typora-user-images/image-20250711145314855.png)
+![image-20250711145314855](http://47.115.50.83:49153/i/image-20250711145314855.png)
 
 为了降低风险并加快产品发布速度，我们希望在尽量少改动现有 Lambda 架构的前提下，加入上述新能力，如图 1 所示。
 
@@ -45,7 +45,7 @@ AWS Lambda 是一种无服务器、事件驱动的计算服务，属于一种被
 - 如果系统中已有资源可用，Worker Manager 会指示前端将请求负载转发给某个 Worker，Worker 上就会执行这个函数。
 - 如果没有资源可用，Worker Manager 会找到一台拥有可用 CPU 和内存的 Worker，发送请求以为该函数启动一个 sandbox（沙箱环境）。启动完成后，前端被通知，函数即可开始执行。
 
-![image-20250711145527612](/Users/mac/Library/Application Support/typora-user-images/image-20250711145527612.png)
+![image-20250711145527612](http://47.115.50.83:49153/i/image-20250711145527612.png)
 
 如图 2 所示，每个 Lambda Worker 包含一个小型控制进程（Micro Manager），一些用于日志与监控的附加代理进程，以及大量的 **MicroVM（微虚拟机）**。
 
@@ -64,7 +64,7 @@ AWS Lambda 是一种无服务器、事件驱动的计算服务，属于一种被
 
 但对于我们所处的环境而言，这种做法并不合适。我们认为传统文件系统的复杂性，加上多个文件系统叠加带来的额外复杂性，会不可接受地增加 Lambda 共享组件的攻击面。因此，我们选择保持 MicroVM 来宾系统与管理程序之间使用 **块设备接口 virtio-blk**，并将所有文件系统操作限制在 guest（来宾系统）内部进行。这就要求我们在**块级（block-level）\**而非\**文件级（file-level）进行稀疏加载**。
 
-![image-20250711145849056](/Users/mac/Library/Application Support/typora-user-images/image-20250711145849056.png)
+![image-20250711145849056](http://47.115.50.83:49153/i/image-20250711145849056.png)
 
 图 3 展示了我们系统的高层架构，包括运行客户代码的 Lambda Worker（在图 4 中详述）、包含容器镜像主副本的容器镜像仓库，以及我们用于分块创建与缓存的基础设施。
 

@@ -113,7 +113,7 @@ Put(k, "B")     // f, g1, g2处理了, g3 错过了
 Get(k)          // 此时客户端需要等待2f+1=3个副本， 其中f和g3回复A，g1 和 g2 会回复B，客户端不知道如何抉择，但至少能检测到有分歧（即拜占庭行为的迹象）
 ```
 
-![image-20250728143855769](/Users/mac/Library/Application Support/typora-user-images/image-20250728143855769.png)
+![image-20250728143855769](http://47.115.50.83:49153/i/image-20250728143855769.png)
 
 ### 局限
 
