@@ -188,7 +188,7 @@ Recitations are not assigned
 
 ## 发散和收敛： 从功能到概念
 
-![截屏2024-06-11 16.50.06](http://14.103.135.111:49153/i/66680fc8ad583.png)
+![截屏2024-06-11 16.50.06](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66680fc8ad583.png)
 
 ### 发散设计的技术
 
@@ -220,7 +220,7 @@ Recitations are not assigned
 
   - 在商店和图书馆翻阅书籍 沉迷于互联网的兔子洞 专注于不寻常的事物
 
-![截屏2024-06-11 16.57.42](http://14.103.135.111:49153/i/66681191195dc.png)
+![截屏2024-06-11 16.57.42](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66681191195dc.png)
 
 ## 依赖的源头
 
@@ -247,11 +247,11 @@ Recitations are not assigned
 - 有一个包含B但不包含A的子集
 - 没有一个包含A但不包含B的有用子集合
 
-![截屏2024-06-11 20.55.13](http://14.103.135.111:49153/i/6668493d67a9b.png)
+![截屏2024-06-11 20.55.13](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6668493d67a9b.png)
 
 ## 原型图wireframe
 
-![截屏2024-06-11 21.13.55](http://14.103.135.111:49153/i/66684dd3db155.png)
+![截屏2024-06-11 21.13.55](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66684dd3db155.png)
 
 **定义**：What is a Wireframe? Wireframes are illustrations or other visual mockups that represent the skeletal framework of a website / other user interface
 
@@ -337,7 +337,7 @@ The final Figma file: https://www.figma.com/file/zoPLZDd6j9obwZCOasta8Z/R2-Wiref
 
 # Lec 8 反应式编程Reactive Programming 
 
-![截屏2024-06-12 06.04.18](http://14.103.135.111:49153/i/6668c9f0f14d1.png)
+![截屏2024-06-12 06.04.18](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6668c9f0f14d1.png)
 
 ```js
 import {Sidebar} from './Sidebar.html'
@@ -365,11 +365,11 @@ ToggleBtn.addEventListener('click', (event)=>	{
 >
 > 通过吸引用户进入您的应用程序、定位他们并显示要去哪里来调整用户的速度。
 >
-> ![截屏2024-06-12 15.56.36](http://14.103.135.111:49153/i/666954d1f261b.png)
+> ![截屏2024-06-12 15.56.36](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666954d1f261b.png)
 >
-> ![截屏2024-06-12 15.56.56](http://14.103.135.111:49153/i/6669550493fd5.png)
+> ![截屏2024-06-12 15.56.56](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6669550493fd5.png)
 >
-> ![截屏2024-06-12 16.01.47](http://14.103.135.111:49153/i/666955f842303.png)
+> ![截屏2024-06-12 16.01.47](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666955f842303.png)
 >
 > 这里有几个关键点。
 >
@@ -396,33 +396,33 @@ ToggleBtn.addEventListener('click', (event)=>	{
 
 > Layout 布局
 >
-> ![截屏2024-06-12 16.30.26](http://14.103.135.111:49153/i/66695caec027c.png)
+> ![截屏2024-06-12 16.30.26](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66695caec027c.png)
 >
-> ![截屏2024-06-12 17.36.24](http://14.103.135.111:49153/i/66696c2f7eea9.png)
+> ![截屏2024-06-12 17.36.24](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696c2f7eea9.png)
 >
-> ![截屏2024-06-12 17.37.18](http://14.103.135.111:49153/i/66696c592154a.png)
+> ![截屏2024-06-12 17.37.18](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696c592154a.png)
 >
-> ![截屏2024-06-12 17.37.40](http://14.103.135.111:49153/i/66696c7236734.png)
+> ![截屏2024-06-12 17.37.40](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696c7236734.png)
 >
-> ![截屏2024-06-12 17.38.17](http://14.103.135.111:49153/i/66696c9627ccf.png)
+> ![截屏2024-06-12 17.38.17](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696c9627ccf.png)
 >
-> ![截屏2024-06-12 17.39.09](http://14.103.135.111:49153/i/66696cc863386.png)
+> ![截屏2024-06-12 17.39.09](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696cc863386.png)
 
 Design Critique
 
-> ![截屏2024-06-12 17.40.14](http://14.103.135.111:49153/i/66696d0ac3dfe.png)
+> ![截屏2024-06-12 17.40.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696d0ac3dfe.png)
 >
-> ![截屏2024-06-12 17.40.44](http://14.103.135.111:49153/i/66696d260b3b6.png)
+> ![截屏2024-06-12 17.40.44](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696d260b3b6.png)
 
 ### 字型
 
 # Lec 12 评估设计
 
-![截屏2024-06-12 15.37.19](http://14.103.135.111:49153/i/66695045c1b7b.png)
+![截屏2024-06-12 15.37.19](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66695045c1b7b.png)
 
-![截屏2024-06-12 15.38.30](http://14.103.135.111:49153/i/6669508a700e1.png)
+![截屏2024-06-12 15.38.30](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6669508a700e1.png)
 
-![截屏2024-06-12 15.39.28](http://14.103.135.111:49153/i/666950c6ec6ce.png)
+![截屏2024-06-12 15.39.28](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666950c6ec6ce.png)
 
 > [!NOTE]
 >
@@ -458,7 +458,7 @@ Design Critique
 
 
 
-![截屏2024-06-12 14.48.21](http://14.103.135.111:49153/i/666944c1a9178.png)
+![截屏2024-06-12 14.48.21](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666944c1a9178.png)
 
 > [!IMPORTANT]
 >

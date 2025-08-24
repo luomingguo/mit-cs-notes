@@ -50,7 +50,7 @@
 - R = \{ 能够在有限时间完成的问题 \}
   - R 来自 recursive languages
 
-![截屏2024-06-17 11.49.44](http://14.103.135.111:49153/i/666fb263c01ca.png)
+![截屏2024-06-17 11.49.44](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666fb263c01ca.png)
 
 ## 非确定性多项式时间（NP）
 

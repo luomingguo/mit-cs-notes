@@ -17,9 +17,9 @@
 
 当今攻击者使用的基本方法。僵尸网络就是一个庞大的被攻击者攻陷的机器构成的集合。对于个人而言，你可以去租用它。僵尸网络的机器联系命令与控制（C&C）服务器，接收命令。
 
-![image-20250305153450556](http://14.103.135.111:49153/i/67ff0923cc732.png)
+![image-20250305153450556](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/67ff0923cc732.png)
 
-![image-20250305153528305](http://14.103.135.111:49153/i/67ff0a0439682.png)
+![image-20250305153528305](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/67ff0a0439682.png)
 
 
 
@@ -84,8 +84,8 @@ for each packet:
 
 问题： 实际上还需要维持大量的状态； 它甚至不能工作
 
-![image-20250305162551543](http://14.103.135.111:49153/i/67ff0ec18ad47.png)
+![image-20250305162551543](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/67ff0ec18ad47.png)
 
 额外的挑战： 一些DDos攻击模仿合法的流量
 
-![image-20250305162646531](http://14.103.135.111:49153/i/67ff0ed4b076f.png)
+![image-20250305162646531](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/67ff0ed4b076f.png)

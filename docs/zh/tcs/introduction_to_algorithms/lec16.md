@@ -66,7 +66,7 @@ Ex： Hieroglyphology 和 Michelangelo，其LCS为 hello 或者是 heglo 或 iel
 
 **LCS 子问题 DAG**
 
-![](http://14.103.135.111:49153/i/666d5b886cbe8.png)
+![](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666d5b886cbe8.png)
 
 （边缘的是Base case， 每个节点都是一个子问题，对应于什么是最长公共子序列，比如（3，2）这个点而言， 子问题就是EIR和ABIT的LCS是什么？箭头是父指针）
 
@@ -136,7 +136,7 @@ SRTBOT分析：
 
 **LIS子问题的DAG图**
 
-![](http://14.103.135.111:49153/i/666e9fbdbde9f.png)
+![](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666e9fbdbde9f.png)
 
 
 
@@ -184,7 +184,7 @@ def lis(A):
 
 **子问题DAG**
 
-![](http://14.103.135.111:49153/i/666ea842acaff.png)
+![](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666ea842acaff.png)
 
 以上，叫**子问题扩展**
 
@@ -218,7 +218,7 @@ def lis(A):
 
 **子问题DAG**
 
-![](http://14.103.135.111:49153/i/666ea862d10b2.png)
+![](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666ea862d10b2.png)
 
 > 练习题： 将复杂度提升到$\Theta(n^2)$，通过以$\Theta(n^2)$时间内预处理所有和\sum^j_{k=i}v_k$
 

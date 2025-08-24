@@ -52,7 +52,7 @@ N. Shavit
   - 适合时延长
   - 在单处理器上表现好
 
-![截屏2024-05-27 18.50.01](http://14.103.135.111:49153/i/6654656055f72.png)
+![截屏2024-05-27 18.50.01](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6654656055f72.png)
 
 **我们想要优化什么？**
 
@@ -162,7 +162,7 @@ public class Backoff implements lock {
 
 性能
 
-![截屏2024-05-28 03.57.33](http://14.103.135.111:49153/i/6654e5b458c88.png)
+![截屏2024-05-28 03.57.33](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6654e5b458c88.png)
 
 指数退避分析
 
@@ -191,23 +191,23 @@ public class Backoff implements lock {
 
 工作原理
 
-![截屏2024-05-28 05.24.56](http://14.103.135.111:49153/i/6654fa2f4dbd0.png)
+![截屏2024-05-28 05.24.56](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6654fa2f4dbd0.png)
 
 
 
- ![截屏2024-05-28 05.25.18](http://14.103.135.111:49153/i/6654fa474c790.png)
+ ![截屏2024-05-28 05.25.18](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6654fa474c790.png)
 
-![截屏2024-05-28 05.25.44](http://14.103.135.111:49153/i/6654fa5db62c2.png)
+![截屏2024-05-28 05.25.44](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6654fa5db62c2.png)
 
-![截屏2024-05-28 05.25.53](http://14.103.135.111:49153/i/6654fb37b1c8b.png)
+![截屏2024-05-28 05.25.53](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6654fb37b1c8b.png)
 
-![截屏2024-05-28 05.26.39](http://14.103.135.111:49153/i/6654fba8548c5.png)
+![截屏2024-05-28 05.26.39](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6654fba8548c5.png)
 
 
 
-![截屏2024-05-28 05.31.38](http://14.103.135.111:49153/i/6654fbc00e667.png)
+![截屏2024-05-28 05.31.38](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6654fbc00e667.png)
 
-![截屏2024-05-28 05.37.18](http://14.103.135.111:49153/i/6654fd13e3c4d.png)
+![截屏2024-05-28 05.37.18](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6654fd13e3c4d.png)
 
 
 
@@ -244,9 +244,9 @@ ccNUMA(cache coherent NUMA)
 
 特点
 
-![截屏2024-05-28 06.01.36](http://14.103.135.111:49153/i/665502c7046fb.png)
+![截屏2024-05-28 06.01.36](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/665502c7046fb.png)
 
-![截屏2024-05-28 06.01.02](http://14.103.135.111:49153/i/665502b150536.png)
+![截屏2024-05-28 06.01.02](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/665502b150536.png)
 
 当使用CLH Lock时，每个线程需要向前驱节点内存内旋时，速度上差别很大。
 
@@ -260,31 +260,31 @@ ccNUMA(cache coherent NUMA)
 
 Each node is going to be a flag bit and also a pointer.
 
-![截屏2024-05-28 07.11.27](http://14.103.135.111:49153/i/66551324c6f6b.png)
+![截屏2024-05-28 07.11.27](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66551324c6f6b.png)
 
- If a thrad wants to acquire the lock it creates a node, put the value true, and do swap ![截屏2024-05-28 07.12.26](http://14.103.135.111:49153/i/6655135feb953.png)
+ If a thrad wants to acquire the lock it creates a node, put the value true, and do swap ![截屏2024-05-28 07.12.26](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6655135feb953.png)
 
 
 
-![截屏2024-05-28 07.13.08](http://14.103.135.111:49153/i/6655138a0f68b.png)
+![截屏2024-05-28 07.13.08](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6655138a0f68b.png)
 
 Redirect a pointer from hime to me, so he knows where I am. When he release critical section he'll go and update me so I can spin my memory, that is ,purple will spin on the purple record
 
-![截屏2024-05-28 07.13.32](http://14.103.135.111:49153/i/665513a1a071f.png)
+![截屏2024-05-28 07.13.32](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/665513a1a071f.png)
 
 if another red guy comes and does an acquisition he create a record and does a swap and again he looks at this one the tail points to his record
 
 
 
-![截屏2024-05-28 07.13.54](http://14.103.135.111:49153/i/665513b7728f3.png)
+![截屏2024-05-28 07.13.54](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/665513b7728f3.png)
 
 purple will know where do the update for orange
 
-![截屏2024-05-28 07.14.52](http://14.103.135.111:49153/i/665513f23fa17.png)
+![截屏2024-05-28 07.14.52](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/665513f23fa17.png)
 
 
 
-![截屏2024-05-28 07.15.06](http://14.103.135.111:49153/i/6655171979343.png)
+![截屏2024-05-28 07.15.06](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6655171979343.png)
 ```java
 class Qnode { 
   volatile boolean locked = false; 
@@ -305,13 +305,13 @@ class MCSLock implements Lock {
 
 By actually looking at the tail pointer, if the tail pointer is pointing to me then there's nobody there if the tail pointer is pointed to somebody else ,then I know that I have to go release somebody. Who do I have to release? How do I find out who it is that I have to release? I have no way of knowing. I have to wait for them
 
-![截屏2024-05-28 07.37.38](http://14.103.135.111:49153/i/6655196ad5b0e.png)
+![截屏2024-05-28 07.37.38](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6655196ad5b0e.png)
 
-![截屏2024-05-28 07.46.03](http://14.103.135.111:49153/i/66551b40dccdf.png)
+![截屏2024-05-28 07.46.03](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66551b40dccdf.png)
 
-![截屏2024-05-28 07.46.25](http://14.103.135.111:49153/i/66551b5831cea.png)
+![截屏2024-05-28 07.46.25](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66551b5831cea.png)
 
-![截屏2024-05-28 07.46.50](http://14.103.135.111:49153/i/66551b70907b1.png)
+![截屏2024-05-28 07.46.50](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66551b70907b1.png)
 
 
 
@@ -347,11 +347,11 @@ Queue Locks
 - Can't just quit: Thread in line hehind will starve
 - Need a gracefule way out 
 
-![截屏2024-05-28 08.03.14](http://14.103.135.111:49153/i/66551f4ba805f.png)
+![截屏2024-05-28 08.03.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66551f4ba805f.png)
 
 
 
-![截屏2024-05-28 08.04.09](http://14.103.135.111:49153/i/66551f8143f44.png)
+![截屏2024-05-28 08.04.09](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66551f8143f44.png)
 
 
 
@@ -367,7 +367,7 @@ Queue Locks
 >
 > Speedup(加速度) = 1-thread exec time / n-thread exec time
 >
-> 以及 ![截屏2024-05-26 02.31.08](http://14.103.135.111:49153/i/66522e7b13df6.png)
+> 以及 ![截屏2024-05-26 02.31.08](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66522e7b13df6.png)
 >
 > 举个例子。假如你买了10-core的机器，你的应用程序有60%是可并发的，40%是顺序的，则加速是多少？ 
 >

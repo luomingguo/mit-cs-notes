@@ -23,7 +23,7 @@
 
 ### 摩尔定律已经失效了
 
-![image-20241002040836267](http://14.103.135.111:49153/i/684943aa22d61.png)
+![image-20241002040836267](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684943aa22d61.png)
 
 1965年摩尔提出，“每隔大约 18~24 个月，集成电路上的晶体管数量将翻一倍，性能提高，成本下降。”，在2004年以前，摩尔定律基本有效。
 
@@ -40,11 +40,11 @@
 
 半导体技术将不再能为应用程序提供免费的性能。这场Party 已经结束了~
 
-![image-20250611164917875](http://14.103.135.111:49153/i/68494313e86ee.png)
+![image-20250611164917875](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/68494313e86ee.png)
 
 ### 现代桌面CPU
 
-![image-20241002042244847](http://14.103.135.111:49153/i/66fc5a1823a00.png)
+![image-20241002042244847](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fc5a1823a00.png)
 
 现代多核桌面处理器包含：
 
@@ -66,7 +66,7 @@
 
 ### 运行设备
 
-![image-20250611170104573](http://14.103.135.111:49153/i/684945d5dfef7.png)
+![image-20250611170104573](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684945d5dfef7.png)
 
 > FPU上面的是什么意思？
 
@@ -82,7 +82,7 @@ Solution: $(2.9 * 10^9) * 2 * 9 $ =$ \approx 836 $GFLOPS
 >
 > 笔者用的是2020款的Macbook M1，GFLOPS 大概只有 160 GFLOPS
 
-![image-20241002041457059](http://14.103.135.111:49153/i/66fc58465df64.png)
+![image-20241002041457059](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fc58465df64.png)
 
 ### 版本0：初始代码
 
@@ -186,15 +186,15 @@ int main(int argc, const char *argv[]) {
 
 这个代码中，行优先存储
 
-![image-20250611180630275](http://14.103.135.111:49153/i/6849552928bc4.png)
+![image-20250611180630275](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849552928bc4.png)
 
 初始方案 `i, j , k`顺序的访问模式为
 
-![image-20250611180903250](http://14.103.135.111:49153/i/684955c243af6.png)
+![image-20250611180903250](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684955c243af6.png)
 
 调整顺序后
 
-![image-20250611180930470](http://14.103.135.111:49153/i/684955dd74763.png)
+![image-20250611180930470](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684955dd74763.png)
 
 ```c
 /*

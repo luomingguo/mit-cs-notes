@@ -23,7 +23,7 @@
 
 首先我们看，GPU里面有什么？
 
-![image-20250611033616536](http://14.103.135.111:49153/i/684889349cdac.png)
+![image-20250611033616536](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684889349cdac.png)
 
 如上图所示，GPU 的组成
 

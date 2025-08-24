@@ -49,7 +49,7 @@ outline: 2
 
 # Lec 2 Bentley 程序优化的法则
 
-![image-20240928152111113](http://14.103.135.111:49153/i/66f7ae6be15b3.png)
+![image-20240928152111113](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f7ae6be15b3.png)
 
 ## 总览
 

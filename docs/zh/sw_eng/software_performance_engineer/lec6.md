@@ -4,7 +4,7 @@
 
 在Lec 5 我们介绍了从C语言如何经过LLVM IR生成汇编语言的，这节我们将探讨LLVM IR 和汇编的
 
-![image-20240928133326478](http://14.103.135.111:49153/i/66f7952957cf6.png)
+![image-20240928133326478](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f7952957cf6.png)
 
 ##  总览
 
@@ -49,7 +49,7 @@ Clang/LLVM 可以为许多转换过程生成报告，不仅限于向量化：
 
 示例
 
-![image-20240928134458312](http://14.103.135.111:49153/i/66f797de6abc9.png)
+![image-20240928134458312](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f797de6abc9.png)
 
 好消息：编译器可以告诉你很多关于它正在做什么的信息。
 

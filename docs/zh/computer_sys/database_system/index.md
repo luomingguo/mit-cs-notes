@@ -107,29 +107,29 @@ outline: 2
 
 **例子**
 
-![截屏2024-07-16 13.30.57](http://14.103.135.111:49153/i/6696059818c58.png)
+![截屏2024-07-16 13.30.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6696059818c58.png)
 
-![截屏2024-07-16 13.31.23](http://14.103.135.111:49153/i/669605b0a9150.png)
-
-
-
-![截屏2024-07-16 13.31.37](http://14.103.135.111:49153/i/669605bfd2915.png)
+![截屏2024-07-16 13.31.23](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669605b0a9150.png)
 
 
 
-![截屏2024-07-16 13.32.01](http://14.103.135.111:49153/i/669605d93440a.png)
+![截屏2024-07-16 13.31.37](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669605bfd2915.png)
 
 
 
-![截屏2024-07-16 13.32.19](http://14.103.135.111:49153/i/669605ed4ee4f.png)
+![截屏2024-07-16 13.32.01](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669605d93440a.png)
 
 
 
-![截屏2024-07-16 13.32.46](http://14.103.135.111:49153/i/669606128220c.png)
+![截屏2024-07-16 13.32.19](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669605ed4ee4f.png)
 
 
 
-![截屏2024-07-16 13.33.14](http://14.103.135.111:49153/i/669606207b71c.png)
+![截屏2024-07-16 13.32.46](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669606128220c.png)
+
+
+
+![截屏2024-07-16 13.33.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669606207b71c.png)
 
 **删除记录和记录标识符（RIDs）**
 
@@ -159,7 +159,7 @@ func (f *HeapFile) deleteTuple(t *Tuple, tid TransactionID) error {
 - 标准的 Rid 实现是页码和页内的插槽号。 
   - 请记住，所有页面都有相同数量的插槽。
 
-![截屏2024-07-16 13.38.03](http://14.103.135.111:49153/i/669607451012b.png)
+![截屏2024-07-16 13.38.03](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669607451012b.png)
 
 ## 相关课程
 
@@ -222,7 +222,7 @@ func (f *HeapFile) deleteTuple(t *Tuple, tid TransactionID) error {
 
 我们的目标是关注整体系统设计
 
-![截屏2024-07-04 02.19.57](http://14.103.135.111:49153/i/6685965e16de2.png)
+![截屏2024-07-04 02.19.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6685965e16de2.png)
 
 ## Outline
 
@@ -265,7 +265,7 @@ func (f *HeapFile) deleteTuple(t *Tuple, tid TransactionID) error {
 
 数据库管理系统（DBMS）负责管理内存并协调数据在磁盘与内存之间的双向传输。由于在绝大多数情况下，数据无法直接在磁盘上被操作，因此任何数据库都必须具备高效迁移数据的能力——即将以文件形式存储于磁盘中的数据加载至内存以供使用。图1展示了这一交互过程的示意图。
 
-![截屏2024-08-13 07.12.59](http://14.103.135.111:49153/i/66ba9702cbbf4.png)
+![截屏2024-08-13 07.12.59](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ba9702cbbf4.png)
 
 （上图中，执行引擎获取页号为2的页面，如果在缓存池中不存在，则需要通过磁盘中找到相应的页面读入磁盘）
 
@@ -341,11 +341,11 @@ func (f *HeapFile) deleteTuple(t *Tuple, tid TransactionID) error {
 
 **行优先例子**
 
-![截屏2024-07-18 03.15.34](http://14.103.135.111:49153/i/6698185d94096.png)
+![截屏2024-07-18 03.15.34](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6698185d94096.png)
 
 **列优先例子**
 
-![截屏2024-07-18 03.16.42](http://14.103.135.111:49153/i/669818a15bbf9.png)
+![截屏2024-07-18 03.16.42](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669818a15bbf9.png)
 
 我们后面以行优先存储为主。
 
@@ -372,7 +372,7 @@ func (f *HeapFile) deleteTuple(t *Tuple, tid TransactionID) error {
 
 ### 连接操作符： 迭代器模型
 
-![截屏2024-07-16 13.58.53](http://14.103.135.111:49153/i/66960c23e5059.png)
+![截屏2024-07-16 13.58.53](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66960c23e5059.png)
 
 每个操作符都实现了一个简单的迭代器接口：
 
@@ -390,11 +390,11 @@ it4 = Join.open(it2, it3, starName=name) # 联接两个表
 it5 = Proj.open(it4, movieTitle) # 投影返回movieTitle字段
 ```
 
-![image-20240716140526895](http://14.103.135.111:49153/i/66960daacd4ee.png)
+![image-20240716140526895](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66960daacd4ee.png)
 
 **具体代码实现，GoDB为例**
 
-![截屏2024-07-16 14.12.06](http://14.103.135.111:49153/i/66960f3ec1d67.png)
+![截屏2024-07-16 14.12.06](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66960f3ec1d67.png)
 
 ```go
 hf1,_ := NewHeapFile(MovieStarsFile,..)
@@ -433,7 +433,7 @@ for {
 
 #### 存储层次
 
-![截屏2024-07-16 14.20.40](http://14.103.135.111:49153/i/669611431c18e.png)
+![截屏2024-07-16 14.20.40](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669611431c18e.png)
 
 - 对于易损性存储器（Primary Storage），我们用通过随机访问（可以按字节编址）。我们将主存简称为内存"memory"
 - 而对于非易损性存储器（Secondary Storage），我们通过顺序访问（按块来编址）。我们将这个层次的存储器统称为disk。
@@ -442,11 +442,11 @@ for {
 
 **从计算机架构下的存储层次**
 
-![截屏2024-07-16 14.20.07](http://14.103.135.111:49153/i/6696111ea2cfd.png)
+![截屏2024-07-16 14.20.07](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6696111ea2cfd.png)
 
 ##### 访问时间——一组重要数据
 
-![截屏2024-07-18 04.09.54](http://14.103.135.111:49153/i/669825243a124.png)
+![截屏2024-07-18 04.09.54](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669825243a124.png)
 
 - L1 到 主存 大 2个  数量级
 - L1->L2->L3 是 3倍增长，并且L1访问一次需要4个机器周期
@@ -567,7 +567,7 @@ WHERE dept.num_machines >=
  WHERE dept.name=emp.dept_name)
 ```
 
-![截屏2024-07-18 02.36.48](http://14.103.135.111:49153/i/66980f45dc294.png)
+![截屏2024-07-18 02.36.48](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66980f45dc294.png)
 
 答案是 **D**
 
@@ -575,7 +575,7 @@ WHERE dept.num_machines >=
 
 ### 生成计划(SQL->Tree)
 
-![截屏2024-07-18 02.42.08](http://14.103.135.111:49153/i/6698108b4517e.png)
+![截屏2024-07-18 02.42.08](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6698108b4517e.png)
 
 ### 查询优化
 
@@ -584,7 +584,7 @@ WHERE dept.num_machines >=
 - 物理优化： 运算符实现和存取方法的选择（索引 vs 堆文件）
 - 逻辑优化： 运算符的排序（搜索空间为指数级别）
 
-![image-20240718024834932](http://14.103.135.111:49153/i/6698120adebb1.png)
+![image-20240718024834932](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6698120adebb1.png)
 
 #### Joins 和 Ordering
 

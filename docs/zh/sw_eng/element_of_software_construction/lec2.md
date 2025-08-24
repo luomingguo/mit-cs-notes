@@ -101,7 +101,7 @@ describe("乘法运算", function() {
 3. **路径覆盖率**
    - 是否覆盖所有可能的分支组合（即程序所有执行路径）？
 
-![image-20250619040459731](http://14.103.135.111:49153/i/68531bee7ee24.png)
+![image-20250619040459731](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/68531bee7ee24.png)
 
 *图示：Istanbul覆盖率工具的输出示例*
 

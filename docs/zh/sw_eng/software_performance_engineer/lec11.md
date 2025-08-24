@@ -31,7 +31,7 @@
 
 栈的规则：LIFO，最近分配（压入）的对象将最先被释放（弹出）
 
-![image-20250612164737228](http://14.103.135.111:49153/i/684a942bbadad.png)
+![image-20250612164737228](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a942bbadad.png)
 
 ```python
 # 分配x字节
@@ -50,7 +50,7 @@ def free(x):
 - 可以使用 alloca() 在调用堆栈上动态分配。
   - 但此函数已弃用，编译器使用固定大小的框架更高效
 
-![截屏2024-06-08 16.10.16](http://14.103.135.111:49153/i/666411f37874a.png)
+![截屏2024-06-08 16.10.16](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666411f37874a.png)
 
 
 
@@ -72,7 +72,7 @@ Solution: glibc 的malloc()取决于两个系统调用
   - 直接使用 `mmap()` 系统调用 **匿名映射**（anonymous mapping）一块独立内存。
   - 该内存与堆隔离，释放时通过 `munmap()` 立即归还给操作系统。
 
-![image-20250612170732065](http://14.103.135.111:49153/i/684a98d6af112.png)
+![image-20250612170732065](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a98d6af112.png)
 
 > malloc() vs. mmap(), 为什么不能统一绝对使用malloc()？
 
@@ -91,7 +91,7 @@ C和C++没有垃圾回收，堆分配的存储必须显式地释放，不这样�
 
 空闲块列表，块中有代表存储的固定大小的区域以及指向下一个空闲块指针。对于固定大小块的的维护，也可以用位图（bitmap）来实现。free是第一个空闲块的地址。
 
-![image-20240928171113527](http://14.103.135.111:49153/i/66f7c83448d11.png)
+![image-20240928171113527](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f7c83448d11.png)
 
 **分配一块空闲块**
 
@@ -102,11 +102,11 @@ free = free->next;
 return x; // should check free != NULL:
 ```
 
-![image-20240928173543086](http://14.103.135.111:49153/i/66f7cdf1c3d5b.png)
+![image-20240928173543086](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f7cdf1c3d5b.png)
 
 **释放一块空闲块**
 
-![image-20240928173754345](http://14.103.135.111:49153/i/66f7ce750330a.png)
+![image-20240928173754345](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f7ce750330a.png)
 
 - 原本free指向的是x->next;  
 
@@ -132,7 +132,7 @@ free = x;
 
 - 90-10 比 50-50 更好
 
-![截屏2024-06-09 07.48.35](http://14.103.135.111:49153/i/6664eddaccbdc.png)
+![截屏2024-06-09 07.48.35](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6664eddaccbdc.png)
 
 如果 90% 的内存使用在某些页面上，而 10% 在其他页面上（集中访问），相比于 50% 和 50% 的均匀分布，性能会更好
 
@@ -155,7 +155,7 @@ Binned free lists，分箱空闲列表
 
 
 
-![截屏2024-06-09 08.11.29](http://14.103.135.111:49153/i/6664f337b4bd9.png)
+![截屏2024-06-09 08.11.29](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6664f337b4bd9.png)
 
 第k个分箱维持着$2^k$字节大小内存块。
 
@@ -176,7 +176,7 @@ Solution:
 
 ## 程序的虚拟内存布局
 
-![截屏2024-06-09 12.55.17](http://14.103.135.111:49153/i/666535bcdba6f.png)
+![截屏2024-06-09 12.55.17](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666535bcdba6f.png)
 
 > Q.由于 64 位地址空间在以每秒 40 亿字节的速率写入的情况下需要一个多世纪才能填满，因此我们实际上永远不会耗尽虚拟内存。为什么不直接从虚拟内存中分配并且从不释放呢？
 
@@ -238,13 +238,13 @@ Garbage Collection（GC），思想是使程序员无需考虑释放对象，GC�
 
 
 
-![截屏2024-06-09 16.44.27](http://14.103.135.111:49153/i/66656b7318914.png)
+![截屏2024-06-09 16.44.27](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66656b7318914.png)
 
-![image-20250612145332502](http://14.103.135.111:49153/i/684a796f67a20.png)![image-20250612145356157](http://14.103.135.111:49153/i/684a7986e260c.png)
+![image-20250612145332502](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a796f67a20.png)![image-20250612145356157](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7986e260c.png)
 
 😱问题： 如果循环引用，将无法地方进行垃圾回收。
 
-![截屏2024-06-09 16.46.11](http://14.103.135.111:49153/i/66656bda1085d.png)
+![截屏2024-06-09 16.46.11](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66656bda1085d.png)
 
 |          | 手动          | 引用计数            | 标记并清除 | 停止并复制 |
 | -------- | ------------- | ------------------- | ---------- | ---------- |
@@ -288,31 +288,31 @@ while (Q != ∅) {
 }
 ```
 
-![image-20250612150633207](http://14.103.135.111:49153/i/684a7c7c6365d.png)
+![image-20250612150633207](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7c7c6365d.png)
 
-![image-20250612150713802](http://14.103.135.111:49153/i/684a7ca4e80d1.png)
+![image-20250612150713802](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7ca4e80d1.png)
 
-![image-20250612150806927](http://14.103.135.111:49153/i/684a7cd9ee4d6.png)
+![image-20250612150806927](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7cd9ee4d6.png)
 
-![image-20250612150829721](http://14.103.135.111:49153/i/684a7cf143efe.png)
+![image-20250612150829721](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7cf143efe.png)
 
-![image-20250612150858977](http://14.103.135.111:49153/i/684a7d0e17865.png)
+![image-20250612150858977](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7d0e17865.png)
 
-![image-20250612150917630](http://14.103.135.111:49153/i/684a7d210ebb1.png)
+![image-20250612150917630](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7d210ebb1.png)
 
-![image-20250612151319095](http://14.103.135.111:49153/i/684a7e1232dc4.png)
+![image-20250612151319095](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7e1232dc4.png)
 
 、
 
-![image-20250612151227846](http://14.103.135.111:49153/i/684a7ddf096f4.png)
+![image-20250612151227846](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7ddf096f4.png)
 
-![image-20250612151600991](http://14.103.135.111:49153/i/684a7eb416cad.png)
+![image-20250612151600991](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7eb416cad.png)
 
 省略一部分，，，
 
-![image-20250612151722671](http://14.103.135.111:49153/i/684a7f060e5ae.png)
+![image-20250612151722671](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7f060e5ae.png)
 
-![image-20250612151739658](http://14.103.135.111:49153/i/684a7f17159d8.png)
+![image-20250612151739658](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a7f17159d8.png)
 
 - 标记阶段：深度优先搜索对所有的live object进行标记。
 
@@ -340,19 +340,19 @@ while (Q != ∅) {
 
 停止-复制法（Stop-And-Copy）是分代垃圾回收算法的早期形式，核心思想把内存分成两个区域，一边运行，一边回收，当收集时，把仍然活着的对象从当前区复制到另一边，剩下的直接丢掉。
 
-![image-20250612153607186](http://14.103.135.111:49153/i/684a8369e1ba8.png)
+![image-20250612153607186](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a8369e1ba8.png)
 
 在标记-清除法中， 一个很重要的发现，在所有的存活对象在Q中是连续存储的。如果能将实际对象存放在队列中（连续的内存区域），把其他隐式删除掉，这样能够处理外部碎片的问题。
 
-![截屏2024-06-09 17.10.57](http://14.103.135.111:49153/i/666571a8e8319.png)
+![截屏2024-06-09 17.10.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666571a8e8319.png)
 
-![截屏2024-06-09 17.11.28](http://14.103.135.111:49153/i/666571c69dea2.png)
+![截屏2024-06-09 17.11.28](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666571c69dea2.png)
 
 
 
 如果我们 **FROM** 空间满了， 触发GC，从Root开始存活对象复制到 **TO** 空间（FIFO)，每复制一个对象，更新所有引用它的指针
 
-![截屏2024-06-09 17.12.18](http://14.103.135.111:49153/i/666571f91e575.png)
+![截屏2024-06-09 17.12.18](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666571f91e575.png)
 
 如何更新？
 
@@ -365,19 +365,19 @@ while (Q != ∅) {
 
 
 
-![image-20250612154152270](http://14.103.135.111:49153/i/684a84c2c9d90.png)
+![image-20250612154152270](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a84c2c9d90.png)
 
 
 
-![image-20250612154308356](http://14.103.135.111:49153/i/684a850ee3a5d.png)
+![image-20250612154308356](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a850ee3a5d.png)
 
 
 
-![image-20250612162635217](http://14.103.135.111:49153/i/684a8f3e3a582.png)
+![image-20250612162635217](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/684a8f3e3a582.png)
 
 > 什么情况下判断FROM空间满了？
 
-![image-20240929025809603](http://14.103.135.111:49153/i/66f851c401ae5.png)
+![image-20240929025809603](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f851c401ae5.png)
 
 - 请求一块新的堆空间时，其大小等于已经使用的空间（即加倍）
 - 垃圾回收的成本与新堆空间的大小成正比，并且摊销后的额外开销为 O(1)，假设用户程序访问了所有已分配的内存。

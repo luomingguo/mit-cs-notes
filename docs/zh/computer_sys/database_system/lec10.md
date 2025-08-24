@@ -52,7 +52,7 @@ Query Planning & Optimization
 
 
 
-![image-20250610125316132](http://14.103.135.111:49153/i/6847ba3ec92a3.png)
+![image-20250610125316132](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847ba3ec92a3.png)
 
 图 1：架构概览 – 应用程序连接到数据库系统并发送 SQL 查询，该查询可能会被重写为其他格式。SQL 字符串被解析为构成语法树的标记。绑定器通过查询系统目录，将语法树中的命名对象转换为内部标识符。绑定器发出一个逻辑计划，该逻辑计划可能会被提供给树重写器以获取额外的架构信息。逻辑计划被提供给优化器，优化器选择最高效的程序来执行该计划。
 
@@ -154,7 +154,7 @@ AND ALBUM.NAME="Andy's OG Remix"
 
 ##### 谓词下推
 
-![image-20250610125523032](http://14.103.135.111:49153/i/6847babe16dff.png)
+![image-20250610125523032](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847babe16dff.png)
 
 
 
@@ -166,7 +166,7 @@ AND ALBUM.NAME="Andy's OG Remix"
 
 当优化器识别到查询只需要部分列时，它会应用规则尽早执行投影操作，以减少不必要的数据处理
 
-![image-20250610125823367](http://14.103.135.111:49153/i/6847bb727f087.png)
+![image-20250610125823367](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847bb727f087.png)
 
 #### 重写优化
 
@@ -307,7 +307,7 @@ SELECT * FROM A WHERE val between 1 AND 150;
 
 ##### 直方图
 
-![截屏2024-08-12 04.39.44](http://14.103.135.111:49153/i/6847c766b7b97.png)
+![截屏2024-08-12 04.39.44](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c766b7b97.png)
 
 我们的公式很好，但我们假设数据值是均匀分布的
 
@@ -315,7 +315,7 @@ SELECT * FROM A WHERE val between 1 AND 150;
 
 维护一组值的计数，而不是每个唯一键的计数。所有桶（bucket）具有相同的宽度，即相同数量的值
 
-![截屏2024-08-12 04.41.24](http://14.103.135.111:49153/i/6847c76718e49.png)
+![截屏2024-08-12 04.41.24](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c76718e49.png)
 
 ##### 草图
 
@@ -330,11 +330,11 @@ SELECT * FROM A WHERE val between 1 AND 150;
 
 现代数据库管理系统（DBMS）还会从表中收集样本以估计选择性。在基础表发生显著变化时，更新这些样本。
 
-![截屏2024-08-12 04.46.14](http://14.103.135.111:49153/i/6847c7682e185.png)
+![截屏2024-08-12 04.46.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c7682e185.png)
 
 通过抽样得出结论
 
-![截屏2024-08-12 04.46.41](http://14.103.135.111:49153/i/6847c767b4db1.png)
+![截屏2024-08-12 04.46.41](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c767b4db1.png)
 
 
 
@@ -407,7 +407,7 @@ $$
 
 
 
-![截屏2024-08-17 12.49.37](http://14.103.135.111:49153/i/6852e4bc4fc94.png)
+![截屏2024-08-17 12.49.37](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e4bc4fc94.png)
 
 > ^Card(X<10) = ?
 
@@ -658,21 +658,21 @@ ORDER BY artist.id
 
 2. 列举所有可能的连接顺序
 
-   ![截屏2024-08-12 09.02.16](http://14.103.135.111:49153/i/6847c0ac06572.png)
+   ![截屏2024-08-12 09.02.16](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c0ac06572.png)
 
 3. 确定最低 成本的连接顺序
 
-   ![截屏2024-08-12 09.05.18](http://14.103.135.111:49153/i/6847c0ad17563.png)
+   ![截屏2024-08-12 09.05.18](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c0ad17563.png)
 
    任意挑选两个表进行连接(hash连接或者排序连接)，根据成本模型，计算出物理操作符的联合操作的执行成本，丢掉成本高的
 
-   ![截屏2024-08-12 09.04.23](http://14.103.135.111:49153/i/6847c0ada1c32.png)
+   ![截屏2024-08-12 09.04.23](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c0ada1c32.png)
 
    
 
-   ![截屏2024-08-12 09.08.17](http://14.103.135.111:49153/i/6847c0b10351e.png)
+   ![截屏2024-08-12 09.08.17](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c0b10351e.png)
 
-<img src="http://14.103.135.111:49153/i/6847c0b05d467.png" alt="截屏2024-08-12 09.08.45" style="zoom:50%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c0b05d467.png" alt="截屏2024-08-12 09.08.45" style="zoom:50%;" />
 
 ​	这个查询有ORDER BY动作，但是逻辑计划并不包含排序性质
 
@@ -689,19 +689,19 @@ ORDER BY artist.id
 
 例子
 
-![截屏2024-08-12 09.21.47](http://14.103.135.111:49153/i/66b963b265173.png)
+![截屏2024-08-12 09.21.47](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66b963b265173.png)
 
 - 我们需要调用两条规则来创建节点并遍历树
   - 逻辑到逻辑： JOIN(A, B) to JOIN(B, A)
   - 逻辑到物理：JOIN(A, B) to HASH_JOIN(A, B)
 
-![截屏2024-08-12 09.25.29](http://14.103.135.111:49153/i/6847c0b3ddb27.png)
+![截屏2024-08-12 09.25.29](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c0b3ddb27.png)
 
-![截屏2024-08-12 09.26.43](http://14.103.135.111:49153/i/6847c0b4d0459.png)
+![截屏2024-08-12 09.26.43](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6847c0b4d0459.png)
 
 如果新节点成本当前成本小，就可以往下走
 
-![截屏2024-08-12 09.27.37](http://14.103.135.111:49153/i/66b965110c931.png)
+![截屏2024-08-12 09.27.37](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66b965110c931.png)
 
 
 

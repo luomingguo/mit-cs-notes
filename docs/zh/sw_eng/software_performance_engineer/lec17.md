@@ -62,7 +62,7 @@ mov a, %eax ; Load
 
 回到刚刚的例子，我们把四个语句标号，他们的交错结果，以及最终产生的值的比较如图
 
-![image-20240912062321533](http://14.103.135.111:49153/i/6852e2f5be18f.png)
+![image-20240912062321533](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e2f5be18f.png)
 
 顺序一致性揭示了没有一种执行结果是 %eax = %ebx = 0
 
@@ -123,7 +123,7 @@ Alice想玩弄这个称为x小物件，而Bob想将它放好，但是小物件�
 - 考虑他们进入临界区域之前各自的最新时间点(the most-recent time)
 - 我们将推导出一个矛盾。
 
-![截屏2024-06-27 04.35.17](http://14.103.135.111:49153/i/667c7b949cb9f.png)
+![截屏2024-06-27 04.35.17](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667c7b949cb9f.png)
 
 - 不失一般性， 假设Bob是最后写入turn的： write_A(turn = B) -> write_B(turn = A)
 - Alice的程序顺序是：write_A(A_wants = true) -> write_A(turn = B)
@@ -162,7 +162,7 @@ Alice想玩弄这个称为x小物件，而Bob想将它放好，但是小物件�
 
 ### 指令（编译器）重排序
 
-![image-20241001065418732](http://14.103.135.111:49153/i/66fb2c1d80664.png)
+![image-20241001065418732](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fb2c1d80664.png)
 
 > 为什么硬件和编译器决定重排序这些指令？为什么硬件更喜欢先做load操作？
 
@@ -179,17 +179,17 @@ Solution：为了通过**掩饰**加载延迟（load latency）来获得更高�
 
 在内存总线上，处理器可以非常快速地发出（issue）存储指令，速度超过总线（网络），因此使用了存储缓冲区(store buffer)来解决存储指令和网络速度不匹配的问题，以防止出现停顿（stall）
 
-![截屏2024-06-27 12.22.37](http://14.103.135.111:49153/i/667ce91c8ca65.png)
+![截屏2024-06-27 12.22.37](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667ce91c8ca65.png)
 
 由于加载（LOAD）指令可能会使处理器停顿（stall）直到加载完成（每当你执行LOAD指令时，如果这个数据不在处理器的缓存中，处理器将不得不等待内存子系统返回数据） ，因此LOAD指令优先于STORE指令，通过LOAD旁路技术在实现。
 
-![截屏2024-06-27 12.31.47](http://14.103.135.111:49153/i/667ceb3b9a8a8.png)
+![截屏2024-06-27 12.31.47](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667ceb3b9a8a8.png)
 
 >  如果LOAD的地址刚好是在STORE缓冲区的怎么办？
 
 SOLUTION： 从存储缓冲区找到该地址的结果并返回。
 
-![截屏2024-06-27 12.38.09](http://14.103.135.111:49153/i/667cecc0995be.png)
+![截屏2024-06-27 12.38.09](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667cecc0995be.png)
 
 因此，总的来说**加载指令**可以**Bypass**不同地址的存储指令.
 
@@ -197,7 +197,7 @@ SOLUTION： 从存储缓冲区找到该地址的结果并返回。
 
 完全存储定序(TSO， Total Store Order) ，硬件实现的
 
-![截屏2024-06-27 13.06.36](http://14.103.135.111:49153/i/667cf365b5b40.png)
+![截屏2024-06-27 13.06.36](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667cf365b5b40.png)
 
 > [!NOTE]
 >
@@ -222,7 +222,7 @@ SOLUTION： 从存储缓冲区找到该地址的结果并返回。
 
 ### 重排序的影响
 
-回到最开始的例子 ![截屏2024-06-27 13.47.16](http://14.103.135.111:49153/i/667cfcf1c69f2.png)
+回到最开始的例子 ![截屏2024-06-27 13.47.16](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667cfcf1c69f2.png)
 
 ,如果按照<2, 4, 1, 3>的顺序，将产生 %eax = %ebx = 0，我们说**指令重排序违背了顺序一致性**， 这不仅会发生在硬件重排序，还有可能发生在编译重排序上。这就要求我们
 
@@ -234,7 +234,7 @@ SOLUTION： 从存储缓冲区找到该地址的结果并返回。
 
 #### 重排序对Perterson‘s 算法的影响
 
-![截屏2024-06-27 13.55.29](http://14.103.135.111:49153/i/667cfee969052.png)
+![截屏2024-06-27 13.55.29](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667cfee969052.png)
 
 B_wants和A_wants的LOAD指令可能重排序到A_wants和B_wants的Store指令前面，最终可能导致Alice和Bob同时进入临界区！
 
@@ -252,7 +252,7 @@ B_wants和A_wants的LOAD指令可能重排序到A_wants和B_wants的Store指令�
 
 ### 恢复示例的一致性
 
-![截屏2024-06-27 14.14.23](http://14.103.135.111:49153/i/667d034adb1c8.png)
+![截屏2024-06-27 14.14.23](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667d034adb1c8.png)
 
 这样一来，内存屏障前后的指令能保持相对的顺序一致性了。
 
@@ -260,7 +260,7 @@ B_wants和A_wants的LOAD指令可能重排序到A_wants和B_wants的Store指令�
 
 ### 过去的解决方案
 
-![截屏2024-06-27 14.40.39](http://14.103.135.111:49153/i/667d097d231a2.png)
+![截屏2024-06-27 14.40.39](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667d097d231a2.png)
 
 **过去**在使用内存屏障（memory fence）时的额外注意事项
 
@@ -276,7 +276,7 @@ C11语言标准定义了自己的弱内存模型，通过以下方式可以控�
 1. **声明变量为_Atomic**：在C11标准中，可以通过声明变量为 `_Atomic` 类型来指示编译器该变量是原子类型，需要进行原子操作。原子类型的变量可以保证在多线程或并发环境中，其操作是原子的，即不会被中断或重排序。
 2. **使用原子函数**：C11标准提供了一系列的原子操作函数，例如 `atomic_load()`、`atomic_store()` 等。这些函数能够确保对原子类型变量的读取和写入是原子性的，不会被硬件或编译器进行重新排序或优化。
 
-![截屏2024-06-27 14.44.01](http://14.103.135.111:49153/i/667d0a3e2cbce.png)
+![截屏2024-06-27 14.44.01](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667d0a3e2cbce.png)
 
 ---
 
@@ -415,7 +415,7 @@ struct Stack {
 }
 ```
 
-![截屏2024-06-28 14.17.56](http://14.103.135.111:49153/i/667e559c75f1f.png)无锁push
+![截屏2024-06-28 14.17.56](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667e559c75f1f.png)无锁push
 
 ```c
 void push(Node* node) {
@@ -429,23 +429,23 @@ void push(Node* node) {
 
 示例：
 
-![image-20241001041021574](http://14.103.135.111:49153/i/66fb05b06ac11.png)
+![image-20241001041021574](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fb05b06ac11.png)
 
 1. 线程 1 开始弹出包含 15 的节点，但在读取到 ``current->next``之后停顿（stall）。
 
-![image-20241001041220522](http://14.103.135.111:49153/i/66fb06273b6ba.png)
+![image-20241001041220522](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fb06273b6ba.png)
 
 2. 线程 2 弹出包含 15 的节点。
 
-![image-20241001041237995](http://14.103.135.111:49153/i/66fb0638ae6c4.png)
+![image-20241001041237995](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fb0638ae6c4.png)
 
 3. 线程 2 弹出包含 94 的节点。
 
-![image-20241001041324081](http://14.103.135.111:49153/i/66fb0666bac9b.png)
+![image-20241001041324081](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fb0666bac9b.png)
 
 4. 线程 2 推入节点 7，重用包含 15 的节点。
 
-![image-20241001041440150](http://14.103.135.111:49153/i/66fb06b2c91a1.png)
+![image-20241001041440150](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fb06b2c91a1.png)
 
 5. 线程 1 恢复（resume），且它的CAS成功，移除 7，但将垃圾放回列表中。
 

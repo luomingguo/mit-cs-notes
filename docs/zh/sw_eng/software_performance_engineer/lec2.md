@@ -13,7 +13,7 @@
 
 ## 总览
 
-![image-20250612022621022](http://14.103.135.111:49153/i/6849ca4fc38eb.png)
+![image-20250612022621022](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849ca4fc38eb.png)
 
 - 数据结构
 - 循环
@@ -44,7 +44,7 @@ Solution： 我们可以通过位域（bit-field）方式，把日期的 year/mo
 
 **增强链表**：如果我们在链表结构中增加一个尾指针（tail pointer），直接指向链表的最后一个节点，那么拼接操作就可以直接找到链表 A 的末尾，无需遍历整个链表。这样拼接操作可以在常数时间（O(1)）内完成，大大提高效率
 
-![image-20250612022556524](http://14.103.135.111:49153/i/6849ca3719a32.png)
+![image-20250612022556524](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849ca3719a32.png)
 
 ### 预计算
 
@@ -58,7 +58,7 @@ $，求解二项式稀疏非常昂贵（需要大量的乘法），并且比较�
 
 第一步： Pascal's 三角
 
-![image-20250612023527256](http://14.103.135.111:49153/i/6849cc7311940.png)
+![image-20250612023527256](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849cc7311940.png)
 
 ```c
 int choose(int n, int k) {
@@ -118,7 +118,7 @@ int main(int argc, const char *argv[]) {
 
 **缓存（cache）**的思想是将最近访问过的结果存储起来，以便程序不必再次计算它们。
 
-![image-20250612022954272](http://14.103.135.111:49153/i/6849cb2602d00.png)
+![image-20250612022954272](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849cb2602d00.png)
 
 ### 稀疏性
 
@@ -136,19 +136,19 @@ int main(int argc, const char *argv[]) {
 
 循环不变量外提（Hoisting）是一种编译器优化技术，目的是将循环内部不变的计算（Loop-Invariant Code）移到循环外部，避免在每次迭代中重复计算相同值，从而提升性能
 
-![image-20250612031031977](http://14.103.135.111:49153/i/6849d4ab50a95.png)
+![image-20250612031031977](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849d4ab50a95.png)
 
 ### 循环融合
 
 循环融合（Loop Fusion， 也称Loop Jamming）是一种编译器优化技术，目的是将多个相邻的、遍历相同索引范围的循环合并为一个循环，从而减少循环控制的开销（如循环变量更新、条件判断等），并提升数据局部性。
 
-![image-20250612030745153](http://14.103.135.111:49153/i/6849d40439e44.png)
+![image-20250612030745153](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849d40439e44.png)
 
 ### 消除无效迭代
 
 消除无效迭代（Eliminating Wasted Iterations）的思想是，通过调整循环边界（loop bounds），跳过那些循环体内实际没有有效操作的迭代
 
-![image-20250612030922568](http://14.103.135.111:49153/i/6849d465a9a2e.png)
+![image-20250612030922568](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849d465a9a2e.png)
 
 ## 函数
 
@@ -156,7 +156,7 @@ int main(int argc, const char *argv[]) {
 
 内联（Inlining）的关键思想子阿姨，减少函数调用开销，用函数体替换调用。
 
-![image-20250612025533637](http://14.103.135.111:49153/i/6849d128c8377.png)
+![image-20250612025533637](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849d128c8377.png)
 
 也可以通过将`square`声明为内联函数，内联函数有着比肩宏（macros）的性能，并且他们更安全和更好的结构化（宏只是简单的替换）。
 
@@ -164,10 +164,10 @@ int main(int argc, const char *argv[]) {
 
 尾递归消除（Tail-Recursion Elimination）的理念是消除函数最后一步递归调用的开销。最后一步的递归调用被替换为跳转到函数开头，更新参数的值（即复用栈帧）
 
-![image-20250612030447519](http://14.103.135.111:49153/i/6849d3529cb65.png)
+![image-20250612030447519](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849d3529cb65.png)
 
 ### 粗化递归
 
 粗化递归（Coarsening Recursion）的理念是增加基准条件的大小，并使用更高效的代码来处理它，从而避免函数调用的开销。
 
-![image-20250612025417964](http://14.103.135.111:49153/i/6849d0dd32ab4.png)
+![image-20250612025417964](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6849d0dd32ab4.png)

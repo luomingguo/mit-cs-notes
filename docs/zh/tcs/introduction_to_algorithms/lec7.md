@@ -31,7 +31,7 @@
 
 当我们高度平衡的树中添加或删除叶节点时，可能会导致不平衡，我们想要在不改变遍历顺序的情况下改变树的结构——通过**旋转**！旋转操作会将一个子树从以下两种局部结构中的一种转换为另一种，并通过在 O(1)时间内修改节点之间的连接来实现这种转换
 
-![image-20241014153608700](http://14.103.135.111:49153/i/670cc9eb13ca8.png)
+![image-20241014153608700](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/670cc9eb13ca8.png)
 
 上述操作保留了遍历顺序，但能改变&lt;A&gt;和&lt;E&gt;的深度，后面会讲解如何在插入或或者删除一个节点后强制平衡。
 
@@ -89,7 +89,7 @@ Proof：既然 skew(&lt;B&gt;) = 2，说明&lt;B&gt; 的右子节点 &lt;F&gt; �
 - 如果skew(&lt;F&gt;) = 0，说明 height(&lt;D&gt;) = h + 1
 - 如果skew(&lt;F&gt;) = 1，说明 height(&lt;D&gt;) = h
 
-![截屏2024-08-03 17.53.14](http://14.103.135.111:49153/i/66adfe15a78f8.png)
+![截屏2024-08-03 17.53.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66adfe15a78f8.png)
 
 旋转后：
 
@@ -101,7 +101,7 @@ Proof：既然 skew(&lt;B&gt;) = 2，说明&lt;B&gt; 的右子节点 &lt;F&gt; �
 
 **情况 3**：&lt;F&gt; 的偏斜度为 -1，因此 &lt;F&gt; 的左孩子 &lt;D&gt; 存在， 先需要对 &lt;F&gt; 执行一次右旋转，然后对&lt;B&gt; 执行一次左旋转（双旋）
 
-![截屏2024-08-03 17.56.04](http://14.103.135.111:49153/i/66adfebebea94.png)
+![截屏2024-08-03 17.56.04](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66adfebebea94.png)
 
 设$h = \text{height}(A)$。那么高度 $\text{height}(<G>) = h$，而高度 $\text{height}(<C>)$ 和 $\text{height}(E)$ 都是 h 或 h - 1
 
@@ -239,7 +239,7 @@ Sol: 朴素算法如下：
 > ```
 
 Solution:
-![image-20241014190145047](http://14.103.135.111:49153/i/670cfa1b5de01.png)
+![image-20241014190145047](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/670cfa1b5de01.png)
 
 
 

@@ -13,7 +13,7 @@
 
 ## 缓存硬件
 
-![image-20240930050033928](http://14.103.135.111:49153/i/66f9bff6f227e.png)
+![image-20240930050033928](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9bff6f227e.png)
 
 - L1缓存： 每个处理器私有，区分指令和数据的缓存
 - L2缓存：同样是处理器私有，不区分
@@ -32,7 +32,7 @@
 - 缓存大小 = 32B
 - 每一个缓存行/块都有一个标签，指定了虚拟地址空间的哪一个内存地址。
 
-![image-20240930052808265](http://14.103.135.111:49153/i/6852e2d754a4c.png)
+![image-20240930052808265](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e2d754a4c.png)
 
 要在缓存中找到一个块，必须搜索整个缓存中的标签。当缓存满时，需要将一个块**逐出**以为新块腾出空间。**替换策略**决定要驱逐哪个块。
 
@@ -40,9 +40,9 @@
 
 另外一个种， 直接映射缓存Direct Mapped Cache，一个缓存块的**set**决定了在缓存中的位置
 
-![image-20241004101818250](http://14.103.135.111:49153/i/66ff506e21686.png)
+![image-20241004101818250](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ff506e21686.png)
 
-![image-20241004101952094](http://14.103.135.111:49153/i/66ff50ca92fb7.png)
+![image-20241004101952094](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ff50ca92fb7.png)
 
 **要在缓存中找到一个块，只需要在缓存中的一个位置进行搜索**，也就是说每个内存块都会映射到缓存中的唯一一个位置。 这个方法查询速度快， 但是cache miss的概率会很高，即便还有空闲位置，也可能会将其替换。
 
@@ -50,11 +50,11 @@
 
 Set Associative Cache
 
-![image-20241004103041763](http://14.103.135.111:49153/i/66ff53561940d.png)
+![image-20241004103041763](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ff53561940d.png)
 
 要在缓存中找到一个块，只需要搜索该块所在集合的 k 个位置
 
-![image-20241004103109484](http://14.103.135.111:49153/i/66ff5370361b0.png)
+![image-20241004103109484](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ff5370361b0.png)
 
 
 
@@ -87,7 +87,7 @@ Set Associative Cache
 > - 缓存行大小 B = 64B
 > - k = 4-路组相联
 >
-> <img src="http://14.103.135.111:49153/i/66ff55333af70.png" alt="image-20241004103840376" style="zoom:25%;" />
+> <img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ff55333af70.png" alt="image-20241004103840376" style="zoom:25%;" />
 
 **冲突未命中对具有有限相联度的缓存可能是个问题。**
 
@@ -101,7 +101,7 @@ Set Associative Cache
 
 ## 理想模型
 
-![image-20241004163232694](http://14.103.135.111:49153/i/66ffa823b456b.png)
+![image-20241004163232694](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ffa823b456b.png)
 
 参数
 
@@ -147,7 +147,7 @@ $$
 \sum^r_{i=1}(s_i/B + 2) = N / B + 2r = N/B + (2rB)/ B \\
 \le N/B + 2N/B = 3N/B
 $$
-![截屏2024-10-04 16.55.44](http://14.103.135.111:49153/i/66ffad94893ee.png)
+![截屏2024-10-04 16.55.44](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ffad94893ee.png)
 
 ### 高缓存假设
 
@@ -155,7 +155,7 @@ $$
 >
 > 【定理】Tall Cache 假设，$B^2 \lt cM$ 对于足够小的$c\le 1$成立
 
-![image-20241004165924307](http://14.103.135.111:49153/i/66ffae6e89646.png)
+![image-20241004165924307](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ffae6e89646.png)
 
 示例： Intel Xeon E5-2666 v3
 
@@ -176,7 +176,7 @@ $$
 >
 > 【引理】假设一个 $N \times N$ 的子矩阵A被高缓存读取，满足$B^2 \lt cM$，其中 $c \le 1$，并且满足 $cM \leq n^2 < M/3$。那么矩阵A 可以完全装入缓存，读取 A 中所有元素的缓存未命中数量至多为 $3n^2/B$
 
-<img src="http://14.103.135.111:49153/i/66ffb1063d9d7.png" alt="image-20241004171027467" style="zoom:33%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ffb1063d9d7.png" alt="image-20241004171027467" style="zoom:33%;" />
 
 **证明**：我们有 $2N = n^2$、$n = r = s_i$、$B \leq n = N/r$，并且$N < M/3$。因此，缓存未命中引理适用。
 

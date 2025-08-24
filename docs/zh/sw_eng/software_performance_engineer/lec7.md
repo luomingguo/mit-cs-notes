@@ -21,12 +21,12 @@ Leiserson, Charles and Ilya Mirman. “[How to Survive the Multicore Software Re
 
 Intel Haswell-E架构
 
-![截屏2024-02-02 03.00.46](http://14.103.135.111:49153/i/65bbea6be7133.png)	
+![截屏2024-02-02 03.00.46](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bbea6be7133.png)	
 
 Question: 想想为什么半导体提供商处理器芯片是多核的呢？
 Ans: 由于在2004年左右晶振频率的达到了瓶颈（4GHz左右，存在“漏电流增加”，导致电压、功耗、温度极具增加），而根据摩尔定律的发展规律来说，时钟频率瓶颈虽然限制了，但可以通过增加核心数量来提高整体处理能力，适应对性能的要求。 能效上讲，多核设计也有助于提高处理器的能效。相对于提高单个核心的时钟频率，使用多个较低频率的核心更为能效，因为更低的时钟频率通常意味着更低的功耗和发热。
 
-![截屏2024-02-02 03.20.09](http://14.103.135.111:49153/i/65bbeef189dbe.png)
+![截屏2024-02-02 03.20.09](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bbeef189dbe.png)
 
 上图可以发现，摩尔定律的每2年迭代潜在伴随着核数量的翻倍。也就是说，核数量的增加是2004年后为摩尔定律继续生效的关键因素。
 
@@ -36,11 +36,11 @@ Ans: 由于在2004年左右晶振频率的达到了瓶颈（4GHz左右，存在�
 
 
 
-![多核架构的抽象](http://14.103.135.111:49153/i/65bbf604348f0.png)
+![多核架构的抽象](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bbf604348f0.png)
 
 片上Cache结构是多核处理器的重要内容，每个核有自己的私有 Cache（L1和L2， 假如L2 Cache共享则称其为片上共享Cache，因效率低，不常用），且拥有共享cache（L3）连接到一起，通过这个网络可以共享同样的主存空间；这里I/O通常是划分到另外的网络上，因此共享了I/O接口
 
-![截屏2024-02-02 03.53.11](http://14.103.135.111:49153/i/65bbf6ae6a6ab.png)
+![截屏2024-02-02 03.53.11](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bbf6ae6a6ab.png)
 
 
 
@@ -48,7 +48,7 @@ Ans: 由于在2004年左右晶振频率的达到了瓶颈（4GHz左右，存在�
 
 计算模型
 
-![image-20240929073609967](http://14.103.135.111:49153/i/66f892ee7ad36.png)
+![image-20240929073609967](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f892ee7ad36.png)
 
 缓存一致性问题这里不赘述，最简单的解决方法是MSI协议。每个Cache行(一般是64B，有些可能是128B)都带上脏位的标记：有三种状态
 
@@ -58,11 +58,11 @@ Ans: 由于在2004年左右晶振频率的达到了瓶颈（4GHz左右，存在�
 
 在一块cache改变一个位置前，硬件会将无效化其他所有的副本，将状态S改成I；
 
-![截屏2024-02-02 06.07.19](http://14.103.135.111:49153/i/65bc162356815.png)
+![截屏2024-02-02 06.07.19](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bc162356815.png)
 
 并且将申请更改缓存的CPU的对应的cache line的脏位从S改成M，并更新缓存内容(y=5)
 
-![截屏2024-02-02 06.09.19](http://14.103.135.111:49153/i/65bc16973b1bd.png)
+![截屏2024-02-02 06.09.19](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bc16973b1bd.png)
 
 > 在CPU视角下，什么情况下可以直接读/LOAD？
 
@@ -110,7 +110,7 @@ int pthread_join(
 ) // return err status
 ```
 
-例子![截屏2024-02-02 06.45.27](http://14.103.135.111:49153/i/65bc1f11b2a09.png)
+例子![截屏2024-02-02 06.45.27](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bc1f11b2a09.png)
 
 Pthreads的限制
 
@@ -134,7 +134,7 @@ Pthreads的限制
 
 **示例**
 
-![截屏2024-02-02 06.54.29](http://14.103.135.111:49153/i/65bc212eb1f65.png)
+![截屏2024-02-02 06.54.29](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bc212eb1f65.png)
 
 其他TBB的特性
 
@@ -169,7 +169,7 @@ Pthreads的限制
 
 **示例**
 
-![截屏2024-02-03 01.53.55](http://14.103.135.111:49153/i/65bd2c3c2bd30.png)
+![截屏2024-02-03 01.53.55](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd2c3c2bd30.png)
 
 - omp：表示这是编译器指令
 - task： 下面语句是单独的任务
@@ -205,7 +205,7 @@ OpenMP 还提供了多种同步构造，例如：
 
 #### 示例：Fib
 
-![截屏2024-02-03 02.50.09](http://14.103.135.111:49153/i/65bd396ee3dcf.png)
+![截屏2024-02-03 02.50.09](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd396ee3dcf.png)
 
 **cilk_spawn**: 当你在父函数中调用某个子函数并使用 `cilk_spawn` 时，该子函数（称为“子任务”）可以与父函数并行执行（但并不是并行运行的指令）。父函数不会等待子任务完成，而是继续执行接下来的代码。（BTW： spawn有”生成“，”产卵“意思）
 
@@ -215,11 +215,11 @@ OpenMP 还提供了多种同步构造，例如：
 
 #### 示例： 矩阵转置
 
-![截屏2024-02-03 02.58.44](http://14.103.135.111:49153/i/65bd3b6d763f7.png)
+![截屏2024-02-03 02.58.44](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd3b6d763f7.png)
 
 我们在看另外一个例子，累加和。第一段代码是否能得到正确的答案？不能。 因为每个迭代它不是独立的，依赖于其他迭代的结果，我们称之为确定性竞态**(determinacy race)**，多个处理器核会同时向同一块内存空间写入数据。
 
-![截屏2024-02-03 03.09.01](http://14.103.135.111:49153/i/65bd3dd3ca24d.png)
+![截屏2024-02-03 03.09.01](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd3dd3ca24d.png)
 
 #### 超对象——reducer
 
@@ -227,7 +227,7 @@ OpenMP 还提供了多种同步构造，例如：
 
 关于reducer的创建，还有一种方法是用Monoid（一种元素的集合，函数式编程经常有这种概念，满足结合律和幺元，自行google），Cilk除了有加法型的，还有乘法型、min/max型，and/or/xor型等等，我们也可以定义自己的reducer。
 
-![非](http://14.103.135.111:49153/i/65bd4bdae7578.png)
+![非](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd4bdae7578.png)
 
 Cilk 程序的串行版本始终是程序语义的合法解释。记住，Cilk 关键词仅授予并行执行的许可，而不是强制并行执行。
 
@@ -243,19 +243,19 @@ Cilk 程序的串行版本始终是程序语义的合法解释。记住，Cilk �
 - Cilk 调度器在运行时动态地将执行中的程序映射到处理器核心上。
 - Cilk 的工作窃取调度算法被证明是高效的。
 
-![image-20240929083531299](http://14.103.135.111:49153/i/66f8a0d5ef41c.png)
+![image-20240929083531299](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8a0d5ef41c.png)
 
 #### 常用工具
 
 - Cilkscan 可以定位确定性竞争(determinacy races)
 
-  <img src="http://14.103.135.111:49153/i/6852e20be20af.png" alt="image-20240929083311860" style="zoom:25%;" />
+  <img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e20be20af.png" alt="image-20240929083311860" style="zoom:25%;" />
 
 
 
 - Cilksccle 用于分析程序在更大规模机器上扩展的效果
 
-  <img src="http://14.103.135.111:49153/i/66f8a02495ea4.png" alt="image-20240929083233668" style="zoom:25%;" />
+  <img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8a02495ea4.png" alt="image-20240929083233668" style="zoom:25%;" />
 
 ## 总结
 
@@ -264,4 +264,4 @@ Cilk 程序的串行版本始终是程序语义的合法解释。记住，Cilk �
 - 介绍了当前并发平台，及其使用方法
 - Clik抽象了处理器核心，能够处理同步和通信协议，并且在负载均衡（一种工作窃取算法）上表现出色
 
-![image-20240930031759940](http://14.103.135.111:49153/i/66f9a7ede38a6.png)
+![image-20240930031759940](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9a7ede38a6.png)

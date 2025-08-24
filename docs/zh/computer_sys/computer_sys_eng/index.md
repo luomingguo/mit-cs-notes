@@ -280,7 +280,7 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 # Lec 8 计算机网络介绍
 
-![截屏2024-07-04 16.17.54](http://14.103.135.111:49153/i/66865ab93619e.png)
+![截屏2024-07-04 16.17.54](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66865ab93619e.png)
 
 随着系统的发展，我们需要考虑，如何将一组链路加入到网络中。
 

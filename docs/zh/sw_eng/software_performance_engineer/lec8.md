@@ -28,7 +28,7 @@ assert(x == 2);
 
 我们来看错误情况下的依赖图
 
-![image-20240929084130907](http://14.103.135.111:49153/i/66f8a23de50a6.png)
+![image-20240929084130907](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8a23de50a6.png)
 
 > Cilk编码如何避免竞态？ 
 
@@ -48,7 +48,7 @@ assert(x == 2);
 - Cilksan 报告数据竞争，并为此提供详细信息，包括文件名、行数以及与竞争相关的变量。此外，它还提供堆栈跟踪信息
 - 要确保 Cilksan 能够检测到所有潜在的问题，程序员需要确保所有的程序文件都被插入了 Cilksan 的检测代码
 
-示例： ![截屏2024-02-03 04.46.03](http://14.103.135.111:49153/i/65bd54932a3dd.png)
+示例： ![截屏2024-02-03 04.46.03](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd54932a3dd.png)
 
 ## 什么是并行？
 
@@ -63,9 +63,9 @@ assert(x == 2);
 
 下图是一个展开的计算DAG图
 
-![截屏2024-02-03 04.51.15](http://14.103.135.111:49153/i/65bd55cbe7324.png)
+![截屏2024-02-03 04.51.15](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd55cbe7324.png)
 
-![image-20240929085822417](http://14.103.135.111:49153/i/66f8a6329ad1a.png)
+![image-20240929085822417](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8a6329ad1a.png)
 
 > 假如每组顺序指令执行时间为单位时间，那么这个程序并行潜力有多大？或者说能提升多大的性能？
 
@@ -81,7 +81,7 @@ assert(x == 2);
 
 下面我们将量化并行度。
 
- <img src="http://14.103.135.111:49153/i/66f8ebb3dec66.png" alt="image-20240929135455332" style="zoom:33%;" />
+ <img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8ebb3dec66.png" alt="image-20240929135455332" style="zoom:33%;" />
 
 根据Amdahl's Law，由于顺序执行占比 $3 / 18 = 1 / 6 $，所以加速比的上界是**6**。
 
@@ -96,11 +96,11 @@ $T_∞= \text{critical-path length}=9$​， 关键路径长度或者叫计算�
 
 对于线性组合，我们有，
 
-![image-20240929142643084](http://14.103.135.111:49153/i/66f8f326e0d81.png)
+![image-20240929142643084](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8f326e0d81.png)
 
 对于并行组合，我们有，
 
-![image-20240929142852925](http://14.103.135.111:49153/i/66f8f3a8f4012.png)
+![image-20240929142852925](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8f3a8f4012.png)
 
 ### 加速比Speedup
 
@@ -126,13 +126,13 @@ $T_∞= \text{critical-path length}=9$​， 关键路径长度或者叫计算�
 >
 > 并行度表示计算任务中的并行潜力，数值越大，意味着任务有更多的并行机会。
 >
-> ![image-20240929143556314](http://14.103.135.111:49153/i/66f8f54fc1c1f.png)
+> ![image-20240929143556314](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8f54fc1c1f.png)
 
 现在我们可以回答示例Fib(4)中的问题了
 
 > 假如每组顺序指令执行时间为单位时间，那么这个程序并行潜力有多大？或者说能提升多大的性能？
 
-![image-20240929144149172](http://14.103.135.111:49153/i/66f8f6b12459f.png)
+![image-20240929144149172](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8f6b12459f.png)
 
 工作量: $T_1 = 17$，
 
@@ -165,14 +165,14 @@ static void quicksort(int64_t *left, int64_t *right) {
 
 接下来我们将用100万的数字进行排序
 
-![image-20240929154820332](http://14.103.135.111:49153/i/66f906495aa82.png)
+![image-20240929154820332](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f906495aa82.png)
 
 - 蓝色线的是Span Law的限制
 - 绿色线的是Work Low限制
 
 用另外一个视角表达就是
 
-![image-20240929155057029](http://14.103.135.111:49153/i/66f906e53805d.png)
+![image-20240929155057029](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f906e53805d.png)
 
 分析： 
 
@@ -185,7 +185,7 @@ static void quicksort(int64_t *left, int64_t *right) {
 
 ### 其他算法
 
-![image-20240929155715367](http://14.103.135.111:49153/i/66f9085e918bf.png)
+![image-20240929155715367](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9085e918bf.png)
 
 > 这里的贪心调度界限是什么？
 
@@ -195,7 +195,7 @@ static void quicksort(int64_t *left, int64_t *right) {
 
 我们还没有讲这些strand（我理解为工作单元）映射到处理器的。 这里的调度理论不仅限于这个主题，这是一个通用的概念。
 
-![image-20240929155918064](http://14.103.135.111:49153/i/66f908db2667a.png)
+![image-20240929155918064](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f908db2667a.png)
 
 - Cilk 允许程序员在应用程序中表达**潜在的并行度**
 - Cilk 的调度器在运行时动态地将**指令序列（strands）**映射到处理器上
@@ -223,7 +223,7 @@ Greedy Schedule 想法：  **每一步尽可能多做**
 1. **完整步骤**：在完整步骤中，能够并行执行 P 单位工作，因此每个完整步骤的时间为 $\frac{T_1}{P}$。
 2. **不完整步骤**：在不完整步骤中，每执行一个步骤就会减少有向无环图（DAG）中未执行部分的关键路径长度 $T_{\infty}$​ 的 1 单位，因此总时间包括了这些不完整步骤的影响。
 
-<img src="http://14.103.135.111:49153/i/66f90b6358bb6.png" alt="image-20240929161006752" style="zoom:25%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f90b6358bb6.png" alt="image-20240929161006752" style="zoom:25%;" />
 
 **优化后贪心调度**
 
@@ -263,31 +263,31 @@ Greedy Schedule 想法：  **每一步尽可能多做**
 
 当一个工作者发生call / spawn 时，将函数的栈帧从底部入队
 
-![image-20240929171311152](http://14.103.135.111:49153/i/66f91a2b3dec4.png)
+![image-20240929171311152](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f91a2b3dec4.png)
 
 ---
 
 它们是可以并行执行
 
-![image-20240929171457941](http://14.103.135.111:49153/i/66f91a9734a61.png)
+![image-20240929171457941](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f91a9734a61.png)
 
 ----
 
 当一个工作者从call / spawn 中return了，直接将其从底部dequeue出去 
 
-![image-20240929173928406](http://14.103.135.111:49153/i/66f920543985c.png)
+![image-20240929173928406](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f920543985c.png)
 
 -----
 
 当有个工作者没有工作了，他就会随机挑个受害者的deque的顶部中“偷工作”
 
-![image-20240929174234659](http://14.103.135.111:49153/i/66f9210ee3ed8.png)
+![image-20240929174234659](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9210ee3ed8.png)
 
 ----
 
 偷完工作后，也可以自己spawn / call 生成更多的工作
 
-![](http://14.103.135.111:49153/i/66f9210ee3ed8.png)
+![](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9210ee3ed8.png)
 
 > [!IMPORTANT]
 >

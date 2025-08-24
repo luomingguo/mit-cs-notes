@@ -44,7 +44,7 @@ SRTBOT分析：
    - 对$\mathcal{l}$增长： 子问题$x(\mathcal{l})$仅仅取决于严格递减的$\mathcal{l}$，所以不会成环。for $\mathcal{l}$​​ = 0, 1..., L
 
    - 子问题的DAG
-     ![](http://14.103.135.111:49153/i/66b3f28aaf6e7.png)
+     ![](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66b3f28aaf6e7.png)
 
      
 
@@ -109,11 +109,11 @@ $\Theta({L^2})$这是一个多项式时间吗？
 
      - 至底向上
 
-       ![](http://14.103.135.111:49153/i/66b42d75ce38b.png)
+       ![](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66b42d75ce38b.png)
 
      - 至顶向下
 
-       ![](http://14.103.135.111:49153/i/66b42d816e480.png)
+       ![](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66b42d816e480.png)
 
 6. 时间分析
 

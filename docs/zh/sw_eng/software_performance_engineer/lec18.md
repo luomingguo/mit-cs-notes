@@ -30,7 +30,7 @@
 
 ### 示例： PageRank in Cpp
 
-![image-20240930165951251](http://14.103.135.111:49153/i/66fa688de2419.png)
+![image-20240930165951251](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fa688de2419.png)
 
 思路就是看谁被引用了最多，那么这网页就排名越高。当然，上面的算法会比较慢，因为数据量太大，cache miss较多，因此接下来在Intel 一个具体机型上做了优化，能够带来23倍的性能提升。借助如下技术
 
@@ -39,7 +39,7 @@
 - NUMA优化
 - Cache优化等等
 
- ![image-20240930170244922](http://14.103.135.111:49153/i/66fa693ae302d.png)
+ ![image-20240930170244922](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fa693ae302d.png)
 
 但是这里面有个几个挑战
 
@@ -52,7 +52,7 @@
 
 #### 拓扑驱动算法
 
-![image-20240930171002286](http://14.103.135.111:49153/i/66fa6aeddda72.png)
+![image-20240930171002286](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fa6aeddda72.png)
 
 Topology-Driven Algorithms，利用拓扑结构来指导算法的执行。
 
@@ -60,7 +60,7 @@ Topology-Driven Algorithms，利用拓扑结构来指导算法的执行。
 
 #### 数据驱动算法
 
-![image-20240930171053042](http://14.103.135.111:49153/i/66fa6b21154fb.png)
+![image-20240930171053042](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fa6b21154fb.png)
 
 ### 图的操作
 
@@ -75,7 +75,7 @@ Topology-Driven Algorithms，利用拓扑结构来指导算法的执行。
 
 #### 分区
 
-![image-20240930173132481](http://14.103.135.111:49153/i/66fa6ff91260e.png)
+![image-20240930173132481](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fa6ff91260e.png)
 
 - 好处： 利用局部性原理，可以将相互关联的节点放在一起。这有助于提高缓存局部性/减少跨核的通信量
 - 坏处： 需要额外的指令来遍历两个图
@@ -87,7 +87,7 @@ Topology-Driven Algorithms，利用拓扑结构来指导算法的执行。
 
 ### 图的优化权衡空间
 
-![image-20240930174021971](http://14.103.135.111:49153/i/66fa720b03ee6.png)
+![image-20240930174021971](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fa720b03ee6.png)
 
 - 局部性：
   - 我可能比较喜欢局部性，这样我的缓存就起作用了 ，这样需要将图进行分区，这样我不得不添加数据结构，及其额外的计算开销
@@ -115,9 +115,9 @@ Topology-Driven Algorithms，利用拓扑结构来指导算法的执行。
 
 ### Graphlt 接口
 
-![image-20240930232047718](http://14.103.135.111:49153/i/66fac1d382010.png)
+![image-20240930232047718](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fac1d382010.png)
 
-![image-20240930232414991](http://14.103.135.111:49153/i/66fac2a405630.png)
+![image-20240930232414991](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fac2a405630.png)
 
 ### 优化方向
 
@@ -136,7 +136,7 @@ Topology-Driven Algorithms，利用拓扑结构来指导算法的执行。
 
 ### 其他方案的对比
 
-![image-20240930232644382](http://14.103.135.111:49153/i/66fac338a43d5.png)
+![image-20240930232644382](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fac338a43d5.png)
 
 实际上，这种方案已经被英伟达等等采纳。
 
@@ -166,11 +166,11 @@ Topology-Driven Algorithms，利用拓扑结构来指导算法的执行。
 
 示例：
 
-![image-20240930232934966](http://14.103.135.111:49153/i/66fac3e3710c2.png)
+![image-20240930232934966](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fac3e3710c2.png)
 
 如果你想手动优化，会得到
 
-![image-20240930233040483](http://14.103.135.111:49153/i/66fac423b9ee1.png)
+![image-20240930233040483](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fac423b9ee1.png)
 
 与传统方法对比
 
@@ -195,7 +195,7 @@ Topology-Driven Algorithms，利用拓扑结构来指导算法的执行。
   - 足够简单，便于搜索和暴露给用户
   - 同时足够强大，能够超越专家的调优代码
 
-![image-20240930234751537](http://14.103.135.111:49153/i/66fac82bed252.png)
+![image-20240930234751537](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fac82bed252.png)
 
 ## 自动调优：OpenTuner
 

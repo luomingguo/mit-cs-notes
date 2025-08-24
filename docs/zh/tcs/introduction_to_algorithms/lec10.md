@@ -10,7 +10,7 @@
 
 ## 背景： 可到达性问题
 
-![截屏2024-07-31 18.54.20](http://14.103.135.111:49153/i/66aa17f178eca.png)
+![截屏2024-07-31 18.54.20](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66aa17f178eca.png)
 
 策略：设P(s) = None， 然后运行visit(s)
 

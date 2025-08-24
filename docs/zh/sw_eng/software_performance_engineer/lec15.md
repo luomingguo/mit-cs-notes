@@ -14,19 +14,19 @@
 
 ## 热扩展模拟
 
-![image-20241001193302354](http://14.103.135.111:49153/i/66fbddf175968.png)
+![image-20241001193302354](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fbddf175968.png)
 
 著名的热扩展函数
 
 从1维的热方程开始
 
-![image-20241001193708588](http://14.103.135.111:49153/i/66fbdee7a6f80.png)
+![image-20241001193708588](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fbdee7a6f80.png)
 
 > 如何实际编写代码来模拟这种差异？
 
 有限差分近似法
 
-![image-20241001212453026](http://14.103.135.111:49153/i/66fbf8284dd87.png)
+![image-20241001212453026](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66fbf8284dd87.png)
 
 3维模版计算
 

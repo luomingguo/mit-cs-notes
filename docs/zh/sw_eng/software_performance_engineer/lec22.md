@@ -15,7 +15,7 @@
 - 顶点代表对象之间的关系
 - 顶点和边都可以有类型和元数据
 
-![image-20240912011740472](http://14.103.135.111:49153/i/66e1d0d903c83.png)
+![image-20240912011740472](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e1d0d903c83.png)
 
 ### 图的应用
 
@@ -51,7 +51,7 @@ Compressed Sparse Row，CSR
 
 - Offsets[i]数组存储顶点、 ``i``的起始边， Edges 数组中开始的位置。
 
-  ![ ](http://14.103.135.111:49153/i/66e1d43bd87a9.png)
+  ![ ](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e1d43bd87a9.png)
 
 > 我们如何知道一个顶点的度？
 
@@ -87,13 +87,13 @@ O(m+n)
 
 - 非常大（但是也不会太大）
 
-​	![image-20240912015757096](http://14.103.135.111:49153/i/66e1da354af73.png)
+​	![image-20240912015757096](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e1da354af73.png)
 
 - 稀疏图（m << $n^2$）
 - 顶点的度倾斜严重
   - 这种现象称为**幂律分布**(power low degree distribution)
 
-​	![image-20240912015904225](http://14.103.135.111:49153/i/66e1da73598f3.png)
+​	![image-20240912015904225](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e1da73598f3.png)
 
 ## 实现图的BFS算法
 
@@ -115,7 +115,7 @@ O(m+n)
 
   - BFS树，每个顶点都有一个**父节点**，这个父节点是它在前一层的**邻居**
 
-  ![image-20240912021241951](http://14.103.135.111:49153/i/66e1dda6eedab.png)
+  ![image-20240912021241951](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e1dda6eedab.png)
 
 ### 顺序BFS算法
 
@@ -182,7 +182,7 @@ Solution： 这里有m次的随机访问，如果父数组并不能fit我们的�
 
 - m次的缓存未命中，就变成了n次
 
-![image-20240912033114361](http://14.103.135.111:49153/i/66e1f013e8cf6.png)
+![image-20240912033114361](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e1f013e8cf6.png)
 
 - ``int nv = 1 + n/32``表示的是位向量所需的整数个数。`1` 是为了处理可能有的额外整数，即在 `n` 不是 32 的倍数时，最后一个整数可能会包含不完全的 32 位
 
@@ -192,7 +192,7 @@ Solution： 这里有m次的随机访问，如果父数组并不能fit我们的�
 
 ### 并行实现BFS(TODO)
 
-![image-20240912034212897](http://14.103.135.111:49153/i/66e1f29e67a93.png)
+![image-20240912034212897](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e1f29e67a93.png)
 
 - **并行处理前沿顶点：** BFS的每一层可以看作是一个前沿（frontier），其中包含了当前层的所有顶点。对于每一层的顶点，我们可以并行地处理这些顶点的邻居。
 - **并行处理顶点的出边：** 在每个顶点 `v` 的邻居的处理上，我们可以进一步并行化。例如，对于顶点 `v`，可以并行地处理 `v` 的所有出边，将邻居顶点加入到下一层前沿。
@@ -234,7 +234,7 @@ BFS(Offsets, Edges, source) {
 ```
 
 - 前缀和的例子
-  - ![截屏2024-09-12 04.00.24](http://14.103.135.111:49153/i/66e1f6e33020f.png)
+  - ![截屏2024-09-12 04.00.24](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e1f6e33020f.png)
   - 《算法导论》 27-4问题
 
 >  frontierNext 怎么组织的
@@ -249,7 +249,7 @@ BFS(Offsets, Edges, source) {
 
 这是一种基于减少内存使用的优化方式，代价是消耗部分CPU资源
 
-![image-20240912042227596](http://14.103.135.111:49153/i/66e1fc0b0a606.png)
+![image-20240912042227596](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e1fc0b0a606.png)
 
 - 将边数组进行排序，并编码差值
 - 对于每个顶点v：
@@ -278,7 +278,7 @@ BFS(Offsets, Edges, source) {
 
 
 
-![image-20240912045002628](http://14.103.135.111:49153/i/66e2028034e60.png)
+![image-20240912045002628](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e2028034e60.png)
 
 - 缺点：增加空间成本，但是让解码更加便宜（没有分支预测错误）
 

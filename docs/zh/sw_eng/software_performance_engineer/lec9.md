@@ -29,7 +29,7 @@ $$
 
 用递归树可以比较容易理解主定理
 
-![截屏2024-07-01 04.32.39](http://14.103.135.111:49153/i/6681c0f016bf8.png)
+![截屏2024-07-01 04.32.39](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6681c0f016bf8.png)
 
 在递归树分析中，叶子结点表示递归结束时最小问题规模。主定理中的叶子节点数是由递归的深度决定的，为$\log_b{n}$，每个叶子的复杂度为T(1)，但是递归树有$a^{\log_b{n}} = n^{\log_b{a}}$ （换底公式得到+转换得到）,将所有的叶子节点复杂度想加就得到了 $\Theta(n^{\log_b{a}})$，这也是总复杂度。
 
@@ -42,17 +42,17 @@ $$
 
 #### 总结
 
-![image-20240929192530927](http://14.103.135.111:49153/i/66f9392f4159e.png)
+![image-20240929192530927](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9392f4159e.png)
 
 #### 测验
 
-![image-20240929192624194](http://14.103.135.111:49153/i/66f9396484a30.png)
+![image-20240929192624194](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9396484a30.png)
 
 ## Cilk循环语句
 
 ### 示例： 矩阵的原地转置
 
-![image-20240929193017208](http://14.103.135.111:49153/i/66f93a4caec24.png)
+![image-20240929193017208](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f93a4caec24.png)
 
 ```c
 // indeces run from 0, not 1
@@ -89,7 +89,7 @@ recur(1, n);
 
  他做的就是找到一个中间点，然后递归调用自己，类似树分裂一样。
 
-![image-20240930011242713](http://14.103.135.111:49153/i/66f98a9218e76.png)
+![image-20240930011242713](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f98a9218e76.png)
 
 `recur` 通过二分法拆分范围，生成对数层级的递归调用树，因此 控制结构的跨度是 = $\Theta(\lg{n})$
 
@@ -144,7 +144,7 @@ clik_for (int i = 0; i < n; ++i) {
 }
 ```
 
-![image-20240930020706762](http://14.103.135.111:49153/i/66f9974d5aef8.png)
+![image-20240930020706762](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9974d5aef8.png)
 
 - 工作量： $T_1 = \Theta(n)$​
   - 包含了大量的开销
@@ -182,7 +182,7 @@ void recur(int lo, int hi) { // half open
 recur(0, n);
 ```
 
-![image-20240930022050335](http://14.103.135.111:49153/i/66f99a86b5cfc.png)
+![image-20240930022050335](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f99a86b5cfc.png)
 
 
 
@@ -232,7 +232,7 @@ for (int j = 0; j < n; j += G) {
 clik_sync;
 ```
 
-![image-20240930032514874](http://14.103.135.111:49153/i/66f9a99da8f47.png)
+![image-20240930032514874](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9a99da8f47.png)
 
 ``cilk_spawn`` 函数里面有一个循环，因此它是G次迭代
 
@@ -305,20 +305,20 @@ Solution:
 
 3. 使用**分治递归或并行循环**：而不是一个接一个地生成小任务。
 
-   ![image-20240930043421772](http://14.103.135.111:49153/i/66f9ba3960a14.png)
+   ![image-20240930043421772](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9ba3960a14.png)
 
 4. 确保工作量 / spawn数量 的比值足够大。
    • 通过使用函数调用和在递归的叶子节点附近内联来进行粗化，而不是生成任务。
 
 5. 如果必须做出选择：优先并行化**外层循环，**而不是内层循环。
 
-   ![image-20240930043547607](http://14.103.135.111:49153/i/66f9ba26b0597.png)
+   ![image-20240930043547607](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9ba26b0597.png)
 
 6. **注意调度开销**。
 
 ## 经典例子： 矩阵乘法
 
-![image-20240930044016211](http://14.103.135.111:49153/i/66f9bb34976ad.png)
+![image-20240930044016211](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9bb34976ad.png)
 
 一个很自然的想法
 
@@ -341,7 +341,7 @@ cilk_for (int i = 0; i < n; ++i) {
 
 用递归分治
 
-![image-20240930044434610](http://14.103.135.111:49153/i/66f9bc354deba.png)
+![image-20240930044434610](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9bc354deba.png)
 
 - 8次 n / 2 * n / 2矩阵的乘法
 - 1次 n * n矩阵的加法
@@ -350,7 +350,7 @@ cilk_for (int i = 0; i < n; ++i) {
 
 首先我们先了解如何索引每个元素
 
-![image-20240930045018034](http://14.103.135.111:49153/i/66f9bd8e66dd5.png)
+![image-20240930045018034](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9bd8e66dd5.png)
 
 最终代码（TODO）
 

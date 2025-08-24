@@ -46,7 +46,7 @@ def reduce(key, values):
 - Reducing。 每组中间值都被一个reduce任务处理
 - output： 从reduce任务生成出结果。
 
-![image-20250326145952068](http://14.103.135.111:49153/i/6852e3d9e841c.png)
+![image-20250326145952068](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e3d9e841c.png)
 
 ### 分析
 
@@ -80,7 +80,7 @@ RDD 是不能直接修改，被分区到不同节点的记录集合。它有两�
 
 举个例子
 
-![image-20250326155309398](http://14.103.135.111:49153/i/6852e3de62a62.png)
+![image-20250326155309398](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e3de62a62.png)
 
 ```python
 lines = spark.textFile("hdfs://..")
@@ -88,13 +88,13 @@ errors = lines.filter(_.startsWith("ERROR"))
 errors.count()
 ```
 
-![image-20250326163758279](http://14.103.135.111:49153/i/6852e3e199c8e.png)
+![image-20250326163758279](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e3e199c8e.png)
 
-![image-20250326171351669](http://14.103.135.111:49153/i/6852e3e562b1b.png)
+![image-20250326171351669](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e3e562b1b.png)
 
-![image-20250326171416868](http://14.103.135.111:49153/i/6852e3e8eef09.png)
+![image-20250326171416868](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e3e8eef09.png)
 
-![image-20250326171432109](http://14.103.135.111:49153/i/6852e3ec6cf64.png)
+![image-20250326171432109](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e3ec6cf64.png)
 
 ### RDD容错性
 
@@ -146,7 +146,7 @@ Spark通过类似于DryadLINQ [31] 和 FlumeJava [8] 的语言集成API暴露RDD
 
 #### 2.2.1 示例： 控制台日志挖掘
 
-![截屏2024-09-04 16.10.57](http://14.103.135.111:49153/i/66d8162149931.png)
+![截屏2024-09-04 16.10.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66d8162149931.png)
 
 假设某个Web服务遇到了错误，运维人员希望搜索Hadoop文件系统（HDFS）中的海量日志，以查找问题的原因。使用Spark，运维人员可以将日志中的错误消息加载到一组节点的内存中，并进行交互式查询。
 
@@ -211,7 +211,7 @@ RDD最适合批处理应用，这些应用对数据集的所有元素应用相�
 
 Spark通过一个类似于DryadLINQ的语言集成API来提供RDD（Resilient Distributed Dataset）抽象。该API在Scala中实现，Scala是一种用于Java虚拟机（JVM）的静态类型的函数式编程语言。我们选择Scala是因为它具有简洁性（便于交互使用）和效率（由于静态类型）。不过，RDD抽象本身并不需要函数式语言。
 
-![截屏2024-09-04 16.42.14](http://14.103.135.111:49153/i/66d81d7440b03.png)
+![截屏2024-09-04 16.42.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66d81d7440b03.png)
 
 为了使用Spark，开发者编写一个驱动程序，该程序连接到一组工作节点，如图2所示。驱动程序定义一个或多个RDD，并在其上调用操作。驱动程序中的Spark代码还跟踪RDD的血统（即数据的来源和变换过程）。工作节点是持久化的进程，可以在多次操作之间将RDD的分区存储在RAM中。
 
@@ -223,7 +223,7 @@ RDD本身是具有静态类型的对象，其参数化的元素类型。例如�
 
 ### 3.1 Spark中的RDD操作
 
-![截屏2024-09-04 16.43.39](http://14.103.135.111:49153/i/66d81dc4590a3.png)
+![截屏2024-09-04 16.43.39](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66d81dc4590a3.png)
 
 表2列出了Spark中主要的RDD转换和动作操作。我们给出了每个操作的签名，使用方括号表示类型参数。回想一下，转换操作是定义一个新RDD的惰性操作，而动作操作会启动计算以将值返回给程序或将数据写入外部存储。需要注意的是，一些操作（如`join`）只在键值对RDD上可用。此外，我们选择的函数名称与Scala和其他函数式语言中的API相匹配；例如，`map`是一个一对一的映射，而`flatMap`将每个输入值映射到一个或多个输出（类似于MapReduce中的`map`）。
 
@@ -256,7 +256,7 @@ for (i <- 1 to ITERATIONS) {
 
 #### 3.2.2  PageRank
 
-![截屏2024-09-04 16.45.21](http://14.103.135.111:49153/i/66d81e2a7cad8.png)
+![截屏2024-09-04 16.45.21](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66d81e2a7cad8.png)
 
 在PageRank中发生了更复杂的数据共享模式。该算法通过累加来自链接到它的文档的贡献，迭代地更新每个文档的排名。在每次迭代中，每个文档向其邻居发送一个贡献`r/n`，其中`r`是其排名，`n`是其邻居的数量。然后它将其排名更新为`α/N + (1 − α)∑ci`，其中累加和来自收到的贡献，`N`是文档总数。
 
@@ -295,7 +295,7 @@ links = spark.textFile(...).map(...)
 
 为RDD提供抽象的挑战之一是能够支持各种转换。理论上应该提供给用户任意组合，因此我们提出了一种基于图形的简单 RDD 表示形式。我们建议通过一个通用接口来表示每个 RDD，该接口公开五条信息：一组分区，它们是数据集的原子部分；一组对父 RDD 的依赖关系；一个基于其父级计算数据集的函数；以及有关其分区方案和数据放置的元数据。
 
-![image-20250327143412191](http://14.103.135.111:49153/i/6852e3fe7ef52.png)
+![image-20250327143412191](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e3fe7ef52.png)
 
 例如，表示 HDFS 文件的 RDD 为文件的每个块都有一个分区，并且知道每个块位于哪些机器上。同时，此 RDD 上的映射结果具有相同的分区，但在计算其元素时将映射函数应用于父级数据。我们在表 3 中总结了此接口。
 
@@ -318,7 +318,7 @@ links = spark.textFile(...).map(...)
 
 图 4 展示了其他示例。
 
-![image-20250327154634173](http://14.103.135.111:49153/i/6852e405966cb.png)
+![image-20250327154634173](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e405966cb.png)
 
 HDFS 文件：在我们的样本中，输入 RDD 来自 HDFS 中的文件。对于这些 RDD，`partitions` 方法为文件的每个数据块返回一个分区（每个 `Partition` 对象中存储了数据块的偏移量），`preferredLocations` 方法返回数据块所在的节点，`iterator` 方法用于读取数据块。
 
@@ -335,4 +335,4 @@ HDFS 文件：在我们的样本中，输入 RDD 来自 HDFS 中的文件。对�
 
 Spark调度采用了第四节介绍的RDD的表示，总的来说，我们的调度器类似于Dryad‘s，但是考虑了哪写分区的RDD在内存可用。每当用户在RDD上运行action（比如count 或 save），调度程序都会检查该RDD的血统以构建要执行的DAG，如图5所示（实线框是RDD，分区时阴影框，如果在内存则为黑色。要在RDD G上action，在宽依赖项处构建构建阶段，并在每个阶段内流水线化窄转换）。每个阶段都包含尽可能多的的窄依赖性的流水线转换，阶段的边界是宽依赖所需的shuffe操作，或者是任何可以缩短父RDD计算的已计算分区。
 
-![image-20250327141702490](http://14.103.135.111:49153/i/6852e41235df4.png)
+![image-20250327141702490](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6852e41235df4.png)

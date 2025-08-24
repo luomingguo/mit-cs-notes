@@ -50,7 +50,7 @@ $bit.c \xrightarrow{预处理器} bit.i \xrightarrow{编译器} bit.s $
 
 从 C 到 汇编的对应关系不总是明显的。
 
-![image-20240927112415950](http://14.103.135.111:49153/i/66f62769c646a.png)
+![image-20240927112415950](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f62769c646a.png)
 
 ## LLVM IR 基础知识
 
@@ -79,7 +79,7 @@ int64_t fib(int64_t n) {
 }
 ```
 
-![image-20240927120444772](http://14.103.135.111:49153/i/66f62eeaeffaf.png)
+![image-20240927120444772](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f62eeaeffaf.png)
 
 LLVM IR 可以直接转变成汇编语言通过命令
 
@@ -87,7 +87,7 @@ LLVM IR 可以直接转变成汇编语言通过命令
 clang fib.ll -S
 ```
 
-![image-20240927120605672](http://14.103.135.111:49153/i/66f62f39261b8.png)
+![image-20240927120605672](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f62f39261b8.png)
 
 ### LLVM IR 组成
 
@@ -107,7 +107,7 @@ clang fib.ll -S
 
 ### LLVM IR 寄存器
 
-![image-20240927121939787](http://14.103.135.111:49153/i/66f6326490fd7.png)
+![image-20240927121939787](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f6326490fd7.png)
 
 - 语法： %\<name>
 - 类似C变量：通过名称来区分，并且数量无限制
@@ -124,7 +124,7 @@ clang fib.ll -S
   - \<opcode> \<operand list>
 - 操作数可能是寄存器，常数值 或者是"基本块"
 
-![image-20240927122506952](http://14.103.135.111:49153/i/66f633b157f10.png)
+![image-20240927122506952](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f633b157f10.png)
 
 ### LLVM IR 数据类型
 
@@ -163,17 +163,17 @@ clang fib.ll -S
 - 任何参与运算的参数都会先被计算，得到实际的值
 - 中间结果将会被存储到寄存器中
 
-![image-20240927135335558](http://14.103.135.111:49153/i/66f6486ccb572.png)
+![image-20240927135335558](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f6486ccb572.png)
 
 **聚合结构**的变量一般会存储在内存中，访问聚合类型变量需要计算地址，然后读/写内存。
 
-![image-20240927140019538](http://14.103.135.111:49153/i/66f649ff3bbc3.png)
+![image-20240927140019538](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f649ff3bbc3.png)
 
 **getelementptr**指令从索引的列表(list of indices)和一个指针中计算出一个内存地址
 
 示例： 计算地址 ``%2 + 0 + %4``
 
-![image-20240927140704685](http://14.103.135.111:49153/i/66f64b90535ed.png)
+![image-20240927140704685](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f64b90535ed.png)
 
 ```asm
 %5 = getelementptr inbounds [7 x i32],
@@ -186,7 +186,7 @@ clang fib.ll -S
 
 示例
 
-![image-20240927151904242](http://14.103.135.111:49153/i/66f65c7ae27b5.png)
+![image-20240927151904242](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f65c7ae27b5.png)
 
 
 
@@ -196,13 +196,13 @@ clang fib.ll -S
 
 函数定义的主体被划分为基本块：每个基本块是一系列指令（即直线代码），其中控制流只能通过第一条指令进入，并只能通过最后一条指令退出
 
-![image-20240927160332478](http://14.103.135.111:49153/i/66f6770967de4.png)
+![image-20240927160332478](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f6770967de4.png)
 
 **控制流图**
 
 控制流指令（比如 ``br`` 指令），在函数的基本块之间产生控制流边，从而创建一个控制流图 (CFG, Control-Flow Graph)。这意味着程序执行的路径通过这些指令进行转移，不再只是顺序执行。控制流图展示了函数中可能的执行路径，以及基本块之间的跳转关系。
 
-![image-20240927160724225](http://14.103.135.111:49153/i/66f676d699e23.png)
+![image-20240927160724225](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f676d699e23.png)
 
 ### C 条件语句到IR
 
@@ -214,19 +214,19 @@ C代码的条件语句会被转成``br``指令
   - 无条件分支结束当前基本块，并生成一条向外的控制流边
 
 
-![image-20240927163516654](http://14.103.135.111:49153/i/66f676ca4aaa9.png)
+![image-20240927163516654](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f676ca4aaa9.png)
 
 ### C 循环语句到IR
 
  
 
-![image-20240927171319959](http://14.103.135.111:49153/i/66f67733c6956.png)
+![image-20240927171319959](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f67733c6956.png)
 
 
 
 ``phi``指令有点费解，我们先看循环语句的控制流图，从而了解``phi``指令要解决什么问题。
 
-![image-20240927171710671](http://14.103.135.111:49153/i/66f678197d979.png)
+![image-20240927171710671](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f678197d979.png)
 
 -  在循环块内部，我们有两条入边
   - 一个是来自循环的入口点
@@ -252,7 +252,7 @@ phi指令为基本块B的每一个前驱P指定了，控制流通过 P 进入 B 
 - 如果这个循环基本块有很多入边，那么可能会有多条``phi``指令
 - 这并不是一个真正的指令，而是一种技巧。
 
-![image-20240927175311680](http://14.103.135.111:49153/i/66f6808c850e4.png)
+![image-20240927175311680](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f6808c850e4.png)
 
 ### LLVM IR 属性
 
@@ -265,11 +265,11 @@ phi指令为基本块B的每一个前驱P指定了，控制流通过 P 进入 B 
     - `align 4` 指定了对齐要求，意味着这个整数在内存中的地址应该是4的倍数，确保访问内存时的效率。
     - `!tbaa !2` 是一个元数据（metadata），与类型别名分析（type-based alias analysis）相关。它帮助编译器理解某个指针的类型和相关信息，以优化内存访问。
 
-![image-20240927180154728](http://14.103.135.111:49153/i/66f682957855e.png)
+![image-20240927180154728](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f682957855e.png)
 
 - readonly：由const派生出来
 
-![image-20240927181518085](http://14.103.135.111:49153/i/66f685b909727.png)
+![image-20240927181518085](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f685b909727.png)
 
 ### 总结LLVM IR
 
@@ -286,7 +286,7 @@ LLVM IR 类似于汇编语言，但更简单。
 
 
 
-![image-20240927182518758](http://14.103.135.111:49153/i/66f68812c5f59.png)
+![image-20240927182518758](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f68812c5f59.png)
 
 
 
@@ -302,7 +302,7 @@ LLVM IR 类似于汇编语言，但更简单。
 
 当进程执行的时候，虚拟内存会被组织成段(segment)。
 
-![image-20240927182834629](http://14.103.135.111:49153/i/66f688d520225.png)
+![image-20240927182834629](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f688d520225.png)
 
 #### 汇编指令
 
@@ -335,7 +335,7 @@ LLVM IR 类似于汇编语言，但更简单。
 
 #### 协调函数调用
 
-![image-20240927205709563](http://14.103.135.111:49153/i/66f6aba810b0e.png)
+![image-20240927205709563](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f6aba810b0e.png)
 
 > 不同对象文件的函数如何协调栈和寄存器状态的使用？
 
@@ -365,7 +365,7 @@ Solution： 两边都保留一部分。具体如下
 
 C链接器定义了调用约定——x86-64 GPR's 寄存器由谁保留 
 
-![image-20240927212438114](http://14.103.135.111:49153/i/66f6b2192cc5e.png)
+![image-20240927212438114](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f6b2192cc5e.png)
 
 > [!NOTE]
 >
@@ -375,7 +375,7 @@ C链接器定义了调用约定——x86-64 GPR's 寄存器由谁保留
 
  函数A调用了函数B，并且在函数B中，准备调用函数C。
 
-![image-20240927212946757](http://14.103.135.111:49153/i/66f6b34ec4bba.png)
+![image-20240927212946757](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f6b34ec4bba.png)
 
 我们从顶往下看，是如何组织的
 
@@ -386,7 +386,7 @@ C链接器定义了调用约定——x86-64 GPR's 寄存器由谁保留
 
 接着 B calls C，这个指令会保存B的返回地址到栈上，并将控制权交给C
 
-![image-20240928125154881](http://14.103.135.111:49153/i/66f78b6f0ebe6.png)
+![image-20240928125154881](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f78b6f0ebe6.png)
 
 当C函数开始执行的时候，它执行一个函数序言（function prologue）：
 
@@ -394,13 +394,13 @@ C链接器定义了调用约定——x86-64 GPR's 寄存器由谁保留
 2. 设置``%rbp = %rsp``
 3. 为C的局部变量和链接块分配空间
 
-![image-20240928125826734](http://14.103.135.111:49153/i/66f78cf72279b.png)
+![image-20240928125826734](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f78cf72279b.png)
 
 
 
 **优化**：如果一个函数除了在函数调用时进行栈分配外，从不进行其他栈分配（即，`%rsp - %rbp` 是一个编译时常量），那么可以直接使用 `%rsp` 进行索引，而 `%rbp` 可以作为普通的被调用者保存的寄存器来使用。
 
-![image-20240928132615925](http://14.103.135.111:49153/i/66f7937a644c1.png)
+![image-20240928132615925](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f7937a644c1.png)
 
 
 
