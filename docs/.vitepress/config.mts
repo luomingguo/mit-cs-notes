@@ -109,8 +109,8 @@ export default defineConfig({
             {text: "计算机网络"},
             {text: "移动和传感计算"},
             {text: "计算机系统与社会"},
-            {text: "数据库系统", link: "zh/database_systems"},
-            {text: "分布式系统"},
+            {text: "数据库系统", link: "zh/database_system"},
+            {text: "分布式系统", link: "zh/distributed_system"},
             {text: "计算机系统原理"},
             {text: "数据中心计算", link: "zh/dc_computing"}
           ]
@@ -308,7 +308,7 @@ export default defineConfig({
           ]
         },
       ],
-      '/zh/database_systems/': [
+      '/zh/database_system/': [
         {
           text: '⮐主页',
           collapsed: false,
@@ -376,6 +376,44 @@ export default defineConfig({
             { "text": "lec20 集群管理", "link": "./lec20" }
           ]
         }
+      ],
+      '/zh/distributed_system/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
+        {
+          text: '数据中心计算',
+          collapsed: false,
+          link: "./index",
+          items: [
+            { "text": "lec1 MapReduce", "link": "./lec1.md" },
+            { "text": "lec2 RPC & 线程", "link": "./lec2.md" },
+            { "text": "lec3 主从复制", "link": "./lec3.md" },
+            { "text": "lec4 一致性 & 可串行化", "link": "./lec4.md" },
+            { "text": "lec5 Golang 模式", "link": "./lec5.md" },
+            { "text": "lec6 Raft 容错（上）", "link": "./lec6.md" },
+            { "text": "lec7 Raft 容错（下）", "link": "./lec7.md" },
+            { "text": "lec8 谷歌文件系统", "link": "./lec8.md" },
+            { "text": "lec9 Zookeeper", "link": "./lec9.md" },
+            { "text": "lec10 分布式事务", "link": "./lec10.md" },
+            { "text": "lec11 Lab 3A+B", "link": "./lec11.md" },
+            { "text": "lec12 Spark", "link": "./lec12.md" },
+            { "text": "lec13 Spanner", "link": "./lec13.md" },
+            { "text": "lec14 乐观并发控制", "link": "./lec14.md" },
+            { "text": "lec15 Chardonnay", "link": "./lec15.md" },
+            { "text": "lec16 DynamoDB", "link": "./lec16.md" },
+            { "text": "lec17 Ray", "link": "./lec17.md" },
+            { "text": "lec18 缓存一致性", "link": "./lec18.md" },
+            { "text": "lec19 Grove", "link": "./lec19.md" },
+            { "text": "lec20 AWS Lambda：按需容器加载", "link": "./lec20.md" },
+            { "text": "lec21 Boki", "link": "./lec21.md" },
+            { "text": "lec22 分叉一致性 & SUNDR", "link": "./lec22.md" },
+            { "text": "lec23 比特币", "link": "./lec23.md" },
+            { "text": "lec24 拜占庭容错", "link": "./lec24.md" }
+          ]
+        },
       ],
       // TCS
       '/zh/introduction_to_algorithms/': [
