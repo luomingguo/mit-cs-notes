@@ -285,7 +285,7 @@ for c != '"' {
 return true
 ```
 
-![截屏2024-04-29 14.12.55](http://47.115.50.83:49153/i/662f3a6de8b0d.png)
+![截屏2024-04-29 14.12.55](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/662f3a6de8b0d.png)
 
 ```go
 // 第7版
@@ -521,7 +521,7 @@ func helper(in <-chan Event, out chan<- Event) {
 } 
 ```
 
-![截屏2024-04-29 12.53.21](http://47.115.50.83:49153/i/662f27ca37c1c.png)
+![截屏2024-04-29 12.53.21](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/662f27ca37c1c.png)
 
 ### Pattern#2 工作调度
 
@@ -556,7 +556,7 @@ func Schedule(servers []string, numTask int,
 
 提示，可以使用 goroutines 让独立的任务并发地运行。在这个例子中，每个任务都被包装在一个 goroutine 中，并从 `idle` 通道中获取空闲的服务器。通过使用 goroutines，每个任务可以独立运行，不会阻塞其他任务的执行
 
-![截屏2024-04-28 21.03.15](http://47.115.50.83:49153/i/662e491c0b03e.png)
+![截屏2024-04-28 21.03.15](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/662e491c0b03e.png)
 
 ```go
 func Schedule(servers []string, numTask int, 

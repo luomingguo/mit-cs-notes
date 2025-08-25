@@ -84,7 +84,7 @@ Boki 的设计将 FaaS 系统与共享日志存储结合起来。Boki 在内部�
 
 ### 架构
 
-![截屏2024-05-21 15.35.43](http://47.115.50.83:49153/i/664c4edf9f6a4.png)
+![截屏2024-05-21 15.35.43](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/664c4edf9f6a4.png)
 
 
 
