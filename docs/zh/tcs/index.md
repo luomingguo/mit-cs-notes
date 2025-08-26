@@ -15,8 +15,8 @@ title: 理论计算机
 ## 理论计算机课程
 
 
-- [算法导论](../fundamentals_of_programming/index.md)
-- [算法设计与分析](../element_of_software_construction/index.md)
-- [高级算法](../software_design/index.md)
-- [高级数据结构](../software_performance_engineer/index.md)
-- [分布式算法](../multicore_programming/index.md)
+- [算法导论](zh/introduction_to_algorithms/index.md)
+- [算法设计与分析]()
+- [高级算法]()
+- [高级数据结构]()
+- [分布式算法]()

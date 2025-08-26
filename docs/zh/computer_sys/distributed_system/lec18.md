@@ -236,7 +236,9 @@ Solution：
 
 备份DB听到更新后，也会发送Invalidates。
 
-
+> [!NOTE]
+>
+> **McRouter** 的核心目的是聚合来自众多客户端的 memcached RPC 请求，并将它们批量发送到 memcached 服务器。与让大量独立客户端直接与 memcached 通信相比，使用少量 McRouter 服务器与 memcached 对话效率更高。原因之一是每个网络（TCP）连接都有开销；让每个 memcached 服务器与每个 McRouter 建立一个 TCP 连接，远比与每个客户端建立连接要好。另一个原因是每个数据包都有开销（数据包头空间和中断处理），因此 McRouter 能够将多个客户端请求打包到一个 TCP 数据包中是非常有帮助的。
 
 **竞态的例子：**
 
@@ -289,3 +291,26 @@ Solution： 这个方案通常被称为 “Write-Through”缓存 或 “Write-B
 - **缓存对于应对高负载至关重要，而不仅仅是为了降低延迟**
 - **需要灵活的工具来控制数据分片（Partition）与数据复制（Replication）**
 - **线性一致性（Linearizability） 的要求往往过高；而最终一致性（Eventual Consistency） 又常常不够**
+
+## FQA
+
+
+
+
+
+>  自本文发表以来，Facebook 开展了哪些存储系统方面的工作？ 
+
+答：以下是示例： 
+
+```
+https://www.usenix.org/system/files/conference/atc13/atc13-bronson.pdf
+https://www.cs.princeton.edu/~wlloyd/papers/existential-sosp15.pdf
+http://www.cs.cmu.edu/~beckmann/publications/papers/2020.osdi.cachelib.pdf
+https://www.usenix.org/system/files/fast21-pan.pdf
+```
+
+
+
+> 问：MySQL 复制系统是如何工作的？ 
+
+答：请参阅 https://dev.mysql.com/doc/refman/8.0/en/replication.html。FB 使用基于日志的复制方案作为发布/订阅系统的一个组件，正如 Sharma 等人在 2015 年发表的“Wormhole：可靠的发布/订阅以支持地理复制互联网服务”一文中所述。复制方案的核心是从 MySQL 的事务日志中读取更新，并将其发送到备份服务器，备份服务器将其应用于其数据。
