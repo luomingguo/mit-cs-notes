@@ -60,7 +60,7 @@
   - 当二叉树是完全的（除了最后一层外，所有行都满）时，最小高度h ≥ ⌈log(n + 1)⌉ - 1 = Ω(log n)，所以任何比较排序的运行时间是 $Ω(\log{n})$
 
   - 因此有序数组和平衡二叉搜索树通过比较模型都能支持find(k)渐进达到 $Ω(\log{n})$
-  - 更普遍地，具有 Θ(n) 个叶子节点和最大分支因子 b 的树的高度是$ Ω(\log_b n)$
+  - 更普遍地，具有 Θ(n) 个叶子节点和最大分支因子 b 的树的高度是$Ω(\log_b n)$
 
 - 如果想要更快，需要一个允许超常数 ω(1) 分支因子的操作。怎么做到呢？
 
@@ -120,7 +120,7 @@ Division Method(bad)：h(k) = (k mod m)
 
 Universal 哈希函数：$h_{ab}(k) = (((ak + b) \text{ mod } p) \text{ mod } m)$
 
-- 哈希家族$\mathcal{H}(p, m) =  \{ h_{ab} \mid a, b \in \{0, \ldots, p - 1\} \text{ 且 } a \ne 0 \} $
+- 哈希家族$\mathcal{H}(p, m) =  \{ h_{ab} \mid a, b \in \{0, \ldots, p - 1\} \text{ 且 } a \ne 0 \}$
 
 - 参数由一个大于 u 的固定质数 p 以及从范围 $\set{0, ..., p - 1}$​​​ 中选择的 a 和 b 构成
   - 通过选择具体的 a 和 b 值可以指定该族中的单个哈希函数
@@ -132,10 +132,15 @@ Universal 哈希函数：$h_{ab}(k) = (((ak + b) \text{ mod } p) \text{ mod } m)
 - 索引$h(k_i)$处链表大小的期望值为  
 
 $$
-\mathbb{E}_{h\in \mathcal{H}} \{X_i\} &=\mathbb{E}_{h\in \mathcal{H}} \set { \sum_{j} X_{ij}  } = \sum_{j} \mathbb{E}_{h\in \mathcal{H}}\{X_{ij}\} = 1 + \sum_{j \neq i} \mathbb{E}_{h\in \mathcal{H}}\{X_{ij}\} \\
-         &= 1 + \sum_{j \neq i} \left( 1 \cdot \Pr\{h(k_i) = h(k_j)\} + 0 \cdot \Pr \{h(k_i) \neq h(k_j)\} \right) \\
-         &\leq 1 + \sum_{j \neq i} \frac{1}{m} \\
-         &= 1 + \frac{n - 1}{m}
+\begin{aligned}
+\mathbb{E}_{h\in\mathcal{H}}[X_i]
+&= \mathbb{E}_{h\in\mathcal{H}}\!\left[\sum_j X_{ij}\right]
+= \sum_j \mathbb{E}_{h\in\mathcal{H}}[X_{ij}]
+= 1 + \sum_{j\neq i}\mathbb{E}_{h\in\mathcal{H}}[X_{ij}] \\
+&= 1 + \sum_{j\neq i}\Big(1\cdot \Pr\{h(k_i)=h(k_j)\} + 0\cdot \Pr\{h(k_i)\neq h(k_j)\}\Big) \\
+&\le 1 + \sum_{j\neq i}\frac{1}{m}
+= 1 + \frac{n-1}{m}.
+\end{aligned}
 $$
 
 - 由于 m = Ω(n)，负载因子 α = n/m = O(1)，所以期望情况下是 O(1)！

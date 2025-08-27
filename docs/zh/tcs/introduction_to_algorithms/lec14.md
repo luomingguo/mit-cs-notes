@@ -15,7 +15,7 @@
 
 All-Pairs Shortest Paths(APSP)问题
 
-- 输入：加权有向图G=(V, E)，加权函数$w: E\rightarrow \mathbb{Z} $
+- 输入：加权有向图G=(V, E)，加权函数$w: E\rightarrow \mathbb{Z}$
 - 输出：返回所有的$u, v \in V 的 \delta(u, v)$， 如果G存在负权重环则中止（因为对于任何一个$\delta(u, v) = -\infty$）。由此可以推断出，输出空间$O(|V|^2)$，因为需要知道每对顶点的加权最短路径
 - 应用： 对于了解整个网络很有用，比如传输、电路layout、供应链管理等
 - 仅仅是用一个SSSP算法执行|V|次的效果也是挺好的，因为输出大小为$O(|V|^2)$​
@@ -89,7 +89,7 @@ All-Pairs Shortest Paths(APSP)问题
   - 添加s并不会引入新的环(s没有入边)
   - 所以，如果重新加权后图有负权重环，则原图中也有
 - 或者， 如果对于所有$v\in V, \delta(s, v)$有限：
-  - 根据三角不等式， 对于每个$(u, v) \in E $， 有$w'(u, v) = w(u, v) + h(u) - h(v) \ge 0$
+  - 根据三角不等式， 对于每个$(u, v) \in E$， 有$w'(u, v) = w(u, v) + h(u) - h(v) \ge 0$
   - 重新加权后的G‘中的新权重是非负的，同时保留了最短路径
 
 ## Johnson's 算法

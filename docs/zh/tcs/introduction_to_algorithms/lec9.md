@@ -9,12 +9,12 @@
 
 ![截屏2024-07-31 10.41.50](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66a9a47d6cf6f.png)
 
-- G = (V, E) 是一组定点和一组定点对$E \subseteq V \times V $的集合
+- G = (V, E) 是一组定点和一组定点对$E \subseteq V \times V$的集合
 - 有向(Directed)边是有序对，例如$(u, v) \in V$，其中$ u, v \in V$
 - 无向边(Undirected)是无序对，例如{u, v} $\in$ V，即(u, v)和(v, u)
 - 在这门课我所说的图都是简单图
   - 边是唯一的，例如(u, v)在E中值出现一次，并且
-  - 边是不同顶点对，即对于(u, v) $\in $ E，$u\neq v$
+  - 边是不同顶点对，即对于(u, v) $\in$ E，$u\neq v$
   - 简单图意味着$|E| = O(|V|^2)$，因为对于无向图来说$|E| \le {|V|(|V|-1)\over{2}}$， 对于有向图来说$|E| \le |V|(|V|-1)$​​
 
 例子：

@@ -17,7 +17,7 @@ SRTBOT分析：
 - Subproblems
   - 扩展子问题，使其无环
   - $\delta_k(s, v) = $ 从 s 到 v 的最短路径权重， 最多使用 k 条边
-  - for $v ∊V $ & $ 0 <= k <= |V| $
+  - for $v ∊V$ & $0 <= k <= |V|$
 
 - Relate
 
@@ -75,7 +75,7 @@ Topo order of G
 
 给定序列$t_0, t_1, ...t_{n-1}$ 单音符，用右手弹奏，右手手指分别是1,2，...，f，给定过渡从音符t及其手指f，到音符t'及其手指f'的难度度量$d(t, f, t', f')$
 
-- 如果$ 1 \lt f \lt f' $ 且 $t > t'$，则是不舒适的
+- 如果$1 \lt f \lt f' $ 且 $t > t'$，则是不舒适的
 - 连续（平滑）演奏要求 $t = t'$ （否则罚分是无限大）
 - 弱指规则，尽量避免使用 $f' \in \set{4, 5}$
 - $\set{f, f'} = \set{3, 4}$ 是令人烦恼的
@@ -102,7 +102,7 @@ Topo order of G
 
 - Subproblem
   - $x(i, f)$ 最小化的演奏难度分，弹奏音符为$t_i, t_{i+1}, ..., t_{n-1}$，并且手指f在字符$t_i$
-  - For $ 0 \le i \lt n $ 且 $1 \le f \le F$
+  - For $0 \le i \lt n$ 且 $1 \le f \le F$
 - Relate
   - 猜测下个手指： 将 f' 分配给 $t_{i+1}$
   - $x(i, f) = \min \set{x(i+1, f') + d(t_i, f, t_{i+1}, f') | 1 \le f' \le F}$
@@ -110,7 +110,7 @@ Topo order of G
   - 逐步减小 i （任何 f 顺序）
 
 - Base
-  - $x(n-1, f) = 0 $ 没有转换
+  - $x(n-1, f) = 0$ 没有转换
 - Original
   - $\min \set{x(0, f) | 1\le f \le F}$
 - Time

@@ -108,7 +108,7 @@ SRTBOT，这其实是MIT教授给这种范式取的名字，将每个步骤的�
 
 Fibonacci numbers: given n, compute $F(n) = F(n-1) + F(n-2), F(1) = F(2) = 1$
 
-- Suburbs: $F(i)$ , $ 1 <= i <= n $
+- Suburbs: $F(i)$ , $1 <= i <= n$
 
 - Relate: $F(i) = F(i-1) + F(i-2)$
 
@@ -202,7 +202,7 @@ DAG 最短路径问题也可以通过 **边松弛算法** 来求解。松弛算�
 
 - Subproblems: B(i, j) = 从第i, i + 1 ... j - 1个保龄球最大总得分
 - Relation:
-  - $ m = ⎣ (i+j) / 2⎦$​
+  - $m = ⎣ (i+j) / 2⎦$​
   - 要么m和m+1同时被击中，要么没有
   - $B(i, j) = \max \set{v_m·v_{m+1} + B(i,m)+B(m+2, j), B(i,m+1) + B(m+1,  j)}$
 - Topo order: 使 ``j-i``增长

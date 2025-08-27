@@ -48,7 +48,7 @@ Ex： Hieroglyphology 和 Michelangelo，其LCS为 hello 或者是 heglo 或 iel
 
 - **B**ase
 
-  - $ L(|A|, j) = 0 = L( i, |B| )$ （其中有一个字符串为空）
+  - $L(|A|, j) = 0 = L( i, |B| )$ （其中有一个字符串为空）
 
 - **O**riginal
 
@@ -115,7 +115,7 @@ SRTBOT分析：
   - 已知第一个元素是A[i]，那么第二个元素是哪个呢？
     - 可以是任何$A[j]\text{，其中} j  > i \text{ 且 } A[j] > A[i]$ ，
     - 也可能A[i]是LIS最后一个元素
-  - $L(i) = 1 + \max \set{L(j) | i < j < n, A[i] < A[j]} ∪ \set{0} $
+  - $L(i) = 1 + \max \set{L(j) | i < j < n, A[i] < A[j]} ∪ \set{0}$
   - 错误的思路： 我们思考i是不是在LIS当中，在和不在分别讨论。第一反应是L(i) =  max{L(i+1), 1+L(i+1)}， 因为这是子问题约束的关系
 - **T**opo order
   - for  i = |A|, ..., 0
@@ -123,7 +123,7 @@ SRTBOT分析：
   - 无需，因为我们考虑的就是A[i]就是最后一个LIS元素
 - **O**riginal: 
   - 那个是LIS的第一个元素呢？ **靠猜**
-  - 我们LIS(A)的长度为$ \max \set{L(i) | 0\le i\le|A|}$
+  - 我们LIS(A)的长度为$\max \set{L(i) | 0\le i\le|A|}$
   - 需要存储子问题父指针来重构序列
 - **T**ime: 
   - 子问题个数： θ(|A|) 
@@ -172,7 +172,7 @@ def lis(A):
   - $X(i, j , u) = \min \set{X(i+1, j, me), X(i, j-1, me)}$
 - **T**opo:  增大  ``j-i``
 - **B**ase: 
-  - $X(i, i, me) = v_i $
+  - $X(i, i, me) = v_i$
   - $X(i, i, u) = 0$
 - Original problems:
   -  $X(0, n-1, me)$
@@ -197,7 +197,7 @@ def lis(A):
 零和博弈：我拿走所有你不拿的硬币，没有合作关系
 
 - **S**ubproblems:
-  - $x(i, j) = $我能拿到的最大分数，在基于硬币$v_i, ...,v_j$的情况下
+  - $x(i, j) =$ 我能拿到的最大分数，在基于硬币 $v_i, ...,v_j$的情况下
   - 其中 $0\le i \le j \lt n$
 - **R**elate
   - 我必须选择要么是第 i 个 要么是第 j 个
@@ -213,13 +213,13 @@ def lis(A):
   - 存储父指针
 - **T**ime Analysis
   - 子问题数目 $\Theta(n^2)$
-  - 每个子问题的工作量 $\Theta(n) $，计算总和
+  - 每个子问题的工作量 $\Theta(n)$，计算总和
   - 运行时间为 $\Theta(n^3)$​
 
 **子问题DAG**
 
 ![](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666ea862d10b2.png)
 
-> 练习题： 将复杂度提升到$\Theta(n^2)$，通过以$\Theta(n^2)$时间内预处理所有和\sum^j_{k=i}v_k$
+> 练习题： 将复杂度提升到$\Theta(n^2)$，通过以$\Theta(n^2)$时间内预处理所有和$\sum^j_{k=i}v_k$
 
 
