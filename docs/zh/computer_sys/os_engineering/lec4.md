@@ -36,7 +36,7 @@
 
 分页硬件MMU通过虚拟地址的低位偏移量加上页表项从而找到物理地址。
 
-![image-20240920101535807](http://47.115.50.83:49153/i/66ecdad6e2f5f.png)
+![image-20240920101535807](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ecdad6e2f5f.png)
 
 页表项（PTE）包含了什么？有多大？
 
@@ -50,13 +50,13 @@
 
 思路： 三级页表（RISC-V硬件实现）。
 
-![image-20240920101559255](http://47.115.50.83:49153/i/66ecdaeca79ba.png)
+![image-20240920101559255](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ecdaeca79ba.png)
 
 具体机制：
 
 - 图中所示，虚拟地址的高 9 位索引到一级页目录
 
-  ![image-20241119065531789](http://47.115.50.83:49153/i/673bc5e765580.png)
+  ![image-20241119065531789](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/673bc5e765580.png)
 
 - 从一级页目录中的 PTE 包含二级页目录的物理地址
 
@@ -98,7 +98,7 @@
 
 XV6内核页表布局如图，左边是虚拟地址，右边是物理地址。物理内存地址的布局是由硬件定义的。
 
-![image-20240920140622652](http://47.115.50.83:49153/i/66ed10ed817e0.png)
+![image-20240920140622652](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ed10ed817e0.png)
 
 机制：
 

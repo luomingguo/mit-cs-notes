@@ -81,7 +81,7 @@ function find(arr: Array<number>, val: number): number {
 
 
 
-![image-20250819065807250](http://47.115.50.83:49153/i/image-20250819065807250.png)
+![image-20250819065807250](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819065807250.png)
 
 ## 4. 规范的结构
 

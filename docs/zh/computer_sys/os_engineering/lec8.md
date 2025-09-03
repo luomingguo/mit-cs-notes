@@ -40,7 +40,7 @@
 
 ## Lab 1 Util
 
-### ![截屏2024-09-05 18.39.49](http://47.115.50.83:49153/i/66d98a803f0af.png)Sleep
+### ![截屏2024-09-05 18.39.49](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66d98a803f0af.png)Sleep
 
 - 查看 `kernel/sysproc.c` 文件以获取实现 `sleep` 系统调用的 xv6 内核代码（查找 `sys_sleep`）
 

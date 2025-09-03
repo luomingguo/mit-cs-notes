@@ -28,11 +28,11 @@ let n: number = 1;
 let x: number = 3.5;
 ```
 
-![Screenshot 2025-08-19 at 06.08.35](http://47.115.50.83:49153/i/Screenshot 2025-08-19 at 06.08.35.png)
+![Screenshot 2025-08-19 at 06.08.35](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/Screenshot 2025-08-19 at 06.08.35.png)
 
 当我们想展示值的类型，或者更多内部结构细节，可以用其类型名的圆形标签框住
 
-![image-20250819060909051](http://47.115.50.83:49153/i/image-20250819060909051.png)
+![image-20250819060909051](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819060909051.png)
 
 快照图目的是为了灵活性，没必要一直展示所有细节可以简化。比如
 
@@ -40,7 +40,7 @@ let x: number = 3.5;
 let s: string ="hello"
 ```
 
-![image-20250819061210904](http://47.115.50.83:49153/i/image-20250819061210904.png)
+![image-20250819061210904](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819061210904.png)
 
 ## 2. 可变值 vs. 可重新赋值变量
 
@@ -58,7 +58,7 @@ let s: string = "a";
 s = s + "b"
 ```
 
-![image-20250819061627757](http://47.115.50.83:49153/i/image-20250819061627757.png)
+![image-20250819061627757](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819061627757.png)
 
 sting 是不可变类型，当被创建后就不可更改其值；不可变性也是这门课的主要设计。
 
@@ -73,7 +73,7 @@ arr.push("b");
 
 可变性和不可变性的区别能让我们代码从安全变成bugs。
 
-![image-20250819061929049](http://47.115.50.83:49153/i/image-20250819061929049.png)
+![image-20250819061929049](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819061929049.png)
 
 ### 2.3 不可重新赋值引用
 
@@ -92,5 +92,5 @@ arr.push("B")
 
 
 
-![image-20250819062411431](http://47.115.50.83:49153/i/image-20250819062411431.png)
+![image-20250819062411431](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819062411431.png)
 

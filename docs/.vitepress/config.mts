@@ -63,7 +63,7 @@ export default defineConfig({
       },
       { text: 'Changelog', link: 'https://github.com/...' },
     ],
-    logo: '/logo.png',
+    logo: '../logo.png',
     sidebar: {
       '/': [
         {
@@ -119,12 +119,14 @@ export default defineConfig({
           text: '计算机架构',
           collapsed: true,
           items: [
-            {text: "低级语言编程导论(C和汇编)"},
-            {text: "计算结构"},
-            {text: "结构化计算机设计"},
+            {text: "C语言与汇编语言底层编程导论"},
+            {text: "计算结构", link: "zh/computation_structures"},
+            {text: "构建式计算机体系结构"},
             {text: "计算机系统架构"},
             {text: "复杂数字系统设计"},
-            {text: "并行计算"},
+            {text: "深度学习的硬件架构"},
+            {text: "TinyML 和高效深度学习计算"},
+            {text: "硬件安全设计"},
           ]
         },
         {
@@ -418,6 +420,11 @@ export default defineConfig({
       // TCS
       '/zh/introduction_to_algorithms/': [
         {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
+        {
           text: '算法导论',
           collapsed: false,
           link: "./index",
@@ -449,6 +456,21 @@ export default defineConfig({
       // 编程语言
 
       // 计算机架构
+      '/zh/computation_structures/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
+        {
+          text: '计算结构',
+          collapsed: false,
+          link: "./index",
+          items: [
+
+          ]
+        },
+      ],
     },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/luomingguo' },

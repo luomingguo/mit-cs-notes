@@ -30,7 +30,7 @@
 
 原生浮点类型
 
-![image-20240918161120044](http://47.115.50.83:49153/i/66ea8b39d83a0.png)
+![image-20240918161120044](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ea8b39d83a0.png)
 
 >  在内存中中如何表示0x12345678 (= 305419896) ?
 
@@ -289,11 +289,11 @@ int main() {
 
 ## 内存抽象
 
-![image-20240918200623155](http://47.115.50.83:49153/i/66eac2483bc4a.png)
+![image-20240918200623155](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac2483bc4a.png)
 
 ### 硬件层面
 
-![image-20240918200655503](http://47.115.50.83:49153/i/66eac265274a6.png)
+![image-20240918200655503](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac265274a6.png)
 
 - **总线**在计算机内部的各个组件之间传输数据。
 
@@ -305,13 +305,13 @@ int main() {
 
 > 总线如何工作？
 
-![image-20240918200757704](http://47.115.50.83:49153/i/66eac2a5daeee.png)
+![image-20240918200757704](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac2a5daeee.png)
 
 ### CPU / OS 层面：地址空间
 
 地址就是按字节索引的数组
 
-![image-20240918200840683](http://47.115.50.83:49153/i/66eac2cf327d5.png)
+![image-20240918200840683](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac2cf327d5.png)
 
 - **问题**：总线接口过于底层，无法做任何有用的操作！
 - **想法**：将总线表示为一个巨大的数据数组。这被称为**地址空间**。
@@ -323,7 +323,7 @@ int main() {
 
 思想1： 地址空间可以有空洞
 
-![image-20240918201247397](http://47.115.50.83:49153/i/66eac3c326ae0.png)
+![image-20240918201247397](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac3c326ae0.png)
 
 Ex：``STORE 0xF0``、``LOAD -> 0xF0``
 
@@ -336,7 +336,7 @@ Ex：``STORE 0xF0``、``LOAD -> 0xF0``
 
 思想2： 地址空间有权限
 
-![image-20240918201321559](http://47.115.50.83:49153/i/66eac3e689551.png)
+![image-20240918201321559](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac3e689551.png)
 
 读（R） -> 可以加载数据
 
@@ -352,7 +352,7 @@ Ex：``STORE 0xF0``、``LOAD -> 0xF0``
 
 思想3： 结合RAM和设备
 
-![image-20240918201427638](http://47.115.50.83:49153/i/image-20240918201427638.png)
+![image-20240918201427638](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20240918201427638.png)
 
 - 这并不像看起来那么明显；例如，x86最初将I/O放在一个与内存分开的地址空间中。
 
@@ -380,7 +380,7 @@ Ex：``STORE 0xF0``、``LOAD -> 0xF0``
   1. **栈**：在函数调用时分配内存，并在函数返回时释放内存
   2. **堆**：管理独立于函数调用的内存分配和释放
 
-![image-20240918201744643](http://47.115.50.83:49153/i/66eac4efc3e07.png)
+![image-20240918201744643](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac4efc3e07.png)
 
 #### 堆分配器
 
@@ -396,7 +396,7 @@ Ex：``STORE 0xF0``、``LOAD -> 0xF0``
 
 - 栈的大小通常比堆小很多，栈的空间有限，因此如果对象过大或需要长期存储，才需要使用堆。
 
-![image-20240918202102337](http://47.115.50.83:49153/i/66eac5b4f12cf.png)
+![image-20240918202102337](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac5b4f12cf.png)
 
 ### 内存管理陷阱
 

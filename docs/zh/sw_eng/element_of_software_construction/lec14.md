@@ -133,7 +133,7 @@ Mozilla 和 Node 为 Worker 的文档都将其称为**线程**，但其行为更
 
 
 
-![image-20250819110242902](http://47.115.50.83:49153/i/image-20250819110242902.png)
+![image-20250819110242902](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819110242902.png)
 
 ```ts
 import fs from "node:fs"
@@ -227,11 +227,11 @@ wirteBalance(201)
 
 现在不仅是每个机器是一个模块，每个账户也是一个模块。模块通过给彼此发送消息来交互。过来的请求被放置在一个队列里面，一次只处理一条消息（比如，下图展示了账户1有3个pending中的请求），当等待其响应时， 发送方不会停止工作。 模块在等待别的模块响应时，仍然可以继续处理来自自身队列的其他请求 —— 它不会因为一次请求而阻塞整个模块的运行。 回复响应最终会作为另外一个消息返回
 
-![image-20250819225650744](http://47.115.50.83:49153/i/image-20250819225650744.png)
+![image-20250819225650744](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819225650744.png)
 
 但不幸当然是，消息传递不会消除竞态条件的可能。假设每个账户支持`get-balance`和`withdraw`操作。两个用户，分别在机器A和B面前， 将同时尝试向同一用户取钱，他们首先检查余额，以确保提取的金额不会超过账户余额。
 
-![image-20250819230609882](http://47.115.50.83:49153/i/image-20250819230609882.png)
+![image-20250819230609882](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819230609882.png)
 
 ```
 send get-balance message, and store the reply in local variable bal

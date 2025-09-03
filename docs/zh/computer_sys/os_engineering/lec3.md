@@ -9,7 +9,7 @@
 
 OS概览图如下
 
-![image-20241119221923460](http://47.115.50.83:49153/i/673c9e6f89fe5.png)
+![image-20241119221923460](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/673c9e6f89fe5.png)
 
 ### 没有OS（内核）会怎么样？
 

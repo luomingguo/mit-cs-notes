@@ -1,5 +1,5 @@
 ---
-sidebarDepth: 2
+sidebarDepth: 1
 title: 理论计算机
 ---
 
@@ -14,8 +14,7 @@ title: 理论计算机
 
 ## 理论计算机课程
 
-
-- [算法导论](zh/introduction_to_algorithms/index.md)
+- [算法导论](/zh/introduction_to_algorithms/index.md)
 - [算法设计与分析]()
 - [高级算法]()
 - [高级数据结构]()

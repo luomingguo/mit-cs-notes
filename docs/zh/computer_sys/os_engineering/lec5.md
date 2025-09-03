@@ -67,7 +67,7 @@ preview:
 
 在user/sh.asm，搜索\<write\>函数的地址，找到write调用地址0xc24上
 
-![image-20241120060039782](http://47.115.50.83:49153/i/673d0a8a252df.png)
+![image-20241120060039782](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/673d0a8a252df.png)
 
 于是我们打上断点
 
@@ -144,9 +144,9 @@ Solution: 这是因为，当陷入（trap）发生时，\$stvec（Supervisor Tra
 
 ### `trampoline` 的作用
 
-![截屏2024-09-07 23.08.45](http://47.115.50.83:49153/i/66dc6c992a2fa.png)
+![截屏2024-09-07 23.08.45](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66dc6c992a2fa.png)
 
-![image-20240920140622652](http://47.115.50.83:49153/i/66ed10ed817e0.png)
+![image-20240920140622652](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ed10ed817e0.png)
 
 `trampoline` 是一种特殊的内存区域，用于处理从用户态到内核态的过渡。在 RISC-V 系统中，`ecall` 指令会触发陷入（trap），`trampoline` 包含了陷入后执行的最初几条指令，完成模式切换、堆栈设置等工作，然后跳转到内核的 trap 处理逻辑。
 
@@ -216,7 +216,7 @@ Solution：管理员模式下确实可以设置``satp``，但是这点上，我�
 
 Solution: 因为我们不知道用户代码中是否有栈，我们作为内核不能限制用户层使用什么编程语言，有些甚至没有用到栈，栈指针指向0，或者有栈，但是格式很不一样，可能是一块特殊区域作为栈，内核无法理解。因此，内核不能对用户内存做出任何假设， 为了能够透明 恢复执行，我们需要将这些寄存器值放到内核中。 ▯
 
-![image-20241120200837843](http://47.115.50.83:49153/i/673dd1487e89c.png)
+![image-20241120200837843](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/673dd1487e89c.png)
 
 我们可以看到有个``tp``寄存器，线程指针，xv6 用它来维护处理器核的hartid（core号），是cpus[]的索引
 
@@ -226,7 +226,7 @@ Solution: 因为我们不知道用户代码中是否有栈，我们作为内核�
 
 在前面trampoline.S的uservec的handling处理过程，分为两个部分，上半部分是保存用户寄存器，下半部分就是设置内核栈，并跳转需要执行的内核代码了。
 
-![image-20241120201555823](http://47.115.50.83:49153/i/673dd2fee7483.png)
+![image-20241120201555823](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/673dd2fee7483.png)
 
 - 该图是下半部分的处理函数
 
@@ -238,7 +238,7 @@ Solution: 因为我们不知道用户代码中是否有栈，我们作为内核�
 
 ## 4. 内核C代码执行
 
-![image-20241120223459540](http://47.115.50.83:49153/i/673df397093a2.png)
+![image-20241120223459540](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/673df397093a2.png)
 
 t0指向的地址trap.c的usertrap的函数入口。我们来看它干了什么事：
 
@@ -267,7 +267,7 @@ usertrap() 最后会调用 usertrapret()，此时就开始处理返回给用户�
 5. trapframe trap = usertrap
 6. trapframe hartid = hartid(in tp)
 
-![image-20241120223609765](http://47.115.50.83:49153/i/673df3dcf1a94.png)
+![image-20241120223609765](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/673df3dcf1a94.png)
 
 在最后，trampoline用到了RISV-V 的``sret``指令，为了能让该指令使用，需要准备一些寄存器
 
