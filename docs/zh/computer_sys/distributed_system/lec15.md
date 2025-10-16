@@ -4,9 +4,9 @@
 >
 > [Chardonnay: Fast and General Datacenter Transactions for On-Disk Databases, osdi'23](https://pdos.csail.mit.edu/6.5840/papers/osdi23-eldeeb.pdf)
 
-为什么要学这篇论文？
+因为人们都想要事务，但又不得不分片（shard），这就导致要用两阶段提交（2PC）。许多研究都在努力让分布式事务更快。而Chardonnay 某种程度上是对 Spanner 的回应， Spanner 的读写事务很慢，大约 14 毫秒， Spanner依赖精密的时间同步机制，Chardonnay 虽然比 FaRM 慢，但支持大规模磁盘存储，而不仅限于内存提供更高级的编程模型（表/行/列）
 
-任梦想要事务，但又po
+
 
 
 

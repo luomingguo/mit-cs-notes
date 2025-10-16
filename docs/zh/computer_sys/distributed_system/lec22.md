@@ -1,10 +1,6 @@
+# Lec 22 Fork一致性
 
-
-# Lec 22 分叉一致性 & SUNDR
-
-阅读资料
-
-- [SUNDR (2004)](https://pdos.csail.mit.edu/6.5840/papers/li-sundr.pdf)
+阅读资料： [SUNDR (2004)](https://pdos.csail.mit.edu/6.5840/papers/li-sundr.pdf)
 
 我们日常信任的一些存储服务：Github、Gmail、AFS、Dropbox等等，这些产品的公司比如Google或许会用心良苦，但是，不可避免地：
 
