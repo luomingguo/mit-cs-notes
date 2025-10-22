@@ -1,13 +1,9 @@
 # Lec 1 静态检查
 
-## Outline
+本节主要讲两个主题：
 
-- 引入示例： 冰雹序列
-- 类型
 - 静态类型
-- 好的编程习惯
-- 为啥要用TypeScript
-- 总结
+- 好的软件的三大性质
 
 ## 引入示例： 冰雹序列
 
@@ -197,9 +193,9 @@ function hailstoneSequence(n: number): Array<number> {
 优秀的程序员会限制可变性，因为意外变更易引发错误。本课程将**不可变性**作为核心设计原则，主要体现在两个维度：
 
 - 值的可变性。
-  - **不可变类型**：创建后值不可修改。
+  - 不可变类型：创建后值不可修改。
     - 例如TS/Py的string
-  - **可变类型**：允许内容修改
+  - 可变类型：允许内容修改
     - 例如TS的Array和Python的list 支持增删改操作
 - 引用的可重赋值性（Reassignment）
   - TypeScript 通过 `const` 声明不可重新赋值的常量
@@ -211,7 +207,7 @@ function hailstoneSequence(n: number): Array<number> {
 
 ### 记录代码假设的重要性
 
-**显式声明即文档**
+显式声明即文档
 
 - **类型注解**（如 `n: number`）记录了对变量的假设，TypeScript 会在编译时验证该假设
 - **常量声明**（`const`）表明变量不可重新赋值，编译器会静态检查这一约束
@@ -222,7 +218,7 @@ function hailstoneSequence(n: number): Array<number> {
 > - 开发者自己会遗忘
 > - 后续维护者只能靠猜测
 
-------
+
 
 ### 编程的双重目标
 
@@ -249,9 +245,9 @@ function hailstoneSequence(n: number): Array<number> {
 
 ## 为啥选用TypeScript
 
-**安全性**是首要原因。TypeScript 具备静态检查能力（主要是类型检查，也包括其他静态验证，例如确保代码返回了声明要返回的值）。本课程聚焦软件工程，而"减少错误"正是软件工程的核心原则
+安全性是首要原因。TypeScript 具备静态检查能力（主要是类型检查，也包括其他静态验证，例如确保代码返回了声明要返回的值）。本课程聚焦软件工程，而"减少错误"正是软件工程的核心原则
 
-**普适性**是另一考量。TypeScript 可编译为纯 JavaScript，后者在科研、教育和工业界应用广泛。JavaScript 不仅能在最初主流的浏览器中运行，如今还支持服务器端甚至 Windows/Mac/Linux 桌面应用开发。
+普适性是另一考量。TypeScript 可编译为纯 JavaScript，后者在科研、教育和工业界应用广泛。JavaScript 不仅能在最初主流的浏览器中运行，如今还支持服务器端甚至 Windows/Mac/Linux 桌面应用开发。
 
 相较 Java，TypeScript 类型系统更丰富，编写程序时所需模板代码更少，更是开发现代用户界面和网页应用的上佳之选。事实上，TypeScript 的类型系统非常先进，开发者甚至能用它编写出意想不到的程序（其中一些堪称精妙）。
 
@@ -263,7 +259,7 @@ function hailstoneSequence(n: number): Array<number> {
 
 ## 总结
 
-我们今天介绍的核心概念是**静态检查**。以下是这一概念与**课程目标**之间的关系：
+我们今天介绍的核心概念是静态检查。以下是这一概念与课程目标之间的关系：
 
 - **避免出BUG（Safe from bugs）**：静态检查通过在运行前捕捉类型错误和其他 bug，有助于提高程序的安全性。
 - **易于理解（Easy to understand）**：因为类型在代码中是显式声明的，静态检查有助于提升代码的可理解性。

@@ -36,7 +36,7 @@ Promise初始状态为Pending，随后会转换为fulfilled或者rejected，但�
 
 如果打印 Promise 以调试，可以看到其状态和存储的结果（若非 `pending` 状态）。例如，在 `npx ts-node` 的 TypeScript 交互环境中，可以立即打印一个 Promise 查看其 `pending` 状态：
 
-```ts
+```tsx
 > const promise = fs.promises.readFile('account', { encoding: 'utf-8' });
 > console.log(promise);
 Promise { <pending> }
@@ -46,7 +46,7 @@ Promise { '200' }
 
 如果文件 `account` 不存在，则会看到 Promise 被 `rejected`。通常用于描述错误的异常对象会被存储在 Promise 中：
 
-```ts
+```tsx
 > console.log(promise);
 Promise {
   <rejected> [Error: ENOENT: no such file or directory, open 'account'] { ... 	}
@@ -85,6 +85,14 @@ const response3: Response = await promise3;
 
 不过，更高效的方式是使用Promise.all()，来同时等待多个Promise。
 
+```tsx
+async function getAllData() {
+    const results = await Promise.all([promise1, promise2, promise3]);
+    console.log(results); // ['数据1', '数据2', '数据3']
+}
+
+```
+
 即使是“空”的 Promise（如 `Promise<void>`）也有其用途，就像返回 `void` 的函数一样：
 
 ```ts
@@ -101,9 +109,7 @@ await promise;
 
 我们之前使用的返回 Promise 的函数（如 `readFile`、`fetch`、`timeout`）都是异步函数的示例。异步函数的特点是：**在计算完成前就返回控制权给调用者**。
 
-对比同步函数（课程中目前使用的大部分函数）：必须等待计算完成才返回，调用者会阻塞直到获得结果。
-
-在现代 TS/JS 中，可通过 `async` 关键字声明异步函数，其返回类型必须为 `Promise<T>`
+对比同步函数（课程中目前使用的大部分函数）：必须等待计算完成才返回，调用者会阻塞直到获得结果。在现代 TS/JS 中，可通过 `async` 关键字声明异步函数，其返回类型必须为 `Promise<T>`
 
 ```ts
 async function getBalance(): Promise<number> {
@@ -201,7 +207,7 @@ void main(); // 调用main()但不会等待它完成
 
 我们来更深入地了解一下 JavaScript 运行时系统是如何执行异步函数的。运行时系统指的是负责运行 JavaScript 代码、管理 JavaScript 环境等任务的解释器。（在本课程中，我们主要使用 Node 作为运行时系统，但其他运行时也存在，比如 Deno、Bun，或者你正在阅读本文的 Web 浏览器。）
 
-JavaScript 每个全局环境中**只有一个控制线程**。（虽然我们在之前的学习中看到，Worker 可以创建一个新的线程，但每个 Worker 会获得一个全新的全局环境，并且通常通过**消息传递**与主程序或其他 Worker 通信，而不是通过共享可变内存对象。）
+JavaScript 每个全局环境中**只有一个控制线程**。（虽然我们在之前的学习中看到，Worker 可以创建一个新的线程，但每个 Worker 会获得一个全新的全局环境，并且通常通过**消息传递**与主程序或其他 Worker 通信，而不是通过共享内存对象。）
 
 这引出了一个问题：如果在一个 JavaScript 环境中只有一个线程，那么多个异步函数**同时进行**到底意味着什么？当一个异步函数调用后立刻返回了一个 Promise，但它的计算还没有完成，它是**什么时候**以及**如何**重新获得控制权，继续执行后续操作，最终完成（fulfill）或拒绝（reject）这个 Promise 的呢？
 
@@ -223,8 +229,8 @@ async function getBalance(account: string): Promise<number> {
 假设有个客户端调用了 `totalBalance()`。以下是这段代码背后的执行过程：
 
 1. `totalBalance` 调用了 `getBalance('checking')`，该函数调用了 `readFile`，这会启动文件读取，并立即返回一个 `Promise<string>`，表示文件内容的未来结果。
-2. `getBalance('checking')` 遇到一个 `await`，等待文件的 promise。这意味着它必须交出控制权。此时它会构造一个新的 `Promise<number>` 来表示自己的最终结果，并将这个 promise 返回给调用它的 `totalBalance`。
-3. `totalBalance` 并不会立即等待这个 promise，而是把它存入 `checkingPromise`，然后继续调用 `getBalance('savings')`。
+1. `getBalance('checking')` 遇到一个 `await`，等待文件的 promise。这意味着它必须交出控制权。此时它会构造一个新的 `Promise<number>` 来表示自己的最终结果，并将这个 promise 返回给调用它的 `totalBalance`。
+1. `totalBalance` 并不会立即等待这个 promise，而是把它存入 `checkingPromise`，然后继续调用 `getBalance('savings')`。
 4. `getBalance('savings')` 也走了相同的流程：遇到 `await`，返回一个表示储蓄账户余额的 promise，`totalBalance` 把它存入 `savingsPromise`
    - 此时，`totalBalance` 实际上已经启动了两个并发的计算：一个用于读取 checking 账户，另一个用于 savings 账户。通过**先保存 promise，稍后再 await**，它允许两个计算独立进行，而不是强制先完成一个再开始另一个。这就是基于 Promise 的并发的本质
 
@@ -238,7 +244,7 @@ async function getBalance(account: string): Promise<number> {
 
 - 每一个 `await` 都是异步函数交出控制权的地方。
 - 在异步函数中的第一个 `await`，所谓“交出控制权”意味着将函数自身的 promise 返回给调用者。之后的 `await` 则是直接把控制权交还给运行时系统。
-- 当 `await` 恢复执行时，控制权是从运行时系统回来的。
+- 当 `await` 恢复执行时，**控制权是从运行时系统回来的**。
 - 一个异步函数实际上被分割成了若干段计算，每一段位于两个 `await` 之间，而这些计算片段可能会和其他异步函数调用的片段交错执行。
 
 这种并发模型被称为 **协作式（cooperative）或非抢占式（non-preemptive）**。只有一条执行线程，并发的计算必须在明确的点（例如 `await` 或 `return`）自愿交出控制权，才能让彼此继续执行。
