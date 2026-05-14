@@ -117,7 +117,7 @@
 
 **在Web，网格必须灵活**
 
-![flexible-grid](/Users/mac/Downloads/gif/6.4500/flexible-grid.gif)
+![flexible-grid](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/flexible-grid.gif)
 
 
 

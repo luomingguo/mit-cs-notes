@@ -58,7 +58,7 @@ https://designftw.mit.edu/lectures/animation/videos/hierarchy-parentchild.mp4
 >
 > — NNGroup (“Animation for Attention and Comprehension”)
 
-![86926325541](/Users/mac/Downloads/gif/6.4500/86926325541.gif)
+![86926325541](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/86926325541.gif)
 
 > [!IMPORTANT]
 >

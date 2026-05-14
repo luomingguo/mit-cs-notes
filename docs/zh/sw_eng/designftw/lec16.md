@@ -238,7 +238,7 @@ let squares = numbers.map(n=>n**2);
 
 
 
-![925761115022513](/Users/mac/Downloads/gif/6.4500/925761115022513.gif)
+![925761115022513](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/925761115022513.gif)
 
 
 
