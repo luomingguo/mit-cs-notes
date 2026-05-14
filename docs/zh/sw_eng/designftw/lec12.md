@@ -113,8 +113,9 @@ function name(arg1, arg2) {
 
 
 ### Script 标签
-
+```html
 <script type="module">
+```
 
 - script 元素中的内容会在页面加载完成后执行
 - 或者，也可以使用 `src` 属性，指定一个 URL，从该地址获取脚本内容并执行
