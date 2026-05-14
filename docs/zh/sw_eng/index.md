@@ -18,7 +18,7 @@ title: 编程与软件工程
 
 - [编程基础(Python版)](/zh/fundamentals_of_programming/index.md)
 - [软件构造基础](/zh/element_of_software_construction/index.md)
-- [Web设计与交互]()
+- [Web技术与UI设计](/zh/designftw/index.md)
 - [软件设计]()
 - [软件性能工程](/zh/software_performance_engineer/index.md)
 - [多核编程]()

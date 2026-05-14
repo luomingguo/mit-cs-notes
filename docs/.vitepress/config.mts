@@ -73,6 +73,7 @@ export default defineConfig({
             { text: "编程基础(Python版)", link: "/zh/fundamentals_of_programming"},
             { text: "软件构造基础", link: "zh/element_of_software_construction"},
             { text: "软件设计", link: "zh/software_design"},
+            { text: "Web技术与UI设计", link: "zh/designftw"},
             { text: "软件性能工程", link: "zh/software_performance_engineer"},
             { text: "算法工程", link: "zh/algorithm_engineer"},
             { text: "多核编程", link: "zh/multicore_programming"},
@@ -194,6 +195,44 @@ export default defineConfig({
             { "text": "lec18 消息传递与网络", "link": "./lec18.md" },
             { "text": "lec19 小语言", "link": "./lec19.md" }
           ],
+        },
+      ],
+      '/zh/designftw/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
+        {
+          text: 'Web技术与UI设计',
+          collapsed: false,
+          link: "./index",
+          items: [
+            { "text": "Lec 1 介绍 & 总览", "link": "./lec1.md" },
+            { "text": "Lec 2 Web网页结构：HTML", "link": "./lec2.md" },
+            { "text": "Lec 3 易学性", "link": "./lec3.md" },
+            { "text": "Lec 4 图形设计", "link": "./lec4.md" },
+            { "text": "Lec 5 高效性", "link": "./lec5.md" },
+            { "text": "Lec 6 CSS的基本概念 I", "link": "./lec6.md" },
+            { "text": "Lec 7 安全性", "link": "./lec7.md" },
+            { "text": "Lec 8 CSS的基本概念 II", "link": "./lec8.md" },
+            { "text": "Lec 9 启发式评估", "link": "./lec9.md" },
+            { "text": "Lec 10 布局", "link": "./lec10.md" },
+            { "text": "Lec 11 原型和用户测试", "link": "./lec11.md" },
+            { "text": "Lec 12 现代JS和DOM的介绍", "link": "./lec12.md" },
+            { "text": "Lec 13 统一Web设计", "link": "./lec13.md" },
+            { "text": "Lec 14 事件", "link": "./lec14.md" },
+            { "text": "Lec 15 设计范式 & 函数式JS", "link": "./lec15.md" },
+            { "text": "Lec 16 函数、类和this", "link": "./lec16.md" },
+            { "text": "Lec 17 字体", "link": "./lec17.md" },
+            { "text": "Lec 18 异步编程", "link": "./lec18.md" },
+            { "text": "Lec 19 色彩", "link": "./lec19.md" },
+            { "text": "Lec 20 Web API", "link": "./lec20.md" },
+            { "text": "Lec 21 路由 & 数据可视化", "link": "./lec21.md" },
+            { "text": "Lec 22 动画 & 反馈", "link": "./lec22.md" },
+            { "text": "Lec 23 Web标准", "link": "./lec23.md" },
+            { "text": "Lec 24 面向AI系统的设计", "link": "./lec24.md" }
+          ]
         },
       ],
       '/zh/software_performance_engineer/': [
@@ -414,6 +453,21 @@ export default defineConfig({
             { "text": "lec22 分叉一致性 & SUNDR", "link": "./lec22.md" },
             { "text": "lec23 比特币", "link": "./lec23.md" },
             { "text": "lec24 拜占庭容错", "link": "./lec24.md" }
+          ]
+        },
+      ],
+      '/zh/storage_systems/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "../notes/",
+        },
+        {
+          text: '存储系统',
+          collapsed: false,
+          link: "./index",
+          items: [
+            { "text": "lec1 MapReduce", "link": "./lec1.md" },
           ]
         },
       ],
