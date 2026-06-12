@@ -8,34 +8,45 @@ export default defineConfig({
   base: '/mit-cs-notes',
   title: "MIT Notes",
   description: "TODO",
-  lang: 'cn-zh',
+  lang: 'zh',
   locales: {
     root: {
       label: '中文',
-      lang: 'zh'
+      lang: 'zh',
+      link: 'zh/index'
     },
     en: {
       label: 'English',
       lang: 'en',
-      link: '/en/guide'
+      link: '/en/index'
     }
   },
   head: [
     ['link' , {rel: 'icon', href: "/mit-cs-notes/logo.png"}],
   ],
   rewrites :{
-  
     "zh/:pkg/:subject/(.*)": "zh/:subject/(.*)",
   },
   markdown: {
     math: true,
-
     codeTransformers: [
       transformerTwoslash() 
     ],
     theme: 'nord', // or any other theme you want
     languages: ['asm'],
-
+    languageAlias: {
+      'assembly': 'asm',
+      'golang': 'go',
+      'postgresql': 'sql',
+      'bluespec': 'txt',
+    },
+    container: {
+        tipLabel: '💁🏼‍♀️提示',
+        warningLabel: '⚠️警告',
+        dangerLabel: '❌危险',
+        infoLabel: 'ℹ️信息',
+        detailsLabel: '详细信息'
+    },
     toc: { level: [1, 2] },
     lineNumbers: true,
     image: {

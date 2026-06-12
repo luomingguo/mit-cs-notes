@@ -266,7 +266,7 @@ Intel Cilk Plus运行时如何实现并行计算的基本思路：
   - 每个生成函数实例都对应一个Cilk栈帧结构（Cilk stack-frame structure）。
   - 每个cilk_spawn实例都对应的spawn-helper栈帧（spawn-helper stack frame）。
 
-```mathematica
+```
                    ┌─────────────────────────┐
                    │       Worker 1          │
                    │                         │

@@ -1,14 +1,15 @@
 {
   "scripts": {
+    "dev": "vitepress dev docs",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
-    "@shikijs/vitepress-twoslash": "^3.9.2",
-    "@vitejs/plugin-vue": "^6.0.1",
+    "@shikijs/vitepress-twoslash": "^4.2.0",
+    "@vitejs/plugin-vue": "^6.0.7",
     "markdown-it-mathjax3": "^4.3.2",
-    "vitepress": "^2.0.0-alpha.11"
+    "vitepress": "2.0.0-alpha.17"
   },
   "dependencies": {
     "vue-router": "^4.5.1"

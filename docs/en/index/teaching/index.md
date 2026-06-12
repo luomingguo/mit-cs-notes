@@ -23,7 +23,7 @@ hero:
       link: /tcs/index
     - theme: alt
       text: 计算机架构
-      link: /computer_arch/index
+      link: /arch/index
     - theme: alt
       text: 计算机系统
       link: /computer_sys/index

@@ -71,7 +71,7 @@ preview:
 
 于是我们打上断点
 
-```“
+```sh
 (gdb) b *0xc24
 (gdb) c
 (gdb) delete 1

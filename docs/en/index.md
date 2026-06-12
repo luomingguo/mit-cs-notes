@@ -4,24 +4,21 @@ layout: home
 
 hero:
   name: "Reading Notes for Math & EECS"
-  text: 
-  tagline: Welcome to join us!
+  tagline: MIT EECS Open Course Learning Notes — a personal collection of notes, code examples, and exercises from MIT open courses, covering computer systems, theoretical computer science, computer security, computer architecture, and software engineering.
   actions:
     - theme: brand
       text: Open courses
       link: /teaching/index
-      # link: /packages/teaching/index
     - theme: alt
       text: reading notes
       link: /notes/index
 
 features:
-  - title: Reading Note Home
+  - title: Reading Notes
     details: Reading Notes for Mathematics & EECS from MIT, Stanford and so on
-  - title: Open Course Warehose
-    details: Study together
-  - title: Team
-    details: team member
-    link: "/team"
+    link: /notes/index
+  - title: Open Courses
+    details: Open course explanations and study materials
+    link: /teaching/index
 ---
 

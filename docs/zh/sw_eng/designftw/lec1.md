@@ -191,7 +191,7 @@ HTML 可能会因为以下内容而需要发起更多的 HTTP 请求：
 
 在服务器端的php文件
 
-```php+HTML
+```HTML
 ...
 <body>
 	<p>Hello <em>world</em> 👋</p>

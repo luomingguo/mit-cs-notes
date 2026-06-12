@@ -233,7 +233,7 @@ x0硬连线道常量0，因此任何时候访问x0，你都会读到0，如果�
 
 - 几个例子
 
-  ```assembly
+  ```asm
   add x3, x1, x2 # x3 <- x1 + x2
   slt x3, x1, x2 # if x1 < x2 then x3 = 1 else x3 = 0
   sll x3, x1, x2 # x3 <- x1 << x2
@@ -284,7 +284,7 @@ x0硬连线道常量0，因此任何时候访问x0，你都会读到0，如果�
 
 格式为： **oper dst, src1, const**
 
-```assembly
+```asm
 addi x3, x1, 3 
 andi x3, x1, 3
 slli x3, x1, 3
@@ -294,7 +294,7 @@ slli x3, x1, 3
 
 我们可以用负数代替
 
-```assembly
+```asm
 addi x3, x1, -3 
 ```
 
@@ -307,7 +307,7 @@ addi x3, x1, -3
 1. 将复杂的表达式拆分，我们的指令仅仅能支持两个源操作数和一个目标操作数
 2. 假设a, b, c在寄存器x1, x2,和x3，相对的，我们用x4代表t0， x5代表t1
 
-```assembly
+```asm
 t0 = b + 3;
 t1 = t0 >> c;
 a = t1 - 1;
@@ -336,7 +336,7 @@ if (a < b): c = a + 1
 | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
 | comp | ==   | !=   | <    | >=   | <    | >=   |
 
-```assembly
+```asm
 # 假设 x1 = a; x2 = b; x3 = c;
 bge  x1, x2, else # 注意，是a >= b时候跳else
 addi x3, x1, 1
@@ -363,7 +363,7 @@ jalr: Unconditional jump via register and link
 - Ex： Jump target = x1 + 4
 - 能够跳转到任何32位的地址-support long jumps
 
-```assembly
+```asm
 # 伪指令
 j label
 # 等同的汇编指令
@@ -384,7 +384,7 @@ jal x0, label
   - offset通常是一个很小的常数
   - 格式：**lw dest, offset(base)** or **sw src, offset(base)**
 
-```assembly
+```asm
 # 行为
 x1 <- load(Mem[x0 + 0x4])
 x2 <- load(Mem[x0 + 0x8])
@@ -407,7 +407,7 @@ sw x3, 0x10(x0) # 注意顺序
 
 sum = a[0] + a[1] + .. + a[n-1]； 假设x10已经取数100。
 
-```assembly
+```asm
 lw x1, 0x0(x10)
 lw x2, 0x4(x10)
 lw x3, 0x8(x10)
@@ -439,7 +439,7 @@ sw x3, 0x8 (x10)
 
 为其他指令提供别称，从而简化汇编编程
 
-```assembly
+```asm
 # 伪指令
 mv x2, x1
 ble x1, x2, label
@@ -487,14 +487,14 @@ bne x1, x0, label
 
   - 使用``li``（load immediate）伪指令设置寄存器。**li x4, 0x123456** 对应的汇编为
 
-    ``````assembly
+    ``````asm
     lui x4, 0x123 # load upper immediate,一个20位的立即数加载到寄存器的高20位，而低12位填充为0
     addi x4, x4, 0x456
     ``````
 
   - 同样的我们可以用``li``伪指令执行小的常数的操作
 
-    ```assembly
+    ```asm
     # 伪指令
     li x4, 0x12
     # 汇编
@@ -520,7 +520,7 @@ z = (x * 4) ^ y;
 
 对应的RISC-V汇编
 
-```assembly
+```asm
 # x: x10; y: x11; z: x12
 # x13, x14用于临时数据
 
@@ -557,7 +557,7 @@ xor x12, x13, x11
 
 例子
 
-```assembly
+```asm
 int x, y;
 if (x < y) {
 	y = y - x;
@@ -628,7 +628,7 @@ endif:
 
 你能够写出执行指令更少的版本吗？
 
-```assembly
+```asm
 # 只有一个分支或者每个迭代都跳转的版本
 	j compare
 loop:
@@ -652,7 +652,7 @@ while (x != y) {
 
 RISV-V的汇编是什么呢？
 
-```assembly
+```asm
 # x: x10, y: x11
 	j compare
 loop:

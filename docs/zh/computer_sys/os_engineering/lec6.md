@@ -49,7 +49,7 @@ int sum_to(int n) {
 
 其汇编代码为
 
-```assembly
+```asm
 .section .text 		# 告诉编译器/汇编器接下来的内容是代码，并将其（定义的函数）放置在 .text 段中
 .global sum_to  	# .global表示你可以从其他文件中调用sum_to函数
 
@@ -73,7 +73,7 @@ loop:
 
 > 如何调用sum_to(n)?
 
-```assembly
+```asm
 main:
 	li a0, 10   # a0 <- 10
 	call sum_to # call sum_to

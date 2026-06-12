@@ -23,7 +23,7 @@ hero:
       link: zh/tcs/index
     - theme: alt
       text: 计算机架构
-      link: zh/computer_arch/index
+      link: zh/arch/index
     - theme: alt
       text: 计算机系统
       link: zh/computer_sys/index

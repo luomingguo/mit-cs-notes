@@ -1,5 +1,5 @@
 node_modules
-*.OS_Store
+.DS_Store
 dist
 dist-ssr
 cache

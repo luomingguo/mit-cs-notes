@@ -54,7 +54,7 @@ n：告诉我们存储了多少个元素
 
 sum: 存储结果
 
-```assembly
+```asm
 x1 <- load(Mem[X10])
 x2 <- load(Mem[X10 + 4])
 x3 <- load(Mem[x10 + 8]) 

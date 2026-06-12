@@ -40,7 +40,7 @@
 
 ### 流水线执行
 
-```assembly
+```asm
 lw x11, 4(x12)
 lw x13, 8(×14)
 sub x15, x16, x17
@@ -67,7 +67,7 @@ Solution: 读操作发生在Dec阶段，而写操作发生在WB阶段
 
 考虑下面的指令序列：
 
-```assembly
+```asm
 addi x11, x10, 2
 xor x13, x11, x12
 sub x17, x15, x16
@@ -105,7 +105,7 @@ xori x19, x18, 0xF
 
 #### Load & Store 造成的数据冒险
 
-```assembly
+```asm
 st x11, 8(x10)      // 将 x11 的值写入地址 x10 + 8
 ld x13, 4(x12)      // 从地址 x12 + 4 加载到 x13
 ```
@@ -116,7 +116,7 @@ ld x13, 4(x12)      // 从地址 x12 + 4 加载到 x13
 
 ### 数据冒险策略： 旁路
 
-```assembly
+```asm
 addi x11, x10, 2
 xor x13, x11, x12  // 用到了上一个指令的x11
 sub x13, x15, x16
@@ -155,7 +155,7 @@ Solution： 是的，还需要！
 
 对于上面的例子
 
-```assembly
+```asm
 lw x11, 0(x10)     
 add x13, x11, x12 
 sub x17, x15, x16
@@ -188,7 +188,7 @@ xori x19, x18, 0xF
 
 ### 控制冒险策略： 停顿
 
-```assembly
+```asm
 loop: 
 addi x13, x11, -1
 sub x14, x15, x16
@@ -201,7 +201,7 @@ CPI  =  7 cycles / 3 instructions !!!
 
 ### 控制冒险策略： 推测执行
 
-```assembly
+```asm
 loop:
 addi x13, x11, -1
 sub x14, x15, x16
@@ -230,7 +230,7 @@ xor x19, x20, x21
 
 假设在同个周期，由于控制冒险EXE想要取消DEC和IF，而由于数据冒险DEC想要停顿。举个例子，假设`bne`被采纳
 
-```assembly
+```asm
 loop:
 addi x13, x11, -1
 lw x14, 0(x15)
