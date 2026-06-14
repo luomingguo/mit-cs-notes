@@ -6,6 +6,5 @@ cache
 .cache
 .temp
 *.local
-package-lock.json
-
+*package-lock.json
 *__pycache__
