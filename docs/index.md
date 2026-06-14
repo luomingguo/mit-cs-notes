@@ -38,5 +38,8 @@ features:
     title: 安全与加密
     details: 安全与加密应用相关课程笔记
     link: /zh/security/index
+  - icon: 🔍
+    title: 开源项目解读
+    details: Redis、Mysql、Golang编程语言等经典开源项目源码分析
+    link: /zh/opensrc/index
 ---
-
