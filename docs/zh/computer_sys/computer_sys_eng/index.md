@@ -1,23 +1,6 @@
----
-sidebarDepth: 2
-title: 计算机系统工程
-
-
-sidebar: true
-aside: right
-editLink: true
-lastUpdated: true
-outline: 2
----
-
-
 # 6.1800 计算机系统工程
 
-[6.033 | Spring 2017 | Schedule (mit.edu)](http://web.mit.edu/6.033/2017/wwwdocs/)
-
-[6.033 | Spring 2022 | Schedule (mit.edu)](https://web.mit.edu/6.033/www/index.shtml)
-
-[6.1800 | Spring 2025 | Schedule (mit.edu)](https://web.mit.edu/6.1800/www/)
+[6.1800 | Spring 2026 | Schedule (mit.edu)](https://web.mit.edu/6.1800/www/)
 
 ## 先行条件
 
@@ -26,6 +9,8 @@ outline: 2
 6.1010/6.009 编程基础
 
 ## 课程描述
+
+![image-20250909163506060](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250909163506060.png)
 
 6.033课程旨在全面覆盖计算机科学和工程中的关键领域，具体包括以下四个方面：
 
@@ -54,7 +39,7 @@ outline: 2
 
 Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design: An Introduction*
 
-和[线上内容(Part II)]([Part_II.print.book (mit.edu)](https://ocw.mit.edu/courses/res-6-004-principles-of-computer-system-design-an-introduction-spring-2009/e962408d900226fef264fd1cd1b81468_part_ii_open_5_0.pdf))
+和[线上内容(Part II)](https://ocw.mit.edu/courses/res-6-004-principles-of-computer-system-design-an-introduction-spring-2009/e962408d900226fef264fd1cd1b81468_part_ii_open_5_0.pdf))
 
 
 
@@ -62,36 +47,36 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 ### 操作系统
 
-1. 复杂度，模块化，抽
-2. 命名
+1. 控制复杂度——模块化，抽象
+2. 命名系统
 3. 虚拟内存
 4. 有界缓冲区和锁
 5. 线程
-6. 操作系统结构；虚拟机
-7. 操作系统性能(存储方面)
+6. 操作系统的组成结构，虚拟机
+7. 操作系统性能（存储）
 
 ### 计算机网络
 
-8. 计算机网络介绍，分层
+8. 计算机网络介绍 & 分层
 9. 网络层： 路由
 10. BGP
 11. 传输层：TCP
-12. 资源管理内部网络
+12. In-Network 资源管理
 13. 应用层
 14. 数据中心和云
 
 ### 分布式系统
 
 15. 可靠性
-16. 原子、隔离、事务
-17. 日志
-18. 隔离
+16. 事务
+17. 日志记录
+18. 隔离性
 19. 分布式事务
-20. 复制
+20. 复制技术
 
 ### 计算机安全
 
-21. 安全介绍+认证
+21. 计算机安全介绍 & 认证
 22. 低级别攻击
 23. 安全通道
 24. ToR
@@ -111,61 +96,37 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 # Part I 操作系统
 
-# Lec 1 复杂度，模块化，抽
+## Lec 1 模块化，抽象
 
 > 阅读参考书 §1.1-1.5, §4.1-4.3
 
-## 思考题
-
-- 为什么构建复杂系统困难？
-- 我们如何降低复杂性？
-- 什么是模块化？模块化意味着什么？
-- 客户端/服务器模型如何帮助我们实现模块化的？
-- RPC与普通的过程调用有什么不同？RPC引入了哪些问题？
-- 在设计系统时，除了模块化，我们还需要关心哪些其他事情？
-
-
+这节我们会介绍为啥设计系统很复杂，会遇到什么通用问题？ 应对这些复杂性的通用方法有哪些？
 
 [lec1.md](./lec1.md)
 
 
 
-# Lec 2 命名
+## Lec 2 命名系统
 
 > 阅读参考书§2.2, §3.1， §4.4
 
-## 思考题
-
-- 在计算机系统中，名称的作用是什么？ 从高层次讲，他们能让我们做什么？
-- 使用名称的好处？
-- 命名方案的组成部分有哪些？
-- 设计命名方案时，我们需要考虑什么问题？
+计算机系统在其构建、配置和运行过程中以多种方式使用名称。在由子系统构建系统时，理想情况下使用子系统时，不必了解其内部的工作原理，名称用于实现模块化，同时在某些情况下，模块化还必须隐藏名称。
 
 
 
 [lec2.md](./lec2.md)
 
-# Lec 3 虚拟内存
+## Lec 3 虚拟内存
 
 > 阅读参考书 §5.1, §5.3, §5.4
 
-## 思考题
 
-- 什么是虚拟化？
-- 当我们说内存时候，意味着什么？ 内存和存储区别是什么？
-- 为什么我们将页表用在虚拟内存？ 他们解决了什么问题？
-- 当使用页表时，如何将虚拟地址转换为物理地址？
-- 如果我们没有足够的内存来存储我们的程序指令和数据时会发生什么？
-- 内核的工作是什么？
-- 页表项的其他比特作用什么？如何 P， U/K 和R/W 比特。他们每个都解决什么问题？
-- 如何用多级页表实现虚拟地址到物理地址的转换？
-- 为什么多级页表要比“一般”的页表要省空间？
 
 [lec3.md](./lec3.md)
 
-# Lec 4 有界缓冲区 + 锁
+## Lec 4 有界缓冲区 + 锁
 
-## 大纲
+大纲
 
 - 什么是虚拟化？
 
@@ -199,13 +160,11 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 - 为什么我们需要原子交换操作来实现锁？
 
-# Lec 5 线程技术加强模块化
+## Lec 5 线程技术加强模块化
 
 > 阅读参考书 §5.5, §5.6
 
-
-
-## 思考题
+思考题
 
 - 什么是虚拟化？
 - suspend() 和 resume() 做什么？
@@ -230,7 +189,7 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 [lec5.md](./lec5.md)
 
-# Lec 6 虚拟机技术加强模块化
+## Lec 6 虚拟机技术加强模块化
 
 > 阅读参考书 §5.8
 
@@ -238,7 +197,7 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 另外一种方法是使用虚拟机（VM）。尽可能利用真实的物理机实现多个虚拟实例（包括特权指令、如加载和存储到页映射地址寄存器）。实现虚拟机的软件被称为**虚拟机监视器**（Virtual Machine monitor， VMM）
 
-## 大纲
+大纲
 
 - 为什么我们希望在同一台物理机器上运行多个操作系统？
 - 虚拟机监控器（VMM）的作用是什么？
@@ -251,7 +210,7 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 [lec6.md](./lec6.md)
 
-# Lec 7 性能
+## Lec 7 性能
 
 前面讲在单一机器上通过虚拟化内存、有界缓存、线程来增强模块化；了解了微内核和宏内核的区别；探讨了如何在单一物理机器上通过虚拟机加强模块化，使其能够运行多个OS实例（并且其中一个OS发生了BUG不会影响到其他OS崩溃），其中如何实现VMM是一个关键问题，解决方法是通过“trap-and-emulate"，陷入并模拟。一个关键问题是，如何陷入那些不会引发中断的指令。
 
@@ -259,7 +218,7 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 > 本节没有参考书资料
 
-## 思考题
+思考题
 
 - 性能瓶颈是指什么？
 - 在思考系统性能时，拥有系统模型有何帮助？
@@ -278,7 +237,7 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 # Part II 计算机网络
 
-# Lec 8 计算机网络介绍
+## Lec 8 计算机网络介绍
 
 ![截屏2024-07-04 16.17.54](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66865ab93619e.png)
 
@@ -293,11 +252,11 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 [lec8.md](./lec8.md)
 
-# Lec 9 路由
+## Lec 9 路由
 
 距离向量、链路状态以及如何
 
-## 大纲
+大纲
 
 - 路由协议的目的是什么
 - 为什么使用分布式路由协议？
@@ -319,9 +278,9 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 [lec9.md](./lec9.md)
 
-# Lec 10 BGP
+## Lec 10 BGP
 
-## 思考题
+思考题
 
 - 自治系统（AS）是什么？
 - 互联网可扩展路由的三个组成部分包括：路由的层次结构、路径矢量路由和拓扑地址。我们如何理解每个组成部分，并且它们如何提升可扩展性？
@@ -349,7 +308,7 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 [lec10.md](./lec10.md)
 
-# Lec 11 TCP
+## Lec 11 TCP
 
 **思考题**
 
@@ -387,15 +346,13 @@ Saltzer, Jerome H., and M. Frans Kaashoek. *Principles of Computer System Design
 
 [lec11.md](./lec11.md)
 
-# Lec 12 网络内资源管理
+## Lec 12 In-network 资源管理
 
 TCP拥塞控制直到出现拥塞问题后才会做出反应；我们能否在队列满之前让发送方做出反应？
 
 TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来应对特定情况。网络内部的确有队列存在，交换机设置队列的原因是为了平滑流量和吸收流量突发。因此，TCP发送方并不要求精确地调整其窗口大小。 我们想找出一种方法，能帮助TCP 发送方能够更早的响应拥塞。
 
-
-
-## 思考题
+思考题
 
 队列管理
 
@@ -420,9 +377,9 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 
 [lec12.md](./lec12.md)
 
-# Lec 13 应用层
+## Lec 13 应用层
 
-## 思考题
+思考题
 
 1. 内容交付介绍。客户端/服务器模型如何交付内容？主要的缺点是什么？
 
@@ -453,9 +410,11 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 
 
 
-# Lec 14 数据中心和云
 
-## 思考题
+
+## Lec 14 数据中心和云
+
+思考题
 
 - 数据中心网络的物理基础设施是什么样的？比如什么是机架？
 
@@ -480,9 +439,19 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 
 [lec14.md](./lec14.md)
 
+
+
+## Lab 2 traceroute
+
+[lab2.md](./lab2.md)
+
+## Lab 3 Tcpdump
+
+[lab3](./lab3.md)
+
 # Part III 分布式系统
 
-# Lec 15 可靠性
+## Lec 15 可靠性
 
 > 阅读参考书 §8.1 §8.2 §8.3 
 >
@@ -508,7 +477,7 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
   - 讲座中描述的RAID系统是否能在两个磁盘同时故障的情况下恢复？为什么或为什么不可以？
   - **附加问题**：如果一个磁盘先故障，然后另一个磁盘在1秒后故障，系统能否恢复？在10秒后故障呢？通常情况下，你会如何考虑这些系统恢复所需的故障间隔时间？
 
-## Outline
+Outline
 
 - 构建可靠的系统
 - 可靠性的测量
@@ -516,7 +485,7 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 
 [lec15.md](./lec15.md)
 
-# Lec 16 事务
+## Lec 16 事务
 
 > 阅读参考书 §9.1，§9.2.1，§9.1.2
 >
@@ -524,7 +493,7 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 
 系统工程设计有两个策略，一个是all-or-nothing原子性、另外一个是before-or-after 原子性，他们都提供了很强的模块化性质，隐藏了一个事实——原子步骤实际上包含了很多步骤。
 
-## Outline
+Outline
 
 - 原子性
 - 隔离性
@@ -533,7 +502,7 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 
 
 
-# Lec 17 Logging
+## Lec 17 Logging
 
 > 阅读参考书 §9.3
 >
@@ -563,11 +532,11 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
   -  添加缓存后，日志的性能表现如何？
   -  截断日志并写入检查点（checkpoint）的目的是什么？
 
-## Outline
+Outline
 
 [lec17.md](./lec17.md)
 
-# Lec 18 隔离性
+## Lec 18 隔离性
 
 > 阅读参考书 §9.4 中 §9.4.1之前的内容, §9.5
 >
@@ -592,7 +561,7 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
     - 为什么添加读写锁定可以提高性能？
   - 2PL 可能导致死锁。发生死锁时我们可以采取什么措施？
 
-## Outline
+Outline
 
 - 隔离性示例
 - 冲突可串行化
@@ -603,7 +572,7 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 
 [lec18.md](./lec18.md)
 
-# Lec 19 分布式事务
+## Lec 19 分布式事务
 
 > 阅读参考书 §9.6
 >
@@ -617,7 +586,7 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 - 如何处理网络重排序问题
 - 2PC协议中可能出现的各种故障
 
-## Outline
+Outline
 
 - 两阶段锁
 - 跨层和多站点的原子性
@@ -626,7 +595,7 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 
 [lec19.md](./lec19.md)
 
-# Lec 20 复制状态机
+## Lec 20 复制状态机
 
 > 阅读资料：
 >
@@ -656,21 +625,46 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 - RSM（复制状态机）提供什么样的一致性？
   - 所有系统都需要这样的一致性吗？
 
-
-## Outline
+Outline
 
 - 复制状态机
 - 论文阅读：Raft共识算法
 
 [lec20.md](./lec20.md)
 
+## Lab 4 Logging
+
+[lab4](./lab4.md)
+
+## Lab 5 MapReduce
+
+[lab5](./lab5.md)
+
+## Leb 6 Database
+
+[lab6](./lab6.md)
+
+## Lab 7 Valgrind
+
+[lab7.md](./lab7.md)
+
 # Part IV 计算机安全
 
-# Lec 21 安全介绍&身份认证
+计算机安全的核心目标是，如何**构建和维护可信的系统**。
+
+计算机安全的三要素CIA：
+
+- 保密性（confidentiality）
+- 完整性（integrity）
+- 可用性（Accessiblity）
+
+
+
+## Lec 21 安全介绍&身份认证
 
 > 阅读参考书 §11.2
 
-## 思考题
+思考题
 
 - 解释哈希函数的基本性质，并将其与各种密码存储方案联系起来（例如，哈希函数的抗碰撞性如何帮助我们存储密码？）。
 - 你不需要理解哈希函数背后的数学原理，感兴趣的话可以wiki SHA-2。我们关注的是将哈希函数作为一种加密基础原语，用于构建更安全的系统。
@@ -683,19 +677,15 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 
 [lec21.md](./lec21.md)
 
-# Lec 22 低级别攻击
-
-## 思考题
-
-
+## Lec 22 低级别攻击
 
 [lec22.md](./lec22.md)
 
-# Lec 23 安全通道
+## Lec 23 安全通道
 
 > 阅读参考书 §11.3-11.5
 
-## 思考题
+思考题
 
 - 给定一个结合了加密、MAC（消息认证码）和签名的协议，判断它是否提供了机密性（confidentiality） 和/或 完整性（integrity），以及它是否能够抵御重放攻击和反射攻击。
   - 你不需要理解加密/解密、MAC或签名/验证背后的数学原理。我们只会问你关于将这些函数作为构建模块的方案。你应该理解它们提供的属性以及它们如何在安全通道中正确使用，但不需要理解，例如，加密提供机密性但不提供完整性的数学原因。
@@ -704,9 +694,9 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 - 解释如何用公钥密码学来验证用户身份，包括证书的创建和分发方式
 - 你不需要理解TLS握手细节，尽管你应该能够识别其中的熟悉元素（序列号、密钥等）
 
-[lec23.md]()
+[lec23.md](./lec23.md)
 
-# Lec 24 ToR
+## Lec 24 ToR
 
 
 
@@ -721,7 +711,7 @@ TCP的拥塞控制本质上是通过接收到队列中数据丢失的信号来�
 
 [lec24.md](./lec24.md)
 
-# Lec 25 网络攻击
+## Lec 25 网络攻击
 
 前面攻击者试图通过观察或者篡改数据包；这次有新的目标：使服务宕机。采用的策略是让服务拥塞，让服务花时间处理对手的请求，以至于无法处理合法的请求，这就做DoS（拒绝服务）攻击。从多个机器上发起攻击，那我们称之为DDos（分布式Dos）攻击。
 
