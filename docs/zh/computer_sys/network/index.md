@@ -277,7 +277,7 @@ On the self-similar nature of Ethernet traffic – Leland et al., SIGCOMM 1993
 - BBQ: a fast and scalable integer priority queue for hardware packet scheduling – Atre et al., NSDI 2024
 - Achieving 100% throughput in an input-queued switch
 - High-Speed Switch Scheduling for Local-Area Networks – Anderson et al., ACM Transactions on Computer Systems 1993
-- Analysis and simulation of a fair queueing algorith[数据链路层.md](./数据链路层.md)
+- Analysis and simulation of a fair queueing algorithm
 
 
 
