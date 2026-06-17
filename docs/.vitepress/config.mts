@@ -86,7 +86,7 @@ export default defineConfig({
           text: '理论计算机',
           collapsed: true,
           items: [
-            {text: "计算机数学"},
+            {text: "计算机数学", link: "zh/maths_for_cs"},
             {text: "算法导论", link: "zh/introduction_to_algorithms"},
             {text: "算法设计和分析"},
             {text: "可计算性和复杂度理论"},
@@ -586,6 +586,43 @@ export default defineConfig({
             { text: "lec17 动态规划, Part 3: APSP, Parens, Piano", link: "/zh/introduction_to_algorithms/lec17" },
             { text: "lec18 动态规划, Part 4: Pseudopolynomials", link: "/zh/introduction_to_algorithms/lec18" },
             { text: "lec19 复杂度", link: "/zh/introduction_to_algorithms/lec19" },
+          ]
+        }
+      ],
+      '/zh/maths_for_cs/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "/zh/index",
+        },
+        {
+          text: '6.1200 计算机数学',
+          collapsed: false,
+          link: "/zh/maths_for_cs/",
+          items: [
+            { text: "Lec 1 证明", link: "/zh/maths_for_cs/lec1" },
+            { text: "Lec 2 反证法和归纳法", link: "/zh/maths_for_cs/lec2" },
+            { text: "Lec 3 分类讨论和强归纳法", link: "/zh/maths_for_cs/lec3" },
+            { text: "Lec 4 状态机", link: "/zh/maths_for_cs/lec4" },
+            { text: "Lec 5 求和", link: "/zh/maths_for_cs/lec5" },
+            { text: "Lec 6 渐进分析", link: "/zh/maths_for_cs/lec6" },
+            { text: "Lec 7 递归关系", link: "/zh/maths_for_cs/lec7" },
+            { text: "Lec 8 整除性", link: "/zh/maths_for_cs/lec8" },
+            { text: "Lec 9 模运算", link: "/zh/maths_for_cs/lec9" },
+            { text: "Lec 10 密码学", link: "/zh/maths_for_cs/lec10" },
+            { text: "Lec 11 图与图染色", link: "/zh/maths_for_cs/lec11" },
+            { text: "Lec 12 匹配问题", link: "/zh/maths_for_cs/lec12" },
+            { text: "Lec 13 连通性与树", link: "/zh/maths_for_cs/lec13" },
+            { text: "Lec 14 有向图", link: "/zh/maths_for_cs/lec14" },
+            { text: "Lec 15 关系与计数", link: "/zh/maths_for_cs/lec15" },
+            { text: "Lec 16 计数方法 I", link: "/zh/maths_for_cs/lec16" },
+            { text: "Lec 17 计数方法 II", link: "/zh/maths_for_cs/lec17" },
+            { text: "Lec 18 概率论导论", link: "/zh/maths_for_cs/lec18" },
+            { text: "Lec 19 条件概率", link: "/zh/maths_for_cs/lec19" },
+            { text: "Lec 20 独立性", link: "/zh/maths_for_cs/lec20" },
+            { text: "Lec 21 随机变量", link: "/zh/maths_for_cs/lec21" },
+            { text: "Lec 22 期望", link: "/zh/maths_for_cs/lec22" },
+            { text: "Lec 23 方差、偏差", link: "/zh/maths_for_cs/lec23" },
           ]
         }
       ],

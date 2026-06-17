@@ -14,7 +14,7 @@ title: 理论计算机
 
 ## 理论计算机课程
 
-- [计算机科学的数学]
+- [计算机科学的数学](/zh/maths_for_cs/index.md)
 - [算法导论](/zh/introduction_to_algorithms/index.md)
 - [算法设计与分析]()
 - [高级算法]()
