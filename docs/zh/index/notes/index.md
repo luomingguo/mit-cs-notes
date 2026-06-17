@@ -17,7 +17,7 @@ hero:
       link: zh/sw_eng/index
     - theme: alt
       text: 编程语言
-      link: zh/programming_language/index
+      link: zh/language/index
     - theme: alt
       text: 理论计算机
       link: zh/tcs/index

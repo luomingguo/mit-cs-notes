@@ -21,7 +21,7 @@ features:
   - icon: 🔤
     title: Programming Languages
     details: Notes on compilers, dynamic language engineering, and the structure and interpretation of computer programs
-    link: /zh/programming_language/index
+    link: /zh/language/index
   - icon: 📐
     title: Theoretical Computer Science
     details: Notes on introduction to algorithms, algorithm design & analysis, and computability & complexity theory

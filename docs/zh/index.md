@@ -21,7 +21,7 @@ features:
   - icon: 🔤
     title: 编程语言
     details: 编译原理、动态语言工程、程序的结构与解释等课程笔记
-    link: /zh/programming_language/index
+    link: /zh/language/index
   - icon: 📐
     title: 理论计算机
     details: 算法导论、算法设计与分析、可计算性与复杂度理论等课程笔记
