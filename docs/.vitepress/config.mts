@@ -37,6 +37,7 @@ export default defineConfig({
       'golang': 'go',
       'postgresql': 'sql',
       'bluespec': 'txt',
+      'bsv': 'verilog',
     },
     container: {
         tipLabel: '💁🏼‍♀️提示',
@@ -123,7 +124,7 @@ export default defineConfig({
           items: [
             {text: "C语言与汇编语言底层编程导论", link: "zh/llp"},
             {text: "计算结构", link: "zh/computation_structures"},
-            {text: "构建式计算机体系结构（施工中）"},
+            {text: "构建式计算机体系结构", link: "zh/cca"},
             {text: "计算机系统架构（施工中）"},
             // {text: "复杂数字系统设计"},
             // {text: "深度学习的硬件架构"},
@@ -638,6 +639,32 @@ export default defineConfig({
           link: "/zh/computation_structures/",
           items: [
 
+          ]
+        },
+      ],
+      '/zh/cca/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "/zh/index",
+        },
+        {
+          text: '构建式计算机体系结构',
+          collapsed: false,
+          link: "/zh/arch/cca/",
+          items: [
+            { text: "Lec 1 引言", link: "/zh/arch/cca/lec1" },
+            { text: "Lec 2 组合电路", link: "/zh/arch/cca/lec2" },
+            { text: "Lec 3 存储器与多规则系统", link: "/zh/arch/cca/lec3" },
+            { text: "Lec 4 调度约束与EHRs", link: "/zh/arch/cca/lec4" },
+            { text: "Lec 5 非流水线处理器", link: "/zh/arch/cca/lec5" },
+            { text: "Lec 6 流水线处理器", link: "/zh/arch/cca/lec6" },
+            { text: "Lec 7 高速缓存与存储缓冲区", link: "/zh/arch/cca/lec7" },
+            { text: "Lec 8 分支预测", link: "/zh/arch/cca/lec8" },
+            { text: "Lec 9 超标量处理器", link: "/zh/arch/cca/lec9" },
+            { text: "Lec 10 多线程处理器", link: "/zh/arch/cca/lec10" },
+            { text: "Lec 11 乱序执行", link: "/zh/arch/cca/lec11" },
+            { text: "Lec 12 同步与顺序一致性", link: "/zh/arch/cca/lec12" }
           ]
         },
       ],
