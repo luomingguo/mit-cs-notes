@@ -11,7 +11,7 @@ hero:
       link: '#'
     - theme: brand
       text: 读书笔记
-      link: /zh/notes/index
+      link: /zh/index
 
 features:
   - icon: 🛠️

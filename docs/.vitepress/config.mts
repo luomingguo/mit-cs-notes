@@ -148,7 +148,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '软件构造要素',
@@ -173,7 +173,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '软件构造要素',
@@ -207,7 +207,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: 'Web技术与UI设计',
@@ -245,7 +245,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '软件性能工程',
@@ -284,7 +284,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '操作系统工程',
@@ -320,7 +320,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '计算机网络',
@@ -343,7 +343,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '移动和传感器计算',
@@ -371,7 +371,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '存储系统',
@@ -397,7 +397,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '计算机系统工程',
@@ -436,7 +436,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '数据库系统',
@@ -471,7 +471,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '数据中心计算',
@@ -505,7 +505,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '数据中心计算',
@@ -543,7 +543,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '存储系统',
@@ -559,7 +559,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '算法导论',
@@ -593,7 +593,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '计算机安全基础',
@@ -630,7 +630,7 @@ export default defineConfig({
         {
           text: '⮐主页',
           collapsed: false,
-          link: "/zh/notes/index",
+          link: "/zh/index",
         },
         {
           text: '计算结构',

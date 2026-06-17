@@ -19,7 +19,7 @@ hero:
       link: /zh/os/
     - theme: alt
       text: 返回笔记主页
-      link: /zh/notes/index
+      link: /zh/index
 
 features:
   - icon: 🧩

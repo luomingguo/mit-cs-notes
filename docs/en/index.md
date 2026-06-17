@@ -11,7 +11,7 @@ hero:
       link: '#'
     - theme: brand
       text: Reading Notes
-      link: /zh/notes/index
+      link: /zh/index
 
 features:
   - icon: 🛠️
