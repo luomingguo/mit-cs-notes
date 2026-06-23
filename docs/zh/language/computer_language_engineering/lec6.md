@@ -40,13 +40,13 @@
 
 **if-then-else**：`if` 节点（无操作 nop）下挂 condition、then、else 的 CFG，汇合于一个 nop。
 
-<img src="/Users/mac/Library/Application Support/typora-user-images/image-20260617100929028.png" alt="image-20260617100929028" style="zoom: 25%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260617100929028.png" alt="image-20260617100929028" style="zoom: 25%;" />
 
 **if-then**、**while**、**语句序列 seq** 各有对应模式。
 
-<img src="/Users/mac/Library/Application Support/typora-user-images/image-20260617101050602.png" alt="image-20260617101050602" style="zoom: 25%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260617101050602.png" alt="image-20260617101050602" style="zoom: 25%;" />
 
-<img src="/Users/mac/Library/Application Support/typora-user-images/image-20260617101010582.png" alt="image-20260617101010582" style="zoom: 25%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260617101010582.png" alt="image-20260617101010582" style="zoom: 25%;" />
 
 ### 2.2 基本块构造
 
@@ -54,7 +54,7 @@
 
 从逐个指令的控制流图出发，遍历所有边，当且仅当：第一个节点只有一条出边，且第二个节点只有一条入边 时，合并相邻两节点
 
-<img src="/Users/mac/Library/Application Support/typora-user-images/image-20260617101359012.png" alt="image-20260617101359012" style="zoom:33%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260617101359012.png" alt="image-20260617101359012" style="zoom:33%;" />
 
 ### 2.3 程序点、分裂点与汇合点
 
@@ -63,7 +63,7 @@
 - **汇合点 (*merge point*)**：有多个前驱。
 - 每个基本块：要么以汇合点开始、要么其前驱以分裂点结束；要么以分裂点结束、要么其后继以汇合点开始。
 
-<img src="/Users/mac/Library/Application Support/typora-user-images/image-20260617101555036.png" alt="image-20260617101555036" style="zoom:25%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260617101555036.png" alt="image-20260617101555036" style="zoom:25%;" />
 
 
 
@@ -75,11 +75,11 @@
 
 用 CFG 表示这种短路：
 
-<img src="/Users/mac/Library/Application Support/typora-user-images/image-20260617101841475.png" alt="image-20260617101841475" style="zoom: 50%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260617101841475.png" alt="image-20260617101841475" style="zoom: 50%;" />
 
 另外一个例子：
 
-<img src="/Users/mac/Library/Application Support/typora-user-images/image-20260617101954648.png" alt="image-20260617101954648" style="zoom:50%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260617101954648.png" alt="image-20260617101954648" style="zoom:50%;" />
 
 ### 3.1 两个解构例程
 

@@ -159,7 +159,7 @@ $$\sum_{i=0}^{n+1} i = \underbrace{\sum_{i=0}^{n} i}_{= n(n+1)/2 \text{ by IH}} 
 
 **结论：** $Q(n) \implies P(n)$，故 $P(n)$ 对所有 $n$​ 成立。
 
-<img src="/Users/mac/Library/Application Support/typora-user-images/image-20260618014623983.png" alt="image-20260618014623983" style="zoom:50%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260618014623983.png" alt="image-20260618014623983" style="zoom:50%;" />
 
 
 

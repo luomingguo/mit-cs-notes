@@ -4,7 +4,7 @@
 
 **问题：** $n$ 块宽度为 1 的矩形叠放，每块可相对下一块错开，设 $d_i$ 为第 $i$​ 块右边缘相对第 0 块右边缘的偏移。能否让顶层 Goomy 悬出桌边超过 1 个单位？
 
-<img src="/Users/mac/Library/Application Support/typora-user-images/image-20260618045214868.png" alt="image-20260618045214868" style="zoom:50%;" />
+<img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260618045214868.png" alt="image-20260618045214868" style="zoom:50%;" />
 
 **约束（重心不超出支撑范围）：** 前 $k$ 块的集体重心不得超出第 $k$ 块右边缘，即
 
