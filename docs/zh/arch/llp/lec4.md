@@ -268,7 +268,7 @@ lui 全称是 Load Upper Immediate(把立即数加载到高位)。`lui rd, luiCo
 
 ## 扩展阅读： 单周期处理器数据通路
 
-![riscv_processor_datapath](/Users/mac/Downloads/riscv_processor_datapath.svg)
+![riscv_processor_datapath](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/riscv_processor_datapath.svg)
 
 图中展示的是一个单周期 RISC-V 处理器的数据通路（*datapath*），每个组件的作用如下：
 
