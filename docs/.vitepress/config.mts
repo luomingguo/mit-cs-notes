@@ -125,7 +125,7 @@ export default defineConfig({
             {text: "C语言与汇编语言底层编程导论", link: "zh/llp"},
             {text: "计算结构", link: "zh/computation_structures"},
             {text: "构建式计算机体系结构", link: "zh/cca"},
-            {text: "计算机系统架构（施工中）"},
+            {text: "计算机系统架构", link: "zh/csa/"},
             // {text: "复杂数字系统设计"},
             // {text: "深度学习的硬件架构"},
             // {text: "TinyML 和高效深度学习计算"},
@@ -688,7 +688,7 @@ export default defineConfig({
         {
           text: '构建式计算机体系结构',
           collapsed: false,
-          link: "/zh/arch/cca/",
+          link: "/zh/cca/",
           items: [
             { text: "Lec 1 引言", link: "/zh/arch/cca/lec1" },
             { text: "Lec 2 组合电路", link: "/zh/arch/cca/lec2" },
@@ -704,6 +704,44 @@ export default defineConfig({
             { text: "Lec 12 同步与顺序一致性", link: "/zh/arch/cca/lec12" }
           ]
         },
+      ],
+      '/zh/arch/csa/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "/zh/index",
+        },
+        {
+          text: '计算机系统架构',
+          collapsed: false,
+          link: "/zh/csa/",
+          items: [
+            { text: "Lec 1 计算机体系架构的介绍", link: "/zh/arch/csa/lec1" },
+            { text: "Lec 2 ISA", link: "/zh/arch/csa/lec2" },
+            { text: "Lec 3 缓存组织与内存管理", link: "/zh/arch/csa/lec3" },
+            { text: "Lec 4 现代虚拟内存系统", link: "/zh/arch/csa/lec4" },
+            { text: "Lec 5 指令流水线——冒险消解与时序约束", link: "/zh/arch/csa/lec5" },
+            { text: "Lec 6 复杂流水线", link: "/zh/arch/csa/lec6" },
+            { text: "Lec 7 复杂流水线——乱序执行、寄存器重命名与异常", link: "/zh/arch/csa/lec7" },
+            { text: "Lec 8 分支预测", link: "/zh/arch/csa/lec8" },
+            { text: "Lec 9 推测执行", link: "/zh/arch/csa/lec9" },
+            { text: "Lec 10 高级访存操作", link: "/zh/arch/csa/lec10" },
+            { text: "Lec 11 多线程技术", link: "/zh/arch/csa/lec11" },
+            { text: "Lec 12 缓存一致性", link: "/zh/arch/csa/lec12" },
+            { text: "Lec 13 目录式缓存一致性", link: "/zh/arch/csa/lec13" },
+            { text: "Lec 14 内存一致性模型", link: "/zh/arch/csa/lec14" },
+            { text: "Lec 15 片上网络（一）：拓扑与流量控制", link: "/zh/arch/csa/lec15" },
+            { text: "Lec 16 片上网络（二）：路由器微架构与路由", link: "/zh/arch/csa/lec16" },
+            { text: "Lec 17 事务内存", link: "/zh/arch/csa/lec17" },
+            { text: "Lec 18 微码与 VLIW 处理器", link: "/zh/arch/csa/lec18" },
+            { text: "Lec 19 可靠性", link: "/zh/arch/csa/lec19" },
+            { text: "Lec 20 向量计算机", link: "/zh/arch/csa/lec20" },
+            { text: "Lec 21 图形处理器", link: "/zh/arch/csa/lec21" },
+            { text: "Lec 22 安全", link: "/zh/arch/csa/lec22" },
+            { text: "Lec 23 加速器（一）", link: "/zh/arch/csa/lec23" },
+            { text: "Lec 24 加速器（二）", link: "/zh/arch/csa/lec24" }
+          ]
+        }
       ],
     },
     socialLinks: [
