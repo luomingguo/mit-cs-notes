@@ -100,8 +100,8 @@ export default defineConfig({
           text: '编程语言',
           collapsed: true,
           items: [
-            {text: "计算机语言工程(编译原理)"},
-            {text: "计算机动态语言工程(js版)"},
+            {text: "计算机语言工程（编译原理）", link: "zh/computer_language"},
+            {text: "计算机动态语言工程", link: 'zh/dynamic_language'},
             {text: "计算机程序的结构与解释"},
           ]
         },
@@ -674,7 +674,78 @@ export default defineConfig({
         },
       ],
       // 编程语言
+      '/zh/computer_language': [
+        {
+          text: '⮐课程主页',
+          collapsed: false,
+          link: "/zh/computer_language",
+        },
+        {
+          text: '计算机语言工程',
+          collapsed: false,
+          link: "/zh/computer_language",
+          items: [
+            { text: "lec1 编译器概览", link: "/zh/computer_language/lec1" },
+            { text: "lec2 正则表达式和上下文无关语法", link: "/zh/computer_language/lec2" },
+            { text: "lec3 自顶向下分析", link: "/zh/computer_language/lec3" },
+            { text: "lec4 中间表示", link: "/zh/computer_language/lec4" },
+            { text: "lec5 语义分析", link: "/zh/computer_language/lec5" },
+            { text: "lec6 代码生成", link: "/zh/computer_language/lec6" },
+            { text: "lec7 程序分析与优化", link: "/zh/computer_language/lec7" },
+            { text: "lec8 数据流分析", link: "/zh/computer_language/lec8" },
+            { text: "lec9 循环优化", link: "/zh/computer_language/lec9" },
+            { text: "lec10 寄存器分配", link: "/zh/computer_language/lec10" },
+            { text: "lec11 并行化", link: "/zh/computer_language/lec11" },
+            { text: "lec12 数据分析基础", link: "/zh/computer_language/lec12" },
+          ],
+        },
+      ],
+      '/zh/dynamic_language': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "/zh/index",
+        },
+        {
+          'text': '动态语言',
+          collapsed: false,
+          link: "/zh/dynamic_language",
+          items: [
+            { text: "lec1 课程总览", link: "/zh/dynamic_language/lec1" },
 
+            { text: "lec2 词法分析", link: "/zh/dynamic_language/lec2" },
+
+            { text: "lec3 语法分析 I", link: "/zh/dynamic_language/lec3" },
+            { text: "lec4 语法分析 II", link: "/zh/dynamic_language/lec4" },
+            { text: "lec5 语法分析 III", link: "/zh/dynamic_language/lec5" },
+
+            { text: "lec6 语义（导论）", link: "/zh/dynamic_language/lec6" },
+            { text: "lec7 语义（IMP）", link: "/zh/dynamic_language/lec7" },
+            { text: "lec8 语义（堆与布尔值）", link: "/zh/dynamic_language/lec8" },
+            { text: "lec9 语义（作用域）", link: "/zh/dynamic_language/lec9" },
+            { text: "lec10 语义（闭包 I）", link: "/zh/dynamic_language/lec10" },
+            { text: "lec11 语义（闭包 II）", link: "/zh/dynamic_language/lec11" },
+
+            { text: "lec12 垃圾回收 I", link: "/zh/dynamic_language/lec12" },
+            { text: "lec13 垃圾回收 II", link: "/zh/dynamic_language/lec13" },
+            { text: "lec14 垃圾回收 III", link: "/zh/dynamic_language/lec14" },
+
+            { text: "lec15 低级虚拟机 I", link: "/zh/dynamic_language/lec15" },
+            { text: "lec16 低级虚拟机 II", link: "/zh/dynamic_language/lec16" },
+            { text: "lec17 低级虚拟机 III", link: "/zh/dynamic_language/lec17" },
+
+            { text: "lec18 代码生成 I", link: "/zh/dynamic_language/lec18" },
+            { text: "lec19 优化", link: "/zh/dynamic_language/lec19" },
+            { text: "lec20 代码生成 II", link: "/zh/dynamic_language/lec20" },
+
+            { text: "lec21 寄存器分配 I", link: "/zh/dynamic_language/lec21" },
+            { text: "lec22 寄存器分配 II", link: "/zh/dynamic_language/lec22" },
+
+            { text: "lec23 静态分析 I", link: "/zh/dynamic_language/lec23" },
+            { text: "lec24 静态分析 II", link: "/zh/dynamic_language/lec24" },
+          ]
+        }
+      ],
       // 计算机架构
       '/zh/computation_structures/': [
         {
