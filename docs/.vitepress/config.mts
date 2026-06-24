@@ -675,7 +675,29 @@ export default defineConfig({
           collapsed: false,
           link: "/zh/computation_structures/",
           items: [
-
+            { text: "Lec 1 数字系统抽象", link: "/zh/computation_structures/lec1" },
+            { text: "Lec 2 组合逻辑设备和布尔算术", link: "/zh/computation_structures/lec2" },
+            { text: "Lec 3 用Bluespec描述组合电路", link: "/zh/computation_structures/lec3" },
+            { text: "Lec 4 二进制计算", link: "/zh/computation_structures/lec4" },
+            { text: "Lec 5 CMOS技术 & 布尔运算到门电路", link: "/zh/computation_structures/lec5" },
+            { text: "Lec 6 时序电路", link: "/zh/computation_structures/lec6" },
+            { text: "Lec 7 用接口实现时序电路模块", link: "/zh/computation_structures/lec7" },
+            { text: "Lec 8 Bluespec / Minispec 硬件综合", link: "/zh/computation_structures/lec8" },
+            { text: "Lec 9 可编程机器（ISA 与汇编）", link: "/zh/computation_structures/lec9" },
+            { text: "Lec 10 单周期处理器", link: "/zh/computation_structures/lec10" },
+            { text: "Lec 13 缓存", link: "/zh/computation_structures/lec13" },
+            { text: "Lec 14 缓存实现", link: "/zh/computation_structures/lec14" },
+            { text: "Lec 15 流水线基础", link: "/zh/computation_structures/lec15" },
+            { text: "Lec 16 处理器流水线：数据和控制冒险", link: "/zh/computation_structures/lec16" },
+            { text: "Lec 17 实现流水线：模块接口 & 并发", link: "/zh/computation_structures/lec17" },
+            { text: "Lec 18 虚拟内存", link: "/zh/computation_structures/lec18" },
+            { text: "Lec 19 操作系统", link: "/zh/computation_structures/lec19" },
+            { text: "Lec 20 虚拟内存", link: "/zh/computation_structures/lec20" },
+            { text: "Lec 21 处理器流水线", link: "/zh/computation_structures/lec21" },
+            { text: "Lec 22 复杂流水线与分支预测", link: "/zh/computation_structures/lec22" },
+            { text: "Lec 23 旁路技术和EHR", link: "/zh/computation_structures/lec23" },
+            { text: "Lec 24 并发与同步", link: "/zh/computation_structures/lec24" },
+            { text: "Lec 25 缓存一致性", link: "/zh/computation_structures/lec25" },
           ]
         },
       ],
@@ -702,6 +724,26 @@ export default defineConfig({
             { text: "Lec 10 多线程处理器", link: "/zh/cca/lec10" },
             { text: "Lec 11 乱序执行", link: "/zh/cca/lec11" },
             { text: "Lec 12 同步与顺序一致性", link: "/zh/cca/lec12" }
+          ]
+        },
+      ],
+      '/zh/llp/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "/zh/index",
+        },
+        {
+          text: 'C语言与汇编语言底层编程导论',
+          collapsed: false,
+          link: "/zh/llp/",
+          items: [
+            { text: "Lec 1 二进制基础", link: "/zh/llp/lec1" },
+            { text: "Lec 2 C 语言基础", link: "/zh/llp/lec2" },
+            { text: "Lec 3 C语言的数组&字符串&结构体", link: "/zh/llp/lec3" },
+            { text: "Lec 4 RISC-V 汇编：寄存器与指令", link: "/zh/llp/lec4" },
+            { text: "Lec 5 调用约定、栈与内存布局", link: "/zh/llp/lec5" },
+            { text: "Lab", link: "/zh/llp/lab" },
           ]
         },
       ],

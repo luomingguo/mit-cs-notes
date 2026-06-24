@@ -25,6 +25,46 @@
 
 回到 ripple-carry adder。展开（unfold）循环时，如果你设定了宽度 W，比如 2 位，就可以按照如下步骤进行静态展开：首先用 i=0 替换循环体，得到第一个 full-adder，输出 c1 和 s0；接着用 i=1 替换，第二个 full-adder 输入 c1，输出 c2 和 s1。这样，carry 位的连接关系是自动建立起来的。编译器也会确保命名的一致性，比如 c1 始终表示同一根连线。
 
+### Minispec 的参数化与静态展开
+
+手工把全加器拼成 `rca2`、再拼 `rca4`、`rca8`…… 既冗长又易错。Minispec 让**编译器**在编译期（静态展开 static elaboration）替我们展开这些重复结构。
+
+**参数化类型（parametric type）**：`Bit#(n)` 其实就是参数化类型，`n` 是一个**编译期必须确定**的整数参数。还有 `Vector#(n, T)`（n 个 T 类型元素），如 `Vector#(4, Bit#(8))`。给定参数后才得到一个具体类型。
+
+**参数化函数（parametric function）**：相当于其他语言里的“泛型/模板”，把工作从运行期转移到编译期。可以对**参数**（而非数据）做递归：
+
+```bluespec
+// n 位奇偶校验：对参数 n 递归
+function Bit#(1) parity#(Integer n)(Bit#(n) x);
+  return (n == 1) ? x : x[n-1] ^ parity#(n-1)(x[n-2:0]);
+endfunction
+
+// n 位行波进位加法器：把一个全加器接到 rca#(n-1) 上
+function Bit#(n+1) rca#(Integer n)(Bit#(n) a, Bit#(n) b, Bit#(1) cin);
+  Bit#(n) lower    = rca#(n-1)(a[n-2:0], b[n-2:0], cin);
+  Bit#(2) upper    = fullAdder(a[n-1], b[n-1], lower[n-1]);
+  return {upper, lower[n-2:0]};
+endfunction
+// 还需定义基例 rca#(1)（即一个全加器），否则编译期无限递归
+```
+
+调用 `parity#(3)` 时，编译器把 3 代入，进而需要 `parity#(2)`、`parity#(1)`……一路实例化成嵌套的硬件盒子。**这是编译期递归，最终全部综合成门和线**。
+
+**`Integer` 类型**：位数无界，**只能在编译期求值**（不可综合）。它支持算术/逻辑/比较运算，但这些运算**不生成任何硬件**——专门用来驱动参数和展开。
+
+**其他常用特性**：
+
+- `let`：让编译器推断类型，如 `let y = x;`（x 是 4 位则 y 也是 4 位），`let n = 42;`（n 是 Integer）。
+- `typedef`：类型别名，如 `typedef Bit#(8) Byte;`。
+- `struct`：一组（可不同类型的）值，如 `Pixel { Byte red; Byte green; Byte blue; }`。
+- `enum`：一组符号常量，如 `typedef enum { Ready, Busy, Error } State;`，编译器自动用若干位编码。
+
+> *踩坑（务必牢记）*：Minispec 语法像软件，但语义是**描述电路**——
+> - **`for` 循环次数必须编译期固定**，编译器会把它**完全展开**；写出依赖运行时数据的循环会报错，且不小心会展开出庞大低效的电路。
+> - **`if`/`?:`/`case` 在组合逻辑里一律变成 mux**，每个分支的硬件都真实存在。
+> - **函数调用都是内联（inlining）**，没有运行时调用栈。
+> - 最终得到的是一张**无环图（DAG）**——本质上只有“组合环路连接”，没有真正的循环或递归在运行时发生。
+
 
 
 ## Outline

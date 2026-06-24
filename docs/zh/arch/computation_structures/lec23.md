@@ -26,7 +26,7 @@ EHR（Ephemeral History Registers）是Bluespec 中一种机制，用于精确�
 
 **目标**： 让 `ra` 和 `rb` 在**同一个周期**并发执行，并且让 `rb` 用到的是 `ra` 刚刚计算出的新值 `x`，外加一个约束`ra < rb`（表示：ra 的优先级比 rb 高，ra 在 rb 之前执行）
 
-```txt
+```
 rule ra;
 	x <= y + 1;  // 读取 y，写入 x
 endrule

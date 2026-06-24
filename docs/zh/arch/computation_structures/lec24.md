@@ -1,53 +1,46 @@
 # Lec 24 并发与同步
 
-同步（Synchronization）。我们已经学习OS通过时间片轮转让多个进程共享CPU，现在进一步，即使在单个进程内，也可以划分多个线程，现代CPU是多核的，我们系统尽可能并行执行多个线程。多线程执行一般分为独立线程，和协作线程，其中独立线程各自，除非访问共享资源，否则可并行运行；而协作线程则是共享数据，一起解决问题，**必须同步通信**。
+[[toc]]
+
+我们已经学习OS通过时间片轮转让多个进程共享CPU，现在进一步.在单个进程内，划分多个线程，由于现代CPU是多核的，我们系统尽可能并行执行多个线程，为了能够正确地配合执行任务，**必须同步（Synchronization）通信**
 
 
 
-## Outline
+## 同步
 
-- 同步场景 & 模式
-- 引例：有界缓冲区问题
-- 信号量
-- 死锁问题
+我们可以将计算任务分配给多线程执行。
 
-## 同步的场景 & 模式
-
-常见的同步场景包括：
-
-- fork-join 模型：主线程派发多个任务，等待所有子线程完成后继续执行。
-- 生产者-消费者模型：一个线程生产数据，另一个线程消费数据，消费必须在生产之后，需同步保证顺序。
-- 互斥模型：多个线程不能同时访问同一共享资源，需要机制来让一个线程排他访问资源。
-
-![image-20250420112250569](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/68046895026b3.png)
-
-> [!IMPORTANT]
->
-> 线程安全（Thread-safe），是指并行程序的输出和在单处理器上串行执行时一致，换句话说，即使并发执行，结果也可预测、正确。
+- 多个**独立（independent）**的顺序线程，它们竞争共享资源
+- 多个**协作（cooperating）**的顺序线程，他们相互通信
 
 
 
-同步通信的模式有两种
+同步模型有两种：
 
-- 基于**共享内存模型（shared memory）**，所有线程共享一个地址空间，通过写入某个内存地址，另外一个线程读取该地址即可通信
+- 基于**共享内存模型（shared memory）**，所有线程**共享同一地址空间**，通过写入某个内存地址，另外一个线程读取该地址即可通信
   - 优点是实现简单，就是load/store操作
   - 缺点是容易踩脚，数据竞争或冲突。
-- 基于**消息传递模型（Message Passing）**，各线程地址空间不同，需发送/接收显式消息。
+- 基于**消息传递模型（Message Passing）**，各线程**地址空间不同**，需发送/接收显式消息。
   - 优点：不容易踩脚
   - 缺点：通信开销大，实现复杂。
 
 
 
-### 进程内部通信
+每当系统中存在并行进程时，就需要同步，
 
-> 为什么我们需要多进程？
+- fork-join ：并行进程可能需要等待多个事件发生
+- 生产者-消费者：消费者进程必须等到生产者进程生成数据
+- 互斥：操作系统必须确保资源在给定时间内仅由一个进程使用
 
-Solution: 大致有几点原因：
+![image-20250420112250569](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/68046895026b3.png)
 
-- 并发场景。多个进程可以同时运行，利用多核CPU。
-- 异步。进程可以独立等待/处理 I/O， 互不阻塞。
-- 把进程作为一种编程原语。这是把“进程”当成程序的基本构建块，像函数或对象一样使用。
-- 数据或事件驱动。
+> [!IMPORTANT]
+>
+> 线程安全（Thread-safe），是指并行程序的输出和在单处理器上某一个串行执行结果一致，换句话说，即使并发执行，结果也可预测、正确。
+
+
+
+
 
 > 进程之间如何通信？
 
@@ -78,9 +71,9 @@ Solution: 大致有几种：
 
 ![image-20250421170648653](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/68060aace0d6a.png)
 
-使用 FIFO 缓冲区放松约束。使用大小为 `n` 的 FIFO 缓冲区：允许生产者最多领先消费者 `n` 步；新约束变为`Receive(i) ≺ Send(i+n)` 。在生产者发送第 `i+n` 个字符前，消费者必须接收完第 `i` 个字符。
+使用 FIFO 缓冲区放松约束。使用大小为 `n` 的 FIFO 缓冲区：允许生产者**最多领先消费者 `n` 步**；新约束变为`Receive(i) ≺ Send(i+n)` 。在生产者发送第 `i+n` 个字符前，消费者必须接收完第 `i` 个字符。
 
-典型地， 会把这个buffer实现成环形缓冲区（Ring buffer），原理缓冲区收尾相连，写满后从头写，用两个指针：`in`：生产者写的位置； `out`：消费者读的位置。
+通常来说，会把这个buffer实现成**环形缓冲区（Ring buffer）**，原理缓冲区收尾相连，写满后从头写，用两个指针：`in`：生产者写的位置； `out`：消费者读的位置。
 
 **示例**：
 
@@ -92,6 +85,7 @@ Solution: 大致有几种：
 4. 缓冲区满了，必须等待消费者读取至少一个；
 5. 消费者读取 `c0` → `out = 1`，此时缓冲区腾出一个位置；
 6. 生产者继续写入下一个字符到位置 `0`。
+7. ![image-20250904004010029](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250904004010029.png)
 
 ```c
 // Shared memory
@@ -113,13 +107,11 @@ char rcv() {
 }
 ```
 
-代码有什么问题？  不能保证precedence限制，比如rcv()均可能在任何send()之前调用。我们将会更改这个代码，满足这些约束条件，为此我们将引入一种新的**编程结构**——信号量，用于实现适当的进程间同步。
+代码有什么问题？  不能保证precedence限制，比如rcv()均可能在任何send()之前调用。我们将会更改这个代码，满足这些约束条件，为此我们将引入一种新的**编程结构**——**信号量（Semaphores）**，用于实现适当的进程间同步。
 
-## 信号量
+### 信号量
 
-### 原理
-
-Dijkstra于1962年提出，信号量（Semaphores）特殊整型变量，始终$\ge$ 0，用于控制资源访问的并发数量或实现某种执行顺序（precedence）约束。
+Dijkstra于1962年提出，**信号量（Semaphores）**是特殊整型变量，始终$\ge$ 0，用于控制资源访问的并发数量或实现某种执行顺序（precedence）约束。
 
 ```c
 semaphore s = K; // initialize s to K
@@ -142,17 +134,15 @@ signal(semaphore s):
 
 $signal(s)_i \prec wait(s)_{i+K}$
 
-### 抽象
+#### 抽象
 
-信号量做资源分配，我们可以抽象地理解这个场景。由K个资源组成的资源池，必须保  证最多由K个资源被使用。
-
-解决方法： 将信号量看成是**资源池的剩余资源数**，将其作为不变量。生产者消费者的代码改动如下，可以至多有K个消费者占用资源，生产者负责
+信号量做资源分配，我们可以抽象地理解这个场景。由K个资源组成的资源池，必须保证最多有K个资源被使用。 主要思想就是， 将信号量看成是**资源池的剩余资源数**，将其作为不变量。生产者消费者的代码改动如下，可以至多有K个消费者占用资源，生产者负责
 
 ```c
 // shared memory
 char buf[N];
 int in = 0, out = 0;
-samaphore chars = 0;
+samaphore chars = 0; // 当前最多可以有0个消息可以被访问
 
 // producer
 void send(char c) {
@@ -181,15 +171,15 @@ char recv() {
 // shared memory
 char buf[N];
 int in = 0, out = 0;
-samaphore chars = 0;
-samaphore spaces = N;
+samaphore chars = 0; // 当前最多可以有0个消息可以被访问
+samaphore spaces = N; // 当前最多可以有K个空间可以防止消息
 
 // producer
 void send(char c) {
   wait(spaces);
   buf[in] = c;
   in = (in + 1) % N;
-  signal(chars);
+  signal(chars);	// 
 }
 
 // consumer
@@ -203,16 +193,21 @@ char recv() {
 }
 ```
 
-### 互斥
+对于单个生产者和消费者， 用信号量管理的资源：字符、空间都采用FIFO机制。 但如果是**多个生产者和消费者**呢？ 将会遇到互斥的问题
 
-实现互斥（Mutual Exclusion），常见的方法包括锁（locks）、信号量、互斥变量（Mutexes）。下面我们以信号量实现互斥
+#### 互斥
+
+编写并发程序时，尤其是在修改共享数据时，对于某些代码段（称为**临界区 critical sections**）， 我们希望确保任何两次执行都不会重叠，这种约束称为**互斥（mutual exclusion）**
+
+解决方案：将临界区嵌入包装器（例如“事务”）中，以保证其原子性，即，使它们看起来像是单个、瞬时的操作。
+
+下面是用信号量也可以实现互斥的例子
 
 ```c
 semaphore mutex = 1;
 
 void debit(int amount) {
   wait(mutex);        // wait for exclusive access
-  
   int bal = account.balance;
   bal = bal - amount;
   account.balance = bal;
@@ -222,7 +217,11 @@ void debit(int amount) {
 
 ```
 
-锁控制了临界区的使用。使用锁，需要考虑粒度大小。
+锁控制了临界区的使用。使用锁，需要**考虑粒度大小**，比如
+
+- 所有账户共用一把锁？
+- 为每个账户分配一把？
+- 还是以004解决的账户共用一把锁？
 
 如果我们考虑多消费者、多生产者的模型，就需要考虑buffer的临界区问题了，因此我们需要再一次改动前面的代码
 
@@ -232,7 +231,7 @@ char buf[N];
 int in = 0, out = 0;
 samaphore chars = 0;
 samaphore spaces = N;
-samaphore lock = 1;
+samaphore lock = 1; // 只有一个能访问
 
 // producer
 void send(char c) {
@@ -257,25 +256,16 @@ char recv() {
 }
 ```
 
-综上 我们发现，我们仅仅同个一个原语就能能保证互斥和先后关系。先后关系有$send(i) \prec recv(i)$ 、$recv(i) \prec send(i+K)$，以及互斥关系
+综上我们发现信号量的强大，我们仅仅同个一个原语就能能保证**互斥**和**先后**关系。先后关系有$send(i) \prec recv(i)$ 、$recv(i) \prec send(i+K)$
 
-### 实现
+#### 实现
 
-信号量的实现方式？ 或者说需要什么样的指令支持实现这种原语。关键是保证`wait()`和`signal()`操作的原子性。
+信号量本身是共享数据，实现`wait` 和 `signal`操作需要 读/修改/写 三步骤，这些序列必须作为临界区执行。那么，如何在不使用信号量的情况下保证这个临界区的互斥呢？
 
-**最常见的**实现方式是： Test-and-Set（TAS）指令，由硬件直接支持，基本功能是同时测试一个内存地址的值，并设置它为某个值。
+实现方式是：
 
-```c
-bool test_and_set(bool *lock) {
-  bool old = *lock;
-  *lock = true;
-  return old;
-}
-```
-
-为什么就能保证互斥，因为TAS是一个原子操作，哪怕多个线程同时竞争进入临界区，只有一个线程能成功设置标志，其它线程会在循环中等待。
-
-用系统调用实现TAS，这种实现只适用于单处理器系统，此时内核无法被打断
+- 使用特殊的原子指令（比如，Test-and-Set指令），由硬件直接支持，这是最常见的方法。
+- 使用系统调用实现他们。 仅适用于单核处理器，其中内核不可中断。
 
 示例： 基于TAS实现锁
 
@@ -289,11 +279,13 @@ void release_lock() {
 }
 ```
 
+同步的阴暗面： 死锁
+
+
+
 ## 死锁问题
 
-引入信号量（semaphores）可以解决**互斥访问共享资源**的问题，但同时也带来了新的危险：死锁（deadlock）。
-
- 示例，A给B转账，但B又同时给A转账。
+示例，A给B转账，但B又同时给A转账。
 
 ```c
 void transfer(int account1, int account2, int amount) {
@@ -304,26 +296,21 @@ void transfer(int account1, int account2, int amount) {
   signal(lock[account2]);
   signal(lock[account1]);
 }
+
+Thread 1: wait(lock[6031]);
+Thread 2: wait(lock[6004]);
+Thread 1: wait(lock[6004]); // cannot complete
+// until thread 2 signals
+Thread 2: wait(lock[6031]); // cannot complete
+// until thread 1 signals
+No thread can make progress a Deadloc
 ```
-
-Thread 1： wait(lock[6031]);
-
-Thread2： wait(lock[6004]);
-
-此时就造成死锁
-
-### 哲学家问题
 
 
 
 **死锁的四个必要条件**
 
-1. 互斥（Mutual Exclusion）
-   - 每个资源（如筷子）一次只能由一个线程（哲学家）占有。
-2. 保持并等待（Hold and Wait）
-   - 线程持有一部分资源，同时等待另一部分。
-3. 不剥夺（No Preemption）
-   - 资源不能被强行回收，只能由占有者显式释放。
+1. 互斥（Mutual Exclusion），每个资源（如筷子）一次只能由一个线程（哲学家）占有。
+2. 保持并等待（Hold and Wait），线程持有一部分资源，同时等待另一部分。
+3. 非抢占（No Preemption），资源不能被强行回收， 只能由占有者显式释放
 4. 循环等待（Circular Wait）
-
-因此解决办法就是打破其中一个必要条件，**或者**检测和恢复

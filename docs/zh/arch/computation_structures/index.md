@@ -1,15 +1,12 @@
----
-sidebarDepth: 1
-title: 计算结构
+#  6.1910 计算结构（Fall 25）
+
+https://6191.mit.edu/spring26
+
+- [Student's 6.004 notes from FA20](https://web.stanford.edu/~lindrew/6.004.pdf)
 
 
-sidebar: true
-aside: right
-editLink: true
-lastUpdated: true
-outline: 2
----
-#  6.1910 计算结构
+
+Computation Structure
 
 ## 先行条件
 
@@ -28,17 +25,42 @@ outline: 2
 - 异常处理与输入/输出（I/O）系统
 - 并行计算体系结构
 
-### 参考书
+ 
 
-- 《Digital Design: A Systems Approach》 2012
-- 《计算机组织和设计:  软硬件接口，RISC-V版》 2017
-- MIT自己计算结构在线材料
+## 阅读资料
 
- ![截屏2024-09-11 07.32.28](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e0d735c91ac.png)
+-  [Digital Design A Systems Approach.pdf](Digital Design A Systems Approach.pdf) , William J. Dally and R. Curtis Harting, Cambridge University Press, 1st ed., 2012.
+-  [6004_student_notes_FA20.pdf](6004_student_notes_FA20.pdf) 
+-  [Computer Organization and Design RISC.pdf](Computer Organization and Design RISC.pdf) , David A. Patterson and John L. Hennessy, Morgan Kaufmann, 1st ed., 2017.
+-  [6.004ComputationStructures.pdf](6.004ComputationStructures.pdf) *Note: These materials correspond to the old version of 6.004, and parts of it are out of date.*
+
+|                                                       | Digital Design: A Systems Approach           | Computer Organization and Design, RISC-V Edition | Computation Structures Online Materials                      |
+| ----------------------------------------------------- | -------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------ |
+| L01 The digital abstraction                           | Chapter 1, 1.1, 1.2 (pages 3-8)              |                                                  | [Notes 5.1-5.8](https://web.archive.org/web/20251115181415/http://computationstructures.org/notes/digitalabstraction/notes.html) |
+| L02 Boolean algebra                                   | Chapter 3, 3.1-3.5                           |                                                  | [Notes 7.1-7.7 (skip 7.7.1)](https://web.archive.org/web/20251115181415/http://computationstructures.org/notes/combinational_logic/notes.html) |
+| L03 Combinational logic 1                             | Chapter 8, 8.1-8.7                           |                                                  | Minispec combinational tutorial                              |
+| L04 Combinational logic 2                             | Chapter 12, 12.1                             |                                                  | [Minispec combinational tutorial, Notes 12.2](https://web.archive.org/web/20251115181415/https://computationstructures.org/notes/tradeoffs/notes.html) |
+| L05 CMOS                                              | Chapter 4; Chapter 5, 5.1-5.3                |                                                  | [Notes 6.1-6.4](https://web.archive.org/web/20251115181415/https://computationstructures.org/notes/cmos/notes.html) |
+| L06 Sequential logic 1                                | Chapter 14, 14.1-14.3; Chapter 15, 15.1-15.3 |                                                  | [Notes 8.1-8.3.5](https://web.archive.org/web/20251115181415/http://computationstructures.org/notes/sequential_logic/notes.html) |
+| L07 Sequential logic 2                                | Chapter 14, 14.1-14.3; Chapter 15, 15.1-15.3 |                                                  | Minispec sequential tutorial                                 |
+| L08 Pipelining                                        | Chapter 23, 23.1-23.3                        |                                                  | [Notes 11.5-11.7](https://web.archive.org/web/20251115181415/http://computationstructures.org/notes/performance/notes.html) |
+| L09 Design tradeoffs                                  | Chapter 23, 23.4-23.5                        |                                                  | [Notes 12.3](https://web.archive.org/web/20251115181415/https://computationstructures.org/notes/tradeoffs/notes.html) |
+| L10 Compilers and Assembly                            |                                              | Chapter 2, 2.1-2.3, 2.5-2.7, 2.10                |                                                              |
+| L11 Single-cycle processor                            |                                              | Chapter 4, 4.1-4.4                               |                                                              |
+| L12 The memory hierarchy                              |                                              | Chapter 5, 5.1-5.3                               | [L14 notes, up to slide 24](https://web.archive.org/web/20251115181415/https://computationstructures.org/lectures/caches/caches.html) |
+| L13 Caches                                            |                                              | Chapter 5, 5.3-5.4, 5.8                          | [L14 notes, slides 25-40](https://web.archive.org/web/20251115181415/https://computationstructures.org/lectures/caches/caches.html) |
+| L14 Pipelined processors 1                            |                                              | Chapter 4, 4.5-4.6                               |                                                              |
+| L15 Pipelined processors 2                            |                                              | Chapter 4, 4.6-4.8 (until page 309)              |                                                              |
+| L16 Operating systems                                 |                                              | Chapter 4, 4.9; Chapter 5, 5.6                   |                                                              |
+| L17 Virtual memory 1                                  |                                              | Chapter 5, 5.7                                   | [VM lecture notes](https://web.archive.org/web/20251115181415/https://computationstructures.org/lectures/vm/vm.html) |
+| L18 Virtual memory 2                                  |                                              | Chapter 5, 5.7                                   | [VM lecture notes](https://web.archive.org/web/20251115181415/https://computationstructures.org/lectures/vm/vm.html) |
+| L19 Exceptions and I/O                                |                                              |                                                  |                                                              |
+| L20 Synchronization                                   |                                              |                                                  | [L19 notes](https://web.archive.org/web/20251115181415/http://computationstructures.org/lectures/synchronization/synchronization.html) |
+| L21 Cache coherence                                   |                                              | Chapter 5, 5.10                                  | [L21 notes, slides 23-27](https://web.archive.org/web/20251115181415/http://computationstructures.org/lectures/parallel/parallel.html#23) |
+| L22 Parallel Processing                               |                                              |                                                  |                                                              |
+| L23 Modern Processor Architecture - Branch prediction |                                              | Chapter 4, 4.8 (pages 310-315)                   |                                                              |
 
 
-
-![image-20240911073257181](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e0d73be3181.png)
 
 
 
@@ -104,6 +126,8 @@ outline: 2
 
 ## Labs
 
+https://github.com/bonbon-on-fire/computation_structures_class_2026
+
 1. 组合电路
 2. ALU设计
 3. 时序电路
@@ -120,7 +144,22 @@ CMU： [CMU  18-447 Introduction to Computer Architecture – Spring 2015\] (cmu
 
 
 
+## 参考资料
 
+- Minispec
+  - Minispec tutorials
+    - Combinational logic [[interactive\]](https://web.archive.org/web/20240104095049/https://6004hub.csail.mit.edu/hub/user-redirect/git-pull?repo=%2Fhome%2Fvagrant%2Fminispec-tutorials&urlpath=tree%2Fminispec-tutorials%2FCombinational.ipynb) [[pdf\]](https://web.archive.org/web/20240104095049/https://6191.mit.edu/_static/fall23/resources/references/minispec_combinational.pdf) [[pdf, executed\]](https://web.archive.org/web/20240104095049/https://6191.mit.edu/_static/fall23/resources/references/minispec_combinational_executed.pdf)
+    - Sequential logic [[interactive\]](https://web.archive.org/web/20240104095049/https://6004hub.csail.mit.edu/hub/user-redirect/git-pull?repo=%2Fhome%2Fvagrant%2Fminispec-tutorials&urlpath=tree%2Fminispec-tutorials%2FSequential.ipynb) [[pdf\]](https://web.archive.org/web/20240104095049/https://6191.mit.edu/_static/fall23/resources/references/minispec_sequential.pdf) [[pdf, executed\]](https://web.archive.org/web/20240104095049/https://6191.mit.edu/_static/fall23/resources/references/minispec_sequential_executed.pdf)
+    - These tutorials provide a first introduction to Minispec. They are interactive Jupyter notebooks, but we also provide PDF printouts for offline use.
+  - Minispec reference
+    - This is the primary reference for the Minispec language, covering its syntax and semantics in full. It is more more detailed than the Minispec tutorials, and is useful mainly to answer particular questions on syntax and to learn the language in depth.
+  - 6.004 JupyterHub
+    - JupyterHub server used for Minispec tutorials and to learn the language. (Please do not use this for labs, use Athena instead.)
+  - Minispec syntax setup [[vim\]](https://web.archive.org/web/20240104095049/https://github.mit.edu/6004/minispec/blob/master/syntax/vim.md) [[emacs\]](https://web.archive.org/web/20240104095049/https://github.mit.edu/6004/minispec/blob/master/syntax/emacs.md) [[nano\]](https://web.archive.org/web/20240104095049/https://github.mit.edu/6004/minispec/tree/master/syntax/nano) [[pygments\]](https://web.archive.org/web/20240104095049/https://github.mit.edu/6004/minispec/blob/master/syntax/pygments/minispec.py)
+    - To set up other editors, since Minispec's syntax is a subset of Bluespec's, you can use any available syntax files for Bluespec and configure your editor to treat Minispec files (ending in `.ms`) as Bluespec files. Bluespec syntax files: [[Atom\]](https://web.archive.org/web/20240104095049/https://atom.io/packages/language-bluespec-system-verilog) [[VSCode\]](https://web.archive.org/web/20240104095049/https://github.com/Raamakrishnan/bsv-for-vscode) [[Sublime Text\]](https://web.archive.org/web/20240104095049/https://github.com/thotypous/sublime-bsv)
+- RISC-V
+  - 6.191 (6.004) ISA Reference Tables
+    - Reference for the subset of RISC-V covered in 6.191 (Includes references for assembly programming as well)
 
 # Module 1 数字逻辑设计
 
@@ -177,287 +216,9 @@ CMU： [CMU  18-447 Introduction to Computer Architecture – Spring 2015\] (cmu
 
 [lec2.md](./lec2.md)
 
-# TODO
+# ISA 与汇编（见 Lec 9）
 
-**Instruction Set Architecture（ISA）**
-
----
-
-ISA：指令集架构是软件和硬件之间的协议
-
-- 功能定义和存储位置
-- 软件如何调用和访问他们的精准描述
-
-RISC-V ISA： 
-
-- 伯克利开发的船新的，开源免费的ISA
-- 有几种改版
-  - RV32、RV64、RV128: 不同的数据宽度
-  - “I”： 基础整数指令集版
-  - "M": 乘除法扩展版
-  - "F" and "D": 单或双精度浮点数
-- 我们会使用**RV32I** 处理器，基于 base integer 32-bit 的版本
-
----
-
-RISV-V 处理器的存储
-
-![截屏2024-06-13 15.03.45](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/682807caa2537.png)
-
-x0硬连线道常量0，因此任何时候访问x0，你都会读到0，如果你往上面写数，相当于啥事也没干。
-
----
-
-**指令的类型**
-
-- 算术和逻辑操作
-- 存取操作
-- 控制流操作
-
----
-
-**算术和逻辑操作**
-
-包括算术、比较、逻辑和移位操作。
-
-寄存器-寄存器型指令
-
-- 2个源操作数寄存器
-- 1个目标寄存器
-
-| 算术     | 比较      | 逻辑        | 移位          |
-| -------- | --------- | ----------- | ------------- |
-| add, sub | slt, sltu | and, or,xor | sll, srl, sea |
-
-- 格式： **oper dst, src1, src2**
-
-- 几个例子
-
-  ```asm
-  add x3, x1, x2 # x3 <- x1 + x2
-  slt x3, x1, x2 # if x1 < x2 then x3 = 1 else x3 = 0
-  sll x3, x1, x2 # x3 <- x1 << x2
-  ```
-
-​	slt 意思是 set less than
-
-​	sll 意思是 set left logical  
-
----
-
-**二进制模算术（Modular Arithmetic）**
-
-当你在加法或者其他操作中出现溢出时，通用的做法是**忽略额外的位**。
-
-![截屏2024-06-13 15.31.36](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/682807c9edfca.png)
-
-对于两个二进制数 a 和 b，在模 n 的情况下，加法运算如下：
-
-(a+b) mod  n
-
-例如，模 8 系统中的加法：
-
-- a=5 (二进制：101)
-- b=3 (二进制：011)
-
-加法结果：
-
-(5+3)mod  8 = 8 mod 8 = 0
-
-二进制运算
-
-101 + 011 = 1000
-
-结果是8，在模8系统中，8相当于0
-
----
-
-**十六进制表示法**
-
-如果用长的比特串容易犯错，因此我们通常用higher-radix表示，就是半径比较大的圆，这样也容易将数恢复成bit串，一个常用的选择是**base-16**，叫十六进制表示法(hexadecimal)，每个4个bit为一组，编码成十六进制的一个字母
-
-----
-
-**寄存器-立即数指令**
-
-一个操作数来自寄存器，另一个是一个小的常数。
-
-格式为： **oper dst, src1, const**
-
-```asm
-addi x3, x1, 3 
-andi x3, x1, 3
-slli x3, x1, 3
-```
-
-注意没有 ``subi``
-
-我们可以用负数代替
-
-```asm
-addi x3, x1, -3 
-```
-
----
-
-**复合计算Compound Computation**
-
-执行 ``a = ((b+3) >> c) - 1;``
-
-1. 将复杂的表达式拆分，我们的指令仅仅能支持两个源操作数和一个目标操作数
-2. 假设a, b, c在寄存器x1, x2,和x3，相对的，我们用x4代表t0， x5代表t1
-
-```asm
-t0 = b + 3;
-t1 = t0 >> c;
-a = t1 - 1;
-
-addi x4, x2, 3
-srl x5, x4, x3
-addi x1, x5, -1
-```
-
----
-
-**控制流指令**
-
-```c
-if (a < b): c = a + 1
-			else: c = b + 2
-        
-```
-
-格式： **comp src1, src2, label**
-
-- 第一个比较决定if分支是是否接受： src1 comp src2
-- 如果比较返回True，那么分支就被接受了，否则继续执行
-
-| 指令 | beq  | bne  | blt  | bge  | bltu | bgeu |
-| ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| comp | ==   | !=   | <    | >=   | <    | >=   |
-
-```asm
-# 假设 x1 = a; x2 = b; x3 = c;
-bge  x1, x2, else # 注意，是a >= b时候跳else
-addi x3, x1, 1
-beq  x0, x0, end #
-else: addi x3, x2, 2
-end:  
-```
-
----
-
-**无条件跳转指令**
-
-jal: Unconditional jump and **link（后面会讲）**
-
-- 格式：**jal x3, label**
-- Jump target specified as label
-- 标签被编码为当前指令的偏移量
-- Link：is stored in x3
-
-jalr: Unconditional jump via register and link
-
-- 格式: **jalr x3, 4(x1)**
-- 跳转的目标指定为寄存器的值加上常数偏移量
-- Ex： Jump target = x1 + 4
-- 能够跳转到任何32位的地址-support long jumps
-
-```asm
-# 伪指令
-j label
-# 等同的汇编指令
-jal x0, label
-```
-
- ![截屏2024-06-13 17.57.59](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/682807cd1afcc.png)
-
-
-
----
-
-**RISV-V 存取指令**
-
-- 由于一些原因，RISC-V ISA不允许我们直接在指令写入内存地址。
-- 地址用<base address, offset>对表示
-  - 其中base address总是被保存在一个寄存器里面
-  - offset通常是一个很小的常数
-  - 格式：**lw dest, offset(base)** or **sw src, offset(base)**
-
-```asm
-# 行为
-x1 <- load(Mem[x0 + 0x4])
-x2 <- load(Mem[x0 + 0x8])
-x3 <- x1 + x2
-store(Mem[x0 + 0x10]) <- x3
-
-# 对应的汇编
-lw x1, 0x4(x0)  # load word
-lw x2, 0x8(x0)
-add x3, x1, x2
-sw x3, 0x10(x0) # 注意顺序
-
-```
-
-
-
----
-
-**累加数组元素**
-
-sum = a[0] + a[1] + .. + a[n-1]； 假设x10已经取数100。
-
-```asm
-lw x1, 0x0(x10)
-lw x2, 0x4(x10)
-lw x3, 0x8(x10)
-loop:
-	lw x4, 0x0(x1)
-	add x3, x3, x4
-	addi x1, x1, 4
-	addi x2, x2, -1
-	bnez x2, loop
-	
-sw x3, 0x8 (x10)
-```
-
----
-
-**常数和指令编码限制**
-
-- 指令都编码成32bits
-  - 需要指定操作类型(10bits)
-  - 指定两个源寄存器(10 bits，**因为我们有31个寄存器，因此5位就可以表示**)或者一个源寄存器(5bit) 加上一个小的常数
-  - 需要指定一个目标寄存器（5bits)
-- 指令中的常数应该在12bits以内，大的常数必须保存在内存或者是寄存器，然后显式使用
-  - 然而， 小的常数在编程当中非常有用
-- 正因为这些限制，我们不能往内存空间直接写入指令。
-
----
-
-**伪指令**
-
-为其他指令提供别称，从而简化汇编编程
-
-```asm
-# 伪指令
-mv x2, x1
-ble x1, x2, label
-beqz x1, label
-bnez x1, label
-
-# 对应的汇编指令
-addi x2, x1, 0
-bge x2, x1, label
-beq x1, x0, label
-bne x1, x0, label
-```
-
----
-
-**负数的编码**
-
-补码技术(two’s complement encoding )fw6
+RISC-V ISA、寄存器、指令类型、控制流、存取、编码限制、伪指令，以及编译高级语言、过程调用/栈、内存布局与 MMIO 等内容已整理至 [lec9.md](./lec9.md)（可编程机器）。
 
 # Lec 3 用Bluespec描述组合电路
 
@@ -473,217 +234,9 @@ bne x1, x0, label
 
 [lec3.md](./lec3.md)
 
-# TODO 编译表达式，函数和栈
+# 编译表达式、函数与栈（见 Lec 9）
 
-**处理常数**
-
-- 执行 **a = b + 3**，常数(12-bit内）能够通过寄存器-立即数的ALU操作执行
-
-  - **addi x1, x2, 3**
-
-- 执行 **a = b + 0x123456**
-
-  - 最大12bit补码表示为2^11-1 = 2027(0x7FF)
-
-  - 使用``li``（load immediate）伪指令设置寄存器。**li x4, 0x123456** 对应的汇编为
-
-    ``````asm
-    lui x4, 0x123 # load upper immediate,一个20位的立即数加载到寄存器的高20位，而低12位填充为0
-    addi x4, x4, 0x456
-    ``````
-
-  - 同样的我们可以用``li``伪指令执行小的常数的操作
-
-    ```asm
-    # 伪指令
-    li x4, 0x12
-    # 汇编
-    addi x4, x0, 0x12
-    ```
-
-
-
----
-
-**编译简单的表达式**
-
-1. 指派变量到寄存器
-2. 将操作翻译成计算指令
-3. 使用寄存器-立即数指令来执行操作
-4. 使用li伪指令来执行大常数的操作
-
-```c
-int x, y, z;
-y = (x + 3) | (y + 123456);
-z = (x * 4) ^ y;
-```
-
-对应的RISC-V汇编
-
-```asm
-# x: x10; y: x11; z: x12
-# x13, x14用于临时数据
-
-addi x13, x10, 3
-li x14, 123456
-add x14, x11, x14
-or x11, x13, x14
-slli x13, x10, 2
-xor x12, x13, x11
-```
-
-
-
-----
-
-**编译条件分支**
-
->  [!NOTE]
->
->  **简单的if表达式**
->
->  **C code**
->
->  if (expr) {
->  	if-body
->  }
->
->  **汇编**
->
->  (compile expr into xN)
->  beqz nN, endif
->  (compile if-body)
->  endif 
-
-例子
-
-```asm
-int x, y;
-if (x < y) {
-	y = y - x;
-}
-
-# 汇编, 假设x:x10, y:x11
-  slt x12, x10, x11
-  beqz x12, endif
-	sub x11, x11, x10
-endif:
-
-# 汇编2
-	bge x10, x11, endif
-	sub x11, x11, x10
-endif:
-
-```
-
-> [!NOTE]
->
-> **If-else 表达式**
->
-> **C code**
->
-> if (expr) {
-> 	if-body
-> } else {
-> 	else-body
-> }
->
-> **汇编**
->
-> (compile expr into xN)
-> beqz nN, else
-> (compile if-body)
-> j endif
-> else:
-> 	(compile else-body)
-> endif:
-
-
-
-> [!NOTE]
->
-> **Loop 表达式**
->
-> **C code**
->
-> while (expo) {
->
-> ​	while-body
->
-> }
->
-> **汇编**
->
-> while:
->
-> ​	(compile expo into xN)
->
-> ​	beqz xN, enwhile
->
-> ​	(compile while-body)
->
-> ​	j while
->
-> endwhile:
-
-你能够写出执行指令更少的版本吗？
-
-```asm
-# 只有一个分支或者每个迭代都跳转的版本
-	j compare
-loop:
-	(compile while-body)
-compare:
-	(compile expr into xN)
-	bnez xN, loop
-```
-
-把上述的都放在一起。
-
-```c
-while (x != y) {
-  if (x > y) {
-    x = x - y;
-  } else {
-    y = y -x;
-  }
-}
-```
-
-RISV-V的汇编是什么呢？
-
-```asm
-# x: x10, y: x11
-	j compare
-loop:
-	ble x10, x11, else
-	sub x10, x10, x11
-	j endif
-else:
-	sub x11, x11, x10
-endif:
-compare:
-	bne x10, x11, loop
-```
-
-----
-
-**函数调用(Procedures)**
-
-可复用的代码段，用于执行指定的任务
-
-- 它只有一个入口
-- 零个或若干个形式参数
-- 局部变量
-- 当执行结束后返回调用者
-
-作用：
-
-- 实现抽象和复用
-
-
-
-- 
+编译表达式/条件/循环、过程调用约定、栈与活动记录等内容已整理至 [lec9.md](./lec9.md)。
 
 # Lec 4 二进制计算
 
@@ -738,6 +291,10 @@ compare:
 [lec8.md](./lec8.md)
 
 # Lec 9 可编程机器
+
+ISA 抽象、RISC-V 汇编、编译高级语言、过程调用与栈、内存布局与 MMIO。
+
+[lec9.md](./lec9.md)
 
 # Lec 10 单周期处理器
 
@@ -838,4 +395,4 @@ EHR（Explicitly Handled Registers）是Bluespec 中一种机制，用于精确�
 - 基于目录的缓存一致性
 - 缓存一致性的实践经验
 
-[lec25.md]()
+[lec25.md](./lec25.md)
