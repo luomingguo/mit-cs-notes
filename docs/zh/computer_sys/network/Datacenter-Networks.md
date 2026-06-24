@@ -27,6 +27,53 @@
 
   SIGCOMM 2022
 
+数据中心的需求与广域网相反：拓扑规则、由单一机构控制，目标是用**廉价商用交换机** <em>(commodity switches)</em> 提供**满二分带宽** <em>(full bisection bandwidth)</em>。
+
+### 5.1 Fat-Tree：用商用交换机做无收敛网络
+
+
+
+Al-Fares et al., *A Scalable, Commodity Data Center Network Architecture* (SIGCOMM 2008)。传统三层树形拓扑在核心层**超额订阅** <em>(oversubscription)</em>，且依赖昂贵的高端核心交换机。
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
+<strong>定义 · k 元胖树 <em>(k-ary Fat-Tree)</em></strong><br>
+用全同的 k 端口交换机构造的特殊 <em>Clos</em> 拓扑：分 k 个 <em>pod</em>，每个 pod 含 k/2 个边缘交换机与 k/2 个汇聚交换机，核心层有 $(k/2)^2$ 台交换机。可接入主机数为
+$$N = \frac{k^3}{4}$$
+理论上提供 1:1 满二分带宽。
+</div>
+
+
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 0.6em 1em; margin: 1em 0;">
+<strong>例 · k = 48 的规模估算</strong><br>
+取 48 端口商用交换机：可接入主机
+$$N = \frac{48^3}{4} = \frac{110592}{4} = 27648\ \text{台}$$
+核心交换机 $(48/2)^2 = 576$ 台。全程仅用同一档廉价交换机即可达成满二分带宽，这是该论文相对传统设计的核心成本优势。
+</div>
+
+
+路由上，Fat-Tree 用**两级路由表**与特制地址编码，把流量在多条等价路径上铺开，避免热点。
+
+### 5.2 VL2：敏捷性与流量随机化
+
+Greenberg et al., *VL2: A Scalable and Flexible Data Center Network* (SIGCOMM 2009)。三大目标：**均匀高容量**、**性能隔离**、**敏捷性** <em>(agility，任意服务器可分配给任意服务)</em>。
+
+两项关键技术：
+
+- **名址分离**：应用地址 <em>(AA, Application Address)</em> 与位置地址 <em>(LA, Locator Address)</em> 解耦，由**目录系统** <em>(directory system)</em> 做映射——服务器可随意迁移而 IP 不变，实现敏捷性。
+- **VLB 流量随机化**：在 *Clos* 拓扑上结合 *ECMP* 与**阀门负载均衡** <em>(Valiant Load Balancing, VLB)</em>，把每条流先随机送到一个中间交换机再转发，使任意流量矩阵下链路负载趋于均匀。
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
+<strong>推论 · 与 Fat-Tree 的对照</strong><br>
+Fat-Tree 解决"拓扑层面"如何便宜地造出满带宽；VL2 解决"如何把这条带宽真正用满且隔离"——靠流量随机化对抗突发的流量矩阵，靠名址分离换取调度自由。二者常被组合理解为数据中心 fabric 的"硬件 + 软件"两面。
+</div>
+
+
+### 5.3 Jupiter（选读）：十年 Clos 与集中控制
+
+Singh et al., *Jupiter Rising* (SIGCOMM 2015) 回顾 Google 数据中心网络十年演进（Firehose → Watchtower → Saturn → Jupiter），三条主线：坚持 *Clos* 拓扑、采用**商用芯片** <em>(merchant silicon)</em>、用**集中式控制** <em>(centralized control，Firepath)</em> 取代传统分布式协议。Jupiter 已达建筑级 fabric、超 1 Pbps 二分带宽，印证了"集中控制 + 规则拓扑"在受控环境下的可扩展性（呼应 Lec 8 的 SDN）。
+
+
+
 # 论文阅读： 微软的VL2 数据中心网络
 
 ## 摘要

@@ -1,4 +1,4 @@
-# Lec 2 互联网路由协议 & 架构
+# Lec 5 互联网路由协议 & 架构
 
 ISP（AS）之间的路由选择的一种EGP：BGP路由协议（边界网关协议，Border Gateway Protocol），
 
@@ -395,3 +395,74 @@ Solution：有三种方法是
 应选择被广泛认可且高效的算法。
 
 必须保证不同实现之间可以协商出共同的安全算法
+
+这一讲回答两个问题：(1) *Internet* 为什么要设计成今天这样？(2) 在"一堆各自为政的网络"之上，路由是如何被组织起来的？三篇阅读分别对应**设计哲学 → 路由机制 → 安全缺陷**。
+
+### 2.1 设计哲学：RFC 1958
+
+*RFC 1958 (Architectural Principles of the Internet)* 把 *Internet* 成功的经验提炼成几条原则。核心是把网络做"瘦"、把智能推到边缘。
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
+<strong>定义 · 端到端原则 <em>(End-to-End Principle)</em></strong><br>
+能在端系统正确实现的功能，就不应放进网络中间节点。网络只负责尽力而为地转发分组 <em>(best-effort forwarding)</em>，可靠性、加密、重排等语义留给端点处理。
+</div>
+
+
+
+其余几条值得记住的原则：
+
+- **连接性本身就是回报** <em>(connectivity is its own reward)</em>：协议设计偏向"先连上再说"，而非预先协商完美状态。
+- **IP 作为细腰** <em>(narrow waist)</em>：上层应用与下层链路技术任意演化，唯一不变的约束是 *IP*。这是 *Internet* 能容纳异构 <em>(heterogeneity)</em> 技术的关键。
+- **保持简单、模块化**：避免在协议里堆叠可选参数 <em>(options)</em>，因为它们极少被实现、且成为攻击面。
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
+<strong>推论</strong><br>
+"瘦腰 + 智能在边缘"既解释了 <em>Internet</em> 为何能快速演化（换应用只需改端点），也预示了它的安全短板：网络层默认不保证身份与路径正确性——这正是 Lec 2.3 的主题。
+</div>
+
+
+
+### 2.2 路由机制：自治系统与 BGP
+
+*Internet* 不是一张扁平的图，而是上万个独立管理域拼起来的，因此路由必须**分层** <em>(hierarchical routing)</em>。
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
+<strong>定义 · 自治系统 <em>(Autonomous System, AS)</em></strong><br>
+处于单一管理控制下、对外呈现统一路由策略的网络，由 <em>ASN (AS Number)</em> 标识。域内用 <em>IGP</em>（如 RIP/OSPF）优化路径，域间用 <em>BGP</em> 交换可达性并执行策略。
+</div>
+
+
+
+**BGP 是一种路径向量协议** <em>(path-vector protocol)</em>，每条路由携带完整的 `AS_PATH`，既能避免环路，又能让策略生效。
+
+- **eBGP vs iBGP**：前者在 AS 之间交换路由，后者在同一 AS 内部传播外部学到的路由。
+- **关键属性**：`LOCAL_PREF`（本地策略偏好，最先比较）、`AS_PATH`（长度，次之）、`MED`（向邻居暗示入口偏好）、`NEXT_HOP`。
+- **Gao–Rexford 策略与无谷路由** <em>(valley-free routing)</em>：基于商业关系——客户 <em>(customer)</em>、提供商 <em>(provider)</em>、对等 <em>(peer)</em>。一条合法路径形如"上坡（向 provider）后下坡（向 customer）"，中间不能出现"谷"。
+- **热土豆路由** <em>(hot-potato routing)</em>：在多个等价出口中，AS 倾向尽快把流量甩给邻居，选择 IGP 代价最小的出口。
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
+<strong>定义 · IP 任播 <em>(Anycast)</em></strong><br>
+同一 IP 前缀从多个地理位置同时向 BGP 通告，路由系统自然把客户端导向"BGP 意义上最近"的实例。<em>DNS</em> 根服务器与 <em>CDN</em> 边缘广泛采用。
+</div>
+
+
+
+### 2.3 安全缺陷：BGP 为什么难以加固
+
+Sharon Goldberg, *Why Is It Taking So Long to Secure Internet Routing?* 解释了一个看似矛盾的现状：问题已知二十年，方案早已设计好，却迟迟无法普及。
+
+根因是 BGP **默认信任**：它既不验证"前缀来源是否合法"，也不验证"`AS_PATH` 是否真实"。由此产生两类事故：
+
+- **前缀劫持** <em>(prefix hijacking)</em>：某 AS 通告本不属于它的前缀（经典案例：2008 年 Pakistan Telecom 误劫持 YouTube）。
+- **路由泄露** <em>(route leak)</em>：违反无谷规则，把不该转发的路由扩散出去。
+
+两套补救方案：
+
+- **RPKI** 提供**源验证** <em>(origin validation)</em>：用证书绑定"哪个 AS 有权通告哪个前缀"。
+- **BGPsec** 提供**路径验证** <em>(path validation)</em>：对 `AS_PATH` 逐跳签名。
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
+<strong>推论 · 部署困境</strong><br>
+Goldberg 的核心论点是经济与博弈问题，而非技术问题：在<strong>部分部署</strong> <em>(partial deployment)</em> 下，早期采用者几乎得不到保护收益（攻击者仍可经未部署的 AS 绕过），却要先承担密码学开销与运维复杂度——典型的<em>负外部性 + 协调失败</em>。这与 RFC 1958"避免需要全网协同的机制"的告诫互为印证。
+</div>
+

@@ -1,0 +1,85 @@
+# Lec 19 区块链网络（Blockchain Networks）
+
+阅读资料
+
+- Satoshi Nakamoto, [Bitcoin: A Peer-to-Peer Electronic Cash System](https://bitcoin.org/bitcoin.pdf).
+- L. Yang, V. Bagaria, G. Wang, M. Alizadeh, D. Tse, G. Fanti, P. Viswanath, [Prism: Scaling Bitcoin by 10,000x](https://arxiv.org/pdf/1909.11261.pdf)（读第 3、4 节）.
+- **(Optional)** V. Sivaraman et al., [Routing Cryptocurrency with the Spider Network](https://web.mit.edu/6.829/www/2020/papers/spider.pdf), HotNets 2018.
+
+> 区块链是一个**去信任的分布式系统**，但它**强烈依赖底层 P2P 网络**（[[Peer-to-Peer-Networks]]）：交易/区块靠 gossip 扩散，而**传播延迟直接决定安全与吞吐**——这就是它出现在网络课里的原因。Bitcoin 给出基本范式，Prism 用「解耦」把吞吐推到网络物理极限。
+
+## 总览
+
+- Bitcoin：双花问题、PoW、最长链共识
+- 网络视角：区块传播延迟 → 分叉 → 吞吐与安全的瓶颈
+- Prism：解耦区块的三种角色，把吞吐扩 10000×
+- Spider：支付通道网络的路由（链下扩容）
+- 论文重点
+
+---
+
+## 一、Bitcoin：去信任的电子现金
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
+<strong>定义 · 双花问题与无中心信任</strong><br>
+数字货币的根本难题是<strong>双花 (double-spend)</strong>：同一笔钱花两次。传统靠银行这个可信第三方记账。Bitcoin 要在<strong>没有可信第三方</strong>、参与者互不信任且可随意加入退出的开放网络里，让所有人对"交易的全局顺序"达成一致。
+</div>
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
+<strong>定义 · 区块链 + 工作量证明 + 最长链</strong><br>
+交易打包成<strong>区块</strong>，每个区块含前一区块的哈希 → 链式结构（改前面就得改后面所有，防篡改）。<strong>工作量证明 (PoW)</strong>：矿工要找一个 nonce 使 <code>hash(block) < target</code>，这很难（需海量算力试），但验证极易。谁先找到谁广播这个新块。<strong>最长链规则</strong>：诚实节点总认"累计工作量最多的那条链"为准。
+</div>
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
+<strong>推论 · 为什么 PoW + 最长链能防双花</strong><br>
+要改写已确认的交易，攻击者必须<strong>重做该块及其后所有块的 PoW，并追上诚实链的增长速度</strong>——只要诚实算力占多数（&gt;50%），这在概率上几乎不可能，且区块埋得越深（confirmations 越多）越安全。共识不靠投票名单，而靠"谁烧的算力多"，从而天然抗女巫攻击。激励：出块给<strong>区块奖励 + 手续费</strong>，让矿工有动力诚实出块。
+</div>
+
+## 二、网络视角：传播延迟是核心
+
+> 这是本课关心的角度：Bitcoin 的性能与安全，本质受制于 **P2P 区块传播**。
+
+区块和交易通过 P2P 覆盖网 **gossip/泛洪** 扩散。出块间隔被设为 ~10 分钟，**远大于**区块传播全网所需时间。
+
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 0.6em 1em; margin: 1em 0;">
+<strong>传播延迟 → 分叉 → 瓶颈</strong><br>
+若两个矿工几乎同时出块、而块还没传遍全网，网络就<strong>分叉 (fork)</strong>：不同节点看到不同"最长链"，最终只有一条胜出，另一条上的工作<strong>白费 (orphan/stale)</strong>。分叉越多 → 有效吞吐越低、且安全性下降（攻击者需要的算力门槛被拉低，利于<strong>自私挖矿</strong>等）。<br>
+为压低分叉率，Bitcoin 只能让<strong>出块很慢（10 min）+ 区块不大</strong>，使"传播时间 ≪ 出块间隔"。代价：吞吐被钉死在约 <strong>7 笔/秒</strong>、确认要等很久。<strong>把区块调大或出块调快都会加剧分叉</strong>——这就是 Bitcoin 的可扩展性死结。
+</div>
+
+## 三、Prism：用「解耦」把吞吐扩 10000×
+
+Prism 的洞察：Bitcoin 把**三件本可分开的事**捆在「一种区块 + 一条链」里，导致它们被同一个"为安全而设的慢挖矿速率"卡住。
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
+<strong>定义 · 区块的三种角色（Prism 把它们拆开）</strong>
+<ol>
+<li><strong>选主/安全（leader election）</strong>：靠 PoW 决定"由谁来定顺序"——这需要慢、需要难，以保证安全；</li>
+<li><strong>交易吞吐（throughput）</strong>：把交易装进块——这只受<strong>网络带宽</strong>限制，本可以很快；</li>
+<li><strong>确认/投票（confirmation）</strong>：为区块的顺序背书、加速最终性。</li>
+</ol>
+Prism 用<strong>不同类型的块/平行链</strong>分别承担这三件事：少量「proposer 块」做选主（保持 Bitcoin 同等安全的慢速率），大量「transaction 块」只管装交易（按带宽全速产出），众多「voter 链」投票确认顺序。
+</div>
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
+<strong>推论 · 解耦后吞吐受限于物理带宽而非安全速率</strong><br>
+一旦把"装交易"从"选主"里剥离，<strong>交易吞吐就只受网络带宽约束</strong>，可逼近物理极限（论文称扩 ~10000×、确认延迟也大降），同时通过 proposer/voter 机制保持与 Bitcoin 相当的安全性。核心思想极具网络/系统味道：<strong>把一个被耦合卡死的系统拆成相互独立、各自扩到物理上限的组件</strong>（与 [[Network-assisted-Congestion-Control]] 里 XCP「解耦效率与公平」异曲同工）。
+</div>
+
+## 四、Spider（可选）：支付通道网络的路由
+
+链上交易慢且贵，**支付通道**让两方在链下来回付款、只把最终净额上链。许多通道连成 **payment channel network（如闪电网络）**，付款可经多跳中转。
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
+<strong>定义 · 这是一个网络路由问题</strong><br>
+每条通道有<strong>双向余额</strong>，沿一个方向付款会消耗该方向的余额；余额耗尽通道就"偏枯"、不能再往那个方向转。Spider 把跨通道付款当作<strong>路由 + 拥塞控制</strong>问题：把大额付款拆成小包、多路径、按通道余额平衡地路由，<strong>保持通道余额均衡</strong>以维持高成功率与吞吐——本质是把网络流量工程的思想用到链下支付上。
+</div>
+
+## 五、论文重点
+
+- **Bitcoin**：双花 → PoW + 最长链 + 诚实多数；网络上靠 gossip 传播，**传播延迟≪出块间隔**是安全前提，代价是 ~7 tx/s 的吞吐死结。
+- **Prism（第 3–4 节）**：把区块的**选主 / 吞吐 / 确认**三角色解耦成 proposer / transaction / voter 块与平行链，使吞吐受限于带宽而非安全挖矿速率，扩约 10000× 且保持安全。
+
+## 本讲小结
+
+> 区块链是去信任分布式系统，但性能与安全由**底层 P2P 传播**决定。**Bitcoin** 用 PoW + 最长链在诚实多数下解决双花；因"传播延迟≪出块间隔"的安全约束，吞吐被钉在 ~7 tx/s。**Prism** 把区块的选主/吞吐/确认三角色**解耦**，让交易吞吐只受网络带宽限制、扩 10000×。**Spider** 则把链下支付通道网络的资金路由当作流量工程问题来做。
