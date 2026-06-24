@@ -1,6 +1,126 @@
 # Lec 14 协调
 
+本讲定位：调度和锁有助于向另一个线程隐藏一个线程的操作，但线程还需要**有意**地交互——等待某个条件成立。
 
+xv6 用 sleep/wakeup 实现这种顺序协调，核心难点是避免"丢失唤醒"。
+
+
+
+## 1. 为什么需要 sleep/wakeup
+
+
+
+管道读者要等写者产数据、父进程 `wait` 要等子进程退出、读磁盘要等硬件完成……这些都需要"等待某条件变真"。
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（睡眠和唤醒，又称顺序协调<i>sequence coordination</i> / 条件同步<i>conditional synchronization</i>）</strong><br/><code>sleep(chan, lk)</code> 把当前进程标记 SLEEPING 并让出 CPU，在等待通道 <code>chan</code> 上睡眠；<br/><code>wakeup(chan)</code> 唤醒所有在相同 <code>chan</code> 上睡眠的进程。</div>
+
+sleep/wakeup 的接口如下：
+
+```c
+void sleep(void *chan, struct spinlock *lk)
+void wakeup(void *chan)
+```
+
+`chan` 是个"透明值"（通常 64 位指针），内核只比较是否相等，不解释其含义。
+
+
+
+睡眠和唤醒提供了相对低级的同步接口。为了激发它们在 xv6 中的工作方式，我们将使 用它们构建一个称为 信号量（*semaphore*） 的更高级别同步机制，用于协调生产者和消费者（xv6 不使用信号量）。信号量维护计数并提供两个操作。
+
+
+
+## 2. xv6 的实现：两把锁的接力
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（sleep 的加锁顺序）</strong>sleep 先 <code>acquire(p->lock)</code>，再 <code>release(lk)</code>（条件锁）；然后记录 chan、置 SLEEPING、调 sched。全程至少持有两把锁中的一把。</div>
+
+```c
+void sleep(void *chan, struct spinlock *lk){
+  struct proc *p = myproc();
+  acquire(&p->lock);   // 先拿 p->lock
+  release(lk);         // 才放条件锁
+  p->chan = chan; p->state = SLEEPING;
+  sched();             // 让出 CPU
+  p->chan = 0;
+  release(&p->lock); acquire(lk);  // 醒来后复原
+}
+void wakeup(void *chan){
+  for(p = proc; p < &proc[NPROC]; p++) if(p != myproc()){
+    acquire(&p->lock);
+    if(p->state==SLEEPING && p->chan==chan) p->state = RUNNABLE;
+    release(&p->lock);
+  }
+}
+```
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论（为何不会丢失唤醒）</strong>睡眠者从"检查条件"到"标记 SLEEPING"全程持有条件锁或 <code>p->lock</code>（或两者），而 wakeup 必须同时拿这两把锁。于是要么唤醒者先拿到锁、在睡眠者检查条件前就把条件置真（睡眠者根本不会睡），要么唤醒者被阻塞到睡眠者完全睡下并释放锁、此时它必看到 SLEEPING 而将其唤醒。</div>
+
+注意 `p->lock` 在标记 SLEEPING 之前**绝不能释放**（否则 wakeup 可能在中途看到不一致状态）。
+
+
+
+## 3. 丢失唤醒与条件锁
+
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题1</strong>（<code>sleep</code> 第二个参数"条件锁" <code>lk</code> 有什么用？为什么必须持有它再调 sleep？）</div>
+
+为防**丢失唤醒 (*lost wakeup*)**：若在"检查条件"与"调用 sleep"之间，另一线程调了 `wakeup`，那时还没有进程在睡，wakeup 直接返回；之后本线程才睡下，便永远等不到唤醒了。解决：调 sleep 时持有保护该条件的"条件锁"并传给 sleep。以管道为例（标记 ZZZ 处即危险窗口）：
+
+```c
+piperead(p){ 
+  acquire(&p->lock);
+  while(no data) sleep(&p, &p->lock);  // 检查→sleep 期间一直持 p->lock
+  remove data; release(&p->lock); 
+}
+pipewrite(p){ 
+  acquire(&p->lock);
+  append data; wakeup(&p); 
+  release(&p->lock); 
+}
+```
+
+因为 piperead 从检查条件到调 sleep 全程持 `p->lock`，pipewrite 无法插入执行 wakeup，丢失唤醒被杜绝。
+
+
+
+
+
+## 4. 伪唤醒与 p->lock
+
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题2</strong>（多个进程在同一 chan 上睡眠，一次 wakeup 全唤醒，为什么 sleep 必须放在 while 循环里？）</div>
+
+因为一次 wakeup 唤醒所有等待者，但通常只有一个能真正消费到资源（如管道里只有一份数据）。其余进程醒来发现条件仍不满足——这叫**伪唤醒 (*spurious wakeup*)**，必须重新睡下。所以模式恒为 `while(条件不满足) sleep(...)`，每次醒来都重新检查条件。这也使得"两个不同用途的 sleep/wakeup 误用同一 chan"不会出错——最多触发伪唤醒，循环检查会兜住。
+
+进程锁 `p->lock` 是 xv6 中最复杂的锁：读写 `p->state`、`p->chan`、`p->killed`、`p->xstate`、`p->pid` 时必须持有它，因为这些字段会被其他进程或别的核上的调度器线程访问。
+
+---
+
+## 5. 现代系统
+
+
+
+
+
+避免丢失唤醒的不同做法：原始 Unix（单 CPU）靠 sleep 时关中断；xv6/FreeBSD 用显式锁；Plan 9 用进入睡眠前运行的回调做最后检查；Linux 用带内部锁的**等待队列 (*wait queue*)**（比扫描整个进程表高效）。许多线程库把这套机制叫**条件变量 (*condition variable*)**，sleep/wakeup 对应 wait/signal。**惊群效应 (*thundering herd*)**：广播唤醒大量进程让它们争抢——故条件变量常分 signal（唤醒一个）与 broadcast（唤醒全部）。**信号量 (*semaphore*)** 用显式计数避免丢失唤醒与伪唤醒。xv6 对 `kill` 的支持不完善：kill 与 sleep 间存在竞态，被 kill 的进程可能要等到所等条件发生才注意到 `p->killed`（甚至永远等不到，如等控制台输入）。
+
+
+
+
+
+
+
+
+
+## 6. 自测清单
+
+- [ ] sleep/wakeup 解决什么问题？chan 是什么？
+- [ ] 什么是丢失唤醒？条件锁如何避免它（用管道例子）？
+- [ ] sleep 为什么先拿 p->lock 再放条件锁？标记 SLEEPING 前为何不能放 p->lock？
+- [ ] 用"两种情况"论证为何不会丢失唤醒。
+- [ ] 什么是伪唤醒？为什么 sleep 必须在 while 循环里？
+- [ ] 等待队列、条件变量、信号量、惊群效应分别是什么？
+
+## 参考资料
+
+阅读：`kernel/{proc.c, uart.c, pipe.c}`，xv6 第 9 章。
 
 阅读 xv6 内核的完整实现代码
 
@@ -20,14 +140,7 @@
 
 ## 接口定义
 
-sleep/wakeup 的接口如下：
-
-```c
-void sleep(void *chan, struct spinlock *lk)
-void wakeup(void *chan)
-```
-
-`sleep()` 会把当前进程标记为 **SLEEPING（不可运行）**，并通过上下文切换把 CPU 让给调度器，让其他进程运行。`chan` 参数被称为“等待通道”（wait channel）。`wakeup(chan)` 会唤醒所有调用过 `sleep(chan, ...)` 且使用相同 `chan` 的进程。
+sleep()` 会把当前进程标记为 **SLEEPING（不可运行）**，并通过上下文切换把 CPU 让给调度器，让其他进程运行。`chan` 参数被称为“等待通道”（wait channel）。`wakeup(chan)` 会唤醒所有调用过 `sleep(chan, ...)` 且使用相同 `chan` 的进程。
 
 `chan` 是一个“透明值”，通常是 64 位；内核只做一件事：比较是否相等。
 

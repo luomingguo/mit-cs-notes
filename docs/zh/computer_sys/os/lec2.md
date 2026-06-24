@@ -1,424 +1,335 @@
-# Lec 2 C语言和GDB
+# Lec 2 用C语言编程Xv6
 
 ## 总览
 
-- C语言入门
-- GDB
-- Bootloader
-- 栈的布局
+- C语言：一门”高级汇编“
+- 数据表示
+- 内存安全问题
+- 指针： 带类型的整数
+- 声明、定义 与 `static`
+- 字符串、常用库函数、结构体和位操作
+- GDB： 调试内核的手法
+- 内存抽象的层次：从总线到堆栈
+- 自测清单
 
 
 
-## C语言入门
+本讲定位：用C语言编程Xv6、用 GDB + QEMU 调试。本讲打牢两个工具基础——把 C 当作"高级汇编"来理解内存与指针，并掌握调试内核所需的 GDB 手法；最后从硬件总线一路抽象到栈与堆，建立"内存到底是什么"的层次图景。
 
-### 对比Python
 
-- **C 更像是“高级汇编语言”**
-  - C 语言的代码结构直接映射到实现它们的机器指令上。
-  - 相比之下，Python 目录反映了很多隐藏的底层代码。
-- **C 是编译型语言，而不是解释型语言**
-  - C 代码可以直接在处理器上执行，无需任何底层运行时环境。
-- **C 是静态类型的**
-  - 在 C 语言中，类型与变量关联，并用于解释值的原始字节。
-  - 在 Python 中，类型是与变量中的值关联的。
-  - C 中的类型错误会在编译时被捕捉。
-  - 如果不需要检查数据类型，代码的执行速度可以更快。
-- **C 使用手动内存管理，而不是垃圾回收**
-- **C 中的 int 和 float 有具体但不确定的范围**
 
-### 端序问题
+## 0. 本讲脉络
 
-原生浮点类型
-
-![image-20240918161120044](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66ea8b39d83a0.png)
-
->  在内存中中如何表示0x12345678 (= 305419896) ?
-
-Solution: 假如是大端序，0x12, 0x34, 0x56, 0x78；假如是小端序：0x78, 0x56, 0x34, 0x12
-
-RISC-V是小端序
-
-### 内存类型
-
-#### 栈内存
-
-- 函数内分配的局部变量。这部分内存在函数退出后会被销毁，并可能被重新使用
-- 默认情况下不会初始化。它会反映该内存区域中之前的内容
-
-#### 堆内存
-
-- 通过显式分配（`malloc`）和释放（`free`）
-- 在释放后，内存可能会被重新使用（全部或部分）以用于未来的分配
-- 默认情况下不会初始化。它会反映该内存区域中之前的内容
-
-#### 静态内存
-
-- 在任何函数外部声明的变量，以及用“static”声明的变量。
-- 只存储一个副本，位于预定义且不变的内存地址
-- 默认初始化为零
-
-### 内存安全
-
-- **释放后使用**：如果程序释放了一块内存区域后，仍然继续使用它。
-- **重复释放**：如果程序对同一块内存区域释放了两次而不是一次。
-- **未初始化的内存**：如果程序使用了从未初始化的内存。
-- **缓冲区溢出**：如果程序修改了超出内存区域末尾的内存。
-- **内存泄漏**：如果程序分配了内存，但从未释放它。
-- **类型混淆**：如果程序无意中使用了错误的数据类型进行操作。
-
-### 指针要点
-
-指针是**整数**，指定一块内存区域的起始地址，并指明预期在该地址找到的值的类型。
-
-```c
-int *a; // pointer to int
-float *b; // pointer to float
-int **c; // pointer to pointer to int
-char (*d)(int); // pointer to a function (int -> char)
-char (**e)(int); // pointer to pointer to function (int -> char)
-void *f; // pointer to untyped memory
-void **g; // pointer to pointer to untyped memory
-// 指针可以被随意嵌套
-int ******value; 
+```
+C 作为"高级汇编" ──► 数据表示(端序/范围) ──► 内存三区(栈/堆/静态) ──► 指针(带类型的整数)
+        │
+        ▼
+   GDB 调试内核（断点/单步/查寄存器查内存/TUI）
+        │
+        ▼
+   内存抽象的层次：硬件总线 → 地址空间 → 栈与堆
 ```
 
-#### 数组
 
-- 部分被初始化的数组的其他元素也会被初始化
 
-  - ```c
-    int my_array[6] = {1};
-    printf(“my_array: [0] = %d, [3] = %d, [5] = %d\n”,my_array[0], my_array[3], my_array[5]);
-    // Answers: [0] = 1, [3] = 100, [5] = 0.
-    ```
+## 1. C 语言：一门"高级汇编"
 
-#### 指针运算
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>C 相对 Python 的关键差异</strong>
+<ul>
+<li><strong>更接近机器</strong>：C 代码几乎直接映射到机器指令；Python 隐藏了大量底层逻辑。</li>
+<li><strong>编译型而非解释型</strong>：C 直接在 CPU 上执行，无需运行时环境。</li>
+<li><strong>静态类型</strong>：类型与<strong>变量</strong>绑定（Python 中类型与<strong>值</strong>绑定），用于解释内存里那串原始字节；类型错误在<strong>编译期</strong>暴露，省去运行时检查 → 更快。</li>
+<li><strong>手动内存管理</strong>：<code>malloc</code>/<code>free</code>，无垃圾回收。</li>
+<li><code>int</code>/<code>float</code> 范围"具体但不确定"——依平台而定。</li>
+</ul></div>
 
-- 取数组的第 n 个元素的值， `` array[n]`` 与``(*(array + n))``相同的 
 
-- 取数组第 n 个元素的地址， ``&array[n]``与(array+n)是相同的
 
-- ```c
-  int my_array[4];
-  printf("Locations: %x %x %x %x\n", &my_array[0], &my_array[1], &my_array[2], &my_array[3]);
-  // Prints: Locations: 2FB0 2FB4 2FB8 2FBC
-  
-  ```
 
-  - &my_array[3] 是 0x2FBC， 比 0x2FB0 大了 12，**这是因为指针运算会乘以基础数据类型的大小！**
 
-  - ```c
-    (long) (my_array + 3) == ((long) my_array) + 3 * sizeof(int)
-    ```
+## 2. 数据表示
 
-- 如果int \*p = (int\*)100，那么(int)p + 1和(int)(p + 1)是不同的数字：第一个是101，而第二个是104。当将整数添加到指针时，如第二种情况，整数会隐式乘以指针指向的对象的大小。
+### 2.1 端序 (*endianness*)
 
-##### 指针运算的一个副作用
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题1</strong>（<code>0x12345678</code>（= 305419896）在内存里怎么放？）</div>
 
-> ```c
-> int values[5] = {10, 20, 30, 40, 50};
-> printf("%d/n", 4[values]);
-> 
-> ```
->
-> 会打印什么
+按地址从低到高：
 
-Sol: x[y] = *(x+y) = *(y+x) = y[x]， 因此结果是50
+大端序 (*big-endian*)：0x12, 0x34, 0x56, 0x78（高位字节在低地址）。
 
-#### 类型转换
+小端序 (*little-endian*)：0x78, 0x56, 0x34, 0x12（低位字节在低地址）。
 
-#### 指针和整数之间
+RISC-V 是小端序。
+
+
+
+### 2.2 三类内存区域
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（栈 / 堆 / 静态内存）</strong>
+<table>
+<tr><th>区域</th><th>分配方式</th><th>默认初始化</th></tr>
+<tr><td><strong>栈 (*stack*)</strong></td><td>函数内局部变量；函数退出即销毁、内存可复用</td><td>❌ 不初始化（残留旧内容）</td></tr>
+<tr><td><strong>堆 (*heap*)</strong></td><td>显式 <code>malloc</code> / <code>free</code>；释放后可被复用</td><td>❌ 不初始化</td></tr>
+<tr><td><strong>静态 (*static*)</strong></td><td>函数外变量 + <code>static</code> 变量；固定地址、单一副本</td><td>✅ 默认清零</td></tr>
+</table></div>
+
+
+
+## 3. 内存安全问题
+
+C 把内存管理交给程序员，于是有一类典型 bug：
+
+- **释放后使用 (*use-after-free*)**：释放后仍访问该内存。
+- **重复释放 (*double-free*)**：对同一块释放两次。
+- **使用未初始化内存**：读到的是残留垃圾值。
+- **缓冲区溢出 (*buffer overflow*)**：写越过数组末尾（Lec 22 砸栈攻击的根源）。
+- **内存泄漏 (*memory leak*)**：分配后从不释放。
+- **类型混淆 (*type confusion*)**：用错误的类型解释同一段字节。
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>工程联想</strong>这正是 Rust 的所有权/借用、Go 的 GC + 边界检查想消灭的问题域。理解了这 6 类 bug，就能理解"内存安全语言"到底安全在哪、以什么为代价（编译期约束或运行时开销）。</div>
+
+
+
+
+
+## 4. 指针：带类型的整数
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（指针 *pointer*）</strong>指针本质是一个<strong>整数</strong>，存放某块内存的<strong>起始地址</strong>，同时其<strong>类型</strong>指明在该地址应当如何解释所存的值。</div>
+
+声明语法（从右向左读）：
 
 ```c
-// 将指针强转换为整数
-int x[4] = {1, 2, 3, 4};
-int *x_ptr = &x[0];
-long x_address = (long) x_ptr;
-
-// 将整数强转为指针
-int *x2_ptr = (int *)(x_address + 4);
-int x2_value = x_ptr[1];
-
-printf("x2_value = %d\n", x2_value)
+int *a;          // 指向 int 的指针
+float *b;        // 指向 float 的指针
+int **c;         // 指向"int 指针"的指针
+char (*d)(int);  // 指向函数 (int -> char) 的指针
+char (**e)(int); // 指向"函数指针"的指针
+void *f;         // 指向无类型内存的指针
+int ******value; // 指针可任意嵌套
 ```
 
-Sol: x2_value = 3
+### 4.1 数组与部分初始化
 
-#### 指针大小
-
-- 取决于平台
-- 我们使用的RISC-V是64位的指针，使得其与long类型的大小相同
-
-
-
-### void类型
-
-- 表示没有数据类型
-- 主要用于函数的返回类型和参数
-- 你不能定义void类型的变量，因为，这将没有任何意义
-- 可以定义``void *``类型的变量，但是不能解引用；不允许对其进行指针操作
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题2（部分初始化的数组，其余元素是什么？）</strong>
+<pre><code>int my_array[6] = {1};
+// my_array[0] = 1，其余元素全部被<strong>零初始化</strong>
+// [0] = 1, [3] = 0, [5] = 0</code></pre>
+规则：只要给了初始化列表，<strong>未显式赋值的元素一律补 0</strong>。<br>
+<em>（订正：原笔记此处写 <code>[3] = 100</code> 有误，正确为 <code>0</code>。）</em></div>
 
 
 
-### 定义与声明
+### 4.2 指针运算会按类型大小缩放
 
-- 在每个文件中，必须先声明变量或函数才能使用，因为 C 需要知道它的类型或类型签名
-  - 你可以声明一个变量或函数多次，只要它的类型或类型签名保持一致
--  在代码库中，必须对每个变量或函数定义一次
-  - 定义也算作声明，但只能在定义之后才有效
-  - 你可以在一个文件中定义一个函数或变量，并在另一个文件中使用它
-- 我们通常把许多声明放在单独的 "头文件" 中，以便程序的各个部分知道其他部分的重要类型
+- `array[n]` 等价于 `*(array + n)`；`&array[n]` 等价于 `array + n`。
+- **关键：把整数加到指针上时，整数会隐式乘以所指类型的大小。**
+
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（指针运算的缩放）</strong>
+<pre><code>int my_array[4];   // 设 &my_array[0] = 0x2FB0
+// &my_array[3] == 0x2FBC，比起点大 12 = 3 × sizeof(int)
+(long)(my_array + 3) == (long)my_array + 3 * sizeof(int);</code></pre>
+对比纯整数：设 <code>int *p = (int*)100;</code><br>
+<code>(int)p + 1</code> = <strong>101</strong>（先转整数再加 1）；<br>
+<code>(int)(p + 1)</code> = <strong>104</strong>（指针先加 1，缩放 ×4，再转整数）。</div>
+
+
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（下标运算的对称性）</strong>
+<pre><code>int values[5] = {10, 20, 30, 40, 50};
+printf("%d\n", 4[values]);  // 打印 50</code></pre>
+因为 <code>x[y] == *(x+y) == *(y+x) == y[x]</code>，所以 <code>4[values] == values[4] == 50</code>。</div>
+
+
+### 4.3 指针 ↔ 整数的强制转换
+
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（整数与指针互转 + 缩放，订正版）</strong>
+<pre><code>int x[4] = {1, 2, 3, 4};
+int *x_ptr   = &x[0];
+long x_addr  = (long)x_ptr;          // 指针 → 整数
+int *x2_ptr  = (int *)(x_addr + 4);  // 整数(+4 字节) → 指针，指向 &x[1]
+int x2_value = x2_ptr[1];            // x2_ptr[1] = x[2] = 3
+// x2_value == 3</code></pre>
+要点：<code>x_addr + 4</code> 是<strong>按字节</strong>加 4（普通整数运算），落到 <code>&x[1]</code>；而 <code>x2_ptr[1]</code> 是<strong>按 int 缩放</strong>再取，落到 <code>x[2]</code>。<br>
+<em>（订正：原笔记最后一行写成 <code>x_ptr[1]</code> 但答案给 3，前后不一致；自洽写法应为 <code>x2_ptr[1]</code>。）</em></div>
+
+
+### 4.4 `void` 与指针大小
+
+- `void` 表示"没有数据类型"，主要用于函数返回值/参数；不能定义 `void` 变量。
+- 可以定义 `void *`，但<strong>不能解引用、不能做指针算术</strong>（不知道步长）。
+- 指针大小依平台而定；本课的 **RISC-V 是 64 位指针，与 `long` 同宽**。
+
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（数组名 vs 取数组地址）</strong>
+<pre><code>int x[5];                  // 设 x 位于 0x...7f00
+printf("%p\n", x);    // 0x...7f00  —— 数组退化为首元素指针
+printf("%p\n", x+1);  // 0x...7f04  —— +1 个 int = +4 字节
+printf("%p\n", &x);   // 0x...7f00  —— 地址值相同，但类型是 int(*)[5]
+printf("%p\n", &x+1); // 0x...7f14  —— +1 个"整个数组" = +20 字节(0x14)</code></pre>
+关键区别：<code>x+1</code> 跨一个 <code>int</code>，<code>&x+1</code> 跨<strong>整个数组</strong>（5×4=20 字节）。</div>
 
 
 
-### 声明static函数和变量
 
-- 如果在两个不同的文件中使用相同的函数名，它们会产生冲突！C 语言会难以区分它们。
-  - 为了避免冲突，我们可以将变量和函数声明为 `static`
 
--  虽然函数中的局部变量通常分配在栈上，但我们可以指定它们分配在静态内存中
+## 5. 声明、定义与 `static`
 
-  ```c
-  int add_cumulative_numbers(int increase) {
-      static int total_sum = 0;
-      total_sum += increase;
-      return total_sum;
-  }
-  ```
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（声明 *declaration* vs 定义 *definition*）</strong>
+<ul>
+<li><strong>声明</strong>：告诉编译器某名字的类型/签名。可多次声明，只要类型一致。使用前必须先声明。</li>
+<li><strong>定义</strong>：实际分配存储/给出函数体。整个代码库中每个名字只能定义一次（定义也算一次声明）。</li>
+<li>常把声明集中放进<strong>头文件 (*header*)</strong>，让各部分知道彼此的类型。</li>
+</ul></div>
 
-  - `total_sum` 在程序启动时将初始化为零，并且在每次调用 `add_cumulative_numbers` 时保持其值！它不会被重新初始化
 
-### 字符串、字符
+`static` 的两种用途：
 
-- 字符串仅仅是字符的数组。
-- 字符是一个1字节的整数
-
-total_sum will be initialized to zero at program start, and it will keep its 
-value across calls to add_cumulative_numbers! It won’t be reinitialized
-
-### 通用函数
-
-● malloc(n): allocates a region of n bytes from heap memory, and returns a  pointer to the start of it. If there’s no memory left to allocate, returns NULL.
-
-● free(ptr): frees the region of memory starting at ptr that was previously allocated by malloc. If ptr is NULL, does nothing.
-
-● memset(ptr, v, n): sets every byte from ptr[0] to ptr[n-1] to v.
-
-● memmove(dst, src, n): copies src[0]...src[n-1] to dst[0]...dst[n-1]
-
-● memcpy(dst, src, n): alternate faster version of memmove, which may misbehave if dst and src overlap in any way. (Discouraged! Prefer memmove.)
-
-● strlen(str): computes and returns the length of str, based on finding its null terminator. Will misbehave if the null terminator is missing!
-
-● strcmp(a, b): compares two strings a and b, and returns an integer < 0, == 0, or > 0, depending on whether a < b, a == b, or a > b.
-
-● strcpy(dst, src): equivalent to memcpy(dst, src, strlen(src)+1);
-
-### 结构体
-
-```c
-struct xy_point {
-  double x;
-  double y;
-};
-struct xy_point my_point = { 12.5, -6.2 };
-```
-
-你可以通过名称进行初始化结构体
+1. **限定作用域**：把函数/变量声明为 `static`，使其仅在本文件可见，避免跨文件重名冲突。
+2. **静态生命周期的局部变量**：函数内的 `static` 变量分配在静态内存，程序启动时清零一次，<strong>跨调用保持值</strong>，不会被重新初始化。
 
 ```c
-struct xy_point my_point = {
-  .y = -6.2,
-  .x = 12.5,
-};
-```
-
-### 联合体
-
-所有字段共享相同的内存地址，也就是说，联合体中的所有字段都占用同一块内存空间。
-
-```c
-union my_union {
-  float x;
-  int y;
+int add_cumulative_numbers(int increase) {
+    static int total_sum = 0;   // 启动时初始化为 0，之后跨调用累加
+    total_sum += increase;
+    return total_sum;
 }
 ```
 
-- 在这个例子中，`x` 和 `y` 使用相同的内存区域。因此，如果你在 `x` 中存储一个浮点数，而后从 `y` 中读取，它将返回一个整数解释的内存数据。
 
-- 结构体中每个字段都有自己独立的内存地址，因此你可以同时安全地使用结构体中的所有字段。每个字段依次存储在内存中，不会互相覆盖。
 
-### 比特范围操作
+
+
+## 6. 字符串、常用库函数、结构体/联合体/位操作
+
+- **字符串就是字符数组**，字符是 1 字节整数，以 `\0`（null 终止符）结尾。
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（常用内存/字符串函数）</strong>
+<ul>
+<li><code>malloc(n)</code> / <code>free(ptr)</code>：堆分配/释放；分配失败返回 <code>NULL</code>，<code>free(NULL)</code> 为空操作。</li>
+<li><code>memset(ptr,v,n)</code>：把 <code>ptr[0..n-1]</code> 全设为 <code>v</code>。</li>
+<li><code>memmove(dst,src,n)</code>：安全拷贝（允许重叠）。</li>
+<li><code>memcpy(dst,src,n)</code>：更快但<strong>重叠时行为未定义</strong> → 优先用 <code>memmove</code>。</li>
+<li><code>strlen(s)</code>：靠 <code>\0</code> 计算长度；缺终止符会越界。</li>
+<li><code>strcmp(a,b)</code>：返回 <0 / 0 / >0。</li>
+<li><code>strcpy(dst,src)</code> ≈ <code>memcpy(dst,src,strlen(src)+1)</code>（含终止符；不限长 → 砸栈隐患，见 Lec 22）。</li>
+</ul></div>
+
+
+**结构体 vs 联合体**：结构体每个字段有独立内存、可同时安全使用；<strong>联合体 (*union*)</strong> 所有字段共享同一块内存——往 `x`（float）写、再从 `y`（int）读，会得到对同一段字节的整数解释（类型双关）。
+
+**位操作**（`unsigned short a=0x1313, b=0x3232`）：`a&b==0x1212`、`a|b==0x3333`、`a^b==0x2121`、`~a==0xECEC`。常用惯用法：
 
 ```c
-unsigned short a = 0x1313, b = 0x3232;
-(a & b) == 0x1212;
-(a | b) == 0x3333;
-(a ^ b) == 0x2121;
-~a == 0xECEC;
-
-unsigned int my_int;
-// Set the Nth bit of an integer:
-my_int |= 1 << N;
-// Clear the Nth bit of an integer
-my_int &= ~(1 << N);
-// Check if any bits in MASK are set
-if (my_int & MASK) { /* ... */ }
-// Check if all bits in MASK are set
-if ((my_int & MASK) == MASK) { /* ... */ }
-// Check if integer is a power of two
-if (my_int && !(my_int & (my_int - 1))) { /* ... */ }
-
-
+my_int |=  1 << N;            // 置第 N 位
+my_int &= ~(1 << N);          // 清第 N 位
+if (my_int & MASK)            // MASK 中有任一位被置
+if ((my_int & MASK) == MASK)  // MASK 中所有位都被置
+if (my_int && !(my_int & (my_int - 1)))  // 判断是否 2 的幂
 ```
 
 
 
-### 测验
 
-```c
-int main() {
-  int x[5]; // x is at 0x7fffdfbf7f00
-  printf("%p\n", x); // -> 0x7fffdfbf7f00
-  printf("%p\n", x+1); // -> 0x7fffdfbf7f04
-  printf("%p\n", &x); // -> 0x7fffdfbf7f00
-  printf("%p\n", &x+1); // -> **0x7fffdfbf7f14**
-  return 0;
-}
-```
 
-## 内存抽象
+## 7. GDB：调试内核的手法
+
+xv6 在 QEMU 里跑，调试靠 GDB 远程连接。后续 Lec 3 / Lec 6 大量用到，这里先备一份速查。
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（GDB 常用命令速查）</strong>
+<table>
+<tr><th>命令</th><th>作用</th></tr>
+<tr><td><code>b *0x80000000</code> / <code>b main</code></td><td>在地址或符号处下断点</td></tr>
+<tr><td><code>c</code> / <code>stepi</code> / <code>n</code></td><td>继续运行 / 单步一条指令 / 单步一行 C</td></tr>
+<tr><td><code>delete 1</code></td><td>删除 1 号断点</td></tr>
+<tr><td><code>info reg</code></td><td>查看所有寄存器（如 a0–a7 传参、a7 系统调用号）</td></tr>
+<tr><td><code>p $pc</code> / <code>p/x $satp</code></td><td>打印寄存器；<code>/x</code> 以十六进制、<code>/a</code> 以地址形式</td></tr>
+<tr><td><code>x/2c $a1</code></td><td>检查内存：<code>/2</code> 两项，<code>c</code> 字符（<code>i</code> 指令 / <code>x</code> 十六进制 / <code>a</code> 地址）</td></tr>
+<tr><td><code>p/3i 0xe14</code></td><td>反汇编从 0xe14 起的 3 条指令</td></tr>
+</table></div>
+
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>TUI（Text User Interface）模式</strong><code>tui enable</code> 分屏同时显示源码/汇编/寄存器/命令行。布局：<code>layout src</code> / <code>asm</code> / <code>split</code> / <code>regs</code>；快捷键 <code>Ctrl-x 1</code>（仅代码窗）、<code>Ctrl-L</code>（刷新）、<code>Ctrl-x s</code>（切布局）。<br>
+另一个常用技巧：QEMU 监视器里 <code>Ctrl-a c</code> 进入，<code>info mem</code> 查看当前页表映射（调试 VM/trap 时极有用，Lec 5/6 会用）。</div>
+**TUI视图常见操作**
+
+- `layout src`（显示源代码窗口）
+- `layout asm`（显示反汇编窗口）
+- `layout split`（分屏显示源代码和汇编）
+- `layout regs`（显示寄存器窗口）
+
+**TUI 视图常见快捷键：**
+
+- `Ctrl-x 1`（仅显示代码窗口）
+
+- `Ctrl + L`：刷新屏幕。
+- `Ctrl + P / Ctrl + N`：在历史命令中导航。
+- `Ctrl + x s`：切换布局（源码视图、汇编视图等）。
+
+
+
+
+
+**Bootloader（先埋个伏笔）**：上电后内核被加载到 RAM 起始地址 `0x80000000`，第一条指令跳到 `entry.S` 的 `_entry`，设置栈后进入 `start()` → `main()`。完整启动流程在 Lec 3 展开。
+
+
+
+## 8. 内存抽象的层次：从总线到栈堆
+
+这是本讲承上启下的关键——同一个"内存"，在不同层次有完全不同的样貌。
 
 ![image-20240918200623155](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac2483bc4a.png)
 
-### 硬件层面
+### 8.1 硬件层：总线、缓存、I/O
 
 ![image-20240918200655503](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac265274a6.png)
 
-- **总线**在计算机内部的各个组件之间传输数据。
-
-- **缓存**记住之前从总线获取的数据。
-
-- 缓存通过减少总线访问的次数来加速CPU的运行。
-
-- **问题**：什么是I/O设备？
-
-> 总线如何工作？
-
 ![image-20240918200757704](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac2a5daeee.png)
 
-### CPU / OS 层面：地址空间
+- **总线 (*bus*)** 在 CPU、内存、I/O 设备之间传输数据。
+- **缓存 (*cache*)** 记住最近从总线取得的数据，通过减少总线访问来加速 CPU。
 
-地址就是按字节索引的数组
+### 8.2 CPU / OS 层：地址空间
 
 ![image-20240918200840683](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac2cf327d5.png)
 
-- **问题**：总线接口过于底层，无法做任何有用的操作！
-- **想法**：将总线表示为一个巨大的数据数组。这被称为**地址空间**。
-- 每个数组元素是一个字节（8位）。
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（地址空间 *address space*）</strong>把底层总线抽象成一个<strong>按字节索引的巨大数组</strong>，每个元素 1 字节（8 位）。软件用 <code>LOAD</code>/<code>STORE</code> 在这个数组上读写。</div>
 
-#### 如何与一个地址空间进行交互？
+四个递进的想法：
 
-
-
-思想1： 地址空间可以有空洞
-
-![image-20240918201247397](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac3c326ae0.png)
-
-Ex：``STORE 0xF0``、``LOAD -> 0xF0``
-
-- 通常地址空间比RAM大得多。
-  - 可以访问的地址称为“已映射”。
-  - 不能访问的空洞称为“未映射”。
-- **问题**：如果CPU加载或存储到未映射的区域，会发生什么？
-
-
-
-思想2： 地址空间有权限
+1. **地址空间可以有空洞**：能访问的地址称"已映射 (*mapped*)"，访问不到的"未映射 (*unmapped*)"；地址空间通常远大于物理 RAM。
+2. **地址带权限**：读（R，可 load）/ 写（W，可 store）/ 执行（X，可作为代码）。无权限访问会触发异常——这是隔离与安全的基石。
+3. **统一 RAM 与设备**：把 I/O 设备寄存器也放进地址空间（内存映射 I/O），用 load/store 即可操作设备。"代码和数据同为内存"即<strong>冯·诺依曼架构 (*von Neumann*)</strong>。（注：x86 早期把 I/O 放在独立地址空间。）映射粒度通常是一个<strong>页 (*page*, 4KB)</strong> 而非一字节。
+4. **虚拟内存 + 缓存一致性**：让每个进程拥有独立地址空间；让多 CPU 共享同一地址空间（Lec 5 展开）。
 
 ![image-20240918201321559](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac3e689551.png)
 
-读（R） -> 可以加载数据
-
-写（W） -> 可以存储数据
-
-执行（X） -> 可以作为代码执行
-
-**问题**：为什么要有权限？
-
-**问题**：如果CPU在没有权限的情况下加载或存储某个地址，会发生什么？
-
-
-
-思想3： 结合RAM和设备
-
 ![image-20240918201427638](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20240918201427638.png)
 
-- 这并不像看起来那么明显；例如，x86最初将I/O放在一个与内存分开的地址空间中。
+### 8.3 编译器 / 库层：栈与堆
 
-- 程序员可以通过加载和存储来与I/O设备进行交互！
+地址空间仍太底层——"数据放数组哪个位置"这个<strong>内存分配 (*memory allocation*)</strong> 问题，有两种基本答案：
 
-- 将代码和数据视为相同（即内存）也是一个强大的思想，称为冯·诺依曼架构。
-
-典型的映射粒度是一个页面（4KB），而不是一个字节
-
-- 思想4：虚拟内存
-  - 允许每个进程拥有自己的地址空间
-- 思想5：缓存一致性和一致性
-  - 允许多个CPU在一个地址空间中共享内存
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（栈 vs 堆）</strong>
+<ul>
+<li><strong>栈</strong>：随函数调用/返回自动分配/释放，高效、简单。</li>
+<li><strong>堆</strong>：分配与释放独立于函数调用，由<strong>堆分配器 (*heap allocator*)</strong> 跟踪哪些区域已用/空闲——这至今仍是活跃研究领域，存在大量权衡，最优方案取决于分配模式。</li>
+</ul></div>
 
 
-
-### 编译器/库 层面： 栈和堆
-
-- 问题：地址空间仍然过于底层！
-
-- 我们如何决定在数组中的哪个位置存储数据？
-  - 这个问题被称为**内存分配**
-
-- 两种基本方法：
-  1. **栈**：在函数调用时分配内存，并在函数返回时释放内存
-  2. **堆**：管理独立于函数调用的内存分配和释放
-
-![image-20240918201744643](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac4efc3e07.png)
-
-#### 堆分配器
-
-- 问题：需要跟踪哪些区域在内存数组（堆）中是已分配的，哪些是空闲的
-- 事实证明，这直到今天仍然是一个有趣的研究领域
-- 存在许多设计上的权衡；最好的解决方案取决于内存分配的模式
-
-#### 栈和堆的选择
-
-- 通常情况下，应该优先使用栈，除非对象在函数返回后需要保持有效，或者对象过大无法在栈中存储。
-
-- 栈的分配和释放更高效，操作也更加简单。栈的内存分配是自动的，函数调用时分配，函数返回时释放，无需手动管理。
-
-- 栈的大小通常比堆小很多，栈的空间有限，因此如果对象过大或需要长期存储，才需要使用堆。
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论（栈与堆的选择原则）</strong>默认优先用<strong>栈</strong>；仅当对象需要在函数返回后存活、或对象过大放不下栈时，才用堆。栈的分配/释放自动且高效，但空间有限。<br>
+对应的内存管理陷阱（务必牢记）：用已释放内存、重复释放、忘记初始化、写越界、忘记释放（泄漏）、错误类型转换、忘记检查分配是否失败、返回指向栈上局部变量的指针。</div>
 
 ![image-20240918202102337](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66eac5b4f12cf.png)
 
-### 内存管理陷阱
+## 9. 自测清单
 
-- 使用已经释放的内存
-
-- 对同一个对象多次调用释放操作
-
-- 忘记初始化内存（内存不会自动清零）
-
-- 写入数组末尾之外的内存区域（缓冲区溢出）
-
-- 忘记释放对象（内存泄漏）
-
-- 将对象强制转换为错误的类型
-
-- 忘记检查内存分配是否失败
-
-- 使用指向栈上位置的指针（如果这些位置可能被返回）
-
-
-
-
+- [ ] C 相对 Python 的 5 点差异？"静态类型"中类型绑定到变量还是值？
+- [ ] `0x12345678` 在小端/大端下的字节序列？RISC-V 是哪种？
+- [ ] 栈/堆/静态三区的分配方式与默认初始化各是什么？
+- [ ] 6 类内存安全 bug 分别是什么？
+- [ ] 为什么 `(int)p+1` 与 `(int)(p+1)` 结果不同？`x+1` 与 `&x+1` 差多少字节？
+- [ ] `static` 局部变量的生命周期与初始化行为？
+- [ ] `memcpy` 与 `memmove` 的区别？为何优先 `memmove`？
+- [ ] 地址空间的 4 个递进想法（空洞/权限/统一 I/O/虚拟内存）。
+- [ ] 何时该用堆而非栈？列出至少 5 个内存管理陷阱。
 
 
 

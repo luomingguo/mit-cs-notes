@@ -8,9 +8,11 @@
 
 阅读 [xv6 教材的第6章]()
 
+阅读 lec https://pdos.csail.mit.edu/6.1810/2025/lec/l-interrupt.txt
 
 
-驱动程序（driver）是操作系统中的一部分代码，用来管理某个具体的设备。它的职责包括：
+
+本讲定位： CPU需要连接设备： 存储、通信、显示等等，而设备驱动程序（*device driver*），作为操作系统中的一部分，用来控制这些设备。它的职责包括：
 
 - 配置设备硬件
 - 告诉设备执行哪些操作
@@ -328,3 +330,242 @@ UART 驱动是通过一次读取一个字节（从控制寄存器中）来获取
 控制台（console）在应用看来是一个“普通文件”，可以通过read、write来输入输出，到那时有些设备无法通过标准文件接口表达，例如开关行缓冲（line buffering），Unix提供了`ioctl`系统调用。
 
 某些应用需要“实时”响应，必须在一个确定的时间上限内完成响应。xv6不适合实时系统，原因是，调度器不考虑 deadline，内核中存在较长时间关闭中断的代码路径。真正的实时操作系统RTOS需要设计成可以分析“最坏情况下的响应时间”（worst-case response time）
+
+---
+
+# 源码精读：UART 驱动 / 控制台 / 内核态 trap
+
+> 三份参考源码 `uart.c` / `console.c` / `kernelvec.S` 正好串成「**上半部（进程内核线程）发请求并睡眠 ↔ 下半部（中断）唤醒**」这套生产者-消费者模型。代码取自 xv6-riscv（rev5）。
+
+## 1. `uart.c`：最底层的 16550 驱动
+
+### 1.1 寄存器宏 & 全局状态
+
+设备寄存器就是 `UART0` 起始的几个物理地址，用 `volatile` 指针读写——`volatile` 告诉编译器**每次都真的访存**、不要缓存到寄存器（因为这些地址有硬件副作用）：
+
+```c
+#define Reg(reg) ((volatile unsigned char *)(UART0 + (reg)))
+#define ReadReg(reg)     (*(Reg(reg)))
+#define WriteReg(reg, v) (*(Reg(reg)) = (v))
+
+#define RHR 0   // 读：收到的字节
+#define THR 0   // 写：要发送的字节（同一地址，读写含义不同）
+#define IER 1   // 中断使能
+#define LSR 5   // 行状态：bit0=有数据可读, bit5=THR 空可再发
+#define LSR_RX_READY (1<<0)
+#define LSR_TX_IDLE  (1<<5)
+
+// 发送线程与「发送完成中断」之间的同步三件套：
+static struct spinlock tx_lock;
+static int tx_busy;   // UART 是否正在发送
+static int tx_chan;   // &tx_chan 作为 sleep/wakeup 的「等待通道」
+```
+
+### 1.2 `uartinit`：配置硬件、打开中断
+
+```c
+void uartinit(void) {
+  WriteReg(IER, 0x00);                         // 先关中断
+  ... // 设波特率、8 位字长、使能并清空 FIFO
+  WriteReg(IER, IER_TX_ENABLE | IER_RX_ENABLE);// ★ 打开收/发中断
+  initlock(&tx_lock, "uart");
+}
+```
+
+### 1.3 上半部：`uartwrite`（发字节，会睡眠）
+
+这是 `write()` 系统调用最终落到的发送路径，**运行在进程内核线程**，可以睡眠：
+
+```c
+void uartwrite(char buf[], int n) {
+  acquire(&tx_lock);
+  int i = 0;
+  while (i < n) {
+    while (tx_busy != 0) {
+      // UART 还在发上一个字节 → 睡在 tx_chan 上，等发送完成中断唤醒
+      sleep(&tx_chan, &tx_lock);
+    }
+    WriteReg(THR, buf[i]);   // 把一个字节塞进发送保持寄存器
+    i += 1;
+    tx_busy = 1;             // 标记「正在发送」
+  }
+  release(&tx_lock);
+}
+```
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>这就是「上半部发请求 + 睡眠」</strong>每写一个字节就置 <code>tx_busy=1</code>，下一个字节前若设备还忙就 <code>sleep</code> 让出 CPU；真正叫醒它的是下半部的发送完成中断。<code>sleep</code> 会原子地释放 <code>tx_lock</code> 并挂起，醒来时重新持锁——所以下半部能安全地拿同一把锁改 <code>tx_busy</code>。</div>
+
+### 1.4 `uartputc_sync`：轮询式发送（给 printk / 回显用）
+
+内核 `printk` 和字符回显不能依赖中断/调度（可能在关中断、panic、早期启动阶段），所以走**纯轮询**：
+
+```c
+void uartputc_sync(int c) {
+  push_off();                                   // 关中断（保护临界区）
+  while ((ReadReg(LSR) & LSR_TX_IDLE) == 0)     // 自旋等 THR 空
+    ;
+  WriteReg(THR, c);
+  pop_off();
+}
+```
+
+> 对比：`uartwrite` 是中断驱动 + 睡眠（高效、能让出 CPU）；`uartputc_sync` 是忙等（简单、不依赖调度，但浪费 CPU）。同一个设备两种用法，体现了「轮询 vs 中断」的取舍。
+
+### 1.5 下半部：`uartintr`（中断处理）
+
+由 `devintr` 在收到 UART 中断（IRQ 10）时调用，**运行在中断上下文、没有特定进程**，因此**绝不能睡眠**：
+
+```c
+void uartintr(void) {
+  ReadReg(ISR);                       // 读 ISR 确认（acknowledge）中断
+
+  acquire(&tx_lock);
+  if (ReadReg(LSR) & LSR_TX_IDLE) {   // 发送完成？
+    tx_busy = 0;
+    wakeup(&tx_chan);                 // ★ 唤醒在 uartwrite 里睡着的发送线程
+  }
+  release(&tx_lock);
+
+  // 把收到的字符全部取出来，逐个交给控制台层
+  while (1) {
+    int c = uartgetc();               // 读 LSR.RX_READY，有则读 RHR
+    if (c == -1) break;
+    consoleintr(c);
+  }
+}
+```
+
+> 一次中断**可能同时**意味着「发完了」和「来了新输入」——所以这里既处理 tx（唤醒发送方）又 drain rx（读空接收 FIFO）。这呼应了「中断只是提示，要靠读状态寄存器判断到底发生了什么」。
+
+## 2. `console.c`：行编辑 + 生产者/消费者缓冲
+
+控制台在 UART 之上提供「按行读取、支持退格」的终端语义。核心是一个环形输入缓冲 + 三个下标：
+
+```c
+struct {
+  struct spinlock lock;
+#define INPUT_BUF_SIZE 128
+  char buf[INPUT_BUF_SIZE];
+  uint r;  // Read  index：consoleread 读到哪了
+  uint w;  // Write index：已成行、可供读取的边界
+  uint e;  // Edit  index：正在编辑的位置（退格在 e 和 w 之间移动）
+} cons;
+```
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>r / w / e 三下标的意义</strong><code>[r, w)</code> 是「已经成行、可被 read 消费」的字符；<code>[w, e)</code> 是「用户正在敲、还没回车」的一行——按退格能在这区间内删除。只有遇到 <code>\n</code>（或 ^D / 缓冲满）时才把 <code>w</code> 推进到 <code>e</code>，整行一次性放出。这就是 Unix 终端「行缓冲」的实现。</div>
+
+### 2.1 消费者：`consoleread`（进程上下文，会睡眠）
+
+```c
+int consoleread(int user_dst, uint64 dst, int n) {
+  uint target = n;
+  acquire(&cons.lock);
+  while (n > 0) {
+    while (cons.r == cons.w) {          // 缓冲里没有成行的数据
+      if (killed(myproc())) { release(&cons.lock); return -1; }
+      sleep(&cons.r, &cons.lock);       // ★ 睡在 &cons.r 上，等中断喂数据
+    }
+    int c = cons.buf[cons.r++ % INPUT_BUF_SIZE];
+    if (c == C('D')) { ... break; }     // ^D = EOF
+    either_copyout(user_dst, dst, &cbuf, 1);  // 拷到用户缓冲
+    dst++; --n;
+    if (c == '\n') break;               // 读到一整行就返回
+  }
+  release(&cons.lock);
+  return target - n;
+}
+```
+
+### 2.2 生产者：`consoleintr`（中断上下文，不睡眠）
+
+被 `uartintr` 对每个输入字符调用一次，做行编辑并在成行时 `wakeup`：
+
+```c
+void consoleintr(int c) {
+  acquire(&cons.lock);
+  switch (c) {
+  case C('U'):  // Ctrl-U 杀掉整行：把 e 退回到上一个 \n
+    while (cons.e != cons.w && cons.buf[(cons.e-1)%INPUT_BUF_SIZE] != '\n') {
+      cons.e--; consputc(BACKSPACE);
+    }
+    break;
+  case C('H'): case '\x7f':  // 退格/删除：e 退一格
+    if (cons.e != cons.w) { cons.e--; consputc(BACKSPACE); }
+    break;
+  default:
+    if (c != 0 && cons.e - cons.r < INPUT_BUF_SIZE) {
+      c = (c == '\r') ? '\n' : c;
+      consputc(c);                              // 回显给用户
+      cons.buf[cons.e++ % INPUT_BUF_SIZE] = c;  // 存进缓冲
+      if (c=='\n' || c==C('D') || cons.e-cons.r==INPUT_BUF_SIZE) {
+        cons.w = cons.e;                        // ★ 整行就绪：推进 w
+        wakeup(&cons.r);                        // ★ 唤醒 consoleread
+      }
+    }
+    break;
+  }
+  release(&cons.lock);
+}
+```
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>sleep/wakeup 的配对正是上下半部的「接头暗号」</strong>消费者 <code>consoleread</code> 睡在 <code>&cons.r</code>，生产者 <code>consoleintr</code> 成行时 <code>wakeup(&cons.r)</code>；发送方 <code>uartwrite</code> 睡在 <code>&tx_chan</code>，中断 <code>uartintr</code> 发完时 <code>wakeup(&tx_chan)</code>。两条链都靠同一把锁（<code>cons.lock</code> / <code>tx_lock</code>）保护共享缓冲，避免上下半部并发竞争。</div>
+
+### 2.3 `consolewrite` & 接线
+
+`consolewrite` 把用户数据分批 `either_copyin` 到内核小缓冲，再调 `uartwrite` 发出。`consoleinit` 把控制台挂到文件系统的设备表上，使 `read/write` 落到这里：
+
+```c
+void consoleinit(void) {
+  initlock(&cons.lock, "cons");
+  uartinit();
+  devsw[CONSOLE].read  = consoleread;   // read()  → consoleread
+  devsw[CONSOLE].write = consolewrite;  // write() → consolewrite
+}
+```
+
+## 3. `kernelvec.S`：内核态 trap 的入口
+
+用户态 trap 走 `trampoline.S` 的 `uservec`（见 Lec 6）；但**当 CPU 已经在内核态时发生中断/异常**，走的是 `kernelvec`。它简单得多——因为已经在内核页表、用的是当前内核栈，不需要换页表、不需要 trapframe：
+
+```asm
+kernelvec:
+        addi sp, sp, -256        # 在「当前内核栈」上腾出空间
+        # 只保存 caller-saved 寄存器（ra, gp, t0-t6, a0-a7）
+        sd ra, 0(sp)
+        # sd sp, 8(sp)           # 不保存 sp：就是当前栈，加减自洽
+        sd gp, 16(sp)
+        # sd tp, 24(sp)          # 不保存 tp：里面是 hartid
+        sd t0, 32(sp)
+        ...
+        sd t6, 240(sp)
+
+        call kerneltrap          # 进入 C 处理（trap.c）
+
+        ld ra, 0(sp)             # 恢复
+        ...
+        ld t6, 240(sp)
+        addi sp, sp, 256
+        sret                     # 回到内核里被打断的地方
+```
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么 kernelvec 只存 caller-saved 寄存器？为什么不存 sp / tp？</strong>因为 <code>kerneltrap</code> 是个普通 C 函数调用，<strong>callee-saved 寄存器（s0–s11）由它自己负责保存/恢复</strong>，kernelvec 只需替被打断的代码保住 caller-saved 的那些（ra/gp/t*/a*）。<code>sp</code> 不用存——它就是当前内核栈指针，<code>addi</code> 加减后自然还原；<code>tp</code> 也不存（且返回时不恢复），因为它装着 hartid，万一中途换了核，应保留新核的值。能直接在当前栈上压寄存器的前提是：<strong>内核态发生中断时一定有一个有效的内核栈</strong>。</div>
+
+> `kerneltrap` 之后同样调用 `devintr` 来分派设备中断；定时器中断在这里返回 2，触发 `yield`——这也是「内核代码可被抢占」的来源（见 Lec 13）。
+
+## 4. 一次键盘输入的完整生产者-消费者时序
+
+```
+shell: read(0, buf, n)
+   └─ consoleread: cons.r == cons.w（空）→ sleep(&cons.r) 让出 CPU   ← 消费者睡下
+
+[你按下键盘 'l']
+设备 → PLIC(IRQ 10) → CPU trap → kernelvec → kerneltrap → devintr
+   └─ plic_claim()=10 → uartintr()
+        ├─ uartgetc() 读 RHR 得到 'l'
+        └─ consoleintr('l'): 回显 + 存入 cons.buf；若是 '\n' 则 cons.w=cons.e + wakeup(&cons.r)
+   └─ plic_complete(10)
+
+调度器恢复 shell → consoleread 从 sleep 醒来 → 取出字符 copyout 到用户 → read 返回   ← 消费者被唤醒
+```
+
+输出方向对称：`write → consolewrite → uartwrite`（写 THR、置 tx_busy、睡 `&tx_chan`）↔ 发送完成中断 `uartintr`（清 tx_busy、`wakeup(&tx_chan)`）。

@@ -78,14 +78,25 @@ https://www.kernel.org/doc/html/latest/
 - OS设计及实现的挑战
 - 系统调用
 
+
+
 [lec1.md](./lec1.md)
 
-# Lec 2 C语言和内存抽象
+# Lec 2 用C语言编程Xv6
 
 ## 总览
 
-- C语言入门
-- 内存抽象
+- C语言：一门”高级汇编“
+- 数据表示
+- 内存安全问题
+- 指针： 带类型的整数
+- 声明、定义 与 `static`
+- 字符串、常用库函数、结构体和位操作
+- GDB： 调试内核的手法
+- 内存抽象的层次：从总线到堆栈
+- 自测清单
+
+
 
 [lec2.md](./lec2.md)
 
@@ -125,39 +136,6 @@ https://www.kernel.org/doc/html/latest/
 
 # Lec 4 操作系统的组织 & 微内核
 
-主题：
-
-- 一个内核应该做什么？
-- 它应该提供怎样的抽象？
-- 宏内核 和 微内核 设计哲学？
-
-答案取决于应用程序和程序员的喜好！ 没有单一的最佳答案 这个主题更多是关于思想，而不是具体的机制
-
-阅读资料：
-
-- [The Performance of micro-Kernel-Based Systems (1997)](https://pdos.csail.mit.edu/6.828/2024/readings/microkernel.pdf)
-
-- (Optional) 
-
-  - L4 微内核细节
-    http://www.cse.unsw.edu.au/~cs9242/02/lectures/01-l4.pdf
-    http://www.cse.unsw.edu.au/~cs9242/02/lectures/01-l4/01-l4.html
-
-  - L4的 fast IPC 
-    https://cs.nyu.edu/~mwalfish/classes/15fa/ref/liedtke93improving.pdf
-
-  - 后来的演变版本
-    https://trustworthy.systems/publications/nicta_full_text/8988.pdf
-
-  - L4背后的思想
-    https://www.cs.fsu.edu/~awang/courses/cop5611_s2004/microkernel.pdf
-
-  - Fiasco.OC Microkernel——当下的L4
-
-    https://l4re.org/doc/
-
-## 总览
-
 - 传统的宏内核背后的设计哲学
 - 宏内核的缺点
 - 微内核介绍
@@ -168,15 +146,9 @@ https://www.kernel.org/doc/html/latest/
 
 # Lec 5 虚拟内存/页表
 
-阅读 xv6 内核的完整实现代码
+本讲定位：假设我们在扁平的物理空间，0 到 $2^{64}$​，应用程序和内核共享同一块内存，shell程序有一个 bug： 它有时会写入一个随机的内存地址。👉 如何防止它破坏内核？如何防止它破坏其他进程呢？
 
-- `kernel/memlayout.h`
-- `kernel/vm.c`
-- `kernel/kalloc.c`
-- `kernel/riscv.h`
-- `kernel/exec.c`
-
-阅读 [xv6 教材的第3章](https://pdos.csail.mit.edu/6.1810/2025/xv6/book-riscv-rev5.pdf)
+我们希望每个进程都有自己的地址空间，要求可以读写自己的内存，但不能访问其他进程和内核的内存。核心挑战是，如何把多个虚拟地址空间映射到同一块物理内存上，同时保证隔离性？
 
 
 
@@ -269,45 +241,11 @@ https://www.kernel.org/doc/html/latest/
 
 # Lec 12 锁
 
-阅读xv6内核的实现，
-
-- `kernel/spinlock.h`
-- `kernel/spinlock.c`
-
-阅读xv6第7章的实现理解页错误
-
-## 总览
-
-- 为什么要使用锁？
-- 锁的抽象
-  - 不同角度理解锁
-- 什么时候需要用锁？
-- 锁是否可以自动的？
-- 锁的问题
-  - 死锁
-  - 模块化
-  - 性能
-- 示例：URAT， CAS
-
 
 
 [lec12.md](./lec12.md)
 
-# Lec 13 调度
-
-
-
-任何操作系统都可能会运行比计算机 CPU 数量更多的进程，因此需要一个计划来在进程之间共享 CPU。理想情况下，这种共享对用户进程是透明的。一种常见的方法是通过将多个进程多路复用到硬件 CPU 上，为每个进程提供虚拟 CPU 的假象。下面我们介绍xv6如何实现这种多路复用技术。
-
-> 为什么要有线程和线程切换？
-
-1. 人们希望计算机能够支持多任务处理
-2. 简化程序结构，通过使用线程，可以优雅地分解复杂的程序，降低编程的复杂性
-   - 比如实验0的素数筛选的例子
-3. 多核并行加速，可以充分利用多核CPU
-   - 可将 xv6 内核视为一个多核并行程序
-
-
+# Lec 13 线程切换 & 调度
 
 
 
@@ -429,11 +367,19 @@ https://www.kernel.org/doc/html/latest/
 
 # Lec 22 内核可扩展性
 
-阅读资料： 《The BSD packet Filter》
+In preparation for lecture, read the paper [The BSD Packet Filter: A New Architecture for User-level Packet Capture](https://pdos.csail.mit.edu/6.1810/2025/readings/bpf-usenix93.pdf).
+
+You might find it interesting that BPF is widely used in Linux, for many use cases beyond network filtering. If you are curious, you can read about some of the ways in which the Linux kernel uses BPF in the article [A thorough introduction to eBPF](https://lwn.net/Articles/740157/).
+
+Since the BPF filter instructions come from an arbitrary application, the kernel cannot trust the instructions to be well-behaved. How does the kernel ensure that the filter does not access arbitrary memory, and how does the kernel ensure that the filter does not run forever, with the least performance overhead?
+
+Submit your answer in an ASCII text file named `homework.txt` to the corresponding "Lecture N" assignment on Gradescope
+
+阅读资料： [The BSD packet Filter](https://pdos.csail.mit.edu/6.1810/2025/readings/bpf-usenix93.pdf)
 
 本节的核心问题是，如何在内核中“安全地运行用户代码”来扩展内核能力。该问题出现的缘由是为了监控原始网络包。具体来说是，某个用户空间进程需要检查所有in-comming的网络包，而不是针对某个TCP连接或端口，但由于多个程序同时运行，每个程序关心的包不同，内核无法提前知道哪个包应该给哪个进程。
 
-
+[Lec bpf](https://pdos.csail.mit.edu/6.1810/2025/lec/l-bpf.txt)
 
 [lec22.md](./lec22.md)
 
@@ -443,7 +389,7 @@ https://www.kernel.org/doc/html/latest/
 
 阅读论文：[Meltdown: Reading Kernel Memory from User Space](https://meltdownattack.com/meltdown.pdf)
 
-
+[Lec Meltdown](https://pdos.csail.mit.edu/6.1810/2025/lec/l-meltdown.txt), [FAQ](https://pdos.csail.mit.edu/6.1810/2025/lec/meltdown-faq.txt)
 
 [lec23.md](./lec23.md)
 

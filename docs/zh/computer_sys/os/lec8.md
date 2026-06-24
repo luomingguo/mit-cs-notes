@@ -1,16 +1,26 @@
 # Lec 8 页错误
 
-阅读xv6内核的实现，
 
-- `kernel/sysproc.c:sbrk()`
-- `kernel/trap.c:usertrap()`
-- `kernel/vm.c:vmfault()`
-
-阅读xv6第5章的实现理解页错误。
 
 [toc]
 
 
+
+本讲定位：上一讲（Lec 5）把页表当成「静态」的地址映射；本讲引入**页错误（page fault）**，让页表变成**动态**的——内核可以在访问发生的那一刻拦截下来、临时修改页表、再让指令重跑。核心公式：**页表（间接层）+ 页错误（拦截点）= 一套强大的透明机制**，可用于惰性分配、零填充、写时复制、按需调页、内存映射文件等。
+
+## 总览
+
+- 虚拟内存的几个视角：从「隔离」到「间接层能做的酷事」
+- 页错误的机制：三种 RISC-V 页错误 + 关键寄存器（`stval` / `scause` / `sepc`）
+- 页表 + 页错误的组合能力
+- **按需分配（lazy allocation）**：`sbrk` 只记账、`vmfault` 真分配
+- 透明性的关键：`copyin` / `copyout` 也会触发 `vmfault`
+- **按需零填充（zero-fill-on-demand）**：共享只读零页 + 写时再分配
+- **写时复制 fork（COW）**：只读共享 + 写时复制 + 引用计数
+- **按需调页（demand paging）**：用到哪页才从磁盘读哪页
+- **换页到磁盘 / 页面淘汰**：局部性、LRU、A/D 位、`madvise`/`mlock`
+- **内存映射文件（mmap）**：VMA、按需读入、写回策略
+- 源码精读：`sys_sbrk` / `usertrap` / `vmfault`
 
 ## 虚拟内存的几个视角
 
@@ -95,8 +105,7 @@ xv6 的按需分配包含两个部分：
 - 用户页表：只包含用户空间内存映射（代码段、数据段、栈等）
 - 内核页表：包含所有物理内存映射（包括UART等硬件设备）
 
-```text
-高地址 ┌─────────────┐
+```
 典型的用户进程内存布局
 
 高地址 ┌─────────────┐
@@ -248,3 +257,183 @@ COW fork的基本思路是，父进程和子进程最初共享所有物理页面
 
 COW fork使得fork速度更快，因为fork不需要立即复制内存。稍后，某些内存可能需要在写入时复制，但通常大部分内存不需要复制。一个常见的例子是fork之后执行exec：在fork之后可能会写入少量页面，但随后子进程的exec系统调用，它会用一个新的可执行程序替换当前进程的内存空间，从而释放大部分从父进程继承的内存。COW fork进一步优化了， 消除了这种内存复制的需求。此外，COW fork是透明（transparent）的：应用程序无需进行任何修改即可从中受益。
 
+---
+
+# 源码精读：lazy allocation 的三段式实现
+
+> 三个参考文件正好串成「按需分配」的完整链路：`sys_sbrk`（只记账不分配）→ 程序访问触发页错误 → `usertrap`（识别并分派页错误）→ `vmfault`（真正分配物理页并建映射）。代码取自 xv6-riscv（rev5）。
+
+## 1. `sysproc.c:sys_sbrk()`：eager vs lazy 两条路
+
+xv6 的 `sbrk` 系统调用带了第二个参数 `t`，用来选「立即分配（EAGER）」还是「惰性分配（LAZY）」：
+
+```c
+uint64
+sys_sbrk(void)
+{
+  uint64 addr;
+  int t;
+  int n;
+
+  argint(0, &n);            // 参数0：要增长的字节数 n（可负，表示收缩）
+  argint(1, &t);            // 参数1：SBRK_EAGER 还是 SBRK_LAZY
+  addr = myproc()->sz;      // 返回值是「旧的」堆顶（brk），符合 sbrk 语义
+
+  if (t == SBRK_EAGER || n < 0) {
+    // 立即分配：老路子，真的 kalloc + mappages
+    if (growproc(n) < 0) {
+      return -1;
+    }
+  } else {
+    // 惰性分配：只把 p->sz 调大，不碰物理内存，也不建 PTE。
+    // 等进程真正访问这片新地址时，vmfault() 才去分配。
+    if (addr + n < addr)        // 溢出检查（回绕）
+      return -1;
+    if (addr + n > TRAPFRAME)   // 不能涨过 TRAPFRAME（用户空间上界）
+      return -1;
+    myproc()->sz += n;          // 关键：只改这一行！
+  }
+  return addr;
+}
+```
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>惰性路径为什么只改 <code>p-&gt;sz</code> 就够了？</strong>因为 <code>p-&gt;sz</code> 是内核判断「某个用户地址是否合法」的唯一依据。把 <code>sz</code> 调大后，<code>[oldsz, sz)</code> 这段地址就成了「合法但尚未映射」——访问它会触发页错误，而 <code>vmfault</code> 正是用 <code>va &lt; p-&gt;sz</code> 来区分「该补一页」还是「真非法、杀进程」。注意收缩（<code>n&lt;0</code>）一律走 eager 路径，因为要真的 <code>uvmdealloc</code> 释放物理页。</div>
+
+> 对比「修改前」的 eager 调用链：`malloc → sbrk → sys_sbrk → growproc → uvmalloc → kalloc + mappages`，全部在系统调用里同步完成。惰性版把后半段推迟到了页错误时。
+
+## 2. `trap.c:usertrap()`：识别页错误并分派
+
+所有来自用户态的中断/异常/系统调用都汇聚到 `usertrap`。页错误在这里被 `scause` 认出来，并交给 `vmfault`：
+
+```c
+uint64
+usertrap(void)
+{
+  int which_dev = 0;
+
+  if ((r_sstatus() & SSTATUS_SPP) != 0)
+    panic("usertrap: not from user mode");
+
+  w_stvec((uint64)kernelvec);          // 进了内核，后续 trap 改走 kernelvec
+
+  struct proc *p = myproc();
+  p->trapframe->epc = r_sepc();        // 保存用户 PC（出错/中断的那条指令地址）
+
+  if (r_scause() == 8) {
+    // —— 系统调用 ——
+    if (killed(p)) kexit(-1);
+    p->trapframe->epc += 4;            // 跳过 ecall，返回到下一条
+    intr_on();
+    syscall();
+  } else if ((which_dev = devintr()) != 0) {
+    // —— 设备中断 ——  ok
+  } else if ((r_scause() == 15 || r_scause() == 13) &&
+             vmfault(p->pagetable, r_stval(), (r_scause() == 13) ? 1 : 0) != 0) {
+    // —— 页错误，且 vmfault 成功补上了一页 —— 什么都不用做，下面会重跑指令
+  } else {
+    // —— 其它无法处理的异常：打印诊断信息并杀进程 ——
+    printk("usertrap(): unexpected scause 0x%lx pid=%d\n", r_scause(), p->pid);
+    printk("            sepc=0x%lx stval=0x%lx\n", r_sepc(), r_stval());
+    setkilled(p);
+  }
+
+  if (killed(p)) kexit(-1);
+  if (which_dev == 2) yield();         // 定时器中断 → 让出 CPU
+
+  prepare_return();
+  uint64 satp = MAKE_SATP(p->pagetable);
+  return satp;                          // 返回用户页表的 satp，交给 trampoline.S 切回用户态
+}
+```
+
+读这段的几个关键点：
+
+- **`scause == 15` 是 store page fault，`13` 是 load page fault**（还有 `12` instruction page fault）。第三个参数 `(scause==13)?1:0` 把「是不是读错误」传给 `vmfault`。
+- 这一句用了 C 的**短路求值**：`(scause==15||13) && vmfault(...) != 0`。只有「是页错误」且「vmfault 成功」才落进这个分支；若 `vmfault` 返回 0（地址非法或没内存），整个条件为假，落到 `else` 把进程杀掉。
+- **没有任何「重跑指令」的显式代码**：因为 `usertrap` 返回后经 `trampoline.S` 的 `sret` 会回到 `sepc`（= 出错那条指令）。`vmfault` 已经把缺的页补好，所以同一条指令再执行就不会 fault 了——这就是「resume the instruction」。
+- `stval` 由 `r_stval()` 读出，是**出错的虚拟地址**（无需对齐，`vmfault` 内部会 `PGROUNDDOWN`）。
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>页错误处理需要哪些信息？都在哪？</strong><code>scause</code>→错误类型（12/13/15）；<code>stval</code>→出错的虚拟地址；<code>sepc</code>（存进 <code>trapframe-&gt;epc</code>）→出错指令地址，用于返回后重跑；当前进程 <code>myproc()</code> 隐含了「用户态 / 哪个地址空间」。</div>
+
+## 3. `vm.c:vmfault()`：真正分配物理页
+
+`vmfault` 是 lazy allocation 的「兑现」环节，逻辑非常清爽：
+
+```c
+uint64
+vmfault(pagetable_t pagetable, uint64 va, int read)
+{
+  uint64 mem;
+  struct proc *p = myproc();
+
+  if (va >= p->sz)                 // ① 合法性：地址必须落在已申请的范围内
+    return 0;                      //    否则返回 0 → usertrap 杀进程
+  va = PGROUNDDOWN(va);            // ② 对齐到页边界
+  if (ismapped(pagetable, va)) {   // ③ 已经映射过了？那不该来这（避免重复分配）
+    return 0;
+  }
+  mem = (uint64)kalloc();          // ④ 分配一页物理内存
+  if (mem == 0)
+    return 0;                      //    内存耗尽 → 返回 0 → 杀进程
+  memset((void *)mem, 0, PGSIZE);  // ⑤ 清零（防泄露上一个使用者的数据）
+  if (mappages(p->pagetable, va, PGSIZE, mem, PTE_W | PTE_U | PTE_R) != 0) {
+    kfree((void *)mem);            // ⑥ 建映射，失败则回收
+    return 0;
+  }
+  return mem;                      // ⑦ 成功，返回物理地址（非 0 即「已处理」）
+}
+
+// 辅助：这个 va 在页表里是否已有有效 PTE
+int
+ismapped(pagetable_t pagetable, uint64 va)
+{
+  pte_t *pte = walk(pagetable, va, 0);
+  if (pte == 0)      return 0;
+  if (*pte & PTE_V)  return 1;
+  return 0;
+}
+```
+
+对照前面页错误处理程序的三步逻辑，代码一一对应：
+
+| 处理程序逻辑 | `vmfault` 对应代码 |
+| --- | --- |
+| 判断 fault 地址是否合法 | `if (va >= p->sz) return 0;` |
+| 合法 → 分配物理页 | `kalloc()` |
+| 置零 | `memset(..., 0, PGSIZE)` |
+| 建立映射、更新页表 | `mappages(..., PTE_W\|PTE_U\|PTE_R)` |
+| 非法 / 失败 → 杀进程 | 返回 0，由 `usertrap` 的 `else` 分支 `setkilled` |
+| 重新执行指令 | 由 `sret` 回到 `sepc` 隐式完成 |
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么 lazy allocation 对应用「透明」？还有一个隐藏前提。</strong>用户进程自己访问惰性页会走 <code>usertrap → vmfault</code>，没问题。但<strong>内核</strong>替进程读写用户内存时（如 <code>read(fd, buf, n)</code> 把数据 <code>copyout</code> 到还没分配的 <code>buf</code>），内核可不会触发用户态页错误。所以 <code>copyout</code>/<code>copyin</code> 里也内嵌了一手：<code>walkaddr</code> 发现没映射时，<strong>主动调用 <code>vmfault</code> 当场补页</strong>（见 Lec 5 源码精读 3.7）。正是这一处补丁，才让「内核访问惰性页」也能无感工作，惰性分配对应用才真正完全透明。</div>
+
+## 4. 一次惰性缺页的完整时序
+
+```
+用户: p = sbrk(SBRK_LAZY, 100MB)
+   └─ sys_sbrk: 只 p->sz += 100MB，不分配  ← 瞬间返回，省了 100MB 物理内存
+
+用户: buf[i] = x          // 第一次访问某个新页
+   └─ CPU 取不到映射 → store page fault (scause=15), stval=&buf[i]
+        └─ trampoline.S → usertrap()
+             └─ scause==15 → vmfault(pagetable, stval, 0)
+                  ├─ va < p->sz ?  合法
+                  ├─ kalloc() + memset(0)
+                  └─ mappages(va, PTE_W|PTE_U|PTE_R)   ← 这一页现在有了
+             └─ return → sret 回到 sepc（buf[i]=x 那条指令）
+   └─ 指令重跑，这次命中映射，正常写入        ← 全程对用户透明
+```
+
+---
+
+# 参考资料
+
+
+
+阅读xv6内核的实现，
+
+- `kernel/sysproc.c:sbrk()`
+- `kernel/trap.c:usertrap()`
+- `kernel/vm.c:vmfault()`
+
+阅读xv6第5章的实现理解页错误。

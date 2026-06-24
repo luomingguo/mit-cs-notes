@@ -38,6 +38,7 @@ export default defineConfig({
       'postgresql': 'sql',
       'bluespec': 'txt',
       'bsv': 'verilog',
+      'minispec': 'verilog',
     },
     container: {
         tipLabel: '💁🏼‍♀️提示',

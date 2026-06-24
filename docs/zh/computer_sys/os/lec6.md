@@ -302,3 +302,192 @@ usertrap() 最后会调用 usertrapret()，此时就开始处理返回给用户�
 
 
 
+---
+
+# 源码精读：trap 入口/出口的汇编与 C
+
+> 前面用截图讲了流程，这里贴出三份参考源码（`trampoline.S` / `trap.c` / `riscv.h`）的真实代码逐行拆解。代码取自 xv6-riscv（rev5）。
+>
+> ⚠️ **命名提示**：本讲早期讲义里的返回函数叫 `usertrapret()`，在 rev5 源码里已拆分/改名为 **`prepare_return()`**（负责出口前的寄存器/控制位准备），下文以源码为准。
+
+## 0. 关键寄存器速查（riscv.h 视角）
+
+| 寄存器 | 作用 | 谁能写 |
+| --- | --- | --- |
+| `satp` | 当前页表的物理基址（+模式） | 仅 S 模式 |
+| `stvec` | trap 入口地址（CPU 进入 S 模式时跳到这） | 仅 S 模式 |
+| `sepc` | trap 时自动保存的用户 PC，`sret` 据此返回 | 由 `ecall`/硬件设置 |
+| `sscratch` | S 模式临时寄存器，用户态用不了 | 仅 S 模式 |
+| `sstatus` | `SPP`=来自哪个模式 / `SIE`=中断使能 / `SPIE`=之前的中断使能 | 仅 S 模式 |
+| `scause` | trap 原因（8=系统调用，13/15=页错误…） | 硬件设置 |
+| `stval` | 出错地址（页错误时） | 硬件设置 |
+
+## 1. `trampoline.S:uservec` —— 入口（汇编）
+
+`ecall` 后 CPU 跳到 `stvec`（= 这里），此时**仍在用户页表、已在 S 模式**：
+
+```asm
+uservec:
+        # 把用户 a0 暂存到 sscratch，腾出 a0 当指针用
+        csrw sscratch, a0
+
+        # 每个进程的 trapframe 都映射在同一个已知虚拟地址 TRAPFRAME(=0x3fffffe000)
+        li a0, TRAPFRAME
+
+        # 把 31 个用户寄存器存进 trapframe（注意此处还没存 a0）
+        sd ra, 40(a0)
+        sd sp, 48(a0)
+        ...
+        sd t6, 280(a0)
+
+        # 用户 a0 此刻在 sscratch 里，取出来存进 trapframe->a0
+        csrr t0, sscratch
+        sd t0, 112(a0)
+
+        # 从 trapframe 取出内核侧上下文：
+        ld sp, 8(a0)     # kernel_sp   → 切到内核栈
+        ld tp, 32(a0)    # kernel_hartid → tp 保存核号
+        ld t0, 16(a0)    # kernel_trap → usertrap() 地址
+        ld t1, 0(a0)     # kernel_satp → 内核页表
+
+        sfence.vma zero, zero   # 等之前的访存在用户页表下完成
+        csrw satp, t1           # ★ 切换到内核页表
+        sfence.vma zero, zero   # 刷掉 TLB 里旧的用户映射
+
+        jalr t0                 # 跳进 usertrap()
+```
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>三个关键设计点</strong>
+<ol>
+<li><strong>为什么先 <code>csrw sscratch,a0</code>？</strong>保存 32 个寄存器需要一个「指针寄存器」指向 trapframe，但所有寄存器都装着用户值。于是借 <code>sscratch</code>（用户态碰不到、无需保存）把 a0 暂存，腾出 a0 当指针；最后再从 sscratch 取回用户 a0 存好。注意它是「写入」不是「交换」。</li>
+<li><strong>为什么切了 <code>satp</code> 还能继续顺序执行不崩？</strong>因为 trampoline 页在用户页表和内核页表里都映射在<strong>同一个虚拟地址 TRAMPOLINE</strong>，所以换页表后 PC 指向的下一条指令仍然有效——这正是 trampoline「双映射」的意义。</li>
+<li><strong>偏移量（40/48/…/280）</strong>对应 <code>struct trapframe</code> 里各寄存器的位置；前几项（0/8/16/32）是内核预先填好的 kernel_satp/kernel_sp/kernel_trap/kernel_hartid。</li>
+</ol></div>
+
+## 2. `trap.c:usertrap()` —— 分派（C）
+
+```c
+uint64
+usertrap(void)
+{
+  int which_dev = 0;
+  if ((r_sstatus() & SSTATUS_SPP) != 0)
+    panic("usertrap: not from user mode");   // SPP 必须=0，确认来自用户态
+
+  w_stvec((uint64)kernelvec);    // ★ 既然进了内核，后续 trap 改走 kernelvec（内核态处理）
+  struct proc *p = myproc();
+  p->trapframe->epc = r_sepc();  // 保存用户 PC（防被进程切换污染 sepc）
+
+  if (r_scause() == 8) {
+    // —— 系统调用 ——
+    if (killed(p)) kexit(-1);
+    p->trapframe->epc += 4;      // ecall 是 4 字节，返回时要落在它的下一条
+    intr_on();                   // 保存好关键寄存器后再开中断（ecall 进来时硬件已关）
+    syscall();
+  } else if ((which_dev = devintr()) != 0) {
+    // —— 设备中断 ——
+  } else if ((r_scause() == 15 || r_scause() == 13) &&
+             vmfault(p->pagetable, r_stval(), (r_scause()==13)?1:0) != 0) {
+    // —— 页错误（惰性分配等）——
+  } else {
+    printk("usertrap(): unexpected scause ...\n");
+    setkilled(p);                // 无法处理 → 杀进程
+  }
+
+  if (killed(p)) kexit(-1);
+  if (which_dev == 2) yield();   // 定时器中断 → 让出 CPU
+
+  prepare_return();              // ★ 准备返回用户态
+  return MAKE_SATP(p->pagetable);// 把用户页表 satp 返回给 trampoline.S（在 a0 里）
+}
+```
+
+要点：
+
+- **第一件事就是 `w_stvec(kernelvec)`**：进入内核后，如果再发生中断/异常，应该走「内核态 trap 处理（kernelvec）」而不是 uservec。返回用户前会在 `prepare_return` 里改回 uservec。
+- **`p->trapframe->epc += 4`**：`sepc` 指向触发的 `ecall` 指令本身，但系统调用返回后要执行**它的下一条**，所以 +4。（页错误则不加，因为要重跑出错指令。）
+- **`intr_on()` 的时机**：必须等 `sepc`/`scause` 等被读出并保存后才能开中断，否则新中断会覆盖这些寄存器。
+
+## 3. `trap.c:prepare_return()` —— 出口准备（C）
+
+```c
+void
+prepare_return(void)
+{
+  struct proc *p = myproc();
+
+  intr_off();   // 即将把 trap 目标切回 uservec；此刻若来中断会跳进 usertrap 造成灾难，故先关中断
+
+  // 下次 trap 走 trampoline 里的 uservec
+  uint64 trampoline_uservec = TRAMPOLINE + (uservec - trampoline);
+  w_stvec(trampoline_uservec);
+
+  // 填好 trapframe，供下次 uservec 使用
+  p->trapframe->kernel_satp   = r_satp();          // 内核页表
+  p->trapframe->kernel_sp     = p->kstack + PGSIZE;// 内核栈顶
+  p->trapframe->kernel_trap   = (uint64)usertrap;  // 下次的 C 处理入口
+  p->trapframe->kernel_hartid = r_tp();            // 核号
+
+  // 准备 sret 要用的控制位
+  unsigned long x = r_sstatus();
+  x &= ~SSTATUS_SPP;   // SPP=0 → sret 回到用户模式
+  x |= SSTATUS_SPIE;   // SPIE=1 → 回用户态后重新开中断
+  w_sstatus(x);
+
+  w_sepc(p->trapframe->epc);  // sret 的目标 PC = 之前保存的用户 PC
+}
+```
+
+> 对照原笔记「恢复执行」一节列的 6 步：`stvec→uservec`、填 `kernel_satp/sp/trap/hartid`、设 `SPP/SPIE`、设 `sepc`——一一对应。注意它**只做准备**，真正切回用户页表 + 恢复 32 个寄存器 + `sret` 是在 `userret` 里完成的，因为这些得在「两个页表都映射的 trampoline」里干。
+
+## 4. `trampoline.S:userret` —— 出口（汇编）
+
+```asm
+userret:
+        # usertrap() 返回值（用户页表 satp）在 a0
+        sfence.vma zero, zero
+        csrw satp, a0           # ★ 切回用户页表
+        sfence.vma zero, zero
+
+        li a0, TRAPFRAME        # a0 重新指向 trapframe
+
+        # 恢复除 a0 外的 31 个用户寄存器
+        ld ra, 40(a0)
+        ...
+        ld t6, 280(a0)
+
+        ld a0, 112(a0)          # 最后恢复用户 a0（里面是系统调用返回值）
+
+        sret                    # ★ 回用户态：见下
+```
+
+#### `sret` 做了什么（硬件一条指令）
+
+1. 把 `sepc` 复制到 `pc`（回到陷入点 / 下一条指令）
+2. 根据 `sstatus.SPP` 切回用户模式（前面已设 SPP=0）
+3. 把 `SPIE` 复制回 `SIE`（重新开中断）
+4. 从新的 PC 继续执行
+
+## 5. 状态变化全景
+
+| 阶段 | 模式 | 页表 | PC 所在 | 中断 |
+| --- | --- | --- | --- | --- |
+| 用户执行 `ecall` 前 | U | 用户 | 用户低地址 | 开 |
+| `ecall` 后 → `uservec` | S | **仍用户** | trampoline(高址) | 关 |
+| `csrw satp` 后 → `usertrap` | S | **内核** | trampoline→内核 | 关→（保存后）开 |
+| `prepare_return` | S | 内核 | 内核 | 关 |
+| `userret` 切 satp 后 | S | **用户** | trampoline | 关 |
+| `sret` 后 | **U** | 用户 | 用户(回 sepc) | 开 |
+
+> 一句话串起来：**`ecall` 只切模式 + 跳 `stvec`（最小化）→ `uservec` 借 `sscratch` 存寄存器、换内核页表 → `usertrap` 认 `scause` 分派 → `prepare_return` 备好返回控制位 → `userret` 换回用户页表、恢复寄存器 → `sret` 切回用户态。** 全程靠「双映射的 trampoline + 已知地址的 trapframe + S 模式专属的 sscratch」三件套，既透明又隔离。
+
+---
+
+# 参考资料
+
+- [lec](https://pdos.csail.mit.edu/6.1810/2025/lec/l-internal.txt)
+- 阅读xv6的第4章
+- 研读 xv6 源码
+  - `kernel/riscv.h`
+  - `kernel/trampoline.S`
+  - `kernel/trap.c`
