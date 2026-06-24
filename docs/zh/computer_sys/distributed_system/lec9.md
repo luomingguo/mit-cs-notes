@@ -317,3 +317,39 @@ ZooKeeper 系统中最主要的性能瓶颈来自于 原子广播协议。 图 7
 1. 如果 follower 发生故障并快速恢复，ZooKeeper 仍能保持较高的吞吐量。
 2. ZooKeeper 的 leader 选举算法恢复非常迅速，能够防止吞吐量显著下降。实验观察表明，ZooKeeper 选出新 leader 的时间小于 200ms。
 3. 即使 follower 恢复较慢，ZooKeeper 也能在它们重新开始处理请求后逐步恢复吞吐量。 不过，在事件 1、2 和 4 之后，吞吐量没有完全恢复到故障前水平，原因是： 客户端只会在与 follower 的连接断开时切换到其他 follower。因此，在事件 4 之后，客户端并未立即重新分布，直到 leader 在事件 3 和 5 处发生故障时才发生重新分配。
+
+
+
+## 课件精讲：ZooKeeper 的核心思想
+
+> 课件：[Zookeeper (l-zookeeper.txt)](https://pdos.csail.mit.edu/6.5840/notes/l-zookeeper.txt)；论文：[ZooKeeper (2010)](https://pdos.csail.mit.edu/6.5840/papers/zookeeper.pdf)；[FAQ](https://pdos.csail.mit.edu/6.5840/papers/zookeeper-faq.txt)
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>一句话精髓</strong>ZooKeeper 给"协调（coordination）"做了专门设计：用 <strong>watch / session / 精心选择的一致性语义</strong>，把<strong>关键状态存进一个容错系统</strong>，而<strong>计算跑在不容错的服务器上</strong>——协调者挂了，新协调者从 ZK 加载状态即可恢复，无需自己做 Raft 那样的状态机复制。</div>
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>两个关键语义</strong>① <strong>A-linearizability（异步线性一致）</strong>：保证同一客户端<strong>异步提交</strong>的一批请求按提交顺序执行（FIFO client order）；写是线性一致的。② <strong>读可由任意 follower 本地服务、可能陈旧</strong>——以此换取高吞吐（三台 21000 写/秒）。能接受陈旧读，因为副本通常只落后几个写、且应用（如每 10 秒查一次分配的 MapReduce 协调者）容忍小延迟。</div>
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>session + ephemeral znode = 锁/选主/fencing</strong>session 维护客户端状态、管 FIFO 顺序与 watch；<strong>临时（ephemeral）znode 在 session 过期时自动删除</strong>。于是选主 = 抢建一个临时 znode（相当于可续约的租约），持有者崩溃 → znode 消失 → 锁释放 → 别人接管；过期即失权，天然做到 <strong>fencing</strong>（防被废黜的旧 leader 继续捣乱）。<strong>pipeline</strong>（leader 批量 + 客户端异步连发）+ FIFO 顺序撑起高吞吐。</div>
+
+## FAQ（ZooKeeper 答疑整理）
+
+> 来自 `zookeeper-faq.txt`。
+
+- **本文主要 take-away？** 用 watch/session + 选定的一致性语义做容错协调：关键状态存容错系统、计算跑在非容错服务器，协调者挂了加载状态即恢复，无需复杂的状态机复制。
+- **session 有什么用？** 维护客户端-服务器状态（带 session ID），管 FIFO 顺序、追踪 watch，并控制 ephemeral znode（session 过期自动删）——支撑可续约租约式选主与 fencing。
+- **§2.4 的锁保护一组 znode 更新，持有者更新到一半崩了怎么恢复？** 它的 ephemeral znode 消失、锁释放；新持有者看到半更新数据，须做类数据库崩溃恢复（如写新文件、文件不全就回退旧版本）。
+- **A-linearizability 与 linearizability 区别？** A 版保证同一客户端**异步请求按提交顺序**执行，而标准线性一致允许并发操作任意排序。
+- **为什么只有写是 A-linearizable，读不是？** 让 follower 各自本地服务读以最大化吞吐；但 follower 可能缺已提交写或含未提交数据 → 读可能陈旧，是性能换一致性的取舍。
+- **linearizability 与 serializability 区别？** serializable 只要求"看起来串行"、不管实时序；linearizable 还要求顺序尊重真实时间。ZK 用"serializable"指写串行 + FIFO 客户端序。
+- **为什么 ZK 可以返回过期读数据？** 副本通常只落后 leader 几个写；且即便保证最新，回复到达前也可能又有新写；应用（如每 10 秒查的 MR 协调者）能容忍。
+- **pipelining 是什么？** leader 批量多操作高效发网络/写盘 + 客户端异步连发多写不等回复；FIFO 顺序防并发重排暴露中间态。
+- **leader 怎么知道客户端异步更新的顺序？** 客户端库给异步请求编序号，leader 按 session 追踪下一个期望序号；序号随复制日志项传递以跨 leader 切换存活。
+- **wait-free 是什么？** 任一进程在有限步内完成任一操作、不受他人速度影响；ZK 的 API 无需等其他客户端（靠 watch + 轮询而非阻塞）。
+- **客户端没收到回复怎么办？会不会重复执行？** 客户端重发；leader 按 session 追踪已收/已提交请求号过滤重复；若发送期间 session 过期，客户端无法可靠判断是否已执行。
+- **异步写后立刻读，能看到该写吗？** 能，FIFO 客户端序保证后续读看到同客户端先前的写（follower 会阻塞读直到收齐该 session 的前序操作）。
+- **fuzzy snapshot 为什么？** ZK 周期把全量状态打快照、截断日志以便掉电恢复；不暂停写、"模糊"地拍内存 → 快照是不一致子集；恢复时从快照点重放所有日志，因操作**幂等**而被纠正。
+- **何处需要把操作转成幂等？** sequential create 非幂等（执行两次产生两个编号 znode）；leader 把它转成"先算好最终结果（含 znode 编号）再记日志"的幂等形式，使含部分日志的模糊快照恢复时不重复建 znode。
+- **leader 怎么选？** 用 ZAB（ZooKeeper 原子广播），内置类 Raft 的选举。
+- **性能对比 Paxos/Raft？** 三台 21000 写/秒；机械盘 Raft 通常几十/秒、SSD 几百/秒，远慢于 ZK。
+- **能不停机加服务器吗？** 现代 ZK 支持动态重配置；原论文是静态集群。
+- **watch 在客户端库怎么实现？** 注册回调；如 Go 客户端给 `GetW()` 传 channel，watch 触发时往 channel 发事件。
+- **为什么叫 ZooKeeper？** "协调分布式系统就像看管一个动物园"，戏称分布式管理的混乱复杂。

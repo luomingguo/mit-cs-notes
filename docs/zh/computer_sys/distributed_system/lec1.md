@@ -1,75 +1,70 @@
-# Lec 1 MapReduce
+# Lec 1 介绍 & MapReduce
 
-> 阅读资料
->
-> [MapReduce: Simplified Data Processing on Large Clusters(OSDI 2004)](https://pdos.csail.mit.edu/6.824/papers/mapreduce.pdf)
+> 课件：[Introduction (l01.txt)](https://pdos.csail.mit.edu/6.5840/notes/l01.txt)；论文：[MapReduce (2004)](https://pdos.csail.mit.edu/6.5840/papers/mapreduce.pdf)
 
-这节是介绍分布式系统，以及学习案例：MapReduce。
+## 本课主线
 
-## Outline
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>Definition 什么是分布式系统？为什么用？为什么难？</strong></div>
 
-- 分布式系统的简介
-- 案例学习： MapReduce
+**是什么**？ 分布式系统是一组计算机协同工作，共同提供某种服务。在日常生活中，我们几乎都在使用分布式系统，例如流行APP（实时通信WECHAT、IG等）、大型网站、电话通信系统等。
 
-## 分布式系统
-
->  ”分布式系统“ 是什么？ 
-
-Solution：分布式系统是一组计算机协同工作，共同提供某种服务。在日常生活中，我们几乎都在使用分布式系统，例如流行APP（实时通信WECHAT、IG等）、大型网站、电话通信系统等。
-
-我们的课程的**关注点**在于，分布式系统的基础设施， 包括数据存储、事务处理系统、大数据处理框架和身份验证服务等。构建分布式系统并**不容易**，需要处理并发、部分故障、性能瓶颈以及复杂的交互带来的挑战。
-
-> 既然构建分布式系统并不简单，为什么人们还是要构建？
-
-Solution：分布式系统有如下好处，
+**为什么用？**分布式系统有如下好处，
 
 - 通过**并行处理**提高计算能力
 - **数据复制**增强容错性
 - **物理设备的分布**适配实际需求（如传感器网络）
 - 通过**隔离**提升系统的安全性。
 
-学习分布式系统不仅能理解和解决复杂而有趣的技术难题，还有助于掌握构建现代大规模系统的核心技能。□
+**为什么难？** 难在：<strong>并发、复杂交互、协调带来的性能瓶颈、以及"部分失败"（一部分坏了、一部分还在跑）</strong>。
 
 
 
-这门课是关于应用的基础设施——存储、计算、网络。一个**大目标**是对应用隐藏分布式环境下的带来的复杂度。主题大致可分为：
+本课聚焦"分布式基础设施（*distributed infrastructure*）"——**存储 / 通信 / 计算**三类抽象，核心目标是**对应用隐藏分布式的复杂性**。围绕三大主题：
 
-**容错（fault tolerance）**：1000多台服务器在大的网络环境下，总是会发送故障，我们需要能对应用隐藏掉这些故障，达到高可用性。高可用性是指即便发送故障，服务仍然能够继续
+1. **容错（fault tolerance）**：成千上万台机器总有在坏的，要做到**高可用**（坏了还能用）与**可恢复**，主要手段是**复制（replication）**。
+2. **一致性（consistency）**：通用基础设施要有"良好定义、可预测"的行为（如 `read(x)` 读到最近一次 `write(x)`）；但跨副本维持同一状态很难。
+3. **性能 / 可扩展性（scalability）**：理想是加 N 台机器得 N 倍吞吐；现实受**负载不均、通信开销、瓶颈资源**（比如受限于N台机器中延迟最长那台的影响）所限。
 
-- 大方向思路，通过**复制**服务器，如果一个crash掉了，能够用其他服务器处理
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>贯穿全课的根本张力："容错、一致性、性能 三者互为敌人"</strong>容错要协调（复制数据、确认写入），强一致要通信（查最新值、同步副本），而<strong>通信本身又慢又难扩展</strong>。于是很多系统<strong>牺牲一致性换性能</strong>（如允许 read 读不到最新 write）。系统设计就是在这条折中曲线上选点——本课后续每一讲几乎都在讨论某个具体折中。</div>
 
-**一致性（consistency）**： 通用的基础设施需要良好地定义行为。例如， read(x)，返回最近一次的write(x)，但是实现起来却很困难。例如，"复制"来的服务器很难保持相同
+并不是只有“两极”选择（强一致 or 不一致），而是有很多中间设计点：
 
-**性能（performance）：**目标是实现可量化的吞吐量，比如N台服务器，通过并行化CPU、RAM、磁盘、网络处理能够达到N倍于单机的吞吐量。 但是横向扩展很难带来成倍数关系的提升，可能来自负载不平衡、受限于N台机器中延迟最长那台的影响。
+| 模式             | 一致性强弱   | 性能高低 | 常见系统                  |
+| ---------------- | ------------ | -------- | ------------------------- |
+| 强一致性         | 强           | 慢       | Paxos、Raft、Zookeeper    |
+| 线性一致性       | 比强一致稍弱 | 中等     | Etcd、Spanner             |
+| 顺序一致性       | 弱           | 高       | Kafka、消息队列           |
+| 最终一致性       | 很弱         | 高       | Dynamo、Cassandra、S3     |
+| 一致性完全不保证 | 极弱         | 非常高   | 一些本地缓存、CDN、MQTT等 |
 
-**权衡（tradeoffs）**：**容错，一致性和性能**， 彼此对立，不可能三全：你通常只能选两样，牺牲另一样。这是著名的 **CAP 定理 / 分布式三难问题** 
 
-- 为了保证一致性和容忍故障，你必须让多个节点互相通信、同步状态，但这通常是“慢的”，特别是在分布式环境中。
 
-  - 容错：为了容忍主节点宕机，你必须把数据复制到副本，但这就需要时间和通信
-  - 一致性：读缓存之前你得校验数据是不是最新的，否则可能读到陈旧值
-- 为了高性能，很多系统选择牺牲严格一致性（如：读不到最新写入），换取更高吞吐、响应快、可扩展性好
-  - 对程序员或者用户来说，有点痛苦
 
-- 并不是只有“两极”选择（强一致 or 不一致），而是有很多中间设计点：
 
-  | 模式             | 一致性强弱   | 性能高低 | 常见系统                  |
-  | ---------------- | ------------ | -------- | ------------------------- |
-  | 强一致性         | 强           | 慢       | Paxos、Raft、Zookeeper    |
-  | 线性一致性       | 比强一致稍弱 | 中等     | Etcd、Spanner             |
-  | 顺序一致性       | 弱           | 高       | Kafka、消息队列           |
-  | 最终一致性       | 很弱         | 高       | Dynamo、Cassandra、S3     |
-  | 一致性完全不保证 | 极弱         | 非常高   | 一些本地缓存、CDN、MQTT等 |
 
-**实现（implementation）**：RPC、线程、并发控制、配置，和实验等。
 
-## 案例学习：MapReduce
+## MapReduce 的工程逻辑
 
-**背景**： MapReduce是应对在数小时内处理多TB数据。例如搜索引擎索引、排序大规模数据、分析Web机构，这些任务只有在成千上万台机器才能高效完成
+**目标**：MapReduce 让非程序员只写 `Map`/`Reduce` 两个纯确定性函数，框架负责分发代码、调度、搬数据、容错。
 
-**目标**： 让没有分布式系统专业知识的程序员也能编写大规模并行程序。程序员只需要定义两个函数 `Map` 和 `Reduce` 函数
+执行四阶段：**输入切成 M 片 → Map（每片一任务，产中间 KV）→ Shuffle（按 `hash(key) mod R` 分到 R 桶）→ Reduce（每桶一任务，产最终输出）**。
 
-**MR的抽象视图**（例子： 词频统计）：
+能线性扩展，因为 Map 之间、Reduce 之间互不干涉。
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>当年的瓶颈是网络，于是有了三个关键工程优化</strong>
+<ul>
+<li><strong>网络瓶颈</strong>：2004 年 1800 台机、根交换机总容量约 100–200 Gb/s，摊到每机仅 ~55 Mb/s；而 shuffle 让每个 Reduce 都要从每个 Map 拉数据，全压在根交换机上。</li>
+<li><strong>局部性（locality）</strong>：协调者把 Map 任务调度到<strong>输入数据所在的那台 GFS 机器</strong>（GFS 与 MR worker 同机），于是 Map 读输入走<strong>本地磁盘、零网络</strong>；中间数据只跨网一次（Map 本地盘 → Reduce），而非两次。</li>
+<li><strong>负载均衡 + straggler</strong>：任务数 M、R <strong>远多于</strong>机器数，谁先做完谁领新任务（快机多做）；对最后几个慢任务（straggler，常因硬件故障）启动<strong>备份任务</strong>，谁先完成用谁。</li>
+</ul></div>
+
+<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>容错 = 重新执行（依赖确定性）</strong>worker 崩了，协调者只<strong>重跑该 worker 的 Map/Reduce 任务</strong>，其余不受影响。前提是 Map/Reduce 必须<strong>纯确定</strong>（无外部状态/文件副作用/随机数/跨任务通信）。重复执行靠确定性（多次 Map 输出相同）+ GFS 的<strong>原子 rename</strong>（多次 Reduce 写同名文件，最终只一份可见）来兜底。未覆盖的失败：返回错误结果的硬件（MR 假设 fail-stop）、协调者崩溃（基础设计未处理）。</div>
+
+
+
+
+
+MR做词频统计的例子
 
 ```
 Input1 -> Map -> a,1 b,1
@@ -617,3 +612,7 @@ MapReduce编程模型已经成功应用到google的各种应用场景中。成�
 2. **网络带宽是一种稀缺资源**。因此，我们系统中的许多优化都针对减少网络传输的数据量：本地化优化使我们能够从本地磁盘读取数据，并将中间数据写入本地磁盘的单个副本可以节省网络带宽。
 3. **冗余执行**可以用于减少慢速机器的影响，并处理机器故障和数据丢失
 
+# 阅读资料
+
+- [MapReduce: Simplified Data Processing on Large Clusters(OSDI 2004)](https://pdos.csail.mit.edu/6.824/papers/mapreduce.pdf)
+- 

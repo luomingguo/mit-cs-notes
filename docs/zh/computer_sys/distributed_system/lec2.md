@@ -1,14 +1,46 @@
 # Lec 2 RPC & 线程
 
-> 完成一下教程 
->
-> [Online Go tutorial](http://tour.golang.org/)
->
-> 阅读材料
->
-> [The Go  Programming  Language and  Environment]([The Go programming language and environment (acm.org)](https://dl.acm.org/doi/pdf/10.1145/3488716))
->
-> [Effective go](https://golang.org/doc/effective_go.html)
+**为什么用 Go**：线程支持好 + RPC 方便 + 类型/内存安全 + GC（消除 use-after-free）+ 业界广用。
+
+
+
+
+
+## 课件精讲：线程与 RPC 的要点
+
+
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么要线程（goroutine）？三种用途</strong>① <strong>I/O 并发</strong>：等一个请求的磁盘/网络时去处理别的；② <strong>多核并行</strong>：真加速；③ <strong>方便</strong>：后台周期任务等。替代方案是<strong>事件驱动（单线程显式交错 + 状态表 + 事件循环）</strong>，省线程开销但<strong>不能利用多核、编程更复杂</strong>。</div>
+
+<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>线程三大坑</strong>① <strong>数据竞争</strong>（并发读写同一内存、至少一个写，如两个 <code>n=n+1</code> 丢更新）→ 用 <code>sync.Mutex</code> 锁临界区，或干脆不共享可变数据；用 <code>-race</code> 检测。② <strong>协调</strong>（生产者/消费者要等待与唤醒）→ channel / <code>sync.Cond</code> / <code>sync.WaitGroup</code>。③ <strong>死锁</strong>（互相等待成环，锁/channel/RPC 都可能造成）。<br>口诀：<strong>channel = "通信"思维，lock = "状态"思维</strong>，多数问题两者皆可解。爬虫例子：ConcurrentMutex 用共享 <code>fetched</code> map + 锁做 test-and-set；ConcurrentChannel 不共享 map、用 channel 同时做通信与同步。</div>
+
+<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>RPC 的失败语义（核心考点）</strong>客户端收不到回复时<strong>无法区分</strong>：请求没到 / 服务器执行了但回复丢了 / 服务器执行后崩了。三种语义：
+<ul>
+<li><strong>at-least-once（至少一次）</strong>：超时就重发——可能<strong>重复执行</strong>，只适合只读或幂等操作（<code>Put("k",10);Put("k",20)</code> 这种非幂等会出错）。</li>
+<li><strong>at-most-once（至多一次）</strong>：Go RPC 默认（单 TCP 连接、不重发、超时即报错），服务器不会见到重复请求；但对复制系统太受限（不能换个副本重试）。</li>
+<li><strong>exactly-once（恰好一次）</strong>：最难，需在 at-most-once 之上加去重等机制——后面实验里实现。</li>
+</ul>
+Go RPC 实现：<code>Args</code>/<code>Reply</code> 结构体字段须<strong>大写（导出）</strong>才能编码；服务器<strong>每个请求开一个 goroutine</strong>，故 handler 内要加锁；不能编码 channel/函数。</div>
+
+## FAQ（Go tour 答疑整理）
+
+- **为什么 6.5840 用 Go？** GC、类型安全、goroutine、内置 RPC 包都比从前的 C++ 更适合分布式实验。
+- **goroutine 真并行吗？** 是，运行时把 goroutine 铺到所有核上并行；多于核数时分时。
+- **channel 怎么保持同步？** 内部用锁+缓冲；发送方拿锁、等接收方、再交接消息。
+- **不阻塞地唤醒 goroutine？** 当不确定有没有接收方时，用 `sync.Cond`（条件变量）而非 channel。
+- **同时从多个 channel 收？** 每个 channel 一个 goroutine，或用 `select`。
+- **`WaitGroup` vs channel？** 等任务完成用 WaitGroup；要更通用的通信用 channel。
+- **每秒执行一次？** 专门一个 goroutine 循环 + `time.Sleep()`。
+- **goroutine 开多少合适？** 实验性加直到吞吐不再涨；CPU 密集大致匹配核数。
+- **channel 能跨网络吗？** 不能，只在单进程内；跨进程用 RPC 包。
+- **slice 怎么实现？** 指向底层数组的指针 + 起止下标，多个 slice 可共享底层数组。
+- **Go 调试工具？** `fmt.Printf` 最有效；gdb 对 Go 支持弱。
+- **初学者常见坑？** map 并发未加锁访问、channel 死锁、循环变量未捕获、goroutine 泄漏。
+- **Go 有继承吗？** 没有 C++ 式继承；用泛型、接口、结构体嵌入。
+- **main 结束后 goroutine？** 随 main 一起终止（语言规范明确）。
+- **值接收者 vs 指针接收者？** 要改接收者状态或避免拷贝大结构用指针；含 mutex 的类型避免值接收者（拷贝锁有害）。
+
+> 
 
 
 
@@ -771,3 +803,11 @@ func main() {
 	fmt.Printf("get(subject) -> %s\n", get("subject"))
 }
 ```
+
+# 参考资料
+
+- 课件：[RPC and Threads (l-rpc.txt)](https://pdos.csail.mit.edu/6.5840/notes/l-rpc.txt)
+- FAQ：[Go tour FAQ](https://pdos.csail.mit.edu/6.5840/papers/tour-faq.txt)
+- 练习：[Online Go tutorial](http://tour.golang.org/)
+- [The Go  Programming  Language and  Environment](https://dl.acm.org/doi/pdf/10.1145/3488716)
+- [Effective go](https://golang.org/doc/effective_go.html)
