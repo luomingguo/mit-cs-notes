@@ -1,7 +1,5 @@
 # PostgreSQL 内核原理系列（中文讲解笔记）
 
-> 原文来自 PostgresPro 工程师在 habr.com 发表的系列技术文章，本目录为中文讲解笔记（非逐字翻译），按主题分类整理。原文链接见 [postgresql.md](./postgresql.md)。
-
 ## 索引 (Indexes)
 
 - [1. 索引概述](./indexes-01-intro.md)
