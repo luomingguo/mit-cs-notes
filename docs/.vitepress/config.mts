@@ -144,6 +144,16 @@ export default defineConfig({
             {text: "计算机系统安全（施工中）"},
           ]
         },
+        {
+          text: "开源项目研读",
+          collapsed: true,
+          items: [
+            {text: "PostgreSQL 内核原理", link: "zh/postgresql"},
+            {text: "golang（施工中）"},
+            {text: "redis（施工中）"},
+            {text: "k8s（施工中）"},
+          ]
+        },
       ],
       // 软件工程 & 编程
       'zh/fundamentals_of_programming/': [
@@ -825,6 +835,83 @@ export default defineConfig({
             { text: "Lec 5 调用约定、栈与内存布局", link: "/zh/llp/lec5" },
             { text: "Lab", link: "/zh/llp/lab" },
           ]
+        },
+      ],
+      '/zh/postgresql/': [
+        {
+          text: '⮐主页',
+          collapsed: false,
+          link: "/zh/index",
+        },
+        {
+          text: 'PostgreSQL 内核原理',
+          collapsed: false,
+          link: "/zh/postgresql/",
+          items: [
+            {
+              text: '索引 (Indexes)',
+              collapsed: false,
+              items: [
+                { text: "1. 索引概述", link: "/zh/postgresql/indexes-01-intro" },
+                { text: "2. 索引接口与方法", link: "/zh/postgresql/indexes-02-interface" },
+                { text: "3. Hash 索引", link: "/zh/postgresql/indexes-03-hash" },
+                { text: "4. B-tree 索引", link: "/zh/postgresql/indexes-04-btree" },
+                { text: "5. GiST 索引", link: "/zh/postgresql/indexes-05-gist" },
+                { text: "6. SP-GiST 索引", link: "/zh/postgresql/indexes-06-spgist" },
+                { text: "7. GIN 索引", link: "/zh/postgresql/indexes-07-gin" },
+                { text: "8. RUM 索引", link: "/zh/postgresql/indexes-08-rum" },
+                { text: "9. BRIN 索引", link: "/zh/postgresql/indexes-09-brin" },
+                { text: "10. Bloom 索引", link: "/zh/postgresql/indexes-10-bloom" },
+              ]
+            },
+            {
+              text: 'WAL（预写日志）',
+              collapsed: false,
+              items: [
+                { text: "1. 缓冲区缓存 (Buffer Cache)", link: "/zh/postgresql/wal-01-buffer-cache" },
+                { text: "2. 预写日志 (Write-Ahead Log)", link: "/zh/postgresql/wal-02-write-ahead-log" },
+                { text: "3. 检查点 (Checkpoint)", link: "/zh/postgresql/wal-03-checkpoint" },
+                { text: "4. 配置与调优", link: "/zh/postgresql/wal-04-setup-tuning" },
+              ]
+            },
+            {
+              text: 'MVCC（多版本并发控制）',
+              collapsed: false,
+              items: [
+                { text: "1. 隔离级别 (Isolation)", link: "/zh/postgresql/mvcc-01-isolation" },
+                { text: "2. 分支文件与页面 (Forks, Files, Pages)", link: "/zh/postgresql/mvcc-02-forks-files-pages" },
+                { text: "3. 行版本 (Row Versions)", link: "/zh/postgresql/mvcc-03-row-versions" },
+                { text: "4. 快照 (Snapshots)", link: "/zh/postgresql/mvcc-04-snapshots" },
+                { text: "5. 页内清理与 HOT 更新", link: "/zh/postgresql/mvcc-05-hot-updates" },
+                { text: "6. Vacuum", link: "/zh/postgresql/mvcc-06-vacuum" },
+                { text: "7. Autovacuum", link: "/zh/postgresql/mvcc-07-autovacuum" },
+                { text: "8. 冻结 (Freezing)", link: "/zh/postgresql/mvcc-08-freezing" },
+              ]
+            },
+            {
+              text: '锁 (Locks)',
+              collapsed: false,
+              items: [
+                { text: "1. 关系级锁", link: "/zh/postgresql/locks-01-relation-level" },
+                { text: "2. 行级锁", link: "/zh/postgresql/locks-02-row-level" },
+                { text: "3. 其他锁", link: "/zh/postgresql/locks-03-other-locks" },
+                { text: "4. 内存中的锁", link: "/zh/postgresql/locks-04-locks-in-memory" },
+              ]
+            },
+            {
+              text: '查询 (Queries)',
+              collapsed: false,
+              items: [
+                { text: "1. 执行阶段", link: "/zh/postgresql/queries-01-execution-stages" },
+                { text: "2. 统计信息", link: "/zh/postgresql/queries-02-statistics" },
+                { text: "3. 顺序扫描", link: "/zh/postgresql/queries-03-sequential-scan" },
+                { text: "4. 索引扫描", link: "/zh/postgresql/queries-04-index-scan" },
+                { text: "5. 嵌套循环连接", link: "/zh/postgresql/queries-05-nested-loop" },
+                { text: "6. 哈希", link: "/zh/postgresql/queries-06-hashing" },
+                { text: "7. 排序与归并", link: "/zh/postgresql/queries-07-sorting-merging" },
+              ]
+            },
+          ],
         },
       ],
       '/zh/csa/': [

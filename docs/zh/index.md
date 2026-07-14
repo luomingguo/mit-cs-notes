@@ -38,5 +38,9 @@ features:
     title: 安全与加密
     details: 安全与加密应用相关课程笔记
     link: /zh/security/index
+  - icon: 🐘
+    title: 开源项目研读
+    details: PostgreSQL 内核原理、golang、redis、k8s 等开源项目源码笔记
+    link: /zh/opensrc/index
 ---
 

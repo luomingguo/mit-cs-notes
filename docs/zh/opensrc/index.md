@@ -3,7 +3,19 @@ sidebarDepth: 1
 title: 开源项目研读
 ---
 
-# 开源项目笔记
-- golang
-- redis
-- k8s
+# CS课程7大部分
+
+- 编程与软件工程
+- 编程语言
+- 理论计算机
+- 计算机系统
+- 计算机架构
+- 计算机安全
+- **开源项目研读** ✅
+
+## 开源项目笔记
+
+- [PostgreSQL 内核原理](/zh/postgresql/index.md)
+- [golang]()
+- [redis]()
+- [k8s]()
