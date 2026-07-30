@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import DefaultTheme from 'vitepress/theme'
 import { useData, inBrowser, withBase } from 'vitepress'
-import { watchEffect } from 'vue'
+import { watchEffect, computed } from 'vue'
 import pkg from '../../../package.json'
+import AskWidget from './AskWidget.vue'
 
 const { lang, site } = useData()
+
+/**
+ * 问答依赖同源的 /rag 后端，只有自建域名部署（base = '/'）才有。
+ * GitHub Pages 那份构建在 /mit-cs-notes/ 子路径下且没有后端，
+ * 挂上去只会给读者一个必然失败的按钮，所以直接不渲染。
+ */
+const hasBackend = computed(() => site.value.base === '/')
 watchEffect(() => {
   if (inBrowser) {
     document.cookie = `nf_lang=${lang.value}; expires=Mon, 1 Jan 2030 00:00:00 UTC; path=/`
@@ -20,6 +28,10 @@ const version = pkg.version
       <div class="sidebar-footer">
         <span class="sidebar-version">v{{ version }}</span>
       </div>
+    </template>
+
+    <template #layout-bottom>
+      <AskWidget v-if="hasBackend" />
     </template>
   </DefaultTheme.Layout>
 </template>

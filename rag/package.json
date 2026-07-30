@@ -1,0 +1,27 @@
+{
+  "name": "mit-cs-notes-rag",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "笔记站的 RAG 问答与学习路径服务",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "ingest": "tsx src/ingest.ts",
+    "paths": "tsx src/paths.ts",
+    "verify": "tsx src/verify.ts",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "smoke": "tsx src/smoke.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

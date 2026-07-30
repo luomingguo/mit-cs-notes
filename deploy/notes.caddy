@@ -6,8 +6,33 @@
 #
 # 证书由 Caddy 自动签发；域名在 Cloudflare 上开了橙云代理，
 # 因此 Cloudflare 的 SSL 模式需要是 Full (strict)。
+#
+# /rag/* 走 RAG 问答服务（notes-rag，独立的一套 compose，见 rag/README.md）。
+# 那套栈没起时这个路径会 502，但静态站点不受影响 —— 两者只通过 edge 网络耦合。
 
 notes.lobomiao.uk {
 	encode gzip
-	reverse_proxy notes-web:80
+
+	# ———— RAG 问答后端 ————
+	# 走同源路径而不是独立子域，有两个原因：免掉 CORS 预检省一个往返；
+	# 独立的 AI/分析类子域容易被广告拦截器的过滤名单命中，同源路径不会。
+	# handle_path 剥掉 /rag 前缀，再补回 /api，于是 /rag/ask -> /api/ask。
+	handle_path /rag/* {
+		rewrite * /api{uri}
+		reverse_proxy notes-rag:3100 {
+			# 问答是 SSE 流式响应，必须关掉缓冲，否则答案会攒到最后一次性吐出。
+			# Caddy 对 text/event-stream 本来就会自动 flush，这里显式写一遍兜底。
+			flush_interval -1
+			# 模型思考 + 生成可能要几十秒，默认超时不够用
+			transport http {
+				response_header_timeout 120s
+				read_timeout 180s
+			}
+		}
+	}
+
+	# ———— 静态站点 ————
+	handle {
+		reverse_proxy notes-web:80
+	}
 }

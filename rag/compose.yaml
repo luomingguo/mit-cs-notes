@@ -1,0 +1,97 @@
+# RAG 问答服务栈（部署在 hk）。
+#
+# 刻意和站点的 deploy/docker-compose.yml 分开成两套：
+#   - 站点每次 push 都由 CI 重新发布，频繁且要快；
+#   - 这套栈只在服务代码变动时手工发布，而且带着数据卷，
+#     不能被每次文档改动牵连着重启，更不该让 CI 拿到这里的 API key。
+# 两者只通过 edge 网络耦合：Caddy 把 /rag/* 转给 notes-rag，其余给 notes-web。
+#
+# 放在栈根目录（不是 deploy/ 里）：compose 默认从 compose 文件所在目录读 .env
+# 并解析构建上下文，放根目录才能让 `docker compose up` 直接跑通、不用额外传参。
+#
+# 放置位置：/home/mac/mit-cs-notes-rag/compose.yaml
+# 启动：cd /home/mac/mit-cs-notes-rag && docker compose up -d --build
+# 日志：docker compose logs -f rag
+
+services:
+  rag:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    container_name: mit-cs-notes-rag
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://notes:${POSTGRES_PASSWORD}@notes-db:5432/notes
+      # 嵌入与重排
+      EMBED_PROVIDER: ${EMBED_PROVIDER:-voyage}
+      EMBED_BASE_URL: ${EMBED_BASE_URL:-https://api.voyageai.com/v1}
+      EMBED_MODEL: ${EMBED_MODEL:-voyage-4}
+      RERANK_MODEL: ${RERANK_MODEL:-rerank-2.5}
+      EMBED_API_KEY: ${EMBED_API_KEY}
+      EMBED_DIM: ${EMBED_DIM:-1024}
+      # 各家私有参数，如智谱要用 {"dimensions":1024} 把默认的 2048 维压下来
+      EMBED_EXTRA_BODY: ${EMBED_EXTRA_BODY:-}
+      # 生成
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai-compatible}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.siliconflow.cn/v1}
+      LLM_MODEL: ${LLM_MODEL:-Qwen/Qwen3-8B}
+      LLM_API_KEY: ${LLM_API_KEY}
+      # 如关闭思考链：智谱 {"thinking":{"type":"disabled"}}
+      LLM_EXTRA_BODY: ${LLM_EXTRA_BODY:-}
+      LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-8000}
+      # 检索
+      RETRIEVAL_MAX_DISTANCE: ${RETRIEVAL_MAX_DISTANCE:-0.6}
+      RETRIEVAL_CANDIDATE_K: ${RETRIEVAL_CANDIDATE_K:-30}
+      RETRIEVAL_TOP_K: ${RETRIEVAL_TOP_K:-8}
+      RATE_LIMIT_PER_HOUR: ${RATE_LIMIT_PER_HOUR:-20}
+      IP_SALT: ${IP_SALT}
+      PORT: "3100"
+    depends_on:
+      notes-db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:3100/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      default:
+      edge:
+        aliases:
+          - notes-rag
+
+  # 向量库。独立实例，不碰 hk 上 deploy 项目那套 postgres。
+  notes-db:
+    image: pgvector/pgvector:pg16
+    container_name: mit-cs-notes-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: notes
+      POSTGRES_USER: notes
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - notes-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notes -d notes"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # 只绑到宿主机回环，不对外暴露。这样本地跑 ingest 可以走
+    #   ssh -L 15432:localhost:15432 hk
+    # 隧道进来，不用临时改 compose。用 15432 避开 hk 上已有的 postgres。
+    ports:
+      - "127.0.0.1:15432:5432"
+    networks:
+      default:
+
+volumes:
+  notes-db-data:
+
+networks:
+  edge:
+    external: true

@@ -69,6 +69,7 @@ export default defineConfig({
     },
     nav: [
       { text: 'Home', link: '/' },
+      { text: '学习路径', link: '/zh/paths' },
       { text: 'Changelog', link: 'https://github.com/...' },
     ],
     logo: '/img/note_logo.svg',
