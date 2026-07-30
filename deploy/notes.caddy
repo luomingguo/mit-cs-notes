@@ -1,0 +1,13 @@
+# mit-cs-notes（MIT 公开课学习笔记，VitePress 静态站）入口配置片段，属于该项目自己维护，
+# 全局 Caddy（infra/edge/Caddyfile）通过 import 加载本文件，互不影响其他项目。
+#
+# 前提：本项目的 nginx 容器要接入 edge 这个外部网络，并带 notes-web 别名
+# （deploy/docker-compose.yml 已配置）。
+#
+# 证书由 Caddy 自动签发；域名在 Cloudflare 上开了橙云代理，
+# 因此 Cloudflare 的 SSL 模式需要是 Full (strict)。
+
+notes.lobomiao.uk {
+	encode gzip
+	reverse_proxy notes-web:80
+}

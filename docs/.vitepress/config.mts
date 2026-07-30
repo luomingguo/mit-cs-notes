@@ -3,9 +3,13 @@ import { defineConfig } from 'vitepress'
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 // https://vitepress.dev/reference/site-config
 
+// 站点根路径。GitHub Pages 部署在 /mit-cs-notes/ 子路径下，
+// 自建域名（notes.lobomiao.uk，部署在 hk）部署在根路径，
+// 构建时用 DOCS_BASE 环境变量切换，本地开发保持和 Pages 一致。
+const base = process.env.DOCS_BASE ?? '/mit-cs-notes/'
 
 export default defineConfig({
-  base: '/mit-cs-notes',
+  base,
   title: "MIT Notes by Ron",
   description: "TODO",
   lang: 'zh',
@@ -20,7 +24,7 @@ export default defineConfig({
     }
   },
   head: [
-    ['link' , {rel: 'icon', href: "/mit-cs-notes/img/note_logo.svg", type: "image/svg+xml"}],
+    ['link' , {rel: 'icon', href: `${base}img/note_logo.svg`, type: "image/svg+xml"}],
   ],
   rewrites :{
     "zh/:pkg/:subject/(.*)": "zh/:subject/(.*)",

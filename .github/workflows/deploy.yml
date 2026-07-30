@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -11,7 +11,8 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# pages/id-token 供 GitHub Pages 部署使用，
+# id-token 同时供 hk 部署通过 Workload Identity Federation 免密登录 GCP
 permissions:
   contents: read
   pages: write
@@ -24,7 +25,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Build job
+  # Build job（GitHub Pages 版本，站点挂在 /mit-cs-notes/ 子路径下）
   build:
     runs-on: ubuntu-latest
     steps:
@@ -68,3 +69,58 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  # 部署到自建服务器 hk（https://notes.lobomiao.uk）。站点挂在根路径下，
+  # 所以要用 DOCS_BASE=/ 单独构建一份产物，和上面的 Pages 版本互不影响。
+  deploy-hk:
+    runs-on: ubuntu-latest
+    name: Deploy to hk
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # lastUpdated 需要完整提交历史
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with VitePress (root base)
+        run: npm run docs:build
+        env:
+          DOCS_BASE: /
+
+      - name: Pack dist
+        run: tar -czf dist.tar.gz -C docs/.vitepress/dist .
+
+      # 用 Workload Identity Federation 换取 GCP 凭证，仓库里不存任何长期密钥
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SA }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      # hk 只放行 IAP 网段的 SSH，所以必须走 --tunnel-through-iap；
+      # --ssh-key-expire-after 让 CI 的临时公钥两小时后自动从实例元数据失效
+      - name: Upload bundle to hk
+        run: |
+          gcloud compute ssh hk --zone=asia-east2-c --tunnel-through-iap --quiet \
+            --ssh-key-expire-after=2h \
+            --command 'rm -rf /tmp/notes-deploy && mkdir -p /tmp/notes-deploy'
+          gcloud compute scp --zone=asia-east2-c --tunnel-through-iap --quiet \
+            dist.tar.gz \
+            deploy/docker-compose.yml deploy/nginx.conf deploy/notes.caddy deploy/remote-deploy.sh \
+            hk:/tmp/notes-deploy/
+
+      - name: Release on hk
+        run: |
+          gcloud compute ssh hk --zone=asia-east2-c --tunnel-through-iap --quiet \
+            --ssh-key-expire-after=2h \
+            --command "bash /tmp/notes-deploy/remote-deploy.sh ${{ github.sha }}"

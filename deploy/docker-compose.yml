@@ -1,0 +1,23 @@
+# mit-cs-notes 站点容器（部署在 hk）。只做静态文件服务：
+# 构建产物由 CI 上传解包到 site/releases/<git-sha>，site/current 软链指向当前版本。
+#
+# 80/443 由 infra/edge 下的全局 Caddy 独占，本容器不暴露端口，
+# 只接入 edge 网络并带 notes-web 别名，由 Caddy 反代（见 infra/edge/sites/notes.caddy）。
+services:
+  web:
+    image: nginx:1.27-alpine
+    container_name: mit-cs-notes-web
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # 挂 site 整个目录而不是 site/current 本身：bind mount 会在容器启动时把软链
+      # 解析成固定路径，挂父目录才能让软链按请求解析，发布时切软链即刻生效、无需重启。
+      - ./site:/srv/notes:ro
+    networks:
+      edge:
+        aliases:
+          - notes-web
+    restart: unless-stopped
+
+networks:
+  edge:
+    external: true
