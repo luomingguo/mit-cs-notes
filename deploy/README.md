@@ -93,8 +93,10 @@ curl -I -H 'Host: notes.lobomiao.uk' http://127.0.0.1/   # 绕过 Cloudflare 直
 ```
 
 回滚：把 `site/current` 软链指回 `site/releases/` 下的上一个版本即可，不用重新构建。
+软链必须用**相对路径**——容器里 `site/` 挂在 `/srv/notes`，指向宿主机绝对路径的软链在容器内是断的，
+表现为所有页面 404。
 
 ```bash
-sudo ln -sfn /home/mac/mit-cs-notes/site/releases/<旧sha> /home/mac/mit-cs-notes/site/current.tmp
-sudo mv -T /home/mac/mit-cs-notes/site/current.tmp /home/mac/mit-cs-notes/site/current
+cd /home/mac/mit-cs-notes/site
+sudo ln -sfn releases/<旧sha> current.tmp && sudo mv -T current.tmp current
 ```

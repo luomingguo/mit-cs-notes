@@ -6,7 +6,8 @@
 set -euo pipefail
 
 RELEASE="${1:?usage: remote-deploy.sh <release-id>}"
-STAGE=/tmp/notes-deploy
+# 上传目录默认由 CI 约定；手工发布时可以用 STAGE=... 指到别处
+STAGE="${STAGE:-/tmp/notes-deploy}"
 APP=/home/mac/mit-cs-notes
 SITE="$APP/site"
 EDGE_SITES=/home/mac/infra/edge/sites
@@ -37,27 +38,39 @@ sudo tar -xzf "$STAGE/dist.tar.gz" -C "$NEW"
 # 产物完整性兜底：首页在才认为这次构建是完整的
 sudo test -f "$NEW/index.html"
 
-# 3. 原子切换软链（ln -sfn + mv -T，避免出现短暂的「软链不存在」窗口）
-sudo ln -sfn "$NEW" "$SITE/current.tmp"
+# 3. 原子切换软链（ln -sfn + mv -T，避免出现短暂的「软链不存在」窗口）。
+#    必须用相对路径：容器里 site/ 挂在 /srv/notes 下，指向宿主机绝对路径的软链在容器内是断的。
+sudo ln -sfn "releases/$RELEASE" "$SITE/current.tmp"
 sudo mv -T "$SITE/current.tmp" "$SITE/current"
 sudo chown -R mac:mac "$APP"
 echo "current -> $NEW"
 
 # 4. 起容器。配置没变时 compose 不会重建，nginx 走软链，内容更新无需重启。
-cd "$APP"
-sudo docker compose up -d
+#    注意：$APP 在 /home/mac 下（750），CI 的登录用户进不去，所以全程不 cd，
+#    用 --project-directory 让 compose 自己去解析相对路径的挂载。
+sudo docker compose --project-directory "$APP" -f "$APP/docker-compose.yml" up -d
 
-# 5. 只有 Caddy 片段变化时才 reload。Caddy 会先校验新配置，
-#    校验不过则保留旧配置继续运行，不会波及其他站点。
-if [ "$changed_caddy" = 1 ]; then
+# 5. reload Caddy 的两种情况：配置片段有变化，或者 Caddy 当前根本没加载本站点
+#    （比如上一次发布中途失败，片段已经落盘但没来得及 reload）。
+#    Caddy 会先校验新配置，校验不过则保留旧配置继续运行，不会波及其他站点。
+domain=$(sed -n 's/^\([a-z0-9.-]*\) {$/\1/p' "$STAGE/notes.caddy" | head -1)
+if [ "$changed_caddy" = 1 ] || [ -z "$domain" ] ||
+	! sudo docker exec caddy wget -qO- http://127.0.0.1:2019/config/ | grep -q "$domain"; then
 	sudo docker exec caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
 	echo "caddy reloaded"
 fi
 
-# 6. 清理旧版本，只留最近 $KEEP 个
-cd "$SITE/releases"
-sudo ls -1dt -- */ | tail -n +$((KEEP + 1)) | xargs -r sudo rm -rf
+# 6. 清理旧版本，只留最近 $KEEP 个（同样因为目录权限，交给 root 去展开通配符）
+sudo bash -c "ls -1dt '$SITE/releases'/*/ | tail -n +$((KEEP + 1)) | xargs -r rm -rf"
 
-# 7. 自检：容器内直接请求首页
-sudo docker exec mit-cs-notes-web wget -qO /dev/null http://localhost/
-echo "deployed OK: $RELEASE"
+# 7. 自检：容器内直接请求首页。容器刚创建时 nginx 可能还没监听，重试几次再判定失败。
+for i in $(seq 1 10); do
+	# 用 127.0.0.1 而不是 localhost：容器里 localhost 会先解析到 ::1，而 nginx 只监听了 IPv4
+	if sudo docker exec mit-cs-notes-web wget -qO /dev/null http://127.0.0.1/; then
+		echo "deployed OK: $RELEASE"
+		exit 0
+	fi
+	sleep 2
+done
+echo "self check failed: nginx did not serve / after 20s" >&2
+exit 1
