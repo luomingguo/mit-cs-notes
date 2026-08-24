@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的 MVCC — 5. 页内清理与 HOT 更新
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的 MVCC — 5. 页内清理与 HOT 更新
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/483768/ （作者 Egor Rogov，PostgresPro）

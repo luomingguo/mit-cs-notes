@@ -1,4 +1,13 @@
-# Lec 14 — 无线神经辐射场（*Wireless NeRFs*）
+---
+title: 无线神经辐射场（Wireless NeRFs）
+course: 6.1820 移动和传感器计算
+course_id: '6.1820'
+lecture: 14
+kind: system
+tags: []
+status: complete
+---
+# Lec 14 无线神经辐射场（*Wireless NeRFs*）
 > MIT 6.1820/MAS.453 · Mobile and Sensor Computing
 > 阅读材料：EchoNeRF [arxiv 2505.22441]
 
@@ -8,8 +17,11 @@
 
 本讲的核心问题：**能否仅凭用户携带手机行走时测量的 Wi-Fi RSSI 信号，反推室内平面图？**
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 神经辐射场（<em>NeRF, Neural Radiance Field</em>）</strong><br>
-NeRF 是一个将三维坐标和视角映射到颜色与密度的神经网络（MLP），通过对输入图像集合过拟合（<em>Overfitting</em>），学习场景的隐式三维表示，可从任意新视角渲染图像。</div>
+::: definition
+**定义 — 神经辐射场（*NeRF, Neural Radiance Field*）**
+
+NeRF 是一个将三维坐标和视角映射到颜色与密度的神经网络（MLP），通过对输入图像集合过拟合（*Overfitting*），学习场景的隐式三维表示，可从任意新视角渲染图像。
+:::
 
 ---
 
@@ -36,7 +48,9 @@ $$\hat{C}(\mathbf{r}) = \int_{t_n}^{t_f} T(t) \cdot \sigma(\mathbf{r}(t)) \cdot 
 - **训练**：对已知相机位姿的图像集合，最小化预测像素颜色与真实像素颜色的 L2 损失
 - **推断**：给定新视角的相机参数，通过体积渲染生成新视角图像
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — NeRF 的跨模态迁移潜力</strong>　NeRF 框架的本质是"用神经网络拟合场景的物理响应函数"，这一框架不限于光学——任何具有明确物理传播模型的信号（声波、无线电信号）都可以套用 NeRF 范式。</div>
+::: theorem 推论 — NeRF 的跨模态迁移潜力
+NeRF 框架的本质是"用神经网络拟合场景的物理响应函数"，这一框架不限于光学——任何具有明确物理传播模型的信号（声波、无线电信号）都可以套用 NeRF 范式。
+:::
 
 ---
 
@@ -59,10 +73,13 @@ $$\hat{C}(\mathbf{r}) = \int_{t_n}^{t_f} T(t) \cdot \sigma(\mathbf{r}(t)) \cdot 
 | 积分方式：体积渲染 | 积分方式：无线信号传播模型 |
 | 损失：像素颜色误差 | 损失：RSSI 预测误差 |
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — EchoNeRF 网格单元</strong><br>
-场景被离散化为二维网格，每个单元包含两个可学习参数：<br>
-• $\delta \in [0, 1]$：不透明度（接近 1 = 墙，接近 0 = 空气）<br>
-• $\omega \in [-\pi, \pi]$：法线方向（确定反射角度）</div>
+::: definition 定义 — EchoNeRF 网格单元
+场景被离散化为二维网格，每个单元包含两个可学习参数：
+
+• $\delta \in [0, 1]$：不透明度（接近 1 = 墙，接近 0 = 空气）
+
+• $\omega \in [-\pi, \pi]$：法线方向（确定反射角度）
+:::
 
 ### 3.3 无线信号传播模型
 
@@ -88,7 +105,9 @@ $$\hat{P}_\text{RX} = P_\text{LoS} + \sum_k P_\text{reflection,k}$$
 
 **解决方案：两阶段训练**
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 为什么两阶段训练有效？</strong></div>
+::: example 例题 — 为什么两阶段训练有效？
+
+:::
 
 **第一阶段**：仅用直射路径训练，网络学会基本的"空气/墙"布局
 
@@ -148,7 +167,9 @@ $$\text{人在场景中移动} \Rightarrow \text{人体反射照亮不同区域}
 
 初步结果展示了完整三维重建的潜力，可支持智能家居、室内导航、场景感知音频等下游应用。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 隐私隐患</strong>　Wi-Fi RSSI 的读取权限比摄像头、麦克风容易获得，若 EchoNeRF 技术成熟，恶意 App 可能在用户不知情的情况下绘制其家庭平面图。如何在 AP/手机固件层面限制 RSSI 精度或频率，是重要的隐私保护议题。</div>
+::: theorem 推论 — 隐私隐患
+Wi-Fi RSSI 的读取权限比摄像头、麦克风容易获得，若 EchoNeRF 技术成熟，恶意 App 可能在用户不知情的情况下绘制其家庭平面图。如何在 AP/手机固件层面限制 RSSI 精度或频率，是重要的隐私保护议题。
+:::
 
 ---
 
@@ -168,6 +189,6 @@ $$\text{人在场景中移动} \Rightarrow \text{人体反射照亮不同区域}
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 EchoNeRF 将视觉 NeRF 框架迁移到无线信号域，以 Wi-Fi RSSI 为"像素"、无线传播物理模型为"体积渲染"、不透明度和法线方向为"场景表示"，通过两阶段训练实现室内平面图重建，Wall IoU 达到 0.38；Wi-Fi 三维场景重建的延伸工作利用人体作为场景照明，进一步拓展了无线感知的边界，也引出了亟需解决的隐私安全问题，为 IoT 感知研究画下了令人期待的终章。

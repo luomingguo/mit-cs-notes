@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 索引 — 9（BRIN 索引）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 索引 — 9（BRIN 索引）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/452900/ （作者 Egor Rogov，PostgresPro）
@@ -137,6 +144,6 @@ from brin_page_items(
 - **手动维护函数**：`brin_summarize_new_values()` 用于为新增的块范围补齐摘要；`brin_desummarize_range()` 用于清除某个范围的现有摘要（比如打算重新精确计算时）。
 - **几何类型缺乏相关性统计**：原文提到，几何类型缺少现成的 correlation 统计支持，导致优化器难以判断是否该用 BRIN；对于严肃的几何数据检索场景，原文建议还是应该考虑专门的 PostGIS 扩展方案。
 
-## 小结
+## 本讲小结
 
 BRIN 是一种反直觉但极具针对性的索引类型：它主动放弃了"精确"，用换来的极低存储和维护成本去服务一种特定但常见的场景——超大规模、按物理顺序增长、且被索引字段与物理顺序高度相关的表（最典型的是时间序列/日志类数据）。它的有效性完全建立在相关性统计之上，相关性越高，BRIN 越接近"以极小代价获得接近索引级的过滤效果";相关性一旦弱化，BRIN 就会退化为几乎无意义的开销。理解 BRIN 的关键不是把它当作 B-tree 的廉价替代品，而是把它当作"顺序扫描的加速器"来定位。下一篇会介绍另一种基于概率数据结构、同样以牺牲精确性换取效率的索引类型——Bloom。

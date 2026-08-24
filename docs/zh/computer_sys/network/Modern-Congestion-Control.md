@@ -1,3 +1,11 @@
+---
+title: 现代拥塞控制（Modern Congestion Control）
+course: 6.5820/6.S04 计算机网络
+course_id: '6.5820'
+kind: system
+tags: []
+status: complete
+---
 # Lec 4 现代拥塞控制（Modern Congestion Control）
 
 阅读资料
@@ -7,7 +15,7 @@
 
 > 经典 AIMD（[[End-to-End-Congestion-Control]]）在两种新环境下力不从心：**超低时延的数据中心**、**速率剧烈波动的无线链路**。本讲两篇分别对症：SWIFT 用时延信号、ABC 用单比特显式反馈。
 
-## 总览
+## 本讲导览
 
 - SWIFT：数据中心的时延型拥塞控制（拆分 fabric / endpoint 时延）
 - ABC：无线链路的单比特"加速/刹车"控制
@@ -21,30 +29,26 @@
 
 $$\text{target\_delay} = \text{fabric\_delay} + \text{endpoint\_delay}$$
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 拆分 fabric / endpoint 拥塞</strong><br>
-把<strong>网络 fabric 拥塞</strong>（交换机排队）与<strong>端点拥塞</strong>（NIC/主机处理不过来）分开建模、各设目标时延。因为二者成因和应对不同：fabric 拥塞要减网络注入，endpoint 拥塞（典型于大规模 <strong>incast</strong> 多打一）要针对目标端节流。
-</div>
+::: definition 定义 · 拆分 fabric / endpoint 拥塞
+把**网络 fabric 拥塞**（交换机排队）与**端点拥塞**（NIC/主机处理不过来）分开建模、各设目标时延。因为二者成因和应对不同：fabric 拥塞要减网络注入，endpoint 拥塞（典型于大规模 **incast** 多打一）要针对目标端节流。
+:::
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 为什么数据中心偏爱时延信号</strong><br>
-数据中心 RTT 是微秒级、可精确测量（参见 [[Network-Measurement]] 的纳秒级时钟同步），时延比丢包/ECN <strong>更早、更细粒度</strong>地反映排队，能在<strong>极小缓冲</strong>下精确控制、在超高负载与大规模 incast 下仍稳定。优点：简单、可扩展、对低缓冲友好——这也是为何"delay is simple and effective"。
-</div>
+::: theorem 推论 · 为什么数据中心偏爱时延信号
+数据中心 RTT 是微秒级、可精确测量（参见 [[Network-Measurement]] 的纳秒级时钟同步），时延比丢包/ECN **更早、更细粒度**地反映排队，能在**极小缓冲**下精确控制、在超高负载与大规模 incast 下仍稳定。优点：简单、可扩展、对低缓冲友好——这也是为何"delay is simple and effective"。
+:::
 
 ## 二、ABC：无线链路的加速/刹车控制
 
 蜂窝/无线链路容量在**毫秒级剧烈变化**（见 [[Wireless-and-Mobile-Networks]]），端到端方案跟不上。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 加速/刹车控制（Accel-Brake Control）</strong><br>
-路由器为每个分组打<strong>单比特</strong>标记："加速 (accelerate)" 或 "刹车 (brake)"。发送方据每个 ACK 的反馈逐包微调窗口：
+::: definition 定义 · 加速/刹车控制（Accel-Brake Control）
+路由器为每个分组打**单比特**标记："加速 (accelerate)" 或 "刹车 (brake)"。发送方据每个 ACK 的反馈逐包微调窗口：
 $$\text{accelerate}:\ \text{cwnd} \leftarrow \text{cwnd}+1 \qquad \text{brake}:\ \text{cwnd}\ \text{减一个分组}$$
-</div>
+:::
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 与 XCP 的取舍</strong><br>
-ABC 与 XCP（[[Network-assisted-Congestion-Control]]）都是显式、网络辅助，但 ABC 只用<strong>单比特</strong>（复用 ECN 字段即可），因此可<strong>增量部署</strong>、与不打 ABC 标记的流共存；代价是反馈表达力不如 XCP 多比特。在容量快速变化的无线链路上，逐包"加速/刹车"能比 AIMD 更快地"咬住"瞬时可用速率。
-</div>
+::: theorem 推论 · 与 XCP 的取舍
+ABC 与 XCP（[[Network-assisted-Congestion-Control]]）都是显式、网络辅助，但 ABC 只用**单比特**（复用 ECN 字段即可），因此可**增量部署**、与不打 ABC 标记的流共存；代价是反馈表达力不如 XCP 多比特。在容量快速变化的无线链路上，逐包"加速/刹车"能比 AIMD 更快地"咬住"瞬时可用速率。
+:::
 
 ## 三、拥塞控制三代演进（小结）
 

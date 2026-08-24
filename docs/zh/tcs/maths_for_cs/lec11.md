@@ -1,4 +1,13 @@
-# Lecture 11：图与着色
+---
+title: 图与着色
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 11
+kind: theory
+tags: []
+status: complete
+---
+# Lec 11 图与着色
 
 ## 1. 简单图
 
@@ -75,7 +84,7 @@ $$\frac{A_L}{A_R} = \frac{|R|}{|L|}$$
 
 ## 5. 贪心着色算法
 
-```
+```text
 1. 对顶点排序：v1, v2, ..., vn
 2. 对颜色排序：c1, c2, ...
 3. 按顺序处理每个顶点，为其分配编号最小的合法颜色

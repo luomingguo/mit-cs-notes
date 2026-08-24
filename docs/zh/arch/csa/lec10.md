@@ -1,4 +1,13 @@
-# L10：高级访存操作（*Advanced Memory Operations*）
+---
+title: 高级访存操作（Advanced Memory Operations）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 10
+kind: system
+tags: []
+status: complete
+---
+# Lec 10 高级访存操作（*Advanced Memory Operations*）
 
 > MIT 6.5900 Fall 2024 · Joel Emer 主题：写性能与流水化写、写策略、读缺失代价、推测 load/store 与存储缓冲、内存依赖预测（Store Sets）、预取
 
@@ -87,7 +96,7 @@
 
 对寄存器用 tag/物理寄存器号判依赖，内存操作呢？
 
-```
+```text
 sw x1, (x2)
 lw x3, (x4)
 ```
@@ -172,7 +181,7 @@ load 的执行"依赖"其所需数据在 Cache 中——可**推测未来的指�
 
 ------
 
-## 小结
+## 本讲小结
 
 - 写比读慢（tag 检查 + 数据写串行），用 CAM tag、推测命中急切更新或**延迟写缓冲 + 旁路**优化；写策略在流量与复杂度间权衡；
 - 推测 load/store 用**惰性存储缓冲**保存推测数据，store-to-load 用旁路；提交按序以避 WAW；

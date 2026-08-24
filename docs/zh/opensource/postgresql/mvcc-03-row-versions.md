@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的 MVCC — 3. 行版本
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的 MVCC — 3. 行版本
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/477648/ （作者 Egor Rogov，PostgresPro）
@@ -298,6 +305,6 @@ COMMIT;
 
 它的实现原理是：psql 在执行每一条命令之前，都隐式地创建一个保存点，一旦命令失败就自动回滚到这个保存点，从而让这条命令的失败在效果上表现得像是原子的。这不是默认行为，因为频繁创建保存点本身有明显的性能开销，即便最终没有真的触发回滚。
 
-## 小结
+## 本讲小结
 
 本篇把行版本从"抽象概念"落实到了具体的字节级别：xmin/xmax/infomask/ctid 构成了每个行版本自描述的身份信息；INSERT/DELETE/UPDATE/COMMIT/ROLLBACK 在物理层面都只是对这些字段做局部、增量式的修改，从不整体重写或物理擦除数据；xmax 兼职充当了行级锁；提交与回滚状态被独立记录在 XACT（以及子事务对应的 pg_subtrans）里，并通过 hint bit 惰性地缓存到行版本头部；虚拟事务 ID 帮只读操作节省了宝贵的真实事务号；子事务机制支撑了 SAVEPOINT 和异常处理，同时也解释了为什么单条语句能在出错时呈现出原子性的假象。这些机制共同构成了下一篇要讲的"快照与可见性判断"的物理基础。

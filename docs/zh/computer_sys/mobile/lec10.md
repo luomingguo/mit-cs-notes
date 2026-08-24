@@ -1,4 +1,13 @@
-# Lec 10 — 坑洞检测（*Pothole Detection / Pothole Patrol*）
+---
+title: 坑洞检测（Pothole Detection / Pothole Patrol）
+course: 6.1820 移动和传感器计算
+course_id: '6.1820'
+lecture: 10
+kind: system
+tags: []
+status: complete
+---
+# Lec 10 坑洞检测（*Pothole Detection / Pothole Patrol*）
 > MIT 6.1820/MAS.453 · Mobile and Sensor Computing
 > 阅读材料：Pothole Patrol [MobiSys'08] — MIT CSAIL
 
@@ -8,8 +17,11 @@
 
 **P2（*Pothole Patrol*）的核心思想**：利用出租车等已在道路上行驶的车辆作为**机会性移动传感平台**（*Opportunistic Mobile Sensing Platform*），以极低额外成本实现大规模路面质量监测。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 机会性感知（<em>Opportunistic Sensing</em>）</strong><br>
-不专门部署感知平台，而是搭载在已有移动载体（出租车、公交车、行人手机）上，利用其自然移动行为收集城市级感知数据，数据上传也可延迟到经过 Wi-Fi 热点时进行（<em>Delay-Tolerant Networking</em>）。</div>
+::: definition
+**定义 — 机会性感知（*Opportunistic Sensing*）**
+
+不专门部署感知平台，而是搭载在已有移动载体（出租车、公交车、行人手机）上，利用其自然移动行为收集城市级感知数据，数据上传也可延迟到经过 Wi-Fi 热点时进行（*Delay-Tolerant Networking*）。
+:::
 
 ---
 
@@ -28,7 +40,9 @@ P2 实验平台（2008 年，早于 iPhone）：
 
 ### 2.2 传感器放置研究
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 最佳加速度计安装位置</strong></div>
+::: example 例题 — 最佳加速度计安装位置
+
+:::
 
 | 位置 | 信号质量 | 实用性 |
 |------|---------|--------|
@@ -82,7 +96,9 @@ $$\text{目标函数}：s(\mathbf{t}) = \text{correct} - \text{incorrect}^2$$
 - 手工标注（*Hand-Labeled*）数据：约 280 个事件，5 类（坑洞、井盖、膨胀缝、铁轨交叉、平坦路面）
 - 松散标注（*Loosely-Labeled*）数据：大量行驶轨迹，无逐事件标注，用于防止过拟合
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 假阳性的危害远大于假阴性</strong>　如果系统误报过多（假阳性高），道路部门会失去信任，整个系统就失去实用价值；漏报（假阴性）只是没发现某个坑洞，危害相对可控。因此 $s(t)$ 对 incorrect 取平方，重点压制假阳性。</div>
+::: theorem 推论 — 假阳性的危害远大于假阴性
+如果系统误报过多（假阳性高），道路部门会失去信任，整个系统就失去实用价值；漏报（假阴性）只是没发现某个坑洞，危害相对可控。因此 $s(t)$ 对 incorrect 取平方，重点压制假阳性。
+:::
 
 ---
 
@@ -131,6 +147,6 @@ P2 体现的设计原则：
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 Pothole Patrol 通过在出租车上安装低成本加速度计，以机会性移动感知实现波士顿城区的大规模路面质量监测；四级级联滤波器结合有标签/松散标签训练数据实现坑洞识别，现场验证精确率 > 81%，展示了将惯性传感器用于城市基础设施监测的巨大潜力。

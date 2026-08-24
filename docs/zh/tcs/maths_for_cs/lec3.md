@@ -1,8 +1,13 @@
+---
+title: 分类讨论和强归纳法
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 3
+kind: theory
+tags: []
+status: complete
+---
 # Lec 3 分类讨论和强归纳法
-
-
-
-
 
 ## 一、证明技术汇总（截至本讲）
 
@@ -14,8 +19,6 @@
 | 逆否证明         | $P \implies Q$                     | 假设 $\neg Q$，推出 $\neg P$        |
 | 反证法           | $P$                                | 假设 $\neg P$，推出矛盾             |
 | 归纳法           | $\forall n \in \mathbb{N}.\; P(n)$ | 证 $P(0)$ 及 $P(n) \implies P(n+1)$ |
-
-
 
 ## 二、 分情形证明 (*Proof by Cases*)
 
@@ -29,7 +32,7 @@
 
 **模板：**
 
-```
+```text
 Proof. By cases on C:
   Case 1: Assume C. Then P because ...
   Case 2: Assume ¬C. Then P because ...
@@ -78,15 +81,15 @@ Proof: Proof by cases:
 
 对每个情形 $C_i$ 分别证明 $P$，则 $P$​ 成立。这些 k 种情况是“穷尽的”（*exhaustive*）
 
+著名的 多情形的例子：
 
-
-著名的 多情形的例子： 
-
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong> 经典案例 </strong> 四色定理（<i>*Four Color Theorem</i>） ：任意地图的区域可用 4 种颜色染色，使相邻区域颜色不同。</div>
+::: example 经典案例
+四色定理（**Four Color Theorem*） ：任意地图的区域可用 4 种颜色染色，使相邻区域颜色不同。
+:::
 
 历史（非常曲折）
 
-• 1852：Guthrie 在观察英国地图时猜想四色足够（1853提出）
+• 1852：Guthrie 在观察英国地图时猜想四色足够（1853 提出）
  • 1853：Kempe “证明”了该定理
  • 1864：Heawood 发现了错误 :(
  • 1880：Tait 再次“证明”该定理
@@ -115,8 +118,6 @@ Proof: Proof by cases:
 - 普通归纳步骤假设 $P(n)$；强归纳步骤可假设 $P(0), P(1), \ldots, P(n)$ 全部成立。
 - 二者**等价**——能用普通归纳证明的，强归纳也能证；反之亦然。
 - 强归纳只是给了更强的出发点，实际上没有"多出"什么证明力。
-
-
 
 ## 五、强归纳应用示例
 
@@ -168,10 +169,6 @@ $\blacksquare$
 - 其余相邻关系由各子排列保证。
 
 故此排列是合法的胜负排列。$\blacksquare$
-
-
-
-
 
 ## 六、 关键术语速查
 

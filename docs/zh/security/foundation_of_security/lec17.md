@@ -1,4 +1,13 @@
-# Lec 17 — 软件安全（Software Security）
+---
+title: 软件安全（Software Security）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 17
+kind: theory
+tags: []
+status: complete
+---
+# Lec 17 软件安全（Software Security）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 总体背景
@@ -26,7 +35,7 @@ void f() {
 
 **调用栈布局**（栈向低地址增长）：
 
-```
+```text
 ...
 返回地址
 buf[127]

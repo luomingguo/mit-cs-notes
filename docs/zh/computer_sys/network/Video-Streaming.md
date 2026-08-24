@@ -1,3 +1,11 @@
+---
+title: 视频流（Video Streaming / ABR）
+course: 6.5820/6.S04 计算机网络
+course_id: '6.5820'
+kind: system
+tags: []
+status: complete
+---
 # Lec 17 视频流（Video Streaming / ABR）
 
 阅读资料
@@ -7,7 +15,7 @@
 
 > 互联网视频占了绝大部分流量。现代流媒体走 **HTTP 自适应流（DASH/HLS）**：视频被切成几秒一个的**分块 (chunk)**，每块预编码成**多档码率**；客户端边播边为每一块**自适应地选码率（ABR, Adaptive BitRate）**。本讲两篇分别代表两条路线：手工设计的 **BBA**，与用强化学习自学的 **Pensieve**。
 
-## 总览
+## 本讲导览
 
 - ABR 问题与 QoE 目标
 - 基于吞吐预测的 ABR 为什么脆弱
@@ -21,51 +29,47 @@
 
 客户端有一个**播放缓冲区**：下载好的块进缓冲、播放器从缓冲取块播放。每下载一块要决定它的码率。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · QoE（体验质量）的几个相互冲突的目标</strong>
-<ul>
-<li><strong>高码率/高清晰度</strong>（越高越好）；</li>
-<li><strong>不卡顿（避免 rebuffering）</strong>：缓冲被取空就要暂停缓冲，是体验杀手；</li>
-<li><strong>平滑</strong>：码率别频繁大幅跳变；</li>
-<li><strong>低启动延迟</strong>。</li>
-</ul>
+::: definition 定义 · QoE（体验质量）的几个相互冲突的目标
+- **高码率/高清晰度**（越高越好）；
+
+- **不卡顿（避免 rebuffering）**：缓冲被取空就要暂停缓冲，是体验杀手；
+
+- **平滑**：码率别频繁大幅跳变；
+
+- **低启动延迟**。
+
 矛盾：想要高码率就得下大块、缓冲更容易被取空→卡顿；想绝对不卡就一直挑低码率→画质差。ABR 就是在这几者间权衡。
-</div>
+:::
 
 ## 二、基于吞吐预测的 ABR 为什么脆弱
 
 直觉做法：估计当前网络吞吐，挑一个"略低于吞吐"的码率。问题是**吞吐估计很不准**：
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>痛点</strong><br>
-视频是<strong>断续下载（on-off）</strong>：缓冲满了就停下载一段时间（off），导致测到的"吞吐"忽高忽低、系统性偏低；CDN/TCP 慢启动、竞争流也让单块下载速率失真。基于错误的吞吐估计选码率，要么过保守（画质差），要么过激进（卡顿）。
-</div>
+::: example 痛点
+视频是**断续下载（on-off）**：缓冲满了就停下载一段时间（off），导致测到的"吞吐"忽高忽低、系统性偏低；CDN/TCP 慢启动、竞争流也让单块下载速率失真。基于错误的吞吐估计选码率，要么过保守（画质差），要么过激进（卡顿）。
+:::
 
 ## 三、BBA：直接用缓冲区水位决定码率
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · Buffer-Based Approach</strong><br>
-干脆<strong>不（在稳态）估计吞吐</strong>，而是把<strong>当前缓冲区占用量</strong>当作唯一信号：定义一个映射 $f(\text{buffer})\to\text{码率}$——缓冲低就选低码率（保命、防卡顿），缓冲高就敢选高码率。只有在<strong>启动阶段</strong>缓冲还没建起来时才辅助用一点吞吐估计。
-</div>
+::: definition 定义 · Buffer-Based Approach
+干脆**不（在稳态）估计吞吐**，而是把**当前缓冲区占用量**当作唯一信号：定义一个映射 $f(\text{buffer})\to\text{码率}$——缓冲低就选低码率（保命、防卡顿），缓冲高就敢选高码率。只有在**启动阶段**缓冲还没建起来时才辅助用一点吞吐估计。
+:::
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 为什么缓冲水位本身就够用</strong><br>
-缓冲区占用其实已经<strong>隐式编码了吞吐与码率的关系</strong>：如果缓冲在涨，说明下载速度 > 播放消耗，可以提码率；在跌就该降。直接用这个可观测、无偏的量做决策，绕开了不可靠的吞吐预测，<strong>显著减少卡顿</strong>。论文来自真实大规模点播服务（Netflix）的数据，证明简单的 buffer→bitrate 映射就能打败复杂的吞吐预测方案。这是"用一个稳健的可观测量替代脆弱的预测"的经典案例。
-</div>
+::: theorem 推论 · 为什么缓冲水位本身就够用
+缓冲区占用其实已经**隐式编码了吞吐与码率的关系**：如果缓冲在涨，说明下载速度 > 播放消耗，可以提码率；在跌就该降。直接用这个可观测、无偏的量做决策，绕开了不可靠的吞吐预测，**显著减少卡顿**。论文来自真实大规模点播服务（Netflix）的数据，证明简单的 buffer→bitrate 映射就能打败复杂的吞吐预测方案。这是"用一个稳健的可观测量替代脆弱的预测"的经典案例。
+:::
 
 ## 四、Pensieve：用强化学习自学 ABR
 
 BBA 等都是**手工设计**的启发式，依赖人对网络的假设，难以同时在各种网络条件下最优。Pensieve 改用**强化学习（RL）**直接从经验里学策略。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · Pensieve 的 RL 表述</strong><br>
-用神经网络做 ABR 决策（A3C 训练）：<strong>状态</strong> = 过去若干块的吞吐、当前缓冲水位、上一个码率、剩余块数等；<strong>动作</strong> = 下一块选哪个码率；<strong>奖励</strong> = QoE 函数（+码率，−卡顿，−码率波动）。在大量模拟网络轨迹上训练，让网络自己学出"在什么状态下选什么码率"。
-</div>
+::: definition 定义 · Pensieve 的 RL 表述
+用神经网络做 ABR 决策（A3C 训练）：**状态** = 过去若干块的吞吐、当前缓冲水位、上一个码率、剩余块数等；**动作** = 下一块选哪个码率；**奖励** = QoE 函数（+码率，−卡顿，−码率波动）。在大量模拟网络轨迹上训练，让网络自己学出"在什么状态下选什么码率"。
+:::
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 学习 vs 手工设计</strong><br>
-Pensieve <strong>不预设任何网络模型/公式</strong>，直接优化最终 QoE，因此能适应吞吐预测难、缓冲式启发式也照顾不到的复杂/多变网络，在多种网络条件下普遍优于（或追平）BBA、MPC 等最佳手工方案。代价/争议：需要大量训练、奖励函数要人定、可解释性差、对训练分布外的网络是否稳健需谨慎——这是"把 ML 用进系统决策"的典型权衡（与 [[Content-Distribution.md]] 的 VideoStorm、NAS 同属一脉）。
-</div>
+::: theorem 推论 · 学习 vs 手工设计
+Pensieve **不预设任何网络模型/公式**，直接优化最终 QoE，因此能适应吞吐预测难、缓冲式启发式也照顾不到的复杂/多变网络，在多种网络条件下普遍优于（或追平）BBA、MPC 等最佳手工方案。代价/争议：需要大量训练、奖励函数要人定、可解释性差、对训练分布外的网络是否稳健需谨慎——这是"把 ML 用进系统决策"的典型权衡（与 [[Content-Distribution.md]] 的 VideoStorm、NAS 同属一脉）。
+:::
 
 ## 五、论文重点
 

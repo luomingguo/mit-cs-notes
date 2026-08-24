@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 内核原理系列（中文讲解笔记）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 内核原理系列（中文讲解笔记）
 
 ## 索引 (Indexes)

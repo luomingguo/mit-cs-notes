@@ -1,3 +1,12 @@
+---
+title: 渐进分析
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 6
+kind: theory
+tags: []
+status: complete
+---
 # Lec 6 渐进分析
 
 ## 一、引例：Goomy 叠叠乐
@@ -19,8 +28,6 @@ $$d_k = d_{k-1} + \frac{1}{2k}$$
 $$d_n = \frac{1}{2}\left(1 + \frac{1}{2} + \frac{1}{3} + \cdots + \frac{1}{n}\right) = \frac{1}{2}H_n$$
 
 由于调和级数发散，$d_n \to \infty$，理论上可悬出任意远。实际上仅需 4 块（$H_4 > 2$）即可悬出 1 个单位。
-
-
 
 ## 二、调和数
 
@@ -110,17 +117,11 @@ $$\frac{1}{n} + \ln n \;\leq\; H_n \;\leq\; 1 + \ln n$$
 
 > **注意：** 极限条件是充分条件（红色警示），不是等价定义（黑色是定义）。
 
-
-
-
-
 ## 五、常见误用警告
 
 - **绝对禁止写 $f = O(g)$**：$O(g)$ 是函数的集合，不是单个值，会导致"$f = O(g)$ 且 $h = O(g)$，故 $f = h$"等谬误。应写 $f \in O(g)$ 或 $f \leq O(g)$。
 - $f \geq O(g)$ 毫无意义（因为 0 函数 $\in O(g)$）。
 - 注意 $\Omega, \omega$ 在 CS 和数论中定义不同，本课使用 CS 定义（更强）。
-
-
 
 ## 六、Stirling 公式
 
@@ -133,8 +134,6 @@ $$n! \sim \left(\frac{n}{e}\right)^n \sqrt{2\pi n}$$
 $$n\ln n - n + 1 \leq \ln(n!) \leq (n+1)\ln n - n + 1$$
 
 即 $n^n/e^{n-1} \leq n! \leq n^{n+1}/e^{n-1}$，误差在 $n$ 倍以内。
-
-
 
 ## 七、关键术语速查
 

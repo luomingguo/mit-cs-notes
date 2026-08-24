@@ -1,4 +1,13 @@
-# Lec 20 — 隐私与零信任证明
+---
+title: 隐私与零信任证明
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 20
+kind: theory
+tags: []
+status: complete
+---
+# Lec 20 隐私与零信任证明
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 超越"全有或全无"的加密

@@ -1,3 +1,12 @@
+---
+title: Bluespec / Minispec 硬件综合
+course: 6.1910 计算结构（Fall 25）
+course_id: '6.1910'
+lecture: 8
+kind: system
+tags: []
+status: complete
+---
 # Lec 8 Bluespec / Minispec 硬件综合
 
 [Lec 7](lec7.md) 建立了模块抽象（submodule / method / rule / input）。本讲聚焦**综合**：这些高级描述如何变成实际硬件，并用 GCD（最大公约数）这个**多周期 FSM** 完整走一遍“模块化设计一个时序计算”的流程。
@@ -92,7 +101,7 @@ endmodule
 
 ![image-20250429230615513](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250429230615513.png)
 
-## 小结
+## 本讲小结
 
 - **综合**：method→输出组合逻辑，rule→下一状态组合逻辑 + 寄存器更新；rule 每周期触发。
 - **多周期模块**让我们能做组合逻辑做不到的变长计算（GCD、串行加法器……）。

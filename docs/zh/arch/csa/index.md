@@ -1,3 +1,11 @@
+---
+title: 6.590 计算机系统架构
+course: 6.590 计算机系统架构
+course_id: '6.590'
+kind: system
+tags: []
+status: complete
+---
 # 6.590 计算机系统架构
 
 [6.5900/6.823 Computer System Architecture - Fall24](https://csg.csail.mit.edu/6.5900/lecnotes.html)
@@ -11,8 +19,6 @@
 介绍现代计算机架构的基本原理。强调在计算机架构演进过程中，技术、硬件组织和编程系统之间的关系。主题包括流水线、乱序执行和推测执行；缓存、虚拟内存和异常处理，超标量、超长指令字（VLIW）、向量和多线程处理器；片上网络、内存模型、同步以及多处理器的缓存一致性协议。
 
 *Daniel Sanchez*
-
-
 
 ### 主题
 
@@ -49,19 +55,17 @@
 - **P&H:** *Computer Organization & Design, by Patterson and Hennessy*
 - **D&T:** *Principles and practices of interconnection networks* by Dally and Towles
 
-![截屏2024-06-23 23.15.58](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66783c47a6265.png)
+![截屏 2024-06-23 23.15.58](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66783c47a6265.png)
 
-![截屏2024-06-23 23.16.41](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66783c6142f22.png)
+![截屏 2024-06-23 23.16.41](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66783c6142f22.png)
 
-- - 
+- -
 
 #### 学习材料
 
 6.5900[6.823] Fall 2023 Study Materials
 
-
-
-Prerequisite Self-Assessment Test ([pdf](http://csg.csail.mit.edu/6.5900/StudyMaterials/self-test/self-test.pdf)) and accompanying handout ([pdf](http://csg.csail.mit.edu/6.5900/StudyMaterials/self-test/self-test-handout.pdf)) [Posted on 9/6] 
+Prerequisite Self-Assessment Test ([pdf](http://csg.csail.mit.edu/6.5900/StudyMaterials/self-test/self-test.pdf)) and accompanying handout ([pdf](http://csg.csail.mit.edu/6.5900/StudyMaterials/self-test/self-test-handout.pdf)) [Posted on 9/6]
 
 **Study Materials for Quiz 1 (L01-L09)**
 
@@ -176,37 +180,21 @@ Prerequisite Self-Assessment Test ([pdf](http://csg.csail.mit.edu/6.5900/StudyMa
 
 [苏黎世理工 Computer Architecture - Fall 2019](https://safari.ethz.ch/architecture/fall2019/doku.php?id=schedule)
 
-
-
-
-
 # Lec 1 计算机体系架构的介绍
-
-
 
 [lec1.md](./lec1.md)
 
 # Lec 2 指令集架构和缓存
 
-
-
 [lec2.md](./lec2.md)
-
-
 
 # Lec 3 缓存组织和内存管理
 
-
-
 [lec3.md](./lec3.md)
-
-
 
 # Lec 4 现代虚拟存储系统
 
 [lec4.md](./lec4.md)
-
-
 
 # Lec 5 指令流水线： 危机解决，时间限制
 
@@ -224,23 +212,15 @@ Prerequisite Self-Assessment Test ([pdf](http://csg.csail.mit.edu/6.5900/StudyMa
 
 [lec8.md](./lec8.md)
 
-
-
 # Lec 9 推测执行
 
 [lec9.md](./lec9.md)
-
-
 
 # Lec 10 高级内存操作
 
 [lec10.md](./lec10.md)
 
-
-
 # Lec 11 多线程技术
-
-
 
 [lec11.md](./lec11.md)
 
@@ -256,29 +236,19 @@ Prerequisite Self-Assessment Test ([pdf](http://csg.csail.mit.edu/6.5900/StudyMa
 
 [lec14.md](./lec14.md)
 
-# Lec 15 片上网络I： 拓扑 & 流控
+# Lec 15 片上网络 I： 拓扑 & 流控
 
-这节Lec我们将专注于连接共享内存处理器的缓存的片上网络。
-
-
+这节 Lec 我们将专注于连接共享内存处理器的缓存的片上网络。
 
 [lec15.md](./lec15.md)
 
-# Lec 16 片上网络II：路由 & 架构
-
-
+# Lec 16 片上网络 II：路由 & 架构
 
 [lec16.md](./lec16.md)
 
-
-
 # Lec 17 事务性内存
 
-
-
 [lec17.md](./lec17.md)
-
-
 
 # Lec 18 微码与 VLIW 处理器
 
@@ -288,13 +258,9 @@ Prerequisite Self-Assessment Test ([pdf](http://csg.csail.mit.edu/6.5900/StudyMa
 
 [lec19.md](./lec19.md)
 
-
-
 # Lec 20 向量计算机
 
 [lec20.md](./lec20.md)
-
-
 
 # Lec 21 GPU
 

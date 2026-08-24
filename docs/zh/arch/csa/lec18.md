@@ -1,4 +1,13 @@
-# L18：微码与 VLIW 处理器（*Microcoded and VLIW Processors*）
+---
+title: 微码与 VLIW 处理器（Microcoded and VLIW Processors）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 18
+kind: system
+tags: []
+status: complete
+---
+# Lec 18 微码与 VLIW 处理器（*Microcoded and VLIW Processors*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez
 > 主题：硬连线 vs 微码（*microcode*）、微码控制器与微指令、VLIW 设计原理、循环调度技术、Trace Scheduling、IA-64（谓词/推测/数据推测）
@@ -57,7 +66,7 @@ $$
 
 **取指序列**示例：
 
-```
+```text
 fetch0: MA ← PC          next
 fetch1: IR ← Memory      spin       # 等存储器
 fetch2: A ← PC           next
@@ -66,7 +75,7 @@ fetch3: PC ← A + 4       dispatch   # 按 opcode 分派
 
 **Load / Store**（含 `spin` 等存储器）：
 
-```
+```text
 LW0: A ← Reg[rs1]   LW1: B ← sExt(Imm)   LW2: MA ← A+B   LW3: Reg[rd] ← Memory (spin)   LW4: fetch
 SW0: A ← Reg[rs1]   SW1: B ← sExt(Imm)   SW2: MA ← A+B   SW3: Memory ← Reg[rs2] (spin)  SW4: fetch
 ```
@@ -203,7 +212,7 @@ VLIW 类技术的根本限制：不可预测的分支、不可预测的访存行
 
 ---
 
-## 小结
+## 本讲小结
 
 - **微码**用一层解释把复杂指令拆成简单微指令，实现简单但 CPI>1；今天仍以 x86 micro-op 形式存活；
 - **VLIW** 把找并行与调度的重担从硬件移到**编译器**，靠固定功能槽、确定延迟、无互锁换取简单硬件；

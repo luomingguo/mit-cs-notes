@@ -1,4 +1,13 @@
-# L4 · 对称原语 II：PRP、Feistel、DES 与 AES
+---
+title: 对称原语 II：PRP、Feistel、DES 与 AES
+course: 6.5610 应用密码学与安全（Spring 2026）
+course_id: '6.5610'
+lecture: 4
+kind: theory
+tags: []
+status: complete
+---
+# Lec 4 对称原语 II：PRP、Feistel、DES 与 AES
 
 > MIT 6.5610 · Lecture 4 · 关键词：PRP、PRP/PRF 切换引理、三步设计法、Feistel 网络、Luby–Rackoff、DES、AES（迭代 Even-Mansour）、缓存攻击、线性密码分析
 > *来源：课程自家 PRP/AES 讲义（Henry Corrigan-Gibbs），对应 2026"Symmetric-key primitives II"。*
@@ -19,25 +28,21 @@
 
 ## 1. PRP：分组密码的真身
 
-<div class="definition">
-
+::: definition
 **定义（伪随机置换 · *Pseudorandom Permutation, PRP*）**
 "分组密码"其实是 PRP（而非 PRF）。与 PRF 的区别：
 1. 输入输出空间相同：$P:K\times X\to X$；
 2. 不同输入映到不同输出（**无碰撞**，是置换）；
 3. 给定密钥有高效**逆算法** $P^{-1}(k,\cdot)$。
 AES、DES 都是分组密码（PRP）。
+:::
 
-</div>
-
-<div class="corollary">
-
+::: theorem
 **PRP/PRF 切换引理（Switching Lemma）**
 看到 $T$ 对输入输出时，PRP 与 PRF 的可区分优势仅约
 $$\frac{T^2}{|X|}.$$
 故当输出空间够大（如 256 位）时，PRP **实用上可直接当 PRF 用**。
-
-</div>
+:::
 
 > 🔎 这正是生日界：$T$ 次查询里 PRF 可能撞出碰撞而 PRP 永不碰撞，差异即 $\approx T^2/|X|$。
 
@@ -68,22 +73,18 @@ NIST 三大分组密码：
 
 ## 3. DES 与 Feistel 网络
 
-<div class="example">
-
+::: example
 **Feistel 置换**（把随机函数变成可逆随机置换）
 $\pi_f:\{0,1\}^{2n}\to\{0,1\}^{2n}$，对函数 $f:\{0,1\}^n\to\{0,1\}^n$：
 $$\pi_f(x,y) := (y,\ x\oplus f(y)).$$
 **天然可逆**——无论 $f$ 是否可逆，$\pi_f$ 都是置换。这是 Feistel 的精髓：用不可逆的随机函数搭出可逆的随机置换。
-
-</div>
+:::
 
 DES 结构：$\mathrm{DES}(x)=(P_1\circ\pi_{f_{16}}\circ\cdots\circ\pi_{f_2}\circ\pi_{f_1}\circ P_0)(x)$，56 位密钥、64 位块、16 轮，$P_0,P_1$ 为固定比特置换（对安全无明显作用，疑似为拖慢软件实现）。
 
-<div class="corollary">
-
+::: theorem
 **Luby–Rackoff**：当 $n\to\infty$ 且把 $f_i$ 建模为随机函数时，**三轮** Feistel 即与随机置换不可区分（强 PRP 需四轮）。但对实际 DES 意义有限（$f_i$ 并不随机，且块太小，渐近结论不适用）。
-
-</div>
+:::
 
 **轮函数**：从 56 位密钥导出 16 个 48 位轮密钥；每轮 = 线性混合 → 拆成 6 位块、各过不同 **S-盒**（查表的非线性替换）→ 比特置换。**唯一非线性来自 S-盒**；若 S-盒随机选取密码会变弱，DES 的 S-盒经精心设计具备抗攻击的统计性质（如无输出比特接近输入的线性函数）。
 
@@ -120,7 +121,7 @@ $$\Pr\big[x[B_x]\oplus y[B_y]=k[B_k]\big] \ge \tfrac12 + e,\quad y\leftarrow F(k
 
 ---
 
-## 6. 小结
+## 6. 本讲小结
 
 - 分组密码 = PRP；大输出时切换引理（$T^2/|X|$）让它可当 PRF 用。
 - 设计三步法：理想原语 → 构造 → 实例化（信仰之跃在第 3 步）。

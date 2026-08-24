@@ -1,0 +1,31 @@
+{
+  "$comment": [
+    "术语表。NOTESTYLE.md 第 6.1 节：同一概念全库只能有一个中文形态。",
+    "notes-lint 用它检查『同一篇里中文形态和英文形态混着用』。",
+    "",
+    "canonical  统一的中文写法（首现时括注英文，之后只用它）",
+    "en         对应英文，正则片段。首现括注和代码里出现是正常的，",
+    "           规则只在同一文件里中英两种形态都作为正文术语出现时报警。",
+    "aliases    该并到 canonical 的其他中文写法",
+    "",
+    "新增条目请按『这个词在库里真的被混用过』来加，不要凭空堆词表。"
+  ],
+
+  "terms": [
+    { "canonical": "页表", "en": "Page ?[Tt]able|PTE", "aliases": [] },
+    { "canonical": "缓存", "en": "Cache", "aliases": ["高速缓存"] },
+    { "canonical": "缓存一致性", "en": "Cache Coherence", "aliases": ["缓存连贯性"] },
+    { "canonical": "事务", "en": "Transaction", "aliases": [] },
+    { "canonical": "副本", "en": "Replica", "aliases": ["复本"] },
+    { "canonical": "线性一致性", "en": "Linearizability", "aliases": ["线性化", "可线性化"] },
+    { "canonical": "一致性哈希", "en": "Consistent Hashing", "aliases": ["一致哈希"] },
+    { "canonical": "调度器", "en": "Scheduler", "aliases": [] },
+    { "canonical": "死锁", "en": "Deadlock", "aliases": [] },
+    { "canonical": "吞吐量", "en": "Throughput", "aliases": ["吞吐率"] },
+    { "canonical": "延迟", "en": "Latency", "aliases": [] },
+    { "canonical": "虚拟内存", "en": "Virtual Memory", "aliases": [] },
+    { "canonical": "预写日志", "en": "Write-Ahead Log(?:ging)?|WAL", "aliases": ["写前日志"] },
+    { "canonical": "并发控制", "en": "Concurrency Control", "aliases": [] },
+    { "canonical": "共识", "en": "Consensus", "aliases": ["一致性协议"] }
+  ]
+}

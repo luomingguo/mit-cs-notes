@@ -1,3 +1,12 @@
+---
+title: 递归数据类型
+course: 6.1020 软件构造基础
+course_id: '6.1020'
+lecture: 11
+kind: design
+tags: []
+status: complete
+---
 # Lec 11 递归数据类型
 
 本节我们将探讨递归定义的类型、如何指定此类类型的操作以及如何实现它们。我们的主要示例是*immutable lists*。
@@ -8,15 +17,11 @@
 - 读写数据类型定义
 - 理解并实现递归数据类型函数
 - 理解*immutable lists*并了解其标准操作
-- 了解并遵循使用ADT编写程序的规则
-
-
-
-
+- 了解并遵循使用 ADT 编写程序的规则
 
 ## 递归
 
-在介绍递归数据类型之前，我们回顾一下递归函数，在6.010学习中，我们知道，
+在介绍递归数据类型之前，我们回顾一下递归函数，在 6.010 学习中，我们知道，
 
 - **递归** 讨论了基本情况（base case）和递归情况（recursive case），介绍了递归辅助函数，并展示了如何用递归实现多个函数。
 - **递归与迭代** 这部分讨论了递归（函数调用自身）和迭代（循环）之间的在表达重复计算时的对偶关系。还介绍了递归计算的三种常见模式：链表型（list-like）、树型（tree-like）和图型（graph-like）。在接下来的内容中，链表式和树状递归模式将特别重要。
@@ -29,7 +34,7 @@
 
 我们定义一个不可变链表类型`ImList<Element>`，它有四种基本操作：
 
-```
+```text
 empty: void → ImList          // 返回一个空链表
 cons: Element × ImList → ImList   // 将一个元素加到另一个链表的头部，返回新的链表
 first: ImList → Element          // 返回链表的第一个元素（要求链表非空）
@@ -40,7 +45,7 @@ rest: ImList → ImList            // 返回除第一个元素外的子链表（
 
 我们用方括号表示链表，如 `[1, 2, 3]`，并把操作写成函数形式：
 
-```
+```text
 empty() → [ ]
 cons(0, empty()) → [0]
 cons(0, cons(1, cons(2, empty()))) → [0, 1, 2]
@@ -56,7 +61,7 @@ rest(rest(rest(x))) → [ ]
 
 `first`、`rest`、`cons` 三者的基本关系是：
 
-```
+```text
 first(cons(x, y)) = x  
 rest(cons(x, y)) = y
 ```
@@ -65,7 +70,7 @@ rest(cons(x, y)) = y
 
 ### TypeScript 中的不可变链表
 
-我们用一个接口来定义这个ADT：
+我们用一个接口来定义这个 ADT：
 
 ```ts
 interface ImList<Element> {
@@ -121,7 +126,7 @@ class Cons<Element> implements ImList<Element> {
 
 已经实现了 `cons`，`first`， `rest`三个操作，那`empty`怎么办呢？
 
-工厂函数实现empty()， 一个做法是让调用者直接创建`new Empty()`，但这样暴露了具体实现类，不符合ADT的封装原则，更好的方法是定义一个工厂函数
+工厂函数实现 empty()， 一个做法是让调用者直接创建`new Empty()`，但这样暴露了具体实现类，不符合 ADT 的封装原则，更好的方法是定义一个工厂函数
 
 ```ts
 function empty<Element>(): ImList<Element> {
@@ -192,7 +197,7 @@ class Cons<Element> implements ImList<Element> {
 
 为了让这种关系更加直观，我们可以写出如下数据类型定义：
 
-```
+```text
 ImList<Element> = Empty + Cons(first: Element, rest: ImList<Element>)
 ```
 
@@ -204,7 +209,7 @@ ImList<Element> = Empty + Cons(first: Element, rest: ImList<Element>)
 
 当我们使用这种定义方式书写时，数据类型的递归特性就会非常清晰。例如，我们可以用这种表达形式来表示任意的 `ImList` 值： 列表 `[0, 1, 2]` 可以写作：
 
-```
+```text
 Cons(0, Cons(1, Cons(2, Empty)))
 ```
 

@@ -1,4 +1,13 @@
-# L12：缓存一致性（*Cache Coherence*）
+---
+title: 缓存一致性（Cache Coherence）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 12
+kind: system
+tags: []
+status: complete
+---
+# Lec 12 缓存一致性（*Cache Coherence*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez 主题：多核动机与 Amdahl 定律、通信模型、一致性 vs 一致、侦听式协议（VI/MSI/MESI/MOESI）、同步与原子操作
 
@@ -128,7 +137,7 @@ $$ S_{\text{overall}} = \frac{1}{(1-f) + f/S} $$
 
 ### 问题 3：总线占用
 
-- 原子读-改-写指令一般需**两次内存(总线)操作**且中间不能插入其他处理器的内存操作；
+- 原子读-改-写指令一般需**两次内存（总线）操作**且中间不能插入其他处理器的内存操作；
 - 多处理器下须在整个原子读写期间**锁总线** → 对简单总线昂贵、对分裂事务总线极昂贵；
 - 现代处理器改用 **load-reserve / store-conditional**。
 
@@ -136,7 +145,7 @@ $$ S_{\text{overall}} = \frac{1}{(1-f) + f/S} $$
 
 用特殊寄存器保存预约标志、地址与 store-conditional 的结果：
 
-```
+```text
 Load-reserve R, (a):           Store-conditional (a), R:
     <flag, adr> ← <1, a>           if <flag, adr> == <1, a>
     R ← M[a]                           then 取消其他处理器对 a 的预约;
@@ -148,7 +157,7 @@ Load-reserve R, (a):           Store-conditional (a), R:
 
 ------
 
-## 小结
+## 本讲小结
 
 - 多核性能受 Amdahl 定律与通信约束；共享内存系统需一致性协议维持"单一内存"假象；
 - **一致性**管单地址读写、**一致**管多地址可见时序；写传播靠失效/更新，串行化靠侦听/目录；

@@ -1,4 +1,13 @@
-# L16：低级虚拟机 II（Low-Level VM II）——语法制导翻译与控制流图
+---
+title: 低级虚拟机 II（Low-Level VM II）——语法制导翻译与控制流图
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+lecture: 16
+kind: theory
+tags: []
+status: complete
+---
+# Lec 16 低级虚拟机 II（Low-Level VM II）——语法制导翻译与控制流图
 
 > 接 L15。本讲讲**怎么把 AST 翻译成字节码**：用**推理规则**（语法制导翻译）逐结构生成指令，把控制流显式化为**控制流图 (CFG)**。与 L2–L5 里"正则表达式→有限自动机"的构造法形成漂亮的类比。
 
@@ -8,15 +17,18 @@
 
 `Language → High-Level VM → Low-Level VM → Machine Code`，本讲做的是 `AST → CFG + Instructions`。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（语法制导翻译 Syntax-Directed Translation 的三项任务）</strong>
+::: definition
+**定义（语法制导翻译 Syntax-Directed Translation 的三项任务）**
 把高级结构翻译成 VM 指令时必须：
-<ol>
-<li><strong>拆分复杂表达式</strong>为一串简单指令（每条只做一个操作）；</li>
-<li><strong>把变量名关联到显式存储位置</strong>（局部槽下标 / 全局名下标 / 常量池下标）；</li>
-<li><strong>用跳转把控制流显式化</strong>（if/while 不再是嵌套结构，而是带条件跳转的基本块图）。</li>
-</ol>
-本质：<strong>AST → CFG + Instructions</strong>。
-</div>
+
+- **拆分复杂表达式**为一串简单指令（每条只做一个操作）；
+
+- **把变量名关联到显式存储位置**（局部槽下标 / 全局名下标 / 常量池下标）；
+
+- **用跳转把控制流显式化**（if/while 不再是嵌套结构，而是带条件跳转的基本块图）。
+
+本质：**AST → CFG + Instructions**。
+:::
 
 我们用一个最小语言（"Simple Language"）来讲，它含四种语句构造：
 
@@ -33,7 +45,7 @@
 
 例子程序：
 
-```
+```text
 while (x > 1) {
   if (x > 10) {
     x = x - 2;
@@ -47,7 +59,7 @@ while (x > 1) {
 
 **CFG** 则把它摊平成一张图：
 
-```
+```text
         ┌─────────┐
    ┌───▶│  x > 1  │──False──▶ (出口)
    │    └────┬────┘
@@ -62,13 +74,13 @@ while (x > 1) {
    └──────┴─────────┘   (回到 x>1)
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（控制流图 Control Flow Graph）</strong>
-CFG 由<strong>基本块 (basic block)</strong> 作为结点、<strong>控制转移</strong>作为有向边组成。
-<ul>
-<li><strong>基本块</strong>：一段<strong>无内部控制流</strong>的直线指令序列——一旦进入就从头执行到尾，中途不分支、不被跳入；</li>
-<li><strong>边</strong>：块末尾的跳转（无条件 / 条件 True / 条件 False）指向后继块。</li>
-</ul>
-</div>
+::: definition 定义（控制流图 Control Flow Graph）
+CFG 由**基本块 (basic block)** 作为结点、**控制转移**作为有向边组成。
+
+- **基本块**：一段**无内部控制流**的直线指令序列——一旦进入就从头执行到尾，中途不分支、不被跳入；
+
+- **边**：块末尾的跳转（无条件 / 条件 True / 条件 False）指向后继块。
+:::
 
 > **执行模型的转变**：AST 的执行模型是**递归**（解释器递归下降）；CFG 的执行模型是**迭代**（VM 取指—执行—按边跳转的循环）。这正是 L15 说的"从树遍历到线性指令流"的结构基础。
 
@@ -80,15 +92,17 @@ CFG 由<strong>基本块 (basic block)</strong> 作为结点、<strong>控制转
 
 ### 3.1 Step 1：为无控制流构造生成基本块
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（基本块生成）</strong>
-先定义"无控制流构造"（表达式 E、赋值）的翻译——它们翻译成<strong>一个基本块</strong>。<br>
-更精确地：翻译是带状态的——<strong>给定一个常量列表，构造翻译成（更新后的常量列表 + 一个基本块）</strong>。<br>
-（因为生成 <code>load_const i</code> 时，需要把字面量加入函数的 constants 池并拿到它的下标 i。）
-</div>
+::: definition 定义（基本块生成）
+先定义"无控制流构造"（表达式 E、赋值）的翻译——它们翻译成**一个基本块**。
+
+更精确地：翻译是带状态的——**给定一个常量列表，构造翻译成（更新后的常量列表 + 一个基本块）**。
+
+（因为生成 `load_const i` 时，需要把字面量加入函数的 constants 池并拿到它的下标 i。）
+:::
 
 这解释了一个实现细节：**`load_const i` 里的下标 `i` 从哪来？** 翻译器维护一个常量池，遇到字面量 `c` 时——若池里已有则复用其下标，否则追加并返回新下标。所以翻译函数的签名概念上是：
 
-```
+```text
 translate(constants, term) -> (constants', basic_block)
 ```
 
@@ -96,7 +110,7 @@ translate(constants, term) -> (constants', basic_block)
 
 **整数常量 / 加载常量**：把字面量分配进常量池得到 `i`，生成 `load_const i`。
 
-```
+```text
 // load_const i: 把常量压栈
 // Stack: S => S :: f.constants()[i]
 ```
@@ -105,7 +119,7 @@ translate(constants, term) -> (constants', basic_block)
 
 **一元负号**：
 
-```
+```text
 // neg: 整数取负
 // Stack: S :: v => S :: (-v)
 ```
@@ -114,20 +128,20 @@ translate(constants, term) -> (constants', basic_block)
 
 **二元加法（其余 sub/mul/div 同理）**：
 
-```
+```text
 // add: 加法（语义同 Assignment #2）
 // Stack: S :: a :: b => S :: op(a, b)   // a 是左值, b 是右值
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（翻译规则 ≈ 语义规则）</strong>
-二元运算的语义规则是"分别求值左、右子式，再对两个值做 op"；翻译规则就是"<strong>先翻译左子式（生成压左值的代码），再翻译右子式（生成压右值的代码），最后追加 op 指令</strong>"。求值顺序在语义里规定，在翻译里就体现为<strong>生成代码的先后顺序</strong>——栈式 VM 天然保证操作数顺序正确。
-</div>
+::: theorem 定理（翻译规则 ≈ 语义规则）
+二元运算的语义规则是"分别求值左、右子式，再对两个值做 op"；翻译规则就是"**先翻译左子式（生成压左值的代码），再翻译右子式（生成压右值的代码），最后追加 op 指令**"。求值顺序在语义里规定，在翻译里就体现为**生成代码的先后顺序**——栈式 VM 天然保证操作数顺序正确。
+:::
 
 ### 3.3 例：翻译 `1 + 2`
 
 目标：`f = fun(){ return 1 + 2; }` →
 
-```
+```text
 function {
   local_vars = [],
   constants  = [1, 2, None],
@@ -154,15 +168,16 @@ function {
 
 语句的翻译规则把子块"接线"成 CFG。三种构造分别对应正则表达式三种运算的自动机构造——这是本讲最重要的类比。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（控制流构造 ↔ 正则→自动机构造的类比）</strong>
+::: theorem 定理（控制流构造 ↔ 正则→自动机构造的类比）
 <table>
 <tr><th>语句构造</th><th>对应的正则运算</th><th>自动机构造类比</th></tr>
 <tr><td>顺序组合 s1; s2</td><td>连接 (concatenation)</td><td>把 s1 的出口接到 s2 的入口</td></tr>
 <tr><td>if-then-else</td><td>选择 (alternation, |)</td><td>条件分叉成两支，再汇合</td></tr>
 <tr><td>while 循环</td><td>Kleene 星 (*)</td><td>条件真则进入体、体末回到条件；条件假则退出</td></tr>
 </table>
+
 就像 Thompson 构造把正则表达式逐运算拼成 NFA，语法制导翻译把语句逐构造拼成 CFG。
-</div>
+:::
 
 ### 4.1 顺序组合 `s1; s2`
 
@@ -170,7 +185,7 @@ function {
 
 ### 4.2 if 语句
 
-```
+```text
 if (cond) { s1 } else { s2 }
 ```
 
@@ -182,7 +197,7 @@ if (cond) { s1 } else { s2 }
 
 ### 4.3 while 语句
 
-```
+```text
 while (cond) { body }
 ```
 

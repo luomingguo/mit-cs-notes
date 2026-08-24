@@ -46,6 +46,12 @@ jobs:
       - name: Install dependencies
         run: npm ci # or pnpm install / yarn install / bun install
 
+      # 笔记规范检查（NOTESTYLE.md）。基线是当前的 error 数，只能降不能升 ——
+      # 存量问题（空章节、超长章节、待补写的短文）要人工处理，
+      # 这道门槛只保证新增的笔记不再引入同类问题。修完记得把这个数字调低。
+      - name: Lint notes
+        run: npm run notes:lint -- --summary --max-errors=1207
+
       - name: Install math lib
         run: npm add -D markdown-it-mathjax3
   

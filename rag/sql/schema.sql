@@ -75,3 +75,37 @@ CREATE OR REPLACE VIEW content_gaps AS
   FROM ask_log
   WHERE top_score IS NOT NULL AND top_score < 0.35
   ORDER BY created_at DESC;
+
+-- ============================================================
+-- NOTESTYLE.md 引入的结构字段。
+--
+-- 用 ADD COLUMN IF NOT EXISTS 而不是改上面的建表语句 —— 已经在 hk 上跑着的
+-- 库不用重建，重建 chunks 表意味着重新调一遍嵌入 API，那是要花钱的。
+-- ============================================================
+
+-- kind：theory | system | source | design，NOTESTYLE.md 的四类骨架。
+-- tags：人工填的概念词。status：complete | draft | stub。
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS kind   TEXT NOT NULL DEFAULT '';
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS tags   TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'complete';
+
+CREATE INDEX IF NOT EXISTS documents_kind_idx ON documents (kind);
+CREATE INDEX IF NOT EXISTS documents_tags_idx ON documents USING gin (tags);
+
+-- block_kind：这一块落在哪种语义容器里。
+-- insight = 作者本人的判断，是这批笔记相对讲义的增量价值，检索时要能加权。
+ALTER TABLE chunks ADD COLUMN IF NOT EXISTS block_kind TEXT NOT NULL DEFAULT 'normal';
+
+CREATE INDEX IF NOT EXISTS chunks_block_kind_idx ON chunks (block_kind)
+  WHERE block_kind <> 'normal';
+
+-- 每门课有多少「我的理解」—— 补写进度看这个视图。
+CREATE OR REPLACE VIEW insight_coverage AS
+  SELECT d.course,
+         count(DISTINCT d.path)                                        AS docs,
+         count(DISTINCT d.path) FILTER (WHERE c.block_kind = 'insight') AS docs_with_insight
+  FROM documents d
+  LEFT JOIN chunks c ON c.doc_path = d.path
+  WHERE d.status = 'complete'
+  GROUP BY d.course
+  ORDER BY docs_with_insight::float / NULLIF(count(DISTINCT d.path), 0);

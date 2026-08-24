@@ -1,3 +1,12 @@
+---
+title: 代码生成
+course: 6.1100 计算机语言工程
+course_id: '6.1100'
+lecture: 6
+kind: theory
+tags: []
+status: complete
+---
 # Lec 6 代码生成
 
 > 配套复习课：R5 SSA（第 9 节）、R6 控制流图、R7 x86 汇编——后两者内容已大量融入本讲正文
@@ -7,20 +16,15 @@
 
 ## 1. 本节学习目标
 
-
-
 **结构化 IR  →  控制流图 (*control flow graph*，CFG)  →  生成的汇编代码**
-
-
 
 本讲强调**未优化** 代码生成：现在只做最简单的事，把优化作为独立主题留到后面。代码生成器要**保持简单**，宁可生成 `0 + 1*x + 0*y` 这样的丑代码，也让优化器后续去清理。
 
-
-
 ## 2. 控制流图
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;">Definition：<strong> 控制流图</strong>
-</div>
+::: definition
+Definition：**控制流图**
+:::
 
 它是这样一种图：
 
@@ -33,8 +37,6 @@
   - 执行从首指令开始
   - 包含块内全部指令；
 - 边表示控制流。
-
-
 
 ### 2.1 结构化 IR → CFG 的模式
 
@@ -50,7 +52,9 @@
 
 ### 2.2 基本块构造
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;">Definition：<strong>基本块合并算法</strong></div>
+::: definition
+Definition：**基本块合并算法**
+:::
 
 从逐个指令的控制流图出发，遍历所有边，当且仅当：第一个节点只有一条出边，且第二个节点只有一条入边 时，合并相邻两节点
 
@@ -64,10 +68,6 @@
 - 每个基本块：要么以汇合点开始、要么其前驱以分裂点结束；要么以分裂点结束、要么其后继以汇合点开始。
 
 <img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260617101555036.png" alt="image-20260617101555036" style="zoom:25%;" />
-
-
-
-
 
 ## 3. 短路条件与"解构"
 
@@ -83,10 +83,11 @@
 
 ### 3.1 两个解构例程
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;">Define <strong>解构与短路</strong>
-</div>
+::: definition
+Define **解构与短路**
+:::
 
-`destruct(n)`：生成结构化节点 n 的降级形式，返回 `(b, e)`——b是起始节点， e是结束节点
+`destruct(n)`：生成结构化节点 n 的降级形式，返回 `(b, e)`——b 是起始节点， e 是结束节点
 `shortcircuit(c, t, f)`：生成条件 c 的短路形式；
 
 - c 为真则流向 t，
@@ -94,11 +95,9 @@
 - 返回起始节点 b —— b 是条件求值的开始点
 - 引入新节点类型 nop。
 
-
-
 **destruct 各情形**（关键边连接）：
 
-```
+```text
 seq x y:   (bx,ex)=destruct(x); (by,ey)=destruct(y); next(ex)=by; return (bx,ey)
 if c x y:  (bx,ex)=destruct(x); (by,ey)=destruct(y); e=new nop;
            next(ex)=e; next(ey)=e; bc=shortcircuit(c,bx,by); return (bc,e)
@@ -108,7 +107,7 @@ while c x: e=new nop; (bx,ex)=destruct(x);
 
 **shortcircuit 各情形**（递归结构归纳）：
 
-```
+```text
 c1 && c2:  b2=shortcircuit(c2,t,f); b1=shortcircuit(c1,b2,f); return b1
 c1 || c2:  b2=shortcircuit(c2,t,f); b1=shortcircuit(c1,t,b2); return b1
 ! c1:      b=shortcircuit(c1,f,t); return b           // 交换 t/f
@@ -136,7 +135,7 @@ ISA 四要素：内存、寄存器、ALU、控制。计算模型：从内存 loa
 
 ### 5.1 典型内存布局
 
-```
+```text
 高地址  ┌─────────────┐
         │  Stack      │ 局部变量 / 临时值 / 部分参数（向下增长）
         ├─────────────┤
@@ -152,19 +151,21 @@ ISA 四要素：内存、寄存器、ALU、控制。计算模型：从内存 loa
 
 ### 5.2 x86-64 寄存器与调用约定
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（System V x86-64 调用约定）</strong>
-<ul>
-<li>16 个 64 位寄存器：<code>%rax,%rbx,%rcx,%rdx,%rdi,%rsi,%rbp,%rsp,%r8–%r15</code>。</li>
-<li><strong>前 6 个整型/指针参数</strong>依次在 <code>%rdi,%rsi,%rdx,%rcx,%r8,%r9</code>，其余压栈。</li>
-<li><strong>返回值</strong>（≤64 位）在 <code>%rax</code>，更长的经栈返回。</li>
-<li><code>%rbp</code> 标记当前帧起点，<code>%rsp</code> 标记栈顶。</li>
-<li><strong>被调用者保存 (callee-save)</strong>：<code>%rsp,%rbx,%rbp,%r12–%r15</code>（过程前后须一致）；<strong>调用者保存 (caller-save)</strong>：<code>%rax,%rcx,%rdx,%rsi,%rdi,%r8–%r11</code>。</li>
-</ul>
-</div>
+::: definition 定义（System V x86-64 调用约定）
+- 16 个 64 位寄存器：`%rax,%rbx,%rcx,%rdx,%rdi,%rsi,%rbp,%rsp,%r8–%r15`。
+
+- **前 6 个整型/指针参数**依次在 `%rdi,%rsi,%rdx,%rcx,%r8,%r9`，其余压栈。
+
+- **返回值**（≤64 位）在 `%rax`，更长的经栈返回。
+
+- `%rbp` 标记当前帧起点，`%rsp` 标记栈顶。
+
+- **被调用者保存 (callee-save)**：`%rsp,%rbx,%rbp,%r12–%r15`（过程前后须一致）；**调用者保存 (caller-save)**：`%rax,%rcx,%rdx,%rsi,%rdi,%r8–%r11`。
+:::
 
 ### 5.3 调用栈帧
 
-```
+```asm
         ┌────────────────────┐  ← 高地址
         │ argument n …7       │  16(%rbp), 24(%rbp)…
         │ return address      │  8(%rbp)
@@ -176,14 +177,15 @@ ISA 四要素：内存、寄存器、ALU、控制。计算模型：从内存 loa
 
 ### 5.4 过程联接（Procedure Linkage）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（标准过程联接四段）</strong>
-<ul>
-<li><strong>Pre-call（调用方）</strong>：保存 caller-save 寄存器；设置参数（1–6 进寄存器，7–N 压栈）。</li>
-<li><strong>Prolog（被调方入口）</strong>：压旧帧指针；保存 callee-save；为参数/临时/局部腾空间。<code>enter $size, $0</code> 一次完成压 %rbp、复制 %rsp→%rbp、下移 %rsp。</li>
-<li><strong>Epilog（被调方出口）</strong>：恢复 callee-save；弹旧帧指针；存返回值。<code>leave; ret</code>。</li>
-<li><strong>Post-return（调用方）</strong>：恢复 caller-save；弹出参数。</li>
-</ul>
-</div>
+::: definition 定义（标准过程联接四段）
+- **Pre-call（调用方）**：保存 caller-save 寄存器；设置参数（1–6 进寄存器，7–N 压栈）。
+
+- **Prolog（被调方入口）**：压旧帧指针；保存 callee-save；为参数/临时/局部腾空间。`enter $size, $0` 一次完成压 %rbp、复制 %rsp→%rbp、下移 %rsp。
+
+- **Epilog（被调方出口）**：恢复 callee-save；弹旧帧指针；存返回值。`leave; ret`。
+
+- **Post-return（调用方）**：恢复 caller-save；弹出参数。
+:::
 
 ---
 
@@ -202,7 +204,7 @@ ISA 四要素：内存、寄存器、ALU、控制。计算模型：从内存 loa
 
 ### 6.2 未优化代码生成模板（Templates）
 
-```
+```text
 temp = var:        mov var(%rbp), %rax ; movq %rax, temp(%rbp)
 temp = temp op temp: mov t2, %rax ; add t3, %rax ; movq %rax, t1
 temp = arr[idx]:   mov idx, %r10 ; mov arr(,%r10,8), %rax ; movq %rax, t1
@@ -234,8 +236,8 @@ jmp .boundsgood
 
 ### 6.4 控制流模板
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（if-then-else 模板）</strong>
-<pre>
+::: example 例题（if-then-else 模板）
+```text
 if (ax > bx) dx = ax - bx; else dx = bx - ax;
 ————————————————————————————————
     movq 16(%rbp), %r10        ; ax
@@ -253,12 +255,12 @@ if (ax > bx) dx = ax - bx; else dx = bx - ax;
     subq %r10, %r11
     movq %r11, -8(%rbp)
 .L1:
-</pre>
-</div>
+```
+:::
 
 while 循环优化模板（把测试放循环末尾，减少一次 jmp）：
 
-```
+```html
 lab_cont:
     <do the test> ; joper lab_end   // 条件不满足跳出
     <body>
@@ -283,15 +285,17 @@ do-while 模板：`lab_begin: <body> <test> joper lab_begin`。
 
 ## 8. 代码生成器编写准则（Guidelines）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（代码生成器工程准则）</strong>
-<ul>
-<li><strong>缓慢降级抽象层</strong>：多趟、每趟只做少量（或一件）事，便于分解与调试。</li>
-<li><strong>保持抽象层一致</strong>：IR 应始终有"正确"语义，趟与趟之间可插入部分优化。</li>
-<li>编写并经常运行<strong>理智/一致性检查 (sanity checks)</strong>。</li>
-<li>做最简单（甚至笨）的事，把优化交给优化器；面向优化器需要的形态来组织代码。</li>
-<li>建立良好测试基础设施：回归测试（把触发 bug 的输入加入回归集）、二分查找 / delta debugging 找 bug。</li>
-</ul>
-</div>
+::: theorem 定理（代码生成器工程准则）
+- **缓慢降级抽象层**：多趟、每趟只做少量（或一件）事，便于分解与调试。
+
+- **保持抽象层一致**：IR 应始终有"正确"语义，趟与趟之间可插入部分优化。
+
+- 编写并经常运行**理智/一致性检查 (sanity checks)**。
+
+- 做最简单（甚至笨）的事，把优化交给优化器；面向优化器需要的形态来组织代码。
+
+- 建立良好测试基础设施：回归测试（把触发 bug 的输入加入回归集）、二分查找 / delta debugging 找 bug。
+:::
 
 为什么用栈分配活动记录（而非静态预分配或堆分配）？支持递归与可重入、按调用动态伸缩、后进先出与调用嵌套自然吻合、回收开销 O(1)。
 
@@ -303,13 +307,13 @@ do-while 模板：`lab_begin: <body> <test> joper lab_begin`。
 
 ### 9.1 什么是 SSA
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（静态单赋值，Static Single-Assignment）</strong>
-一种低层 IR，其中<strong>每个变量恰好被定义一次</strong>（静态性质）。等价直觉：变量不可变；同名变量的每次出现都有相同的值；"SSA 即函数式编程"（Appel 1998）。
-</div>
+::: definition 定义（静态单赋值，Static Single-Assignment）
+一种低层 IR，其中**每个变量恰好被定义一次**（静态性质）。等价直觉：变量不可变；同名变量的每次出现都有相同的值；"SSA 即函数式编程"（Appel 1998）。
+:::
 
 基本块内转 SSA：给每次定义一个新下标名。
 
-```
+```text
 a ← 1            a1 ← 1
 b ← a + 1        b1 ← a1 + 1
 a ← a + b   ⟹   a2 ← a1 + b1
@@ -321,12 +325,11 @@ a ← b + c        a3 ← b1 + c1
 
 在 CFG 的**汇合点**，不同控制流路径带来不同定义，需用 φ 函数合并：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（φ 函数）</strong>
-</div>
+::: definition 定义（φ 函数）
+
+:::
 
 $a_5 \leftarrow \phi(a_3, a_4)$ 表示根据所走的控制流路径，从 $a_3$ 或 $a_4$ 中选一个值。φ 节点放在汇合点（基本块开头），保证"每个变量仍只定义一次"
-
-
 
 ### 9.3 为什么 SSA 有用
 
@@ -344,25 +347,27 @@ SSA 让程序分析更简单更快——把 def-use 链这一关键环节**一�
 
 **标准（高效）法**：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（基于支配的 SSA 构造）</strong></div>
+::: definition 定义（基于支配的 SSA 构造）
+
+:::
 
 1. 计算支配树 (dominator tree)。
 2. 对变量 $x$ 在基本块 $B$ 的每次赋值，计算迭代支配边界 $DF^+(B)$，在 $DF^+(B)$ 的每个块放 $x$ 的 φ 节点。
 3. 按支配树的 DFS 顺序遍历各块，重命名变量。
 
-
-
 **支配关系**：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（支配 / 严格支配 / 直接支配 / 支配边界）</strong>
-<ul>
-<li>若从入口到 <span>$m$</span> 的<strong>每条路径都经过 <span>$n$</span></strong>，则 <span>$n$</span> <strong>支配 (dominate)</strong> <span>$m$</span>。</li>
-<li><span>$m \ne n$</span> 时为<strong>严格支配</strong>。</li>
-<li>若不存在 <span>$x$</span> 使 <span>$n$</span> 严格支配 <span>$x$</span> 且 <span>$x$</span> 严格支配 <span>$m$</span>，则 <span>$n$</span> <strong>直接支配 (immediately dominate)</strong> <span>$m$</span>；除入口外每个节点有唯一直接支配者，构成<strong>支配树</strong>。</li>
-<li><strong>支配边界 <span>$DF(n)$</span></strong>：<span>$n$</span> 所支配 CFG 区域的"边界"——精确地，满足"<span>$n$</span> 支配 <span>$m$</span> 的某个直接前驱、但不支配 <span>$m$</span>"的节点 <span>$m$</span> 的集合。</li>
-<li><strong>迭代支配边界</strong>：<span>$DF^0(n)=\{n\}$</span>，<span>$DF^{i+1}(n)=DF(\{n\}\cup DF^i(n))$</span> 的极限 <span>$DF^+(n)$</span>。</li>
-</ul>
-</div>
+::: definition 定义（支配 / 严格支配 / 直接支配 / 支配边界）
+- 若从入口到 $m$ 的**每条路径都经过 $n$**，则 $n$ **支配 (dominate)** $m$。
+
+- $m \ne n$ 时为**严格支配**。
+
+- 若不存在 $x$ 使 $n$ 严格支配 $x$ 且 $x$ 严格支配 $m$，则 $n$ **直接支配 (immediately dominate)** $m$；除入口外每个节点有唯一直接支配者，构成**支配树**。
+
+- **支配边界 $DF(n)$**：$n$ 所支配 CFG 区域的"边界"——精确地，满足"$n$ 支配 $m$ 的某个直接前驱、但不支配 $m$"的节点 $m$ 的集合。
+
+- **迭代支配边界**：$DF^0(n)=\{n\}$，$DF^{i+1}(n)=DF(\{n\}\cup DF^i(n))$ 的极限 $DF^+(n)$。
+:::
 
 ### 9.5 SSA 析构（Destruction）
 

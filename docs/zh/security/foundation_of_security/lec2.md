@@ -1,6 +1,13 @@
-# Lec 2 — 身份认证
-
-
+---
+title: 身份认证
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 2
+kind: theory
+tags: []
+status: complete
+---
+# Lec 2 身份认证
 
 ## 1. 认证的基本框架
 
@@ -72,7 +79,7 @@ $$\text{若密码熵为 } b \text{ bits，攻击者需约 } 2^b \text{ 次猜测
 
 **正确做法：加盐哈希**
 
-```
+```text
 存储：(username, salt, H(salt || password))
 验证：计算 H(salt || pw_input)，与存储值比较
 ```
@@ -97,7 +104,7 @@ $$\text{Client} \xrightarrow{t = \text{MAC}(k, c)} \text{Server}$$
 
 $$\text{TOTP code} = \text{MAC}(k,\ \lfloor t / 30 \rfloor) \bmod 10^6$$
 
-- 防止窃听攻击（每个 code 30秒失效）
+- 防止窃听攻击（每个 code 30 秒失效）
 - **仍然**易受 Phishing（攻击者实时转发 code）
 
 ### 5.3 防 Phishing：绑定服务器名称
@@ -191,4 +198,3 @@ $$\sigma = \text{Sign}(sk,\ \text{nonce} \| \text{server\_name})$$
 **挑战-响应（防窃听）**：
 
 $$t = \text{MAC}(k,\ c \| \text{request}) \quad \text{绑定请求防篡改}$$
-

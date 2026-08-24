@@ -1,6 +1,13 @@
+---
+title: 什么是计算机安全？
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 1
+kind: theory
+tags: []
+status: complete
+---
 # Lec 1 什么是计算机安全？
-
-
 
 ## 1. 安全的核心框架
 
@@ -14,19 +21,15 @@
 | **目标（Goal）**                 | 系统需要保证的安全属性                 | 只有 Alice 能读取文件 F                  |
 | **实现（Implementation）**       | 如何在该模型下实现目标                 | 设置文件权限、启用密码+双因素认证        |
 
-
-
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>Kerckhoff 原则：</strong>实现方案永远假定为公开，唯一保密的是密钥（secret key）</div>
-
-
+::: definition Kerckhoff 原则：
+实现方案永远假定为公开，唯一保密的是密钥（secret key）
+:::
 
 ## 2. 安全目标的三大类别
 
 - **机密性（*Confidentiality*）**：对手无法获取敏感信息
 - **完整性（*Integrity*）**：对手无法篡改系统状态
 - **可用性（*Availability*）**：系统在攻击下仍能正常运行
-
-
 
 ## 3. 安全为何困难
 
@@ -37,8 +40,6 @@
 ### 3.2 典型案例：成绩单文件
 
 攻击途径包括：利用服务器漏洞、猜测助教密码、窃取笔记本、拦截网络传输、破解加密方案、入侵注册办公室……
-
-
 
 ## 4. 三类失败原因
 
@@ -60,8 +61,6 @@
 - **TLS 证书 OCR 漏洞**：CA 对 `.eu` 域名联系人邮件地址用 OCR 识别 ASCII 图片，`a1telekom.at` 被误读为 `altelekom.at`，攻击者注册误读域名即可冒充合法域名获取证书
 - **管理/维护盲点**：谁能修改权限？谁能访问审计日志？谁能管理备份？
 
-
-
 ### 4.2 威胁模型假设错误
 
 | 假设                                           | 实际漏洞                                                 |
@@ -73,8 +72,6 @@
 | CAPTCHA 需要 OCR 才能破解                      | 人工破解服务每个不到 $0.01                               |
 | 所有 CA 不会被攻破                             | 2011 年 DigiNotar 被攻破，伪造了 Google/Yahoo/Tor 等证书 |
 | 安全通过隐藏实现（Security through Obscurity） | Clipper Chip 等案例证明此策略不可靠                      |
-
-
 
 ### 4.3 实现结果的漏洞
 
@@ -128,7 +125,5 @@ $$\Pr[\text{事件}] < 2^{-128} \Rightarrow \text{可认为永远不会发生（
 - 挑战者（*Challenger*）设置系统
 - 对手（*Adversary*）在威胁模型约束下与系统交互
 - 若对手无法以不可忽略概率违反安全目标，则称系统是安全的
-
-
 
 公开漏洞数据库， 如https://www.cve.org/

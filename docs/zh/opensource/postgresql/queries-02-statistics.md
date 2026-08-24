@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 查询系列 — 2. 统计信息
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 查询系列 — 2. 统计信息
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/576100/ （作者 Egor Rogov，PostgresPro）
@@ -95,6 +102,6 @@ CREATE STATISTICS flights_expr ON (
 
 这个参数（默认 100）同时控制着两件事：一是 `ANALYZE` 抽样的行数（大约 300 倍于该值），二是 MCV 列表和直方图数组的最大长度上限。文章提醒不要盲目地把这个参数调得很大：抽样越大、统计维护和存储的开销越高，而在实践中，MCV 列表 + 直方图这套组合，即便面对基数很大的表，通常也已经能提供足够用的估算精度，"越大越好"并不成立，调整这个参数应该是针对具体列、具体问题的定向操作，而不是全局蛮力加大。
 
-## 小结
+## 本讲小结
 
 统计信息是优化器"猜"行数的全部依据：表级的 `reltuples`/`relpages` 决定了整表扫描代价的量级；列级的 `null_frac`、`n_distinct`、MCV 列表、直方图、`avg_width`、`correlation` 分别对应缺失值估算、基数估算、倾斜分布下的精确匹配估算、范围条件估算、内存估算、索引扫描代价估算等具体问题；而 PostgreSQL 10+ 的扩展统计（函数依赖、多列 ndistinct、多列 MCV、表达式统计）则是对"列与列之间并非相互独立"这一现实的补丁。所有这些统计都只是基于随机抽样的近似值，`default_statistics_target` 控制着这份近似的精细程度，`ANALYZE` 的执行时机决定着这份近似的新鲜程度——理解这套体系，才能理解为什么有的查询计划"猜错了"，以及应该往哪个方向去修（调大统计粒度、建扩展统计，还是先老老实实跑一次 ANALYZE）。

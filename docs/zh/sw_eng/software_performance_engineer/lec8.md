@@ -1,20 +1,28 @@
+---
+title: 竞态和并行
+course: 软件性能工程
+lecture: 8
+kind: system
+tags: []
+status: complete
+---
 # Lec 8 竞态和并行
 
-He, Yuxiong, Charles Leiserson, and William Leiserson. “[The Cilkview Scalability Analyzer](https://dl.acm.org/citation.cfm?id=1810509).” *Proceedings of the Twenty-Second Annual ACM Symposium on Parallelism in Algorithms and Architectures* (2010): 145–156. 
+He, Yuxiong, Charles Leiserson, and William Leiserson. “[The Cilkview Scalability Analyzer](https://dl.acm.org/citation.cfm?id=1810509).” *Proceedings of the Twenty-Second Annual ACM Symposium on Parallelism in Algorithms and Architectures* (2010): 145–156.
 
-## 总览
+## 本讲导览
 
 - 确定性竞态条件
 - 什么是并行？
 - 扩展性分析：Cilkscale
 - 调度理论
-- Cilk运行时系统
+- Cilk 运行时系统
 
 ## 确定性竞态条件
 
 > [!NOTE]
 >
-> 【定义】确定性竞态条件(determinacy race) 发生在当两个并行逻辑指令访问同一个内存位置，并且至少有一个指令是写操作。
+> 【定义】确定性竞态条件（determinacy race） 发生在当两个并行逻辑指令访问同一个内存位置，并且至少有一个指令是写操作。
 
 示例
 
@@ -30,25 +38,24 @@ assert(x == 2);
 
 ![image-20240929084130907](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8a23de50a6.png)
 
-> Cilk编码如何避免竞态？ 
+> Cilk 编码如何避免竞态？
 
 首先什么情况下会发生？就是写后写，读后写，或者写后读。如果这两段代码都是独立的，那么它们之间就不会有的竞态条件。
 
-- cilk_for的每个迭代都应该是独立的
-- 在cilk_spawn子函数和对应的cilk_sync之间调用者代码段，应该是相互独立； 另外，对于spawn子函数的参数，应该在在spawn发生之前，父函数中事先生成出来。
+- cilk_for 的每个迭代都应该是独立的
+- 在 cilk_spawn 子函数和对应的 cilk_sync 之间调用者代码段，应该是相互独立； 另外，对于 spawn 子函数的参数，应该在在 spawn 发生之前，父函数中事先生成出来。
 - 机器字大小有影响，这取决于编译器的优化等级。
-  - 示例： ``struct { char a; char b; } x``同时更新x.a和x.b可能有竞态，
-
+  - 示例： ``struct { char a; char b; } x``同时更新 x.a 和 x.b 可能有竞态，
 
 ### Cilksan 竞态条件检测
 
 - 使用 `-fsanitize=cilk` 编译器选项，会插入检测代码
-- 对于给定输入，检测与对应串行代码行为差异，Cilksan可以报告并定位导致问题的数据竞争
+- 对于给定输入，检测与对应串行代码行为差异，Cilksan 可以报告并定位导致问题的数据竞争
 - Cilksan 使用回归测试方法（regression-test）方法，这种方法确保在程序的演进过程中，新的更改没有引入新的数据竞争问题
 - Cilksan 报告数据竞争，并为此提供详细信息，包括文件名、行数以及与竞争相关的变量。此外，它还提供堆栈跟踪信息
 - 要确保 Cilksan 能够检测到所有潜在的问题，程序员需要确保所有的程序文件都被插入了 Cilksan 的检测代码
 
-示例： ![截屏2024-02-03 04.46.03](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd54932a3dd.png)
+示例： ![截屏 2024-02-03 04.46.03](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd54932a3dd.png)
 
 ## 什么是并行？
 
@@ -57,13 +64,13 @@ assert(x == 2);
 我们先看执行模型的有向图，节点颜色与代码上颜色对应，**自上而下箭头是调用边**，表示调用关系，**自下而上的是返回边**，表函数返回关系。这里的有向图是仅考虑**单核**处理器的情况，多核处理器无需按照这种深度优先顺序执行。
 
 - 并行指令流是一个有向无环图
-- 每个顶点都是一组顺序指令组(strand)，指的是不包含并发操作（例如 `spawn`、`sync` 或``return``语句）的指令序列
-- 任何边都是spawn、call、return或者是contine边
-- 循环并行(cilk_for)通过递归的分治，被转变为spawn和sync的组合
+- 每个顶点都是一组顺序指令组（strand），指的是不包含并发操作（例如 `spawn`、`sync` 或``return``语句）的指令序列
+- 任何边都是 spawn、call、return 或者是 contine 边
+- 循环并行（cilk_for）通过递归的分治，被转变为 spawn 和 sync 的组合
 
-下图是一个展开的计算DAG图
+下图是一个展开的计算 DAG 图
 
-![截屏2024-02-03 04.51.15](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd55cbe7324.png)
+![截屏 2024-02-03 04.51.15](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65bd55cbe7324.png)
 
 ![image-20240929085822417](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8a6329ad1a.png)
 
@@ -75,15 +82,15 @@ assert(x == 2);
 
 > [!NOTE]
 >
-> 【定义】阿姆达尔法则，它是一种经验法则，如果你的应用有50%是可并行的，另外50%是需要顺序执行的，那么不管你有多少处理器去执行，执行速度的加快将不会超过两倍的。
+> 【定义】阿姆达尔法则，它是一种经验法则，如果你的应用有 50%是可并行的，另外 50%是需要顺序执行的，那么不管你有多少处理器去执行，执行速度的加快将不会超过两倍的。
 >
-> 更通用地，如果应用中有占比为a的顺序执行部分，那么加速比(speedup)不超过1/a。 
+> 更通用地，如果应用中有占比为 a 的顺序执行部分，那么加速比（speedup）不超过 1/a。
 
 下面我们将量化并行度。
 
  <img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8ebb3dec66.png" alt="image-20240929135455332" style="zoom:33%;" />
 
-根据Amdahl's Law，由于顺序执行占比 $3 / 18 = 1 / 6 $，所以加速比的上界是**6**。
+根据 Amdahl's Law，由于顺序执行占比 $3 / 18 = 1 / 6 $，所以加速比的上界是**6**。
 
 $T_p = \text{exec time on P processes} $
 
@@ -102,11 +109,11 @@ $T_∞= \text{critical-path length}=9$​， 关键路径长度或者叫计算�
 
 ![image-20240929142852925](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8f3a8f4012.png)
 
-### 加速比Speedup
+### 加速比 Speedup
 
 > [!NOTE]
 >
-> 【定义】加速比(speedup)：$T1/Tp =\text{ speedup on P processors}$
+> 【定义】加速比（speedup）：$T1/Tp =\text{ speedup on P processors}$
 >
 > 如果 $T1/T_p < P$​， 我们称之为**次线性加速比**
 >
@@ -114,13 +121,13 @@ $T_∞= \text{critical-path length}=9$​， 关键路径长度或者叫计算�
 >
 > 如果 $T1/T_p \gt P$，称为**超线性加速比**，这种情况在简单的性能模型中是不可能的，因为根据**工作量法则**：$T_p \ge T_1 / P $
 
-### 并行度Parallelism
+### 并行度 Parallelism
 
 > [!NOTE]
 >
-> 
 >
-> 【定义】并行度(parallelism)
+>
+> 【定义】并行度（parallelism）
 >
 > $T_1/T_∞ = parallelism = \text{沿关键路径下每步的平均工作量} = 18 / 9 = 2$​
 >
@@ -128,7 +135,7 @@ $T_∞= \text{critical-path length}=9$​， 关键路径长度或者叫计算�
 >
 > ![image-20240929143556314](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f8f54fc1c1f.png)
 
-现在我们可以回答示例Fib(4)中的问题了
+现在我们可以回答示例 Fib(4)中的问题了
 
 > 假如每组顺序指令执行时间为单位时间，那么这个程序并行潜力有多大？或者说能提升多大的性能？
 
@@ -163,25 +170,23 @@ static void quicksort(int64_t *left, int64_t *right) {
 }
 ```
 
-接下来我们将用100万的数字进行排序
+接下来我们将用 100 万的数字进行排序
 
 ![image-20240929154820332](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f906495aa82.png)
 
-- 蓝色线的是Span Law的限制
-- 绿色线的是Work Low限制
+- 蓝色线的是 Span Law 的限制
+- 绿色线的是 Work Low 限制
 
 用另外一个视角表达就是
 
 ![image-20240929155057029](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f906e53805d.png)
 
-分析： 
+分析：
 
 - 预期的 work  = $O(n\lg{n})$
 - 预期 span = $\Omega(n)$： 因为要处理每个数据项
 
 得出 并行度为 $O(\lg n)$​
-
-
 
 ### 其他算法
 
@@ -193,7 +198,7 @@ static void quicksort(int64_t *left, int64_t *right) {
 
 ## 调度理论
 
-我们还没有讲这些strand（我理解为工作单元）映射到处理器的。 这里的调度理论不仅限于这个主题，这是一个通用的概念。
+我们还没有讲这些 strand（我理解为工作单元）映射到处理器的。 这里的调度理论不仅限于这个主题，这是一个通用的概念。
 
 ![image-20240929155918064](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f908db2667a.png)
 
@@ -216,7 +221,7 @@ Greedy Schedule 想法：  **每一步尽可能多做**
 
 > [!important]
 >
-> 【定理1】任何贪心调度都能实现$T_p \le T_1 / P + T_{\infty}$
+> 【定理 1】任何贪心调度都能实现$T_p \le T_1 / P + T_{\infty}$
 
 证明：
 
@@ -229,7 +234,7 @@ Greedy Schedule 想法：  **每一步尽可能多做**
 
 > [!IMPORTANT]
 >
-> 【推论】任何贪心调度都能在最优调度的2倍范围内实现
+> 【推论】任何贪心调度都能在最优调度的 2 倍范围内实现
 
 证明： 设$T_{p^*}$为最优调度产生的执行时间，根据工作量和关键路径法则，可知$T_{p^*} \ge \max \set{\frac{T_1}{P}, T_{\infty}}$， 我们有$T_p \le T_1 / P + T_{\infty} \le 2 T_{p^*}$
 
@@ -245,23 +250,23 @@ Greedy Schedule 想法：  **每一步尽可能多做**
 >
 > 【定义】并行宽松度（Parallel Slackness）我们把$\frac{T_1}{PT_{\infty}}$​ 定义为并行宽松度
 
-根据经验，一般并行宽松度超过10，才需要使用Cilk编程，否则没太大必要。
+根据经验，一般并行宽松度超过 10，才需要使用 Cilk 编程，否则没太大必要。
 
-### Clik性能
+### Clik 性能
 
 - Cilk 的工作窃取调度器在期望时间上达成$T_P = \frac{T_1}{P} + O(T_{\infty}) $（经过证明），在经验上则为$T_P \approx \frac{T_1}{P} + T_{\infty}$​
-  - 伪证明：伪证明：一个处理器要么在工作，要么在窃取。所有处理器的工作总时间是$T_1$。每次窃取都有$ \frac{1}{P}$的机会减少跨度1。所有窃取的预期成本是$O(PT_{\infty})$。因此，预期时间为$\frac{T_1 + O(PT_{\infty})}{P} = \frac{T_1}{P} + O(T_{\infty})\\$。
+  - 伪证明：伪证明：一个处理器要么在工作，要么在窃取。所有处理器的工作总时间是$T_1$。每次窃取都有$ \frac{1}{P}$的机会减少跨度 1。所有窃取的预期成本是$O(PT_{\infty})$。因此，预期时间为$\frac{T_1 + O(PT_{\infty})}{P} = \frac{T_1}{P} + O(T_{\infty})\\$。
 
 - 当$P \ll \frac{T_1}{T_{\infty}} $时，能够实现近乎完美的线性加速。
-- Cilkscale 中的工具可以测量$ T_1$和$ T_{\infty}$。 
+- Cilkscale 中的工具可以测量$ T_1$和$ T_{\infty}$。
 
-## Cilk运行时系统
+## Cilk 运行时系统
 
 每个工作者（处理器）维护一个包含就绪线程的工作双端队列，并像操作栈一样操作队列的底部。
 
 ---
 
-当一个工作者发生call / spawn 时，将函数的栈帧从底部入队
+当一个工作者发生 call / spawn 时，将函数的栈帧从底部入队
 
 ![image-20240929171311152](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f91a2b3dec4.png)
 
@@ -273,22 +278,22 @@ Greedy Schedule 想法：  **每一步尽可能多做**
 
 ----
 
-当一个工作者从call / spawn 中return了，直接将其从底部dequeue出去 
+当一个工作者从 call / spawn 中 return 了，直接将其从底部 dequeue 出去
 
 ![image-20240929173928406](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f920543985c.png)
 
 -----
 
-当有个工作者没有工作了，他就会随机挑个受害者的deque的顶部中“偷工作”
+当有个工作者没有工作了，他就会随机挑个受害者的 deque 的顶部中“偷工作”
 
 ![image-20240929174234659](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9210ee3ed8.png)
 
 ----
 
-偷完工作后，也可以自己spawn / call 生成更多的工作
+偷完工作后，也可以自己 spawn / call 生成更多的工作
 
 ![](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66f9210ee3ed8.png)
 
 > [!IMPORTANT]
 >
-> 【著名的定理】如果并行程度足够高，那么worker偷工作的情况会很少发生，越少则越趋近于线性加速
+> 【著名的定理】如果并行程度足够高，那么 worker 偷工作的情况会很少发生，越少则越趋近于线性加速

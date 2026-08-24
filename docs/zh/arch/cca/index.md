@@ -1,6 +1,12 @@
+---
+title: 6.1920 建构式计算机架构，CCA
+course: 6.1920 建构式计算机架构，CCA
+course_id: '6.1920'
+kind: system
+tags: []
+status: complete
+---
 # 6.1920 建构式计算机架构，CCA
-
-
 
 ## 先行条件
 
@@ -20,15 +26,11 @@
 
 课程实验使用现代硬件描述语言（HDL），用于展示处理器设计的不同方面。课程的期末项目中，学生将完成一个多核处理器设计，并在 FPGA 开发板上实现并运行该设计。
 
-
-
 ### 参考资料
 
 - BSV Reference Manual；
-- 《Introduction to Digital Design as Cooperating Sequential Machines》（Arvind等著，2019）
-- 《Computer Architecture: A Constructive Approach》（Arvind等著，2014，仅需阅读第5、6、9、10、11、12章，注意其中部分内容可能与课堂讲解不完全一致）。
-
-
+- 《Introduction to Digital Design as Cooperating Sequential Machines》（Arvind 等著，2019）
+- 《Computer Architecture: A Constructive Approach》（Arvind 等著，2014，仅需阅读第 5、6、9、10、11、12 章，注意其中部分内容可能与课堂讲解不完全一致）。
 
 ## 相关课程
 
@@ -38,35 +40,23 @@
 
 https://github.com/6192-sp24
 
-
-
 # Lec 1 引言
 
 [lec1.md](./lec1.md)
 
-
-
-
-
 # Lec 2 组合电路
 
-组合电路是纯函数，给定相同的输入，它产生相同的输出。虽然可以用真值表来表达，但是对于大量的输入而言，这样做并不实际。我们将使用一种名为Bluespec SystemVerilog（BSV）的编程语言来表达所有的电路。
+组合电路是纯函数，给定相同的输入，它产生相同的输出。虽然可以用真值表来表达，但是对于大量的输入而言，这样做并不实际。我们将使用一种名为 Bluespec SystemVerilog（BSV）的编程语言来表达所有的电路。
 
 [lec2.md](./lec2.md)
-
-
 
 # Lec 3 存储器与多规则系统
 
 [lec3.md](./lec3.md)
 
-
-
-# Lec 4 调度约束与EHRs
+# Lec 4 调度约束与 EHRs
 
 [lec4.md](./lec4.md)
-
-
 
 # Lec 5 非流水线处理器
 
@@ -76,23 +66,13 @@ https://github.com/6192-sp24
 
 [lec6.md](./lec6.md)
 
-
-
-
-
 # Lec 7 高速缓存与存储缓冲区
 
 [lec7.md](./lec7.md)
 
-
-
 # Lec 8 分支预测
 
-
-
 [lec8.md](./lec8.md)
-
-
 
 # Lec 9 超标量处理器
 
@@ -102,61 +82,37 @@ https://github.com/6192-sp24
 
 [lec10.md](./lec10.md)
 
-
-
 # Lec 11 乱序执行
 
 [lec11.md](./lec11.md)
-
-
 
 # Lec 12 同步与顺序一致性
 
 [lec12.md](./lec12.md)
 
-
-
-
-
 # Lec 13 缓存一致性
 
 [lec13.md](./lec13.md)
-
-
 
 # Lec 14 向量机与 SIMD
 
 [lec14.md](./lec14.md)
 
-
-
-
-
 # Lec 15 片上网络 I：基础
 
 [lec15.md](./lec15.md)
-
-
-
-
 
 # Lec 16 片上网络 II：拓扑与路由
 
 [lec16.md](./lec16.md)
 
-
-
 # Lec 17 连接加速器
 
 [lec17.md](./lec17.md)
 
-
-
 # Lec 18 从 BSV 到芯片：硅综合与 FPGA
 
 [lec18.md](./lec18.md)
-
-
 
 # 参考资料
 

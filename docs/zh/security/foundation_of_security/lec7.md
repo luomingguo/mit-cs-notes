@@ -1,4 +1,13 @@
-# Lec 7 — 案例研究：公钥基础设施（PKI）
+---
+title: 案例研究：公钥基础设施（PKI）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 7
+kind: theory
+tags: []
+status: complete
+---
+# Lec 7 案例研究：公钥基础设施（PKI）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 公钥认证的核心问题
@@ -122,7 +131,7 @@ CT 不能阻止错误签发，但使其可被发现。2016 年发现 Symantec �
 
 ## 8. HTTPS 证书验证总结
 
-```
+```text
 浏览器 访问 https://bank.com
   → 服务器发送证书链 [Cert_server, Cert_inter]
   → 浏览器验证链:

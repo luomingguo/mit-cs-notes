@@ -1,4 +1,13 @@
-# L17：事务内存（*Transactional Memory*）
+---
+title: 事务内存（Transactional Memory）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 17
+kind: system
+tags: []
+status: complete
+---
+# Lec 17 事务内存（*Transactional Memory*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez（基于 Christos Kozyrakis 的幻灯片）
 > 主题：并行编程之难、并发控制、事务内存（*TM*）语义、数据版本管理与冲突检测、硬件事务内存（*HTM*）
@@ -184,7 +193,7 @@ CPU 改动：寄存器检查点、TM 状态寄存器（状态、处理器指针�
 
 ---
 
-## 小结
+## 本讲小结
 
 - 锁在易用性与并发度之间总有取舍；**事务内存**用声明式 `atomic` 把"做什么/怎么做"分离，提供原子性、隔离性、可串行化与可组合性；
 - 实现核心是**数据版本管理**（急切 undo-log / 惰性 write-buffer）与**冲突检测**（悲观早检 / 乐观晚检）；

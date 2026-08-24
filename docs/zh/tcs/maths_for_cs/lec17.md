@@ -1,4 +1,13 @@
-# Lecture 17：更多计数
+---
+title: 更多计数
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 17
+kind: theory
+tags: []
+status: complete
+---
+# Lec 17 更多计数
 
 ## 1. 容斥原理（Inclusion-Exclusion，PIE）
 

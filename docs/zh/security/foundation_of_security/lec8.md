@@ -1,4 +1,13 @@
-# Lec 8 — 传输层安全导论（Intro to Transport Security）
+---
+title: 传输层安全导论（Intro to Transport Security）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 8
+kind: theory
+tags: []
+status: complete
+---
+# Lec 8 传输层安全导论（Intro to Transport Security）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 传输安全的目标
@@ -92,7 +101,7 @@ TLS 1.3 是当前 HTTPS 的标准协议。
 
 ### 6.1 握手流程（简化）
 
-```
+```text
 Client                          Server
   |                               |
   |-- ClientHello (支持的算法) -->|

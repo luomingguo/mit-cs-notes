@@ -1,4 +1,13 @@
-# Lec 18 — 特权分离（Privilege Separation）
+---
+title: 特权分离（Privilege Separation）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 18
+kind: theory
+tags: []
+status: complete
+---
+# Lec 18 特权分离（Privilege Separation）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 核心思想
@@ -43,7 +52,7 @@
 
 **架构**：
 
-```
+```text
 应用服务器 ---[仅追加]---> 日志服务器 ----> 日志存储
               (Append/Read API, 无 Delete)
 ```
@@ -57,7 +66,7 @@
 
 **架构**：
 
-```
+```text
 应用 ---[sign(msg) / get_public_key()]--> 密钥管理器（含 sk）
        （没有提取 sk 的 API）
 ```
@@ -74,7 +83,7 @@ JPEG 等媒体 Codec 历史上漏洞频发，是浏览器攻击的常见入口�
 
 **架构**（WebAssembly 语言级隔离）：
 
-```
+```text
 浏览器 Tab ---[编码数据]--> Codec 沙箱
              <---[位图]----
 ```
@@ -90,7 +99,7 @@ JPEG 等媒体 Codec 历史上漏洞频发，是浏览器攻击的常见入口�
 
 **架构**：
 
-```
+```text
 网络 <---> NTP 网络进程（无 root）
                |
           [adjust clock]
@@ -107,7 +116,7 @@ SSH 服务器需要访问：网络端口 22、主机签名密钥、密码数据�
 
 **架构**：
 
-```
+```text
 [ 主机密钥 ] [ 密码 DB ] [ 端口 22 ]
       |
       ↓
@@ -129,7 +138,7 @@ Worker 与 Monitor 的 API：
 
 ## 8. 实例：Web 服务架构
 
-```
+```text
 Client --TLS--> [前端 HTTPS 服务器，持有 TLS 密钥]
                     |
                     +---> [Login 服务] <--> [密码 DB]
@@ -151,7 +160,7 @@ Client --TLS--> [前端 HTTPS 服务器，持有 TLS 密钥]
 
 **浏览器多进程架构**：
 
-```
+```text
 Codec 沙箱 <--> mit.edu 进程
 Codec 沙箱 <--> nytimes.com 进程
                   |
@@ -166,7 +175,7 @@ Codec 沙箱 <--> nytimes.com 进程
 
 在线商户将信用卡数据完全外包给支付处理商：
 
-```
+```text
 Client --[商品选择]--> 商户网站
               |
               ↓（重定向到支付页）

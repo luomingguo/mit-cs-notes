@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的锁 — 2. 行级锁（Row-level locks）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的锁 — 2. 行级锁（Row-level locks）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/503008/ （作者 Egor Rogov，PostgresPro）
@@ -55,7 +62,7 @@ PostgreSQL 的答案是引入**多事务（MultiXact）**：把一组同时持�
 
 可以用扩展函数 `pgrowlocks()` 直观地看到这类信息，示例输出（示意）：
 
-```
+```text
 locked_row | (0,1)
 locker     | 61
 multi      | t
@@ -78,20 +85,20 @@ modes      | {"Key Share","No Key Update"}
 
 原文用 PID 示例展示了这个过程：
 
-```
+```text
 事务1 (pid 5892)：短暂持有元组锁，写入 xmax，然后提交
 事务2 (pid 5928)：持有元组锁，正在等待事务号 530497（ShareLock 模式）
 事务3 (pid 5964)：在排队等元组锁本身（granted = f）
 事务4 (pid 6000)：同样在排队等这把元组锁
 ```
 
-当事务1提交后，事务2被唤醒并完成自己的更新；事务3、4 则会看到新的行版本，转而排到事务2的事务号后面。
+当事务 1 提交后，事务 2 被唤醒并完成自己的更新；事务 3、4 则会看到新的行版本，转而排到事务 2 的事务号后面。
 
 ## 共享锁导致的"插队"问题
 
 共享类锁因为彼此兼容，会造成一种比较隐蔽的排队问题。举例：
 
-```
+```text
 事务1：SELECT ... FOR SHARE，锁住某行（共享模式）
 事务2：UPDATE 同一行，需要排他锁，只能等待事务1，同时持有元组内部锁
 事务3：又执行 SELECT ... FOR SHARE
@@ -99,7 +106,7 @@ modes      | {"Key Share","No Key Update"}
           事务3不需要排队，直接"插队"拿到了共享锁！
 ```
 
-结果是：等事务1结束后，事务2本以为可以进行更新了，却发现事务3仍然持有着共享锁，只能继续等待。如果这种 `FOR SHARE` 请求源源不断地到来，事务2的更新可能被无限期推迟——这是一种典型的"写饥饿"现象，也是原文特别提醒要谨慎使用共享行锁的原因。
+结果是：等事务 1 结束后，事务 2 本以为可以进行更新了，却发现事务 3 仍然持有着共享锁，只能继续等待。如果这种 `FOR SHARE` 请求源源不断地到来，事务 2 的更新可能被无限期推迟——这是一种典型的"写饥饿"现象，也是原文特别提醒要谨慎使用共享行锁的原因。
 
 ## 多事务号的冻结（Freezing）
 
@@ -133,7 +140,7 @@ SELECT * FROM accounts ORDER BY acc_no FOR UPDATE SKIP LOCKED;
 
 这两个子句在实现"多线程消费者从队列表中抢任务"这类场景时非常实用：每个 worker 都可以直接跳过被别的 worker 占用的行，无需排队等待，从而实现高效的并行任务分发。
 
-## 小结
+## 本讲小结
 
 - PostgreSQL 的行锁不占用共享内存里的锁表槽位，而是直接编码在元组的 `xmax` 字段及相关信息位中，因此数量不受限，但也无法通过一个全局视图直接列出"当前所有被锁的行"；
 - 一共 4 种行锁模式（`FOR UPDATE`、`FOR NO KEY UPDATE`、`FOR SHARE`、`FOR KEY SHARE`），其中 `FOR KEY SHARE` 与 `FOR NO KEY UPDATE` 兼容，专门为降低外键校验带来的锁冲突而设计；

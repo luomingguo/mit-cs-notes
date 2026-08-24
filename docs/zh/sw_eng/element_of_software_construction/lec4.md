@@ -1,14 +1,19 @@
+---
+title: 规格
+course: 6.1020 软件构造基础
+course_id: '6.1020'
+lecture: 4
+kind: design
+tags: []
+status: complete
+---
 # Lec 4 规格
-
-
 
 规格目标
 
 - 理解函数规格中的先决条件与后置条件，并能够编写正确的规格
 - 能够根据规格写测试
 - 理解如何处理异常
-
-
 
 ## 1. 介绍
 
@@ -41,7 +46,7 @@ function find(arr: Array<number>, val: number): number {
 } 
 ```
 
-行为等价要求我们，必须在没有影响正确性前提下，进行替换。这些实现不仅性能上有差异，可能在输出上也会有差异。当val仅在数组中出现一次时，两个实现的行为是相同， 即返回哪个索引。如果客户对行为有其他假设，比如总是希望返回最小的索引，那么就不能替换这两个实现。例如，规格可以**要求**：`val` 在数组中只出现一次，并且返回满足 `arr[i] = val` 的索引。
+行为等价要求我们，必须在没有影响正确性前提下，进行替换。这些实现不仅性能上有差异，可能在输出上也会有差异。当 val 仅在数组中出现一次时，两个实现的行为是相同， 即返回哪个索引。如果客户对行为有其他假设，比如总是希望返回最小的索引，那么就不能替换这两个实现。例如，规格可以**要求**：`val` 在数组中只出现一次，并且返回满足 `arr[i] = val` 的索引。
 
 > ```
 > find(arr: Array<number>, val: number): number
@@ -77,24 +82,20 @@ function find(arr: Array<number>, val: number): number {
 
 契约充当客户和实现者之间的防火墙。它将客户与模块工作细节隔离开来；作为客户，如果您拥有模块的规格，则无需阅读模块的源代码。它也将实现者与模块使用细节隔离开来：作为实现者，您不必询问每个客户他们计划如何使用该模块。这道防火墙实现了解耦，允许模块代码和客户代码独立更改，只要更改符合规格——即各自遵守契约规定的义务。
 
-
-
-
-
 ## 4. 规格的结构
 
 从抽象的角度来看，一个函数的规格说明通常有以下几个部分组成：
 
 - 函数签名： 给出函数的名称、参数类型和返回类型
-- require子句： 描述对参数的额外限制条件
-- effects子句： 描述函数的返回值、可能抛出的异常，以及函数产生的其他影响
+- require 子句： 描述对参数的额外限制条件
+- effects 子句： 描述函数的返回值、可能抛出的异常，以及函数产生的其他影响
 
 这些部分合在一起，构成了函数的前置条件（precondition）和后置条件（postcondition）。
 
 **前置条件** 是函数调用者（客户端）的责任。它描述了函数被调用时程序应处于的状态。前置条件的一部分是参数的数量和类型，这部分可以由 TypeScript 静态检查。 额外的条件可以写在 requires 子句中，例如：
 
 - 缩小参数类型（如 $x \ge 0$的整数）
-- 参数之间的约束（如 val 在 arr中恰好出现一次）
+- 参数之间的约束（如 val 在 arr 中恰好出现一次）
 
 **后置条件** 是函数实现者（实现方）的责任。 TypeScript 可以静态检查后置条件的一部分，特别是返回类型。其他条件可以写在 effects 子句中，包括：
 
@@ -108,7 +109,7 @@ function find(arr: Array<number>, val: number): number {
 
 ![image-20250819065807250](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819065807250.png)
 
-## 5. TypeScript的规格
+## 5. TypeScript 的规格
 
 有些编程语言（尤其是 Eiffel）把前置条件和后置条件作为语言的基本组成部分，这些条件可以由运行时系统（甚至编译器）自动检查，从而强制执行客户端与实现方之间的“契约”。
 
@@ -151,7 +152,7 @@ function find(arr: Array<number>, val: number): number
 
 函数的源代码甚至可能对规格的读者不可见，因为 TypeDoc 工具只会从代码中提取注释并渲染成 HTML。这种分离是有益的：规格让客户端无需担心（或依赖）函数的实现细节，客户端只需遵循规格即可。
 
-## 6. 避免Null
+## 6. 避免 Null
 
 许多语言允许变量取特殊值，比如 Python 的 `None` 或 JavaScript/TypeScript 的 `null`，表示变量不指向任何对象。TypeScript 默认允许任何变量为 `null`，不论类型是什么：
 
@@ -192,7 +193,7 @@ Google 在 Guava 项目中也有类似讨论：随意使用 null 会导致各种
 
 此外，null 含义模糊。例如 Java 的 `Map.get(key)` 返回 null 可能表示该 key 对应的值是 null，也可能表示 map 中没有这个 key。null 可以表示失败，也可以表示成功，几乎什么都可能。使用非 null 的方式能让含义更清晰。
 
-## 7. 区分Null和空值
+## 7. 区分 Null 和空值
 
 在 Python 中，`None` 不同于空字符串 `""`、空数组 `[ ]` 或空字典 `{ }`。空对象只是没有元素，但仍然是合法对象，可以使用其类型允许的所有操作。例如：
 
@@ -211,8 +212,6 @@ None + "a"  # 报错
 同样的概念也适用于 TypeScript：`null` 不是有效的字符串、数组、Map 或其他对象；但空字符串 `""` 和空数组 `[ ]` 是有效值。
 
 因此，除非规格明确禁止，空值总是允许作为参数或返回值。
-
-
 
 ## 8. 测试与规格
 
@@ -287,7 +286,7 @@ function index(filenames: Set<string>): Map<string, Set<string>>  {
 
 前面讨论了可变对象与不可变对象，但规格示例中还未说明如何描述副作用（对可变对象或输入/输出状态的修改）。例如，可变函数 `addAll` 的规格：
 
-```
+```text
 addAll(array1: Array<string>, array2: Array<string>): boolean
 requires:
 array1 和 array2 不是同一个对象
@@ -300,7 +299,7 @@ effects:
 
 另一个可变函数示例：
 
-```
+```text
 sort(array: Array<string>): void
 requires:
 无
@@ -310,7 +309,7 @@ effects:
 
 非可变函数示例：
 
-```
+```text
 toLowerCase(array: Array<string>): Array<string>
 requires:
 无
@@ -332,8 +331,6 @@ function sort(array: Array<string>): void { ... }
 ```
 
 ![image-20251020235512991](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251020235512991.png)
-
-
 
 ## 10. 异常
 
@@ -468,7 +465,7 @@ let twice = root * 2;
 
 ### 缺失的 Map  键
 
-在python中
+在 python 中
 
 ```python
 zoo = { 'Tim': 'beaver' }
@@ -522,4 +519,3 @@ Python 的模块机制也类似，只不过：
 
 - Python 没有显式的 `export` 声明；
 - 模块导出的内容通过**命名约定**（例如以下划线 `_` 开头的名称被视为内部实现）或特殊变量 `__all__` 来控制。
-

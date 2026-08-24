@@ -1,3 +1,12 @@
+---
+title: 超标量处理器
+course: 6.1920 建构式计算机架构，CCA
+course_id: '6.1920'
+lecture: 9
+kind: system
+tags: []
+status: complete
+---
 # Lec 9 超标量处理器
 > MIT 6.1920 · Constructive Computer Architecture
 > 讲师：Martin Chan / Thomas Bourgeat · 日期：2024-03-07
@@ -10,8 +19,11 @@ $$\text{Time} = \frac{\text{Instructions}}{\text{Program}} \times \frac{\text{Cy
 
 前面各节解决了分支/缓存缺失等问题，但 IPC 仍 ≤ 1。超标量（*Superscalar*）的思路：**每周期同时发射（*issue*）和执行多条指令**。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 超标量（<em>Superscalar</em>）</strong><br>
-超标量处理器每周期可以取指、译码、执行、写回两条或更多条指令。宽度（<em>issue width</em>）为 2 的处理器称为 2-wide superscalar，理论 IPC 上限为 2。</div>
+::: definition
+**定义 — 超标量（*Superscalar*）**
+
+超标量处理器每周期可以取指、译码、执行、写回两条或更多条指令。宽度（*issue width*）为 2 的处理器称为 2-wide superscalar，理论 IPC 上限为 2。
+:::
 
 ---
 
@@ -67,7 +79,9 @@ end
 
 **指令间依赖（*Inter-Instruction Dependency*）**：ins2 的源寄存器与 ins1 的目标寄存器相同时，ins2 必须等待 ins1 完成写回后才能读取正确值（或通过旁路解决）。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — Decode 依赖矩阵</strong></div>
+::: example 例题 — Decode 依赖矩阵
+
+:::
 
 对所有（ins1, ins2）情况分类：
 
@@ -123,12 +137,14 @@ end
 
 ## 6. 性能提升
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 超标量的实际 IPC 提升</strong>　理论 IPC 上限为发射宽度，但实际受限于指令间依赖（RAW）、结构冒险（访存）和控制流（分支）。ALU 密集型代码受益最大（科学计算、数值算法）；存储器密集型或分支密集型代码提升有限。</div>
+::: theorem 推论 — 超标量的实际 IPC 提升
+理论 IPC 上限为发射宽度，但实际受限于指令间依赖（RAW）、结构冒险（访存）和控制流（分支）。ALU 密集型代码受益最大（科学计算、数值算法）；存储器密集型或分支密集型代码提升有限。
+:::
 
 未来方向：**同时多线程（*Simultaneous Multithreading, SMT*）** — 多个线程共享同一超标量处理器，每周期从不同线程发射指令，填充单线程无法利用的槽位。
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 超标量处理器在每个流水线阶段都需要宽化：SuperFIFO 支持多路 enq/deq，Decode 处理指令间依赖矩阵，Execute 通过双 ALU 实现双发射（访存/控制仍单发），Writeback 需要多写端口；EHR 是解决多端口读写冲突的关键 BSV 原语。

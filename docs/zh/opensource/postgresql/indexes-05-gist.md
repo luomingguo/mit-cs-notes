@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 索引 — 5（GiST 索引）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 索引 — 5（GiST 索引）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/444742/ （作者 Egor Rogov，PostgresPro）
@@ -170,6 +177,6 @@ where a is not null;
 - `ltree`（树形路径结构）；
 - `pg_trgm`（三元组模糊全文/相似度搜索）。
 
-## 小结
+## 本讲小结
 
 GiST 是一套"通用搜索树"框架而非某一种具体算法——它把树的通用骨架（平衡、层次化谓词包含）和数据类型相关的具体逻辑（一致性判断、谓词合并、距离估算等支持函数）解耦开来,使得像点、区间、全文检索这些看起来毫不相干的数据类型都能复用同一套索引结构。它的核心权衡是：为了获得对各种"相似性/包含关系"数据的通用支持，往往需要接受一定程度的"有损"表示（比如外接矩形、签名压缩），这带来了假阳性回表的代价，也带来了删除后谓词不收缩、需要定期维护的运维成本。GiST 还独有的能力是原生支持 k-NN 最近邻排序查询和排除约束（EXCLUDE constraint）,这是很多其他索引类型不具备的。下一篇会介绍另一种同样通用但内部实现思路完全不同的树——SP-GiST。

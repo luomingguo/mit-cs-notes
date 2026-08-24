@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的锁 — 1. 关系级锁（Relation-level locks）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的锁 — 1. 关系级锁（Relation-level locks）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/500714/ （作者 Egor Rogov，PostgresPro）
@@ -12,7 +19,7 @@ PostgreSQL 内部其实存在好几层锁，覆盖的对象粒度和持续时间
 
 关系级锁属于"长时间持有、开销较大"的锁，它们并不像行锁那样藏在数据页里，而是集中存放在服务器的共享内存中，通过一张固定大小的锁表来管理。这张表的容量不是无限的，其上限由两个参数的乘积决定：
 
-```
+```text
 max_locks_per_transaction × max_connections
 ```
 
@@ -72,7 +79,7 @@ max_locks_per_transaction × max_connections
 
 2. **`pg_blocking_pids(pid)` 函数**（PostgreSQL 9.6 引入）：传入一个正在等待锁的进程号，它会返回一个数组，列出所有直接或间接阻塞该进程的其他进程号。结合 `pg_stat_activity` 可以快速定位"到底是谁在拖慢/卡住了谁"，比手工去解析 `pg_locks` 里的等待关系方便得多。
 
-## 小结
+## 本讲小结
 
 这篇文章建立了理解 PostgreSQL 锁体系的基础框架：
 

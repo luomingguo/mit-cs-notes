@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 索引 — 3（Hash 索引）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 索引 — 3（Hash 索引）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/442776/ （作者 Egor Rogov，PostgresPro）
@@ -115,6 +122,6 @@ order by opfamily_name, opfamily_procedure;
 
 原文特别指出一个容易被忽视的运维细节：**哈希索引的物理体积不会自动缩小**。即便大量删除了索引对应的行，被释放的页面也不会归还给操作系统，只有在后续 VACUUM 过程中，这些空闲页面才可能被复用给新插入的数据。如果想彻底把索引文件压缩回真实需要的大小，必须显式执行 `REINDEX` 或 `VACUUM FULL`。
 
-## 小结
+## 本讲小结
 
 Hash 索引的设计目标非常单一：极致优化等值查询。它把原始键压缩成哈希值存储,通过桶和溢出页面的结构组织数据,换来的是紧凑的存储和 O(1) 量级的等值查找,但代价是彻底放弃了排序、范围查询、多列组合、仅索引扫描等能力,并且早期版本因缺乏 WAL 支持而不建议在生产环境使用。自 PostgreSQL 10 起,随着 WAL 日志和平滑扩容机制的引入,哈希索引才摆脱了"鸡肋"的历史包袱,成为在纯等值查询场景下,相较 B-tree 更紧凑、有时更快的可用选项。后续文章将转向功能更全面、结构也更复杂的 B-tree 索引。

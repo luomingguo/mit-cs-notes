@@ -1,11 +1,23 @@
+---
+title: 向量机与 SIMD
+course: 6.1920 建构式计算机架构，CCA
+course_id: '6.1920'
+lecture: 14
+kind: system
+tags: []
+status: complete
+---
 # Lec 14 向量机与 SIMD
 > MIT 6.1920 · Constructive Computer Architecture
 > 讲师：Arvind · 日期：2024-04-04
 
 ## 1. SIMD 的动机
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — SIMD（<em>Single Instruction, Multiple Data</em>）</strong><br>
-SIMD 是一种并行化范式：一条指令同时对多个数据元素执行相同操作。适用于多媒体处理（音视频编解码、图像压缩 DCT）、科学计算（向量/矩阵运算）等数据并行（<em>data-parallel</em>）负载。</div>
+::: definition
+**定义 — SIMD（*Single Instruction, Multiple Data*）**
+
+SIMD 是一种并行化范式：一条指令同时对多个数据元素执行相同操作。适用于多媒体处理（音视频编解码、图像压缩 DCT）、科学计算（向量/矩阵运算）等数据并行（*data-parallel*）负载。
+:::
 
 **DCT（*Discrete Cosine Transform*）动机**：JPEG/MPEG 压缩使用 8×8 DCT，每像素块需要大量加乘运算，非常适合 SIMD 加速。
 
@@ -13,20 +25,25 @@ SIMD 是一种并行化范式：一条指令同时对多个数据元素执行相
 
 ## 2. Intel MMX
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — MMX（<em>MultiMedia eXtension, Intel 1997</em>）</strong><br>
-MMX 复用了 x87 浮点寄存器，将其重解释为 64 位向量寄存器（<em>vector register</em>），支持：<br>
-<ul style="margin:4px 0; padding-left:20px;">
-<li>2 × 32 位整数（2×int32）</li>
-<li>4 × 16 位整数（4×int16）</li>
-<li>8 × 8 位整数（8×int8）</li>
-</ul>
-注：SSE（MMX 的后继）引入了全新的 128 位 xmm 寄存器，与 MMX 共享寄存器的问题得到解决。</div>
+::: definition
+**定义 — MMX（*MultiMedia eXtension, Intel 1997*）**
+
+MMX 复用了 x87 浮点寄存器，将其重解释为 64 位向量寄存器（*vector register*），支持：
+
+- 2 × 32 位整数（2×int32）
+
+- 4 × 16 位整数（4×int16）
+
+- 8 × 8 位整数（8×int8）
+
+注：SSE（MMX 的后继）引入了全新的 128 位 xmm 寄存器，与 MMX 共享寄存器的问题得到解决。
+:::
 
 **32 位加法器的共享技巧（*Sharing Trick*）**：
 
 两个 16 位加法只需一个 32 位加法器，通过清除进位位隔离两路计算：
 
-```
+```text
 A = [a1 (16 bit) | a0 (16 bit)]   ← 两个 16 位元素打包
 B = [b1         | b0         ]
 C = A + B，但先清除第 16 位（进位隔离）
@@ -37,12 +54,15 @@ C = A + B，但先清除第 16 位（进位隔离）
 
 ## 3. 向量寄存器文件与向量单元
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 向量寄存器文件（<em>Vector Register File</em>）</strong><br>
-向量处理器拥有专用向量寄存器（如 8 个 512 位向量寄存器），每个寄存器存放多个元素（如 16 × 32 位）。向量单元（<em>vector unit</em>）内部有多个并行执行通道（<em>lanes</em>），每通道处理向量的一个或多个元素。</div>
+::: definition
+**定义 — 向量寄存器文件（*Vector Register File*）**
+
+向量处理器拥有专用向量寄存器（如 8 个 512 位向量寄存器），每个寄存器存放多个元素（如 16 × 32 位）。向量单元（*vector unit*）内部有多个并行执行通道（*lanes*），每通道处理向量的一个或多个元素。
+:::
 
 **向量单元结构（2 通道示例）**：
 
-```
+```text
 向量寄存器 VR0 = [e7, e6, e5, e4, e3, e2, e1, e0]
 向量寄存器 VR1 = [f7, f6, f5, f4, f3, f2, f1, f0]
                          ↓
@@ -81,8 +101,11 @@ vscatter base, vr2, vr1  # mem[base + vr2[i]] = vr1[i]
 
 ## 5. 谓词执行（*Predication*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 谓词执行（<em>Predicated Execution</em>）</strong><br>
-向量操作中，某些元素可能不满足执行条件（如 <code>if (a[i] > 0) b[i] = a[i]</code>）。谓词寄存器（<em>predicate register</em>）为每个元素存储 1 位条件，向量指令只对谓词为 1 的元素生效，谓词为 0 的元素结果不更新（或写入 0）。</div>
+::: definition
+**定义 — 谓词执行（*Predicated Execution*）**
+
+向量操作中，某些元素可能不满足执行条件（如 `if (a[i] > 0) b[i] = a[i]`）。谓词寄存器（*predicate register*）为每个元素存储 1 位条件，向量指令只对谓词为 1 的元素生效，谓词为 0 的元素结果不更新（或写入 0）。
+:::
 
 ```asm
 vcmp.gt  pr0, vr0, 0    # pr0[i] = (vr0[i] > 0)
@@ -97,7 +120,9 @@ vadd.p   vr1, vr0, vr2, pr0  # vr1[i] = (pr0[i]) ? vr0[i]+vr2[i] : vr1[i]
 
 ## 6. Shuffle 指令
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 向量乘法中的 Shuffle 需求</strong></div>
+::: example 例题 — 向量乘法中的 Shuffle 需求
+
+:::
 
 实现 $\text{result} = \sum_{i=0}^{3} a_i \times b_i$（点积）：
 
@@ -111,6 +136,6 @@ Sol：Shuffle 指令提供元素重排（<em>permutation</em>）能力，是 SIM
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 SIMD 通过一条指令处理多个数据元素，吞吐量随通道数线性扩展；MMX/SSE/AVX 是 Intel 的渐进式向量扩展，宽度从 64 位增至 512 位（AVX-512）；步长访问和 Scatter-Gather 支持不规则内存访问；谓词寄存器消除向量代码中的分支；Shuffle 指令完成元素重排，是实现高性能矩阵和信号处理算法的关键原语。

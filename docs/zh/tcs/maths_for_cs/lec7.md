@@ -1,6 +1,13 @@
+---
+title: 递归
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 7
+kind: theory
+tags: []
+status: complete
+---
 # Lec 7 递归
-
-
 
 ## 1. 递推关系
 
@@ -30,7 +37,7 @@ $n$ 个大小各异的圆盘堆在柱 L 上（从下到上由大到小），目�
 
 归纳构造：已知可以移动 $n-1$ 个圆盘，则移动 $n$ 个圆盘的策略为：
 
-```
+```text
 H(n, A, B):   // 将盘 1..n 从柱 A 移到柱 B，C 为第三根柱
   if n == 1: 直接移动盘 1 从 A 到 B
   else:
@@ -74,7 +81,7 @@ $$T(n) = (n-1) + (n-2) + \cdots + 1 = \frac{n(n-1)}{2} = \Theta(n^2)$$
 
 **算法（$n = 2^k$ 时）：**
 
-```
+```text
 MergeSort(X):
   if |X| == 1: return X
   L, R = 前半段, 后半段

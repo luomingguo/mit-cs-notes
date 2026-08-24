@@ -1,38 +1,41 @@
-# Lec 12 现代JS和DOM的介绍
+---
+title: 现代 JS 和 DOM 的介绍
+course: 6.4500 Web设计：语言和用户接口
+course_id: '6.4500'
+lecture: 12
+kind: design
+tags: []
+status: complete
+---
+# Lec 12 现代 JS 和 DOM 的介绍
 
-阅读资料 
+阅读资料
 
 [JavaScript for Python Programmers](https://observablehq.com/@ballingt/javascript-for-python-programmers)
 
-
-
 ## 介绍
 
-JavaScript  唯一能在浏览器中直接运行的客户端编程语言，由 Brendan Eich 在10 天快速设计出来的语言，彼时是1995年。他能做：
+JavaScript  唯一能在浏览器中直接运行的客户端编程语言，由 Brendan Eich 在 10 天快速设计出来的语言，彼时是 1995 年。他能做：
 
 - 自动化：在日程表中的每个 `<td>` 内添加一个 `<time>` 元素
 - 行为：当我点击这个按钮时，验证表单并显示错误信息
 - API：当收到一条消息时，显示一个操作系统级别的通知弹窗
 - Web API：在侧边栏显示我最近 9 条 Instagram 帖子
 
-
-
 **标准**
 
-核心语法被称为 **ECMAScript**。 用于与宿主环境不同部分交互的API有：
+核心语法被称为 **ECMAScript**。 用于与宿主环境不同部分交互的 API 有：
 
-- [DOM API](https://dom.spec.whatwg.org/)： 用于查询和操作DOM树、处理事件
+- [DOM API](https://dom.spec.whatwg.org/)： 用于查询和操作 DOM 树、处理事件
 - [CSS OM](https://dom.spec.whatwg.org/)：用于读取和修改样式表
 - [Fetch API](https://fetch.spec.whatwg.org/)： 用于发送 HTTP 请求
-- 。。。。非常非常多其他API
+- 。。。。非常非常多其他 API
 
-Javascript在服务端：Node.js
+Javascript 在服务端：Node.js
 
+> 为什么是 javascript？
 
-
-> 为什么是javascript？
-
-历史原因，可以拜读这篇论文[JavaScript: the first 20 years](https://dl.acm.org/doi/10.1145/3386327) 
+历史原因，可以拜读这篇论文[JavaScript: the first 20 years](https://dl.acm.org/doi/10.1145/3386327)
 
 这里给出枝端末节：
 
@@ -66,8 +69,6 @@ Javascript在服务端：Node.js
   - 交互性主要面向专业人士
   - 如果只是验证邮政编码这种小事呢？
 
-
-
 Netscape 的回应： 我们必须做点什么！如果所有有趣的功能都由 Java 来完成，那么 Web 就会被 Sun 控制。
 
 为一些简单的场景（比如表单验证）做一个简单的东西
@@ -77,7 +78,7 @@ Netscape 的回应： 我们必须做点什么！如果所有有趣的功能都�
 
 关键点： 让“网页本身成为应用程序”，而不是只作为应用的容器。
 
-于是紧急聘请 Brendan Eich，让他“昨天就做出来一个东西”。他从scheme/LISP作为起点，这是最优雅的编程语言，语法非常简单，一个非常小、简单的解释器却具有极强的表达能力
+于是紧急聘请 Brendan Eich，让他“昨天就做出来一个东西”。他从 scheme/LISP 作为起点，这是最优雅的编程语言，语法非常简单，一个非常小、简单的解释器却具有极强的表达能力
 
 ## 主题
 
@@ -91,11 +92,9 @@ Netscape 的回应： 我们必须做点什么！如果所有有趣的功能都�
 - 对象
 - DOM 及其操作
 
-
-
 ## 基本语法
 
-早期受到Java的影响，
+早期受到 Java 的影响，
 
 ```js
 statement1;
@@ -109,8 +108,6 @@ function name(arg1, arg2) {
   return value;
 }
 ```
-
-
 
 ### Script 标签
 ```html
@@ -137,8 +134,6 @@ function name(arg1, arg2) {
 - 数组：如 [1, 2, 3, "anything goes"]（里面可以放任何类型）
 - 带属性的对象
 
-
-
 ## 控制台
 
 控制台的用途：
@@ -152,8 +147,6 @@ function name(arg1, arg2) {
 - 你的代码通过 console 输出的数据
 - DOM：文档结构数据（网页结构）
 
-
-
 一些特殊的变量和函数（只有在控制台中）
 
 - `$('#id')`：选择第一个匹配 CSS 选择器的 DOM 元素
@@ -163,8 +156,6 @@ function name(arg1, arg2) {
 - `$0` - `$4`： 最近在 Elements（元素面板）中选中的 5 个 DOM 元素，`$0` 是最新选中的那个
 - `$_`： 上一次在控制台执行表达式的结果
 
-
-
 ## 类型与类型转换
 
 下面这段会输出什么？
@@ -173,11 +164,9 @@ function name(arg1, arg2) {
 4 * "2" ** 3 + 10
 ```
 
-结果是：42。  与 Python 不同，类型转换在需要时会自动（隐式）发生，而这里JS的`*`只接受数字，因此它的参数会被强制转换为数字。
+结果是：42。  与 Python 不同，类型转换在需要时会自动（隐式）发生，而这里 JS 的`*`只接受数字，因此它的参数会被强制转换为数字。
 
-
-
-JS的隐式类型转换：当参数类型不正确时，JavaScript 会自动尝试将其转换为正确的类型
+JS 的隐式类型转换：当参数类型不正确时，JavaScript 会自动尝试将其转换为正确的类型
 
 看这个例子，会输出什么
 
@@ -195,11 +184,9 @@ JS的隐式类型转换：当参数类型不正确时，JavaScript 会自动尝�
 
 ## DOM 及其操作
 
-# 阅读资料： JS vs Python
+## 阅读资料： JS vs Python
 
-
-
-JavaScript 和 Python 很相似！ JS早期借用了Python的一些概念，例如JS从Python引入了 generotor 和 协程， 并加以改造，发展出了 async 和 await； 随后Python 又吸收了这些改进。
+JavaScript 和 Python 很相似！ JS 早期借用了 Python 的一些概念，例如 JS 从 Python 引入了 generotor 和 协程， 并加以改造，发展出了 async 和 await； 随后 Python 又吸收了这些改进。
 
 《Eloquent JavaScript》是我最喜欢的一本深入学习 JavaScript 的书。不过，如果你想利用已有的 Python 经验、重点关注两者的差异，下面是一个用 Python 来类比理解 JavaScript 的简要说明。
 
@@ -232,9 +219,7 @@ modify_global_variable()  # prints 3
 print(x)  # prints 3
 ```
 
-
-
-而在JS中，则需要显式声明变量。使用`let`表示可以重新赋值的变量，使用`const`表示不可重新赋值的绑定
+而在 JS 中，则需要显式声明变量。使用`let`表示可以重新赋值的变量，使用`const`表示不可重新赋值的绑定
 
 ```js
 let x = 1;
@@ -266,14 +251,10 @@ console.log(x) // logs 3
 > ```js
 > x = 1
 > y = x + 1
-> // 当你改x
-> x = 5 
-> y 自动变成6 
+> // 当你改 x
+> x = 5
+> y 自动变成 6
 > ```
-
-
-
-
 
 ## 花括号与块作用域
 
@@ -288,7 +269,7 @@ if (true) {
 console.log(a); // 报错
 ```
 
-JavaScript 中用 `let` 和 `const` 声明的变量是**块作用域**, 变量只在当前 `{}` 代码块及其内部有效，不像Python是函数作用域。
+JavaScript 中用 `let` 和 `const` 声明的变量是**块作用域**, 变量只在当前 `{}` 代码块及其内部有效，不像 Python 是函数作用域。
 
 下面通过例子，看看关键区别
 
@@ -308,9 +289,7 @@ functions[1]()  # prints 3
 functions[2]()  # prints 3
 ```
 
-原因是，所有函数共享同一个变量 `i` ，循环结束后 `i=3`， 所以全部输出3 
-
-
+原因是，所有函数共享同一个变量 `i` ，循环结束后 `i=3`， 所以全部输出 3
 
 JavaScript（块作用域）
 
@@ -328,13 +307,9 @@ functions[1](); // logs 2
 functions[2](); // logs 3
 ```
 
-原因是，JavaScript 循环中每次迭代都会创建新的变量绑定，每一次循环都会创建一个新的 `i`， 每个函数"捕获（闭包）"是不同的，所以分别输出1、2、3
-
-
+原因是，JavaScript 循环中每次迭代都会创建新的变量绑定，每一次循环都会创建一个新的 `i`， 每个函数"捕获（闭包）"是不同的，所以分别输出 1、2、3
 
 ## 标签模板字符串
-
-
 
 JavaScript 的模板字符串（template literals）有点像 Python 的三引号 f-string。
 
@@ -377,8 +352,6 @@ const s = capitalize(
 
 函数 `capitalize` 实际接收到 1）一个字符串数组（被 `${}` 分割后的部分），2）后面是插值表达式的值
 
-
-
 ## self vs this
 
 不用再在每个实例方法的参数里写 `self` 了！像 C++ 和 Java 一样，`this` 关键字不会出现在函数签名中，但在函数内部始终可用，通常表示当前对象（也就是 Python 里的 `self`）。
@@ -396,7 +369,7 @@ a = A()
 a.f()
 ```
 
-发生了什么？ 当你写`a.f`， Python会自动把 a 塞进去，变成`A.f(a)`，self 在“访问方法的时候”就已经决定了。
+发生了什么？ 当你写`a.f`， Python 会自动把 a 塞进去，变成`A.f(a)`，self 在“访问方法的时候”就已经决定了。
 
 ```js
 const obj = {
@@ -413,8 +386,6 @@ g();  // this ≠ obj
 ```
 
 `g()` 是“普通函数调用”， `this` 不在指向 `obj`
-
-
 
 再看这个例子， （箭头函数 =>）：更像 Python
 
@@ -455,15 +426,11 @@ formatText('hello', {font: 'Times New Roman', size: '12pt'});
 
 如果你是从头编写代码，最好使用真正的 Map 或 Set，因为使用普通对象会有一些陷阱（它们有继承的方法，很容易误以为是自己添加的属性）。但在使用已有 API 时，通常还是需要使用这些普通对象。
 
-
-
 ## 大多数数字都是浮点数
 
 在 JavaScript 中，你遇到的大多数数字都是浮点数。除非你使用仍然不太常见的 BigInt（直到 2021 年才被 Safari 支持），或者使用类型化数组（typed arrays），否则每一个数字都相当于 NumPy 中的“double”：一种双精度 64 位浮点数。甚至在数组索引时也是如此！
 
 整数语法不常见的一个原因是，直到最近它在 Safari 中还不被支持。就像过去写代码需要同时兼容 CPython 和 PyPy（或者 Python 2 和 Python 3）一样，JavaScript 开发者通常会尝试编写能同时在 Firefox、Chrome、Safari 和 Edge 上运行的代码——这些浏览器分别由 Mozilla 和全球三大公司开发。
-
-
 
 ## 函数表达式
 
@@ -489,7 +456,7 @@ const announce = s => {
 f = x => y => z => x + y + z
 ```
 
-对应的Python写法就是
+对应的 Python 写法就是
 
 ```python
 f = lambda x: lambda y: lambda z: x + y + z
@@ -506,9 +473,7 @@ def f(x):
 f(1)(2)(3)  # 结果为 6
 ```
 
-顺带说一下`f(1)` 返回 ，`lambda y: (lambda z: 1 + y + z)`，此时 x 已经被锁住为1（闭包）
-
-
+顺带说一下`f(1)` 返回 ，`lambda y: (lambda z: 1 + y + z)`，此时 x 已经被锁住为 1（闭包）
 
 JavaScript 的等价写法：
 
@@ -527,13 +492,9 @@ f = x => {
 f(1)(2)(3) // 结果为 6
 ```
 
-
-
 ## Async 和 事件循环
 
 在 JavaScript 中，已经隐式内置了一个事件循环（event loop），并且一直在运行。所以不再需要像 `asyncio.run(your_async_code)` 这样手动启动异步运行环境——它本身就已经在运行了！
-
-
 
 ## 两种类型体系
 
@@ -587,8 +548,6 @@ Python：
 thenExpr if cond else elseExpr
 ```
 
-
-
 ## 相等性
 
 ython 的 `==` 在某种程度上接近 JavaScript 的 `===`。
@@ -611,7 +570,7 @@ ython 的 `==` 在某种程度上接近 JavaScript 的 `===`。
 
 因此：
 
-```
+```text
 x = (y = 2)
 ```
 
@@ -638,8 +597,6 @@ len([1,2,3])
 
 ---
 
-
-
 在 Python 中：
 
 ```python
@@ -654,8 +611,6 @@ map(lambda x: x, [1,2,3])
 
 ------
 
-
-
 在 Python 中：
 
 ```python
@@ -664,13 +619,9 @@ filter(lambda x: x, [1,2,3])
 
 在 JavaScript 中：
 
-```
+```text
 [1,2,3].filter(x => x)
 ```
-
-
-
-
 
 ## 展开运算符
 
@@ -683,10 +634,6 @@ const innerArr = [1, 2]
 const innerObj = {a: 1, b: 2}
 {...innerObj, c: 3, d: 4} // 结果是 {a: 1, b: 2, c: 3, d: 4}
 ```
-
-
-
-
 
 ## 解构赋值
 
@@ -731,7 +678,7 @@ const {a, b: {c}} = {a: 1, b: {c: 2}}
 
 一个很有用的惯用法：
 
-```
+```text
 x == null
 ```
 
@@ -748,13 +695,11 @@ x == null
 
 更高级的功能可以使用：
 
-```
+```text
 Object.defineProperty
 ```
 
 它类似 Python 中 `__slots__` 和 descriptor 的组合能力。
-
-
 
 ## JavaScript 风格（Style）
 
@@ -763,10 +708,6 @@ Object.defineProperty
 - 全局常量：ALL_CAPS
 - 推荐使用分号（Python 不需要，但 JavaScript 规范建议）
 - 缩进：2 个空格（不是 4 个）
-
-
-
-
 
 ## 浏览器开发者工具（Dev Tools）
 

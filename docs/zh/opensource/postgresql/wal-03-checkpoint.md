@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的 WAL — 3. 检查点（Checkpoint）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的 WAL — 3. 检查点（Checkpoint）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/494464/ （作者 Egor Rogov，PostgresPro）
@@ -91,6 +98,6 @@ SELECT pg_stat_reset_shared('bgwriter');
 
 文章还结合 `pg_waldump` 和 `pg_controldata` 演示了如何在检查点前后分别观察 WAL 记录内容和控制文件里记录的最新检查点位置变化，从原理上验证了前面讲的整个机制。
 
-## 小结
+## 本讲小结
 
 检查点把"崩溃后要重放多少 WAL"这件事控制在了一个可预期的范围内：它不是瞬时动作，而是"标记—渐进写出—完成"的完整过程，写出节奏由 `checkpoint_completion_target` 摊开，触发时机由 `checkpoint_timeout`（定时）和 `max_wal_size`（WAL 用量）共同决定；检查点完成后把起始 LSN 写入 WAL 记录并更新 `pg_control`，恢复时正是从这里开始前滚。与检查点并行工作的后台写进程（bgwriter）则专注于提前把"看起来快要被换出"的脏页悄悄写掉，减轻业务查询临时被迫同步写盘的概率。调优这一整套机制离不开 `pg_stat_bgwriter` 视图提供的长期观测数据，需要结合实际的 WAL 生成速率、可接受的恢复时间窗口来综合权衡。下一篇会进一步展开 WAL 相关的可靠性与性能参数（`wal_level`、`full_page_writes`、`synchronous_commit` 等），把整个体系的调优图景补完整。

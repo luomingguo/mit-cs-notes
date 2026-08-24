@@ -1,4 +1,13 @@
-# L05：指令流水线——冒险消解与时序约束（*Instruction Pipelining: Hazard Resolution, Timing Constraints*）
+---
+title: '指令流水线——冒险消解与时序约束（Instruction Pipelining: Hazard Resolution, Timing Constraints）'
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 5
+kind: system
+tags: []
+status: complete
+---
+# Lec 05 指令流水线——冒险消解与时序约束（*Instruction Pipelining: Hazard Resolution, Timing Constraints*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez 主题：理想流水线与 CPI、三类冒险、数据冒险消解（停顿/旁路/推测）、控制冒险与跳转/分支、异常处理
 
@@ -102,7 +111,7 @@ $$ \text{IRSrcD} = \begin{cases} \text{nop} & opcode_D \in {JAL, JALR} \ \text{I
 
 控制方程（PC 与 IR 的多路选择，**优先较老的指令**即执行级优先于译码级）：
 
-```
+```text
 IRSrcD = case opcodeE: Taken branch → nop
                        else → (case opcodeD: JAL/JALR → nop; else → IM)
 IRSrcE = case opcodeE: Taken branch → nop
@@ -138,7 +147,7 @@ PCSrc  = case opcodeE: Taken branch → pc+imm (来自 E)
 
 ------
 
-## 小结
+## 本讲小结
 
 - 流水线靠提高时钟频率提速，但三类冒险（结构/数据/控制）会增大 CPI；
 - 数据冒险用**停顿、旁路、推测**消解：全旁路后只剩 **Load-use** 的一周期停顿；

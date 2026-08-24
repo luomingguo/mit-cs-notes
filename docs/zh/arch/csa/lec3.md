@@ -1,4 +1,13 @@
-# L03：缓存组织与内存管（*Cache Organization and Memory Management*）
+---
+title: 缓存组织与内存管（Cache Organization and Memory Management）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 3
+kind: system
+tags: []
+status: complete
+---
+# Lec 03 缓存组织与内存管（*Cache Organization and Memory Management*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez 主题：放置/替换策略、缓存性能与缺失分类、块级与多级优化、内存管理演进（绝对地址→分页→按需分页）
 
@@ -143,7 +152,7 @@ $$ \text{AMAT} = \text{命中时间} + \text{缺失率} \times \text{缺失代�
 
 ------
 
-## 小结
+## 本讲小结
 
 - Cache 由放置（直接/组相联/全相联）、替换（LRU/FIFO/伪 LRU 等）策略决定，性能用 **AMAT** 与 **3C 缺失**（强制/容量/冲突）刻画；
 - 块级（子块）与多级（包含/非包含/互斥、牺牲者缓存）优化在容量、延迟、tag 开销间权衡；

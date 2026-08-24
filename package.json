@@ -4,11 +4,15 @@
     "dev": "vitepress dev docs",
     "docs:dev": "vitepress dev docs",
     "docs:build": "NODE_OPTIONS=--max-old-space-size=4096 vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "notes:lint": "node tools/notes-lint.mjs",
+    "notes:fix": "node tools/notes-fix.mjs",
+    "notes:new": "node tools/notes-new.mjs"
   },
   "devDependencies": {
     "@shikijs/vitepress-twoslash": "^4.2.0",
     "@vitejs/plugin-vue": "^6.0.7",
+    "markdown-it-container": "^4.0.0",
     "markdown-it-mathjax3": "^4.3.2",
     "vitepress": "2.0.0-alpha.17"
   },

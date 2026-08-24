@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 查询系列 — 5. 嵌套循环连接
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 查询系列 — 5. 嵌套循环连接
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/579024/ （作者 Egor Rogov，PostgresPro）
@@ -33,7 +40,7 @@ PostgreSQL 的优化器可以从三种物理算法中选择来实现一个逻辑
 
 对于一个参数化的嵌套循环连接，代价大致按下面的方式累加（N 表示外层集合的估算行数）：
 
-```
+```text
 startup_cost = outer_startup_cost + inner_startup_cost
 total_cost   = outer_total_cost
              + N × inner_scan_cost
@@ -70,6 +77,6 @@ Materialize 节点是"无差别缓存所有内层结果"，而 PostgreSQL 14 引
 
 在并行计划中，外层集合的扫描可以被拆给多个并行 worker 各自负责一部分（比如外层是一个 Parallel Seq Scan），但内层的循环逻辑本身在每个 worker 内部依然是串行执行的——也就是说并行化只发生在"外层分片"这个维度，内层针对每一行的查找过程并不会被进一步拆分。
 
-## 小结
+## 本讲小结
 
 嵌套循环是最通用、最"朴素"的连接算法：外层驱动、内层查找，没有排序或建哈希表的前置要求，因此对连接条件的类型几乎没有限制。它的性能高度依赖"外层集合小 + 内层能高效定位（通常靠索引）"这个组合；当内层缺乏索引或需要被外层反复扫描时，Materialize（无差别缓存）和 PostgreSQL 14 引入的 Memoize（按参数值缓存 + LRU 淘汰）能够显著降低重复扫描的代价，但两者的真实收益都需要结合 `EXPLAIN ANALYZE` 的实际运行统计来判断，而不能只看规划阶段的估算代价。等值连接条件可以下推为内层的 `Index Cond`，非等值条件只能退化为 `Join Filter`。嵌套循环不支持右外连接/全外连接，在 OLTP 场景、小驱动集合配合索引良好的内层表时通常表现优异，但一旦外层集合过大且内层缺乏索引，很容易成为性能瓶颈。下一篇文章将讨论哈希连接，看看当条件是等值连接、且需要处理大数据量时，PostgreSQL 是如何用哈希表来避免嵌套循环这种"重复查找"开销的。

@@ -44,16 +44,18 @@ export async function applySchema(): Promise<void> {
 
 export async function upsertDocument(doc: SourceDoc): Promise<void> {
   await getPool().query(
-    `INSERT INTO documents (path, url, lang, course_slug, course, category, title, outline, chars, file_hash, updated_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, now())
+    `INSERT INTO documents (path, url, lang, course_slug, course, category, title, outline, chars, file_hash, kind, tags, status, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13, now())
      ON CONFLICT (path) DO UPDATE SET
        url=EXCLUDED.url, lang=EXCLUDED.lang, course_slug=EXCLUDED.course_slug,
        course=EXCLUDED.course, category=EXCLUDED.category, title=EXCLUDED.title,
        outline=EXCLUDED.outline, chars=EXCLUDED.chars, file_hash=EXCLUDED.file_hash,
+       kind=EXCLUDED.kind, tags=EXCLUDED.tags, status=EXCLUDED.status,
        updated_at=now()`,
     [
       doc.path, doc.url, doc.lang, doc.courseSlug, doc.course,
       doc.category, doc.title, doc.outline, doc.chars, doc.fileHash,
+      doc.kind, doc.tags, doc.status,
     ],
   )
 }
@@ -98,8 +100,8 @@ export async function replaceDocChunks(
     // 一次多行 INSERT，而不是一块一条。
     // 从本地经 SSH/IAP 隧道灌库时，每条 INSERT 都是一次网络往返 ——
     // 6700 块就是 6700 次往返，光延迟就要十几分钟。合并后降到每篇一次。
-    // 每行 13 个参数，Postgres 的参数上限是 65535，所以按 500 行一批切。
-    const COLS = 13
+    // 每行 14 个参数，Postgres 的参数上限是 65535，所以按 500 行一批切。
+    const COLS = 14
     const PER_BATCH = 500
 
     for (let start = 0; start < chunks.length; start += PER_BATCH) {
@@ -111,19 +113,20 @@ export async function replaceDocChunks(
         const e = embeddings[start + j]!
         const base = j * COLS
         const ph = Array.from({ length: COLS }, (_, k) => `$${base + k + 1}`)
-        // 倒数第二个占位符是向量，要显式转型
-        rows.push(`(${ph.slice(0, 11).join(',')},${ph[11]}::vector,${ph[12]})`)
+        // 第 12 个占位符是向量，要显式转型
+        rows.push(`(${ph.slice(0, 11).join(',')},${ph[11]}::vector,${ph[12]},${ph[13]})`)
         values.push(
           c.id, c.docPath, c.url, c.anchor, c.lang, c.course, c.docTitle,
           c.heading, c.ordinal, c.content, c.contentHash,
           typeof e === 'string' ? e : toVectorLiteral(e),
           new Date(),
+          c.blockKind,
         )
       })
 
       await client.query(
         `INSERT INTO chunks
-           (id, doc_path, url, anchor, lang, course, doc_title, heading, ordinal, content, content_hash, embedding, updated_at)
+           (id, doc_path, url, anchor, lang, course, doc_title, heading, ordinal, content, content_hash, embedding, updated_at, block_kind)
          VALUES ${rows.join(',')}`,
         values,
       )
@@ -155,6 +158,7 @@ export interface SearchRow {
   heading: string
   content: string
   distance: number
+  block_kind: string
 }
 
 /**
@@ -178,7 +182,7 @@ export async function searchChunks(
       langFilter = 'WHERE lang = $3'
     }
     const { rows } = await client.query<SearchRow>(
-      `SELECT id, url, anchor, course, doc_title, heading, content,
+      `SELECT id, url, anchor, course, doc_title, heading, content, block_kind,
               embedding <=> $1::vector AS distance
          FROM chunks
          ${langFilter}

@@ -1,12 +1,19 @@
-# Lec 3 C语言的数组&字符串&结构体
+---
+title: 'C 语言的数组&字符串&结构体'
+course: 6.1904 C语言的底层汇编
+course_id: '6.1904'
+lecture: 3
+kind: system
+tags: []
+status: complete
+---
+# Lec 3 C 语言的数组&字符串&结构体
 
 [[toc]]
 
 ## 数组与指针
 
-
-
-指针是一种用于存放另外一个变量的地址的变量。 地址位宽为32bit，不同的数据类型有不同的字节大小，因此需要指定指针的类型，这样它就能知道如何读取 & 解释有多少字节。函数中常用来更改原始数据的值，函数默认是值拷贝。
+指针是一种用于存放另外一个变量的地址的变量。 地址位宽为 32bit，不同的数据类型有不同的字节大小，因此需要指定指针的类型，这样它就能知道如何读取 & 解释有多少字节。函数中常用来更改原始数据的值，函数默认是值拷贝。
 
 指针的错误用法；
 
@@ -21,23 +28,19 @@ int *x; // 没有指向特别的地址
 *x = a; // Segmentment fault ❌， x存储的地址不合法
 ```
 
-
-
 C 里的数组（*array*）是一段连续的内存，长度固定，定义时需指定类型和长度。
 
 声明数组会做两件事:为数组分配内存；创建一个指针，通过它访问这段内存。数组是一个固定指针，不能重新赋值。C 不做越界检查，用指针访问数组时可能读到内存中未知的部分，这是潜在的 bug 来源。
 
-把数组传入函数时，函数实际看到的只是数组的首地址指针，无法从中得知数组长度，所以在函数内部没有内在办法知道数组有多大，长度通常需要额外作为参数传入。C 中所有函数参数都是按值传递(passed by value)，传进去的是副本而非原件。
+把数组传入函数时，函数实际看到的只是数组的首地址指针，无法从中得知数组长度，所以在函数内部没有内在办法知道数组有多大，长度通常需要额外作为参数传入。C 中所有函数参数都是按值传递（passed by value），传进去的是副本而非原件。
 
 初始化方法：
 
-- `int x[] = {1， 2， 3， 4};` 构成4个int长的长度数组，并取名为x
-- `int y[10];`  创建一个10个int长度的数组，取名为y（但是没有声明其值）
-- `int z[5] = {1};`  创建5个int长度的数组，取名为z；下标为0的元素是1，其余为0
-- `char a[10] = {'t'， 'h'， 'e'， ' '， 'c'， 'a'， 't'， '.'};`  10个char长度的数组，结尾有两个`null`
-- `char b[] = "the cat.";`   9个长度为char的数组，结尾跟着`null`
-
-
+- `int x[] = {1， 2， 3， 4};` 构成 4 个 int 长的长度数组，并取名为 x
+- `int y[10];`  创建一个 10 个 int 长度的数组，取名为 y（但是没有声明其值）
+- `int z[5] = {1};`  创建 5 个 int 长度的数组，取名为 z；下标为 0 的元素是 1，其余为 0
+- `char a[10] = {'t'， 'h'， 'e'， ' '， 'c'， 'a'， 't'， '.'};`  10 个 char 长度的数组，结尾有两个`null`
+- `char b[] = "the cat.";`   9 个长度为 char 的数组，结尾跟着`null`
 
 指针与数组的关系十分密切。
 
@@ -49,13 +52,7 @@ pa = &a[0]; // 将pa指向a的第0个元素
 
 `*(pa+1)` 与 `a[1]`是等价的
 
-
-
 `sizeof` 给出一个数据对象在内存中占用的字节数，它不是函数，而是一个运算符。在编译期就被替换成结果。因为它在编译期求值，所以当数组作为参数传入函数后，函数内对参数用 `sizeof` 得到的是指针的大小，而不是整个数组的大小。同样，没有任何内在方式能在运行期得知数组真实长度。
-
-
-
-
 
 1. 指针运算以元素为单位，而不是字节。
 2. 数组名就是首元素地址，因此 `a` 与 `&a[0]` 等价。
@@ -75,41 +72,29 @@ pa = &a[0]; // 将pa指向a的第0个元素
 
 - **越界访问不会报错，但是 UB。** C 不做边界检查，越界读写可能"看起来正常"，也可能悄悄破坏相邻变量，是最难复现的一类 bug。
 
-
-
-
-
-
-
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>例题1</strong>　下面程序会打印什么？</div>
+::: example 例题 1
+下面程序会打印什么？
+:::
 
 <img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260613093753037.png" alt="image-20260613093753037" style="zoom: 33%;" />
 
-
-
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>例题2</strong>　下面程序会打印什么？</div>
+::: example 例题 2
+下面程序会打印什么？
+:::
 
 ![image-20260613094403367](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260613094403367.png)
 
-
-
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>例题3</strong>　下面程序会打印什么？</div>
+::: example 例题 3
+下面程序会打印什么？
+:::
 
 <img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260613094631775.png" alt="image-20260613094631775" style="zoom:50%;" />
 
-从我的macbook m1 64位程序来说，得到72。 因为，sizeof(ai) 得到的是8，因此循环计算了8次。
+从我的 macbook m1 64 位程序来说，得到 72。 因为，sizeof(ai) 得到的是 8，因此循环计算了 8 次。
 
-
-
-如果是32位机器，下面打印如图
+如果是 32 位机器，下面打印如图
 
 <img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260613095622406.png" alt="image-20260613095622406" style="zoom:50%;" />
-
-
-
-
-
-
 
 ## 函数指针
 
@@ -121,30 +106,26 @@ int (*comp)(void *, void *);
 
 很多初学者都会觉得难懂，其实一步一步读就行。
 
-1. 先找到变量名，外面有 `(*comp)`，说明comp是一个指针
+1. 先找到变量名，外面有 `(*comp)`，说明 comp 是一个指针
 2. 继续往右看，它指向的是一个函数，这个函数有两个参数。
-3. 最后最左边，它返回int
+3. 最后最左边，它返回 int
 
 **comp 是一个指向函数的指针，这个函数接受两个 void\* 参数，返回 int。**
-
-
 
 ```c
 (*pfa[])()
 ```
 
 1. 找到变量名
-2. `[]`： 说明pfa是数组
+2. `[]`： 说明 pfa 是数组
 3. `*`： 说明数组里面的元素是指针
 4. 右边，`()`说明这些指针指向函数，
 
-结论： **pfa是一个向函数指针数组**
+结论： **pfa 是一个向函数指针数组**
 
 ## 字符串
 
 字符串在 C 里是字符数组（char array），用一个常量指针表示，采用 ASCII 编码，以空字符 `'\0'`（null char）标记结尾。ASCII 用 8 位，共 256 种可能，实际只用了前 128 个。注意:`'A'`（单引号）是字符 65，`"A"`（双引号）是字符串。函数读取字符串时会一直读到遇见 `'\0'` 为止。
-
-
 
 ### 字符串函数
 
@@ -192,7 +173,7 @@ int (*comp)(void *, void *);
   ```
 
   - 第一，它会修改原字符串:每次切割时，strtok 会把找到的分隔符直接替换成 `'\0'`，所以原始字符串会被破坏;如果你之后还要用原串，应该先拷贝一份再传给 strtok。
-  - 第二，它内部维护了一个静态指针(static pointer)来记录上次切割到了哪个位置，这就是为什么后续调用传 NULL 它还能接着往下切;但这也意味着 strtok 不是线程安全的——如果两个地方同时在用 strtok 切不同的字符串，它们会互相干扰。
+  - 第二，它内部维护了一个静态指针（static pointer）来记录上次切割到了哪个位置，这就是为什么后续调用传 NULL 它还能接着往下切;但这也意味着 strtok 不是线程安全的——如果两个地方同时在用 strtok 切不同的字符串，它们会互相干扰。
 
 - `atoi`： 将字符串转换成 `int` 类型
 
@@ -210,19 +191,17 @@ int (*comp)(void *, void *);
 
 ---
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>例题4</strong>　把 0 到 999 这一千个数字，用空格分隔，拼接成一个很长的字符串，存进全局字符数组 totes 里，最后打印出来 </div>
+::: example 例题 4
+把 0 到 999 这一千个数字，用空格分隔，拼接成一个很长的字符串，存进全局字符数组 totes 里，最后打印出来
+:::
 
 ![image-20260613103221202](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260613103221202.png)
 
-分析： 第一个版本性能弱，因为每次调用 `strcat` 都重复需要从头开始扫描找到null的位置。
+分析： 第一个版本性能弱，因为每次调用 `strcat` 都重复需要从头开始扫描找到 null 的位置。
 
-第二个版本更好，利用`sprintf`的返回值是每次写入的字符数的特性，将tally作为游标。
+第二个版本更好，利用`sprintf`的返回值是每次写入的字符数的特性，将 tally 作为游标。
 
 -----
-
-
-
-
 
 ## 结构体
 
@@ -245,14 +224,10 @@ make_subject3(&our_course);  // 传入 our_course 的地址
 
 这样 make_subject3 内部通过指针 s 修改的就是 our_course 本身，函数返回后 our_course 的值已经被改好了，不需要再用返回值覆盖
 
-
-
 通过指针访问结构体成员时，需要先解引用（dereference）再取成员。写法上有两种等价形式
 
 - `(*s).units = 12; `  // 因为`.`的优先级比`*`高
 - `s->units = 12;` // 但写起来更简洁，实际代码中几乎都用这种形式
-
-
 
 **结构体的初始化**
 
@@ -265,11 +240,9 @@ struct Subject other_course = {9, 12, "9.01: Intro Brain Stuff", 100};
 struct Subject other_course = {.dept=9, .units=12, .name="9.01: Intro Brain Stuff", .num_students=100};
 ```
 
-
-
 **Null**
 
-在C语言中， Null的语义是 none，
+在 C 语言中， Null 的语义是 none，
 
 ### 结构体容易踩坑的点
 
@@ -286,14 +259,16 @@ struct Subject other_course = {.dept=9, .units=12, .name="9.01: Intro Brain Stuf
 
 - **按值传结构体会复制整个结构体。** 大结构体按值传参开销很大（前面已说要传指针）；同理，按值返回结构体也会整体拷贝。
 
-# 例题
+## 例题
 
-
-
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong> Example 1 </strong> int[10] vals = {0, 3, 6, 9,12, 15, 18, 21, 24, 27} </div>
+::: example Example 1
+int[10] vals = {0, 3, 6, 9,12, 15, 18, 21, 24, 27}
+:::
 
 Sol： `*(&vals[7]-2)` =  `val[7]`这个地址往回退两个元素，得到值为 15
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong> Example 2 </strong> int* x = (int*) 0; x = x + 3; 问 x的值是多少</div>
+::: example Example 2
+int* x = (int*) 0; x = x + 3; 问 x 的值是多少
+:::
 
-Sol：每个int类型元素需要4字节，因此， `x = x + 3 = x + 3(4) = 12`
+Sol：每个 int 类型元素需要 4 字节，因此， `x = x + 3 = x + 3(4) = 12`

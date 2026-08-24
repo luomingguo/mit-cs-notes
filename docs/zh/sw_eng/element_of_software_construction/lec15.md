@@ -1,23 +1,32 @@
-# Lec 15 Promises语法
+---
+title: Promises 语法
+course: 6.1020 软件构造基础
+course_id: '6.1020'
+lecture: 15
+kind: design
+tags: []
+status: complete
+---
+# Lec 15 Promises 语法
 
 [toc]
 
-本节讨论使用`Promise`进行并发计算。我们从最高层次的抽象开始，介绍Promise的抽象，以及`await`操作符和`async`函数声明，这些特性使得TypeScript能够非常类似同步编程的方式实现。随后我们将更深入底层。进一步理解 `Promise`、`await` 和 `async` 的运行机制。
+本节讨论使用`Promise`进行并发计算。我们从最高层次的抽象开始，介绍 Promise 的抽象，以及`await`操作符和`async`函数声明，这些特性使得 TypeScript 能够非常类似同步编程的方式实现。随后我们将更深入底层。进一步理解 `Promise`、`await` 和 `async` 的运行机制。
 
 ## 1. promises
 
 Promise 代表一个已启动但尚未完成结果的并发计算。其名称来源于“承诺”这一概念，即它保证在未来某个时刻完成计算并返回结果。TypeScript 中的 `Promise` 是泛型（generic）：`Promise<T>` 表示一个并发计算，最终会生成一个类型为 `T` 的值。
 
-下面是用promises实现并发计算的一些例子：
+下面是用 promises 实现并发计算的一些例子：
 
-- `readFile(pathname: string, ...)`返回 `Promise<string>`： 文件被并发加载，最终Promise返回文件内容。
-- `diskSpace(folder: string)`返回 `Promise<number>`：在后台遍历文件系统目录树，计算所有文件的总大小，最终Promise返回字节数。
-- `fetch(url: string)` 返回 `Promise<Reponse>`，在后台打开URL，最终Promise返回HTTP响应对象。
-- `timeout(milliseconds: number)`返回`Promise<void>`：启动一个定时器，在指定毫秒数后完成，最终Promise返回`void`（类似于无返回值的函数）。虽然看似空Promise，但也很有用，可以在`timoeout`完成后触发计算。
+- `readFile(pathname: string, ...)`返回 `Promise<string>`： 文件被并发加载，最终 Promise 返回文件内容。
+- `diskSpace(folder: string)`返回 `Promise<number>`：在后台遍历文件系统目录树，计算所有文件的总大小，最终 Promise 返回字节数。
+- `fetch(url: string)` 返回 `Promise<Reponse>`，在后台打开 URL，最终 Promise 返回 HTTP 响应对象。
+- `timeout(milliseconds: number)`返回`Promise<void>`：启动一个定时器，在指定毫秒数后完成，最终 Promise 返回`void`（类似于无返回值的函数）。虽然看似空 Promise，但也很有用，可以在`timoeout`完成后触发计算。
 
 关键点在于，这些函数**几乎立即（ almost immediately）**返回 Promise。函数启动了一个长时间运行的计算（如加载网页或扫描文件系统），但不会等待计算完成，而是返回一个与该并发计算关联的 Promise。当计算完成时，其结果将通过 Promise 提供。
 
-Promise的一个优势是支持并发： 通过启动多个计算并收集各自的Promise，这些计算可以并行执行
+Promise 的一个优势是支持并发： 通过启动多个计算并收集各自的 Promise，这些计算可以并行执行
 
 ```ts
 const promise1 = fetch('http://www.mit.edu/');
@@ -29,10 +38,10 @@ const promise3 = fetch('http://www.tufts.edu/');
 具体来说，`Promise<T>`是一个可变值，具有三种状态：
 
 1. Pending（待定）： 关联的计算尚未完成。
-2. fulfilled（已兑现）： 计算已完成，Promise现在持有T类型的结果值
-3. rejected（已拒绝）： 计算因某些原因失败，Promise现在持有描述错误的Error对象
+2. fulfilled（已兑现）： 计算已完成，Promise 现在持有 T 类型的结果值
+3. rejected（已拒绝）： 计算因某些原因失败，Promise 现在持有描述错误的 Error 对象
 
-Promise初始状态为Pending，随后会转换为fulfilled或者rejected，但它可能永远保持pending。一旦进入了fulfilled或者rejected，就不会再改变状态（无法重置为pending）。
+Promise 初始状态为 Pending，随后会转换为 fulfilled 或者 rejected，但它可能永远保持 pending。一旦进入了 fulfilled 或者 rejected，就不会再改变状态（无法重置为 pending）。
 
 如果打印 Promise 以调试，可以看到其状态和存储的结果（若非 `pending` 状态）。例如，在 `npx ts-node` 的 TypeScript 交互环境中，可以立即打印一个 Promise 查看其 `pending` 状态：
 
@@ -83,7 +92,7 @@ const response3: Response = await promise3;
 // 此时已收到所有三个服务器的初始响应（除非某个请求失败并抛出异常）
 ```
 
-不过，更高效的方式是使用Promise.all()，来同时等待多个Promise。
+不过，更高效的方式是使用 Promise.all()，来同时等待多个 Promise。
 
 ```tsx
 async function getAllData() {
@@ -120,7 +129,7 @@ async function getBalance(): Promise<number> {
 }
 ```
 
-需要注意的是，在异步函数（`async function`）中，`return` 和 `throw` 语句的行为与同步函数类似，但它们会自动转化为对 Promise 状态的影响。`return balance`语句会使得Promise变为已完成状态；而`throw new Error(...)`会使得Promise变为已拒绝状态，并把错误对象作为拒绝原因。
+需要注意的是，在异步函数（`async function`）中，`return` 和 `throw` 语句的行为与同步函数类似，但它们会自动转化为对 Promise 状态的影响。`return balance`语句会使得 Promise 变为已完成状态；而`throw new Error(...)`会使得 Promise 变为已拒绝状态，并把错误对象作为拒绝原因。
 
 由于 `getBalance()` 是异步函数（返回 Promise），调用方必须通过适当的方式处理这个 Promise，典型方式是使用 `await`
 
@@ -199,10 +208,6 @@ async function main(): Promise<void> { ... }
 void main(); // 调用main()但不会等待它完成
 ```
 
-
-
-
-
 ## 4. 并发模型
 
 我们来更深入地了解一下 JavaScript 运行时系统是如何执行异步函数的。运行时系统指的是负责运行 JavaScript 代码、管理 JavaScript 环境等任务的解释器。（在本课程中，我们主要使用 Node 作为运行时系统，但其他运行时也存在，比如 Deno、Bun，或者你正在阅读本文的 Web 浏览器。）
@@ -260,11 +265,11 @@ async function getBalance(account: string): Promise<number> {
 
 还需要澄清的是：**“一条执行线程”** 的意思是，只有一条线程在运行我们的 TypeScript/JavaScript 代码。但 JavaScript 运行时系统在内部可能会使用其他线程，比如处理网络连接、渲染网页、读写文件系统等等。这些线程可能会使某些 promise 得到兑现（例如 `readFile()` 或 `fetch()` 返回的 promise），但等待这些 promise 的代码，只有在单一的 JavaScript 执行线程准备好时，才会恢复运行。
 
-## 5. 聚合Promises
+## 5. 聚合 Promises
 
-在运行多个并发计算时，经常需要用类似逻辑与（AND）和逻辑或（OR）的操作组合它们的Promise。
+在运行多个并发计算时，经常需要用类似逻辑与（AND）和逻辑或（OR）的操作组合它们的 Promise。
 
-`Promise.all()` 类似于逻辑AND——他把一个可迭代的Promise集合组合成单一的的Promise，这个Promise会等待所有的子Promise都完成，并返回它们的结果的数组值：
+`Promise.all()` 类似于逻辑 AND——他把一个可迭代的 Promise 集合组合成单一的的 Promise，这个 Promise 会等待所有的子 Promise 都完成，并返回它们的结果的数组值：
 
 ```ts
 const allReponses: Array<Response> = await Promise.all([
@@ -295,9 +300,7 @@ const responseOrTimeout: Response|void =
                         timeout(5000) ] ); 
 ```
 
-
-
-## 6. 永不Busy-wait
+## 6. 永不 Busy-wait
 
 我们已经看到，`Promise` 有一个观察者操作 —— `await`，它让客户端能够获取 Promise 的值（并且总是交出控制权，必要时等待 Promise 完成）。但是，没有方法可以直接查询一个 Promise 的状态（“你还在挂起吗？”），或者在不交出控制权的情况下提取其值。
 
@@ -328,8 +331,6 @@ const data: string = promise.get() // 假设性代码，get() 并不存在
 这段代码不仅会冻结程序，而且甚至达不到程序员的预期效果。因为忙等待循环从未交出控制权，这意味着我们永远无法返回到处理文件输入输出的顶层运行时系统。所以 `readFile()` 永远不会标记它的 Promise 为完成，假设的 `promise.isPending()` 方法永远不会返回 `true`，我们也永远无法退出忙等待循环。
 
 忙等待通常在并发编程中是个糟糕的做法（除了一些极少数的例外，如自旋锁），但对于 Promise 和 `async/await` 代码，它特别危险。正确的做法是，使用 `await` 来操作 Promise 的值，或者响应它从挂起到完成的状态转变。
-
-
 
 ## 7. 错误处理
 
@@ -384,7 +385,7 @@ async function getBalance(account: string): Promise<number> {
 
 你不需要使用 `Promise.reject()` 来创建一个拒绝的 Promise。只需要像使用 `return` 来使 Promise 完成一样，直接使用 `throw` 和异常对象来拒绝 Promise。
 
-## 总结
+## 本讲小结
 
 这篇阅读内容讨论了异步函数返回的 Promise。
 

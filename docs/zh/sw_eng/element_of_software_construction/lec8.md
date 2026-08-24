@@ -1,27 +1,34 @@
-# Lec 8 用接口、泛型、枚举和函数定义ADT
+---
+title: 用接口、泛型、枚举和函数定义 ADT
+course: 6.1020 软件构造基础
+course_id: '6.1020'
+lecture: 8
+kind: design
+tags: []
+status: stub
+---
+# Lec 8 用接口、泛型、枚举和函数定义 ADT
 
 本节将介绍实现抽象数据类型的各种方法，包括：
 
-- 接口： 分离ADT的接口与其实现
-- 泛型：用泛型类型参数定义一系列的ADT
-- 枚举： 定义具有一小组有限值的ADT
+- 接口： 分离 ADT 的接口与其实现
+- 泛型：用泛型类型参数定义一系列的 ADT
+- 枚举： 定义具有一小组有限值的 ADT
 - 对不透明类型操作的全局函数，在 TypeScript 中很少见，但在非面向对象语言中很常见。
 
 我们还将讨论子类型（subtyping），即由其规范确定的两种类型之间的关系，并会区分子类化（subclassing）
 
 完成今天的课程后，你应该能够： 使用类、接口、泛型和枚举定义 ADT 判断一个类型是否是另一个类型的子类型。
 
-
-
 ## 接口
 
-TypeScript的接口（interface）是一种表达抽象数据类型的机制。在TS中，接口是一个方法签名列表，这些方法没有方法体。当一个类在其 implements 子句中实现了某个接口，并为该接口的所有方法提供具体实现（方法体）时，就认为该类实现了这个接口。
+TypeScript 的接口（interface）是一种表达抽象数据类型的机制。在 TS 中，接口是一个方法签名列表，这些方法没有方法体。当一个类在其 implements 子句中实现了某个接口，并为该接口的所有方法提供具体实现（方法体）时，就认为该类实现了这个接口。
 
 因此，在 TypeScript 中定义抽象数据类型的一种方式，就是通过接口来定义该类型的规范（即方法签名），而将该类型的具体实现放在实现该接口的类中。
 
 接口可以只向客户端程序员暴露使用契约（contract），而不会暴露实现细节。客户端程序员只需阅读接口定义，就能了解该抽象数据类型的功能，无需也无法依赖其内部表示，因为接口中根本就没有这些内容（甚至连私有字段也没有）。这样，接口和实现被彻底地分离，位于不同的类中，遵循了良好的模块化设计原则。
 
-### TypeScript的接口
+### TypeScript 的接口
 
 TypeScript 的接口语法上只包含抽象数据类型的规范，即它的 公共方法签名 和 公共实例方法签名。每个方法签名都以分号结尾。
 
@@ -36,19 +43,19 @@ TypeScript 的接口语法上只包含抽象数据类型的规范，即它的 �
 > interface Curve {
 >     /** @returns true if the point (x,y) lies on this curve */
 >     contains(x: number, y: number): boolean;
-> 
+>
 >     /** @returns a curve formed by connecting this with that */
 >     join(that: Curve): ArrayCurve; /* A */
 > }
-> 
+>
 > /** Implementation of Curve. */
 > class ArrayCurve implements Curve {
 >     /** make a one-point curve */
 >     public constructor(x: number, y: number) { ... }
-> 
+>
 >     /** @returns a curve formed by connecting this with that */
 >     public join(that: Curve): ArrayCurve { ... }
-> 
+>
 >     /** @returns the total path length of this curve */
 >     public pathLength(): number { ... }
 > }
@@ -59,7 +66,7 @@ TypeScript 的接口语法上只包含抽象数据类型的规范，即它的 �
 > 以下关于 `Curve` 和 `ArrayCurve` 的论述，正确还是错误：
 >
 > 1. 有标签 A 的一行有问题，接口和类之间的相互引用了。
-> 2. 标签A的一行有问题，因为它不是表示无关性（representation independence）
+> 2. 标签 A 的一行有问题，因为它不是表示无关性（representation independence）
 
 Solution：
 
@@ -70,15 +77,15 @@ Solution：
 
 回想一下，类型（type）是一组值以及相关操作。例如，TypeScript ArrayLike 类型由一个接口定义，该接口具有长度和 [..] 索引操作。
 
-如果我们考虑所有可能的 ArrayLike 值，它们实际上都不是 ArrayLike 类型的对象：我们无法创建接口的实例。相反，这些值可能是字符串对象、数组对象，或者任何提供 ArrayLike 所需操作（即长度和 [..] 索引）的类的对象。 
+如果我们考虑所有可能的 ArrayLike 值，它们实际上都不是 ArrayLike 类型的对象：我们无法创建接口的实例。相反，这些值可能是字符串对象、数组对象，或者任何提供 ArrayLike 所需操作（即长度和 [..] 索引）的类的对象。
 
 **子类型（subtype）** 只是 父类型（supertype） 的一个子集。例如：`string` 和 `Array` 是 `ArrayLike` 的子类型。当我们说 “**B 是 A 的子类型**” 时，意思是：**每一个 B 都是一个 A**。从规格（specification）的角度看： “**每一个 B 都满足 A 的规格要求**”。
 
-只有当 **B 的规格至少和 A 一样强** 时，B 才能算作 A 的子类型。当我们声明一个实现接口的类时，TypeScript 编译器会自动强制执行部分要求：例如，它会确保 A 中的每个方法都出现在 B 中，并具有兼容的类型签名。类 B 必须实现 A 中声明的所有操作才能实现接口 A。 
+只有当 **B 的规格至少和 A 一样强** 时，B 才能算作 A 的子类型。当我们声明一个实现接口的类时，TypeScript 编译器会自动强制执行部分要求：例如，它会确保 A 中的每个方法都出现在 B 中，并具有兼容的类型签名。类 B 必须实现 A 中声明的所有操作才能实现接口 A。
 
 但是编译器无法检查我们是否在逻辑上削弱了规格：例如，让方法在某些输入上有更严格的前置条件，或者在输出上放宽了后置条件，或者削弱了接口向客户端承诺的保证。因此，当你在 TypeScript 中声明一个子类型（例如通过 `implements` 实现接口）时，你必须自己确保这个子类型的规格至少与父类型一样强
 
-### TypeScript的子类型
+### TypeScript 的子类型
 
 要声明类 B 是接口 A 的子类型，请使用 implements 语句：
 
@@ -103,15 +110,13 @@ interface ReversibleArrayLike<Element> extends ArrayLike<Element> {
 }
 ```
 
-由于 `ReversibleArrayLike` 也是一个 接口， 它并不会为 `ArrayLike` 中的操作提供任何具体实现。但它可以通过以下方式强化该类型的规格，强化已有的ArrayLike操作（比如`length`或索引访问`[i]`添加更严格的约束），或者添加新的操作。这里新增了一个reverse操作
+由于 `ReversibleArrayLike` 也是一个 接口， 它并不会为 `ArrayLike` 中的操作提供任何具体实现。但它可以通过以下方式强化该类型的规格，强化已有的 ArrayLike 操作（比如`length`或索引访问`[i]`添加更严格的约束），或者添加新的操作。这里新增了一个 reverse 操作
 
 > [!NOTE]
 >
-> TypeScript的接口可以定义非方法属性，只不过不能是private的
+> TypeScript 的接口可以定义非方法属性，只不过不能是 private 的
 
-
-
-### TypeScript的结构子类型
+### TypeScript 的结构子类型
 
 在 TypeScript 中，还有另一种方法可以将类型 B 变为类型 A 的子类型：**结构子类型（ Structural subtyping）**。使用结构子类型，B 不必在其声明中提及 A（无需 `B implements A `或 `B extends A`）。但是，如果 B 至少提供了 A 所需的所有操作——相同的公共方法和公共实例变量，并且类型兼容——那么 TypeScript 就会将 B 视为 A 的子类型。
 
@@ -127,13 +132,13 @@ class B {
 let a: A = new B(); // ✅ 合法，因为 B“看起来像”A
 ```
 
-结构子类型在TS中很方便，并且经常是必需的，但在类型安全方面存在漏洞，因为即使B的规范不兼容，他也允许B成为A的子类型（不看功能契约，只看结构契约）。举个例子， Array 和 ReadOnlyArray
+结构子类型在 TS 中很方便，并且经常是必需的，但在类型安全方面存在漏洞，因为即使 B 的规范不兼容，他也允许 B 成为 A 的子类型（不看功能契约，只看结构契约）。举个例子， Array 和 ReadOnlyArray
 
 ```ts
 const readonlyArr: ReadlyArray<number> = [1, 2, 3];
 ```
 
-`[1, 2, 3]` 是一个 普通的 `Array`，是可变的，TS允许它赋值给`ReadOnlyArray<number>`，因为`Array`包含了其所有的方法（如 map、 foreach等），只是多个变更操作（如push， pop），所以`Array`是`ReadOnlyArray`的结构子类型，你不能调用变更操作：
+`[1, 2, 3]` 是一个 普通的 `Array`，是可变的，TS 允许它赋值给`ReadOnlyArray<number>`，因为`Array`包含了其所有的方法（如 map、 foreach 等），只是多个变更操作（如 push， pop），所以`Array`是`ReadOnlyArray`的结构子类型，你不能调用变更操作：
 
 ```ts
 readonlyArr.push(5);
@@ -170,23 +175,23 @@ console.log(readonlyArr); // 打印：[1, 2, 3, 4]
 >     private side: number;
 >     // ... TODO implement setSize
 > }
-> 
+>
 > ```
 >
 > 现在你想实现一个**可变正方形类**，让它成为可变矩形的子类，重点问题是它必须实现 `setSize(width, height)`。但问题是：正方形必须保持 `width == height`。
 >
 >  看三个实现方案，并分析为什么都不符合行为子类型
 >
-> 方案1：
+> 方案 1：
 >
 > ```ts
-> 
+>
 > /** Set this square's dimensions to width x height. Requires width == height. */
 > public setSize(width: number, height: number) { ... }
-> 
+>
 > ```
 >
-> 方案2：
+> 方案 2：
 >
 > ```ts
 > /** Set this square's dimensions to width x height. Throws if width != height. */
@@ -195,24 +200,24 @@ console.log(readonlyArr); // 打印：[1, 2, 3, 4]
 > }
 > ```
 >
-> 方案3：
+> 方案 3：
 >
 > ```ts
-> /** 
+> /**
 >  * If width == height, set to width x height.
 >  * Otherwise, new dimensions are unspecified.
 >  */
 > public setSize(width: number, height: number) { ... }
-> 
+>
 > ```
 
 Solution :子类型原则（Liskov Substitution Principle）要求：一个子类型必须能够替代父类型，并不违反父类型的契约。
 
-方案1： 不合法 —— 因为它 加强了前置条件
+方案 1： 不合法 —— 因为它 加强了前置条件
 
-方案2： 不合法 —— 因为它的行为 不兼容
+方案 2： 不合法 —— 因为它的行为 不兼容
 
-方案3： 不合法 —— 因为 弱化了后置条件。 原始 `MutableRectangle.setSize()` 的语义是“设置并成功生效”，但这个子类却说“有时不一定生效”。
+方案 3： 不合法 —— 因为 弱化了后置条件。 原始 `MutableRectangle.setSize()` 的语义是“设置并成功生效”，但这个子类却说“有时不一定生效”。
 
 ## 例子： MyString
 
@@ -353,7 +358,7 @@ function makeMyString(s: string): MyString {
 }
 ```
 
-客户端在不破坏抽象屏障的情况下使用ADT
+客户端在不破坏抽象屏障的情况下使用 ADT
 
 ```ts
 const s: MyString = makeMyString("good morning");
@@ -361,8 +366,6 @@ console.log("第一个字符是：" + s.charAt(0));
 ```
 
 完全隐藏实现是一种设计权衡——有时客户端需要根据特性差异选择不同的实现方案。
-
-
 
 ## 为什么要用接口？
 
@@ -373,8 +376,6 @@ console.log("第一个字符是：" + s.charAt(0));
 - 支持“未完全确定”的规格
 - 支持多重视角
 - 支持不同可靠性的实现，有时我们为同一个接口编写多个实现，是出于“可靠性分层”的考虑。
-
-
 
 ## 继承
 
@@ -466,7 +467,7 @@ obj.charAt(0);  // ?
 
 ## 泛型
 
-TypeScript以及其他现代静态类型语言的一个有用特性是泛型类型（generic type）： 它是一种在定义时使用占位类型，而在稍后具体化的类型。Set类就是一个很好的例子。与其分别为 `Set<string>`、`Set<number>` 等编写不同的规范与实现，我们可以只设计一个通用接口 `Set<T>`，它代表了一整个“set ADT”的家族。
+TypeScript 以及其他现代静态类型语言的一个有用特性是泛型类型（generic type）： 它是一种在定义时使用占位类型，而在稍后具体化的类型。Set 类就是一个很好的例子。与其分别为 `Set<string>`、`Set<number>` 等编写不同的规范与实现，我们可以只设计一个通用接口 `Set<T>`，它代表了一整个“set ADT”的家族。
 
 按照惯例，类型参数（type parameters）首字母大写，就像接口和类的名字一样。
 
@@ -525,7 +526,6 @@ interface MySet<Element> {
 function makeMySet<Element>(): MySet<Element> { ... }
 ```
 
-
 注意：TypeScript 语法要求在函数声明中显式定义泛型参数，因此 `makeMySet` 需要在参数列表前写 `<Element>`，即：
 
 ```ts
@@ -534,9 +534,7 @@ function makeMySet<Element>()
 
 而接口中的实例方法不需要再重复 `<...>` 声明，因为类型参数已经由外层接口 `interface MySet<Element>` 声明过了。
 
-
-
-泛型不仅可以用于ADT，本身也很有用。例如，我们之前讨论过 null 合并运算符（nullish coalescing operator），它常用于断言某个值不是 `undefined`。若想将此逻辑封装成一个辅助函数，可以使用泛型：
+泛型不仅可以用于 ADT，本身也很有用。例如，我们之前讨论过 null 合并运算符（nullish coalescing operator），它常用于断言某个值不是 `undefined`。若想将此逻辑封装成一个辅助函数，可以使用泛型：
 
 ```ts
 /**
@@ -586,7 +584,7 @@ class HashSet<Element> implements MySet<Element> {
 
 ## 枚举
 
-有时候，一个ADT包含一组小而有限、不可变的值，例如：
+有时候，一个 ADT 包含一组小而有限、不可变的值，例如：
 
 - 一年中的月份：January、February、…
 - 一周中的天数：Monday、Tuesday、…
@@ -637,9 +635,7 @@ enum Direction {
 }
 ```
 
-
-
-## Getter和Setter
+## Getter 和 Setter
 
 我们经常会有一些观察者操作（observer operation），它们不需要参数，比如下面这个 `MyString` 接口中的例子：
 
@@ -671,7 +667,7 @@ interface MyString {
 
 但是，这样做会不会牺牲表示无关性？换句话说，会不会迫使我们在 `MyString` 的实现中必须有一个公开的实例变量 `length`？
 
-在支持getter 方法的语言（比如 TypeScript）中，答案是不会。我们可以用关键字 `get` 来定义一个 getter 方法，这个方法会在客户端读取该属性时被自动调用：
+在支持 getter 方法的语言（比如 TypeScript）中，答案是不会。我们可以用关键字 `get` 来定义一个 getter 方法，这个方法会在客户端读取该属性时被自动调用：
 
 ```ts
 class FastMyString implements MyString {
@@ -702,11 +698,9 @@ class SimpleMyString implements MyString {
 
 `setter` 方法可以执行一切必要的操作，以确保重新赋值后对象的内部表示仍然保持一致，甚至可以在客户端赋了不合法的值时**抛出异常**。
 
+## 非 OPP 语言的 ADT
 
-
-## 非OPP语言的ADT
-
-定义ADT的另一种方式是：把它看作是一组可以全局访问的函数，这些函数操作一个不透明的数据类型。这种模式在 TypeScript、Python 等面向对象语言（OOP）中很少见，但在像 C 这样的早期编程语言中却很常见。
+定义 ADT 的另一种方式是：把它看作是一组可以全局访问的函数，这些函数操作一个不透明的数据类型。这种模式在 TypeScript、Python 等面向对象语言（OOP）中很少见，但在像 C 这样的早期编程语言中却很常见。
 
 下面是一个 C 语言中文件 I/O 的例子：
 
@@ -723,11 +717,9 @@ fclose(f);                       // 关闭文件
 
 客户端无法查看 `FILE` 的内部结构； 使用文件的唯一方式就是通过该类型提供的函数来操作它。
 
-这个故事告诉我们， ADT的概念不依赖于特定语言特性，数据抽象是强大的设计模式，在软件工程中无处不在。
+这个故事告诉我们， ADT 的概念不依赖于特定语言特性，数据抽象是强大的设计模式，在软件工程中无处不在。
 
-
-
-## TypeScript的ADT
+## TypeScript 的 ADT
 
 我们现在已经完成了 TypeScript 工具箱中关于 ADT 的概念总结，本次阅读的新概念在下面用黄色标出。
 
@@ -749,7 +741,7 @@ fclose(f);                       // 关闭文件
 |              | Setter                     |                          |
 | 表示         | 私有字段                   |                          |
 
-## 总结
+## 本讲小结
 
 TypeScript 接口帮助我们将抽象数据类型的概念形式化，把它定义为一组必须被类型支持的操作。
 

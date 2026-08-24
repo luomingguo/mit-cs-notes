@@ -1,6 +1,13 @@
+---
+title: 整除性
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 8
+kind: theory
+tags: []
+status: complete
+---
 # Lec 8 整除性
-
-
 
 ## 一、数论
 
@@ -20,14 +27,10 @@
 
 不过这些就暂且不谈。
 
-
-
 数论中有很多问题非常容易描述，但极其难以解决，例如：
 
 - 哥德巴赫猜想（Goldbach’s conjecture）
 - 双素数猜想（Twin Prime conjecture）
-
-
 
 说到 Hardy，还有一个他和 Ramanujan 的趣事：
 
@@ -42,17 +45,13 @@ $1729 = 1^3 + 12^3 = 9^3 + 10^3$
 
 > 数论几乎和一切都有联系。
 
-
-
-
-
 ## 二、整除性
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong> Definition1 </strong> 若存在整数 k 使得 ak = b， 则称 a 整除 b（<i>a divides b</i>） ， 记作 a | b 
-<br/>等价说法：b 是 a 的倍数（<i>multiple</i>），a 是 b 的因子（<i>divisor</i>）。
-</div>
+::: definition
+若存在整数 k 使得 ak = b， 则称 a 整除 b（*a divides b*） ， 记作 a | b
 
-
+等价说法：b 是 a 的倍数（*multiple*），a 是 b 的因子（*divisor*）。
+:::
 
 **例：** $3 \mid 12$，$-5 \mid 100$，$n \mid n$，特别地情况， $0 \mid 0$。
 
@@ -65,11 +64,11 @@ $1729 = 1^3 + 12^3 = 9^3 + 10^3$
 | $a \mid b$ 且 $a \mid c \implies a \mid (b+c)$               | 整除对加法封闭                  |
 | $a \mid b$ 且 $a \mid c \implies a \mid (sb + tc),\; \forall s,t \in \mathbb{Z}$ | 整除对整数线性组合（*ILC*）封闭 |
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong> Definition2 </strong> 整数线性组合（<i>integer linear combination, ILC</i>） </div>
+::: definition
+整数线性组合（*integer linear combination, ILC*）
+:::
 
 $b$ 和 $c$ 的**整数线性组合**（*integer linear combination*, ILC）是形如 $sb + tc$（$s, t \in \mathbb{Z}$）的整数。
-
-
 
 ## 2. 引例：水壶问题
 
@@ -128,7 +127,7 @@ $b$ 和 $c$ 的**整数线性组合**（*integer linear combination*, ILC）是�
 
 **示例：** $\gcd(1001, 777)$：
 
-```
+```text
 gcd(1001, 777) = gcd(777, 224)   [q=1]
                = gcd(224, 105)   [q=3]
                = gcd(105, 14)    [q=2]

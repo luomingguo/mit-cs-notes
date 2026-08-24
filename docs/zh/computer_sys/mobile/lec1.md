@@ -1,4 +1,13 @@
-# Lec 1 — 课程介绍与核心思想
+---
+title: 课程介绍与核心思想
+course: 6.1820 移动和传感器计算
+course_id: '6.1820'
+lecture: 1
+kind: system
+tags: []
+status: complete
+---
+# Lec 1 课程介绍与核心思想
 > MIT 6.1820/MAS.453 · Mobile and Sensor Computing (IoT Systems)
 
 ## 1. 课程定位
@@ -12,14 +21,18 @@
 
 ## 2. 什么是物联网？
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 物联网（<em>Internet of Things, IoT</em>）</strong><br>微型传感、计算与通信技术的融合，使系统能够：<br>
-<ul>
-<li>从环境中<strong>采集（Sense）</strong>数据</li>
-<li>在设备本地<strong>预处理（Edge Computing）</strong></li>
-<li>将数据上传至<strong>云端（Cloud）</strong></li>
-<li>从数据中提取洞见并对环境<strong>施加控制（Actuate）</strong></li>
-</ul>
-</div>
+::: definition
+**定义 — 物联网（*Internet of Things, IoT*）**
+微型传感、计算与通信技术的融合，使系统能够：
+
+- 从环境中**采集（Sense）**数据
+
+- 在设备本地**预处理（Edge Computing）**
+
+- 将数据上传至**云端（Cloud）**
+
+- 从数据中提取洞见并对环境**施加控制（Actuate）**
+:::
 
 ---
 
@@ -27,7 +40,7 @@
 
 IoT 系统围绕以下四个维度展开设计：
 
-```
+```text
                 ┌──────────────────────────────┐
                 │    Sensing Tasks & Modalities │  ← WHAT to sense, HOW
                 │    Computation               │  ← HOW to process
@@ -69,7 +82,10 @@ $$\text{设计空间} = f(\text{通信距离},\ \text{数据速率},\ \text{电�
 
 ### 3.4 能源（*Power/Energy*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 能量收集（<em>Energy Harvesting</em>）</strong><br>从环境中获取能量（太阳能、振动、人体活动、RF 辐射等），实现无需更换电池的长期部署。</div>
+::: definition
+**定义 — 能量收集（*Energy Harvesting*）**
+从环境中获取能量（太阳能、振动、人体活动、RF 辐射等），实现无需更换电池的长期部署。
+:::
 
 供电方式：① 电网供电  ② 可充电/一次性电池  ③ 能量收集（太阳能、无线能量传输等）
 
@@ -88,7 +104,9 @@ $$\text{设计空间} = f(\text{通信距离},\ \text{数据速率},\ \text{电�
 | 精准农业系统 | 端到端 IoT 农业应用 |
 | 水下 IoT | 海洋物联网 |
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 自动驾驶（<em>Self-Driving Cars</em>）在雾天的挑战</strong></div>
+::: example
+**例题 — 自动驾驶（*Self-Driving Cars*）在雾天的挑战**
+:::
 
 摄像头在雾天失效；毫米波雷达（*Millimeter-Wave Radar*）不受天气影响，但传统雷达分辨率低。Hawkeye 系统利用 AI 将雷达点云转化为高分辨率图像，实现恶劣天气下的感知。
 
@@ -113,6 +131,6 @@ $$\text{设计空间} = f(\text{通信距离},\ \text{数据速率},\ \text{电�
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 > **IoT = 传感 + 计算 + 连接 + 能源**，四个维度的协同设计决定系统的可行性与效果。感知是物理世界与数字世界之间的桥梁。

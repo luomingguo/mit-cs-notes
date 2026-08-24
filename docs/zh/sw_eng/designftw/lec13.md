@@ -1,10 +1,15 @@
-# Lec 13 统一Web设计
+---
+title: 统一 Web 设计
+course: 6.4500 Web设计：语言和用户接口
+course_id: '6.4500'
+lecture: 13
+kind: design
+tags: []
+status: stub
+---
+# Lec 13 统一 Web 设计
 
-Web 
-
-
-
-
+Web
 
 ## 包容性设计
 

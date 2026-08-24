@@ -1,4 +1,13 @@
-# Lec 2 — 物联网定位基础（*Fundamentals of IoT Localization*）
+---
+title: 物联网定位基础（Fundamentals of IoT Localization）
+course: 6.1820 移动和传感器计算
+course_id: '6.1820'
+lecture: 2
+kind: system
+tags: []
+status: complete
+---
+# Lec 2 物联网定位基础（*Fundamentals of IoT Localization*）
 > MIT 6.1820/MAS.453 · Mobile and Sensor Computing
 
 ## 1. 课程目标
@@ -13,8 +22,11 @@
 
 ## 2. 为什么需要定位？
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 无线定位（<em>Wireless Positioning / Localization</em>）</strong><br>
-利用无线信号获取人或物体位置的过程。</div>
+::: definition
+**定义 — 无线定位（*Wireless Positioning / Localization*）**
+
+利用无线信号获取人或物体位置的过程。
+:::
 
 **应用场景**：
 - 室内外导航（博物馆、商场导览）
@@ -34,9 +46,15 @@
 
 ## 3. 定位模式分类
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 基于设备定位（<em>Device-based Localization</em>）</strong><br>设备本身利用来自锚点（<em>Anchor</em>）的信号，自行计算位置。例：GPS 接收机。</div>
+::: definition
+**定义 — 基于设备定位（*Device-based Localization*）**
+设备本身利用来自锚点（*Anchor*）的信号，自行计算位置。例：GPS 接收机。
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 基于网络定位（<em>Network-based Localization</em>）</strong><br>锚点/接入点利用设备发出的信号，在网络侧计算设备位置。例：雷达、蜂窝基站定位。</div>
+::: definition
+**定义 — 基于网络定位（*Network-based Localization*）**
+锚点/接入点利用设备发出的信号，在网络侧计算设备位置。例：雷达、蜂窝基站定位。
+:::
 
 ---
 
@@ -46,7 +64,9 @@
 
 **思路**：已知各锚点位置，信号来自哪个锚点，设备就在哪个位置附近。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题</strong>　战时驾车记录（<em>War-driving</em>）</div>
+::: example 例题
+战时驾车记录（*War-driving*）
+:::
 
 扫描周边 Wi-Fi 接入点 ID，对应已知位置数据库，即可粗略定位。A-GPS 也利用此原理加速首次定位。
 
@@ -64,7 +84,9 @@ $$P_r \propto \frac{1}{d^2}$$
 
 $$d = \sqrt{\frac{P_t \cdot G_t \cdot G_r \cdot \lambda^2}{(4\pi)^2 \cdot P_r}}$$
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论</strong>　RSSI 三边测量精度局限：远距离时功率对距离的变化极小，微小功率测量误差造成巨大距离偏差。</div>
+::: theorem 推论
+RSSI 三边测量精度局限：远距离时功率对距离的变化极小，微小功率测量误差造成巨大距离偏差。
+:::
 
 **核心问题：多径（*Multipath*）**  
 无线信号经墙壁、家具反射，产生相长/相消干涉（*Constructive/Destructive Interference*），导致 RSSI 波动。
@@ -137,7 +159,7 @@ $$d_1 - d_2 = \Delta t_{12} \times c \quad \Rightarrow \quad \text{双曲线}$$
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 $$\text{定位精度：身份匹配} < \text{RSSI} < \text{ToF/TDoA} < \text{相位/AoA（融合）}$$
 

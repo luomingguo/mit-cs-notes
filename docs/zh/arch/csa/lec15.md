@@ -1,4 +1,13 @@
-# L15：片上网络（一）：拓扑与流量控制（*On-Chip Networks I: Topology / Flow Control*）
+---
+title: '片上网络（一）：拓扑与流量控制（On-Chip Networks I: Topology / Flow Control）'
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 15
+kind: system
+tags: []
+status: complete
+---
+# Lec 15 片上网络（一）：拓扑与流量控制（*On-Chip Networks I: Topology / Flow Control*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez
 > 主题：互连网络架构、拓扑（*topology*）及其度量、流量控制（*flow control*）协议
@@ -147,7 +156,7 @@
 
 ---
 
-## 小结
+## 本讲小结
 
 - 片上网络的设计分**拓扑、路由、流量控制、路由器/链路微架构**五个层面；
 - 拓扑用**直径、平均距离、对分带宽**度量，线性阵列/环/多维网格与环面是基础结构；

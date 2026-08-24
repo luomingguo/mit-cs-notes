@@ -1,3 +1,12 @@
+---
+title: '动画 & 反馈'
+course: 6.4500 Web设计：语言和用户接口
+course_id: '6.4500'
+lecture: 22
+kind: design
+tags: []
+status: complete
+---
 # Lec 22 动画 & 反馈
 
 本节主题关于
@@ -6,10 +15,6 @@
 - 实现方式
 - 可访问性
 
-
-
-
-
 ## 理解动作
 
 一个良好的动作效果设计可以传达如下信息：
@@ -17,8 +22,6 @@
 - 各个元素之间有什么关系？
 - 可以进行哪些操作？
 - 我的操作导致了什么后果
-
-
 
 说到元素之间的关系，动效设计可以用来传达层级结构（hierarchy）。在这里，动画体现了父元素（如收件箱 inbox）与子元素（收件箱中的邮件 inbox message）之间的层级关系。
 
@@ -30,8 +33,6 @@ https://designftw.mit.edu/lectures/animation/videos/hierarchy-parentchild.mp4
 
 当动画元素对键盘输入做出响应时，它可以通过反馈来表明该操作是否成功。“摇头（shaking head）”是一种隐喻，用来表达“否定”或“操作失败”的含义。
 
-
-
 ![image-20260509173631280](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260509173631280.png)
 
 **占位**
@@ -39,10 +40,6 @@ https://designftw.mit.edu/lectures/animation/videos/hierarchy-parentchild.mp4
 动画列表项作为占位符，用来表示内容正在加载中
 
 ![image-20260509173809850](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260509173809850.png)
-
-
-
-
 
 > [!IMPORTANT]
 >
@@ -80,25 +77,17 @@ https://designftw.mit.edu/lectures/animation/videos/hierarchy-parentchild.mp4
 
 当然，还有另一种解决方案：可以将该链接始终固定在页面中的某个位置，这样可以避免动画可能打断用户浏览商品这一任务的注意力。
 
-
-
-
-
 ### 选择合适的动画
 
 较慢的过渡动画：更不容易引起注意力转移，也更不容易造成干扰。适用于那些由用户间接触发，或并非由用户主动发起的动画。
 
 较快的动画： 在用户注意力不在该区域时，更容易吸引注意力。适用于那些重要的元素，需要用户关注并采取行动的情况。
 
-
-
-要考虑当前情境以及用户的情绪。 
+要考虑当前情境以及用户的情绪。
 
 下面是来自 Mac 代码编辑器 Espresso 的一个例子：当使用“跳转到某一行（Go to line…）”功能时，在编辑器实际滚动到目标行之前，会先播放一个弹出窗口消失的动画。这个动画并没有传达任何信息，本质上只是装饰性的。
 
 虽然这种动画在某些情况下可能会让人感到愉悦，但在调试场景中，用户通常已经处于挫折状态，并且目标导向非常强。他们没有时间去“欣赏设计”，而是希望尽快完成任务、继续前进。随着需要查找的行数增加，用户对这种无意义动画的容忍度会进一步下降。
-
-
 
 ---
 
@@ -106,18 +95,10 @@ https://designftw.mit.edu/lectures/animation/videos/hierarchy-parentchild.mp4
 
 [图标内的动感](https://designftw.mit.edu/lectures/animation/videos/icons-owl.mp4)
 
-
-
 [Newton Running](https://designftw.mit.edu/lectures/animation/videos/Menu-SlowRepeatedAnimation.mp4 )的主菜单是在一段较长的动画序列结束时才被展示出来的，而当用户选择某个选项后，这段动画还会再倒放一遍。
 
 因此，每当用户想要使用主菜单时，都必须再次经历完整的动画过程。这种多余的、没有实际目的的动画会降低用户继续与网站交互的意愿，因为它无谓地浪费了本可以用来浏览实际内容的宝贵时间。
 
-
-
 这个故事告诉我们： 不要妨碍用户。要考虑在一次典型访问中某个操作的出现频率， 对于高频使用的动画，应尽量保持非常简短。
-
-
-
-
 
 ## 实现

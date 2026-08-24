@@ -1,11 +1,23 @@
+---
+title: 分支预测
+course: 6.1920 建构式计算机架构，CCA
+course_id: '6.1920'
+lecture: 8
+kind: system
+tags: []
+status: complete
+---
 # Lec 8 分支预测
 > MIT 6.1920 · Constructive Computer Architecture
 > 讲师：Thomas Bourgeat / Arvind · 日期：2024-03-19
 
 ## 1. 分支指令频率与代价
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 控制流惩罚（<em>Control Flow Penalty</em>）</strong><br>
-处理器在 Execute 阶段才能确定分支目标，而 Fetch 阶段每周期都必须提供下一条指令地址。若流水线有 $D$ 级在 Execute 之前，每次预测失败将白白执行 $D$ 条错误路径指令，造成 $D$ 周期惩罚。</div>
+::: definition
+**定义 — 控制流惩罚（*Control Flow Penalty*）**
+
+处理器在 Execute 阶段才能确定分支目标，而 Fetch 阶段每周期都必须提供下一条指令地址。若流水线有 $D$ 级在 Execute 之前，每次预测失败将白白执行 $D$ 条错误路径指令，造成 $D$ 周期惩罚。
+:::
 
 统计数据（Blem et al.，SPEC INT/FP 2006）：
 - ARM Cortex-A7 整数负载：每 12 条指令中有 1 条分支
@@ -26,8 +38,11 @@
 
 ## 3. 分支目标缓冲区（*Branch Target Buffer, BTB*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — BTB（<em>Branch Target Buffer</em>）</strong><br>
-BTB 是一个小型缓存，记录历史上发生过跳转的指令的（PC → 目标 PC）映射。Fetch 阶段查询 BTB，若命中则用预测目标地址替代 PC+4；命中率很高，即使容量很小（因常跳转的指令反复被预测）。</div>
+::: definition
+**定义 — BTB（*Branch Target Buffer*）**
+
+BTB 是一个小型缓存，记录历史上发生过跳转的指令的（PC → 目标 PC）映射。Fetch 阶段查询 BTB，若命中则用预测目标地址替代 PC+4；命中率很高，即使容量很小（因常跳转的指令反复被预测）。
+:::
 
 BSV 接口：
 
@@ -55,8 +70,11 @@ endmodule
 
 ## 4. 方向预测：分支历史表（*Branch History Table, BHT*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — BHT（<em>Branch History Table</em>）</strong><br>
-BHT 是一个大型表（4K 项），每项存 2 位饱和计数器（<em>saturating counter</em>），记录该分支历史上更多 taken（≥10）还是 not-taken（≤01）。BHT 在 Decode 阶段使用（指令类型已知），可将预测准确率提高到 80–90%。</div>
+::: definition
+**定义 — BHT（*Branch History Table*）**
+
+BHT 是一个大型表（4K 项），每项存 2 位饱和计数器（*saturating counter*），记录该分支历史上更多 taken（≥10）还是 not-taken（≤01）。BHT 在 Decode 阶段使用（指令类型已知），可将预测准确率提高到 80–90%。
+:::
 
 **2 位饱和计数器状态机**：
 
@@ -64,7 +82,9 @@ $$\text{强不跳}(00) \leftrightarrow \text{弱不跳}(01) \leftrightarrow \tex
 
 - 连续两次 not-taken 才从"弱跳"改为"不跳"（迟滞性 *hysteresis* 减少误翻转）
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 1 位 vs. 2 位预测器循环分析</strong></div>
+::: example 例题 — 1 位 vs. 2 位预测器循环分析
+
+:::
 
 循环分支：99 次 taken，1 次 not-taken，再循环。
 
@@ -98,8 +118,11 @@ else // 正常指令，咨询 BHT
 
 ## 6. 返回地址栈（*Return Address Stack, RAS*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — RAS（<em>Return Address Stack</em>）</strong><br>
-JALR 用于函数返回时，其目标是运行时才确定的调用点地址，BTB 难以预测（同一函数被多处调用）。RAS 是一个硬件小栈：调用函数时 push PC+4，返回（JALR）时 pop 预测目标，准确率极高。</div>
+::: definition
+**定义 — RAS（*Return Address Stack*）**
+
+JALR 用于函数返回时，其目标是运行时才确定的调用点地址，BTB 难以预测（同一函数被多处调用）。RAS 是一个硬件小栈：调用函数时 push PC+4，返回（JALR）时 pop 预测目标，准确率极高。
+:::
 
 ---
 
@@ -111,10 +134,12 @@ $$\text{BHT 索引} = \text{PC}[k:0] \oplus \text{GHR}[N-1:0]$$
 
 Pentium Pro 用最近 2 条分支历史，准确率约 95%。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 分支预测的本质</strong>　分支预测本质上是「记住过去」：识别（PC, 上下文历史）组合，这足以预测绝大多数分支。不可预测分支（如密码学中的数据驱动跳转）仍是安全漏洞的来源（Spectre 攻击）。</div>
+::: theorem 推论 — 分支预测的本质
+分支预测本质上是「记住过去」：识别（PC, 上下文历史）组合，这足以预测绝大多数分支。不可预测分支（如密码学中的数据驱动跳转）仍是安全漏洞的来源（Spectre 攻击）。
+:::
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 BTB 在 Fetch 阶段提供目标地址预测；BHT 在 Decode 阶段提供方向预测；双纪元机制保证多预测器的重定向优先级正确；RAS 专门优化函数返回；两级预测器利用历史相关性进一步提升精度。现代处理器通常组合三种以上预测器，总体准确率超过 97%。

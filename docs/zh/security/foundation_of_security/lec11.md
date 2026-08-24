@@ -1,4 +1,13 @@
-# Lec 11 — 加密的实际应用（Encryption in Practice）
+---
+title: 加密的实际应用（Encryption in Practice）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 11
+kind: theory
+tags: []
+status: complete
+---
+# Lec 11 加密的实际应用（Encryption in Practice）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 文件加密
@@ -60,7 +69,7 @@ $$\text{Client} \xrightarrow{\text{TLS 1.3}} \text{(攻击者改成 REJECT)} \xr
 
 ### 2.3 TLS 握手（简化）
 
-```
+```text
 Client                          Server
   |                               |
   |-- ClientHello(nonce, g^a) --->|

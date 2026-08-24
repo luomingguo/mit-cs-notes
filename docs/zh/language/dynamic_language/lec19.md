@@ -1,4 +1,13 @@
-# L19：优化（Optimizations）——暴露 IR、类型/值分析、栈缓存与寄存器分配
+---
+title: 优化（Optimizations）——暴露 IR、类型/值分析、栈缓存与寄存器分配
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+lecture: 19
+kind: theory
+tags: []
+status: complete
+---
+# Lec 19 优化（Optimizations）——暴露 IR、类型/值分析、栈缓存与寄存器分配
 
 > 本讲是 Phase 5 的核心方法论。主线：把高层指令**拆开 (expose)** 成更细的 IR 操作，让**类型分析**和**值分析（常量传播）**有机会删掉冗余的类型检查与常量加载；再用**栈缓存 / 寄存器分配**把临时值从内存搬到寄存器。贯穿全程的一句话：**IR 是把分析推断出的信息编码进表示的统一载体。**
 
@@ -8,23 +17,25 @@
 
 回顾 L18 那个塌缩成 9 条指令的减法例子。今天讲它**怎么**被优化出来。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（本讲涉及的分析/优化）</strong>
-<ul>
-<li><strong>类型分析 (Type Analysis)</strong>（今日）：尽可能静态确定操作数的<strong>类型</strong>；</li>
-<li><strong>形状分析 (Shape Analysis)</strong>：尽可能确定操作数的<strong>形状</strong>（如 record <code>{a:1,b:2}</code> 的字段集合 <code>{a,b}</code>）；</li>
-<li><strong>值分析 (Value Analysis)</strong>（今日）：尽可能确定操作数的<strong>值</strong>；</li>
-<li><strong>寄存器分配 — 依赖与活跃性分析</strong>：栈缓存（今日）→ 一般寄存器分配（L21–L22）。</li>
-</ul>
-</div>
+::: definition 定义（本讲涉及的分析/优化）
+- **类型分析 (Type Analysis)**（今日）：尽可能静态确定操作数的**类型**；
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（四条 takeaway）</strong>
-<ol>
-<li>关于程序可<strong>推断</strong>的信息很多，都能拿来优化；</li>
-<li><strong>IR 是把这些信息编码进表示</strong>的方式；</li>
-<li>从<strong>变换后的程序</strong>直接解释/代码生成，而不是另外携带辅助信息；</li>
-<li>优化之间会<strong>相互作用、可能要跑多轮</strong>——IR 提供统一编码使之可迭代。</li>
-</ol>
-</div>
+- **形状分析 (Shape Analysis)**：尽可能确定操作数的**形状**（如 record `{a:1,b:2}` 的字段集合 `{a,b}`）；
+
+- **值分析 (Value Analysis)**（今日）：尽可能确定操作数的**值**；
+
+- **寄存器分配 — 依赖与活跃性分析**：栈缓存（今日）→ 一般寄存器分配（L21–L22）。
+:::
+
+::: theorem 定理（四条 takeaway）
+- 关于程序可**推断**的信息很多，都能拿来优化；
+
+- **IR 是把这些信息编码进表示**的方式；
+
+- 从**变换后的程序**直接解释/代码生成，而不是另外携带辅助信息；
+
+- 优化之间会**相互作用、可能要跑多轮**——IR 提供统一编码使之可迭代。
+:::
 
 ---
 
@@ -49,21 +60,25 @@ Integer* sub(Frame *f) {
 
 ## 3. 暴露 IR：新增类型与指令
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（IR 扩展，示意）</strong>
-<strong>新类型</strong>：<code>int32</code>——原始（拆箱）整数，区别于堆上装箱的 <code>Integer</code>。<br>
-<strong>新指令</strong>（把 sub 拆开）：
-<ul>
-<li><code>assert_integer</code>：弹出参数，检查是否整数，成功则放回；否则失败（exit/异常）；</li>
-<li><code>get_integer</code>：弹出 Integer，压回其 int32 值；<strong>不检查类型</strong>，非 int32 行为未定义；</li>
-<li><code>sub_int32</code>：弹出两个 int32，相减后把 <strong>Integer</strong> 结果压回；不检查类型；</li>
-<li>（后续）<code>get_integer &lt;constant&gt;</code>：直接压入某常量的 int32 值；</li>
-<li>（后续）<code>sub_int32_const &lt;constant&gt;</code>：弹一个 int32，与常量相减、压回 Integer。</li>
-</ul>
-</div>
+::: definition 定义（IR 扩展，示意）
+**新类型**：`int32`——原始（拆箱）整数，区别于堆上装箱的 `Integer`。
+
+**新指令**（把 sub 拆开）：
+
+- `assert_integer`：弹出参数，检查是否整数，成功则放回；否则失败（exit/异常）；
+
+- `get_integer`：弹出 Integer，压回其 int32 值；**不检查类型**，非 int32 行为未定义；
+
+- `sub_int32`：弹出两个 int32，相减后把 **Integer** 结果压回；不检查类型；
+
+- （后续）`get_integer &lt;constant&gt;`：直接压入某常量的 int32 值；
+
+- （后续）`sub_int32_const &lt;constant&gt;`：弹一个 int32，与常量相减、压回 Integer。
+:::
 
 把 `sub` 拆成 `assert_integer; get_integer; ...; sub_int32` 后，原来一条 `sub` 变成一串：
 
-```
+```text
 load_local 0
 assert_integer
 get_integer
@@ -86,10 +101,11 @@ return
 
 ## 4. 类型分析（Type Analysis）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（类型分析）</strong>
-一种<strong>静态分析</strong>，用来静态地推理类型。<br>
-<strong>核心思想：静态地模拟程序执行</strong>，维护一个"抽象操作数栈"，记录每个栈位上<strong>已知什么、不知什么</strong>。
-</div>
+::: definition 定义（类型分析）
+一种**静态分析**，用来静态地推理类型。
+
+**核心思想：静态地模拟程序执行**，维护一个"抽象操作数栈"，记录每个栈位上**已知什么、不知什么**。
+:::
 
 对上面的指令序列，抽象解释抽象栈的演变（栈格 = 类型而非值）：
 
@@ -104,13 +120,13 @@ return
 | `sub_int32` | `[Integer]` | 结果装箱 |
 | `return` | `[]` | |
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（类型分析的收益）</strong>
-当抽象栈表明某操作数<strong>类型已知为 Integer</strong> 时，其上的 <code>assert_integer</code> 是冗余的，可替换为 <code>nop</code>（随后删除）。常量永远类型已知，所以对常量的类型检查总能去掉。
-</div>
+::: theorem 定理（类型分析的收益）
+当抽象栈表明某操作数**类型已知为 Integer** 时，其上的 `assert_integer` 是冗余的，可替换为 `nop`（随后删除）。常量永远类型已知，所以对常量的类型检查总能去掉。
+:::
 
 去掉对常量的 `assert_integer` 后：
 
-```
+```text
 load_local 0
 assert_integer    # y 仍需检查（来自参数，类型未知）
 get_integer
@@ -143,10 +159,11 @@ pop %rax
 
 ## 5. 值分析 / 常量传播（Value Analysis / Constant Propagation）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（值分析）</strong>
-静态推理<strong>值</strong>的分析。思想同类型分析：静态模拟执行，跟踪哪些值已知、哪些未知。<br>
-<strong>精度有多档</strong>：精确值 / 符号（正负零）/ 区间（range）。
-</div>
+::: definition 定义（值分析）
+静态推理**值**的分析。思想同类型分析：静态模拟执行，跟踪哪些值已知、哪些未知。
+
+**精度有多档**：精确值 / 符号（正负零）/ 区间（range）。
+:::
 
 常量 `2` 的值编译期就知道——**何必运行时 `load_const` 再 `get_integer`？** 抽象栈跟踪到栈顶是常量 `2` 时：
 
@@ -155,7 +172,7 @@ pop %rax
 
 结果：
 
-```
+```text
 load_local 0
 assert_integer
 get_integer
@@ -168,7 +185,7 @@ return
 
 `get_integer 2` 紧接 `sub_int32`，可融合成带常量操作数的指令：
 
-```
+```text
 load_local 0
 assert_integer
 get_integer
@@ -204,12 +221,13 @@ pop %rax
 
 ## 6. 机器与存储层级（为什么要用寄存器）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（CPU/系统组成）</strong>
+::: definition 定义（CPU/系统组成）
 内存 (Memory)、寄存器 (Registers)、算术逻辑单元 (ALU)、控制 (Control)。
-</div>
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（存储层级 Memory Hierarchy）</strong>
+::: definition 定义（存储层级 Memory Hierarchy）
 用多种存储取长补短：越靠近 CPU 越快越小。
+
 <table>
 <tr><th>层级</th><th>容量</th><th>延迟</th></tr>
 <tr><td>寄存器</td><td>256B–8KB</td><td>0.25–1 ns</td></tr>
@@ -219,7 +237,7 @@ pop %rax
 <tr><td>硬盘</td><td>500GB+</td><td>3–10 ms</td></tr>
 <tr><td>网络</td><td>巨大</td><td>10–2000 ms</td></tr>
 </table>
-</div>
+:::
 
 > 寄存器比主存快约**两个数量级**。上面机器码里满是 push/pop（访问内存栈），把这些临时值放进寄存器就是下一步优化。
 
@@ -227,17 +245,19 @@ pop %rax
 
 ## 7. 栈缓存（Stack Caching）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（栈缓存）</strong>
-一种<strong>简单形式的寄存器分配</strong>。思想：临时值不放（内存）栈，而<strong>给每个栈位固定指定一个寄存器</strong>。<br>
-价值：操作栈贵、寄存器便宜（内存访问即便有好缓存行为也慢）。<br>
+::: definition 定义（栈缓存）
+一种**简单形式的寄存器分配**。思想：临时值不放（内存）栈，而**给每个栈位固定指定一个寄存器**。
+
+价值：操作栈贵、寄存器便宜（内存访问即便有好缓存行为也慢）。
+
 挑战：必须生成不同的代码并管理寄存器。
-</div>
+:::
 
 ### 7.1 IR 进化为寄存器形式
 
 把"操作数栈位置"显式写成寄存器/三地址码：抽象栈每个位置映射到一个固定寄存器（如栈底位 → `r13`）。指令变成 `dst = op args`：
 
-```
+```text
 r13 = load_local 0
 r13 = assert_integer r13
 r13 = get_integer r13
@@ -263,31 +283,33 @@ pop %r13
 
 ## 8. 一般寄存器分配（Register Allocation）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（寄存器分配，作为约束优化问题）</strong>
-<ul>
-<li>给程序中每个值<strong>命名</strong>（虚拟寄存器 / 临时值 t1, t2, …）；</li>
-<li>收集<strong>约束</strong>：
-  <ul>
-  <li><strong>同时活跃</strong>的值必须放<strong>不同寄存器</strong>；</li>
-  <li>某些值必须在<strong>特定寄存器</strong>（如返回值在 <code>rax</code>）；</li>
-  <li>可用寄存器<strong>总数有限</strong>。</li>
-  </ul>
-</li>
-<li><strong>求解优化问题</strong>：在约束下找最佳性能的"名字→寄存器"分配；放不下的值<strong>溢出 (spill)</strong> 到内存。</li>
-</ul>
-价值：和栈缓存一样但<strong>通用得多</strong>，原则上能编码任意约束与目标。<br>
-挑战：一般情况下<strong>NP 完全</strong>，需启发式。
-</div>
+::: definition 定义（寄存器分配，作为约束优化问题）
+- 给程序中每个值**命名**（虚拟寄存器 / 临时值 t1, t2, …）；
+
+- 收集**约束**：
+
+- **同时活跃**的值必须放**不同寄存器**；
+
+- 某些值必须在**特定寄存器**（如返回值在 `rax`）；
+
+- 可用寄存器**总数有限**。
+
+- **求解优化问题**：在约束下找最佳性能的"名字→寄存器"分配；放不下的值**溢出 (spill)** 到内存。
+
+价值：和栈缓存一样但**通用得多**，原则上能编码任意约束与目标。
+
+挑战：一般情况下**NP 完全**，需启发式。
+:::
 
 ### 8.1 IR：三地址码 / RTL，引入虚拟寄存器
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（IR 操作数三类）</strong>
-常量（1,2,…）、<strong>真实寄存器</strong>（r1,r2,… 受 ISA 限制有限）、<strong>虚拟寄存器/临时值</strong>（t1,t2,… 无限多）。指令是简单的<strong>三地址码 (three-address code)</strong> / 寄存器转移语言 (RTL)：<code>&lt;reg&gt; = op &lt;operand&gt; &lt;operand&gt;</code>。
-</div>
+::: definition 定义（IR 操作数三类）
+常量（1,2,…）、**真实寄存器**（r1,r2,… 受 ISA 限制有限）、**虚拟寄存器/临时值**（t1,t2,… 无限多）。指令是简单的**三地址码 (three-address code)** / 寄存器转移语言 (RTL)：`&lt;reg&gt; = op &lt;operand&gt; &lt;operand&gt;`。
+:::
 
 先用无限虚拟寄存器命名每个值：
 
-```
+```text
 t1 = load_local 0
 t2 = assert_integer t1
 t3 = get_integer t2
@@ -297,16 +319,19 @@ return t4
 
 ### 8.2 把它当约束优化问题解
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（寄存器分配求解）</strong>
-<strong>假设</strong>：<code>load_local 0</code> 的参数 y 在 <code>rdi</code>。<br>
-<strong>约束</strong>：assert_integer 的 t1 用 rdi；get_integer 的 t2 用 rdi；sub 的 t3 用 rdi；return 的 t4 必须在 rax。<br>
-<strong>目标</strong>：最小化内存访问 + 指令数（寄存器到寄存器的 mov）。<br>
-<strong>解</strong>：t1→rdi, t2→rdi, t3→rdi, t4→rax。
-</div>
+::: example 例题（寄存器分配求解）
+**假设**：`load_local 0` 的参数 y 在 `rdi`。
+
+**约束**：assert_integer 的 t1 用 rdi；get_integer 的 t2 用 rdi；sub 的 t3 用 rdi；return 的 t4 必须在 rax。
+
+**目标**：最小化内存访问 + 指令数（寄存器到寄存器的 mov）。
+
+**解**：t1→rdi, t2→rdi, t3→rdi, t4→rax。
+:::
 
 代入后：
 
-```
+```text
 rdi = load_local 0
 rdi = assert_integer rdi
 rdi = get_integer rdi
@@ -328,17 +353,21 @@ sub $2, %rdi;  call new_integer    ; rax = sub_const rdi 2
 
 ### 8.3 MITScript 直线代码的基本生成算法
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（直线 MITScript 的代码生成算法）</strong>
-<ul>
-<li>访问每条语句；</li>
-<li>按运算顺序访问语句中每个表达式；</li>
-<li>为表达式结果<strong>分配一个临时值</strong>；</li>
-<li>递归访问嵌套子表达式，每个返回其临时值；</li>
-<li>把"对各子临时值施加运算"的结果赋给所分配的临时值；</li>
-<li>若适用，把右侧的临时值赋给语句左侧；</li>
-<li><strong>保留控制流图 (CFG)</strong>。</li>
-</ul>
-</div>
+::: definition 定义（直线 MITScript 的代码生成算法）
+- 访问每条语句；
+
+- 按运算顺序访问语句中每个表达式；
+
+- 为表达式结果**分配一个临时值**；
+
+- 递归访问嵌套子表达式，每个返回其临时值；
+
+- 把"对各子临时值施加运算"的结果赋给所分配的临时值；
+
+- 若适用，把右侧的临时值赋给语句左侧；
+
+- **保留控制流图 (CFG)**。
+:::
 
 ---
 

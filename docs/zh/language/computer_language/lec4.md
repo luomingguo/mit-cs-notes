@@ -1,11 +1,18 @@
-# Lecture 04：中间表示（OPP）
+---
+title: 中间表示（OPP）
+course: 6.1100 计算机语言工程
+course_id: '6.1100'
+lecture: 4
+kind: theory
+tags: []
+status: complete
+---
+# Lec 04 中间表示（OPP）
 
 > 配套复习课：R3 解析器生成器（ANTLR4，见末节）；本讲为 Phase 2 项目（IR + 语义检查）的核心
 > 参考：Cooper et al., Ch.5 中间表示；§ 名字空间 / 命名环境
 
 ---
-
-
 
 ## 1. 程序表示的目标（Program Representation Goals）
 
@@ -16,7 +23,7 @@
 
 典型多级降级流水线：
 
-```
+```text
 语法树 (Parse Tree)
    │  语义分析 (Semantic Analysis)
    ▼
@@ -27,15 +34,11 @@
 机器码 (Machine Code)
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（高层 IR vs. 低层 IR）</strong>
-<ul>
-<li><strong>High-Level IR</strong>：保留对象结构、保留结构化控制流；首要目标是<strong>分析程序</strong>。</li>
-<li><strong>Low-Level IR</strong>：把数据模型搬到<strong>扁平地址空间</strong>，消除结构化控制流；适合低层任务——寄存器分配、指令选择。</li>
-</ul>
-</div>
+::: definition 定义（高层 IR vs. 低层 IR）
+- **High-Level IR**：保留对象结构、保留结构化控制流；首要目标是**分析程序**。
 
-
-
+- **Low-Level IR**：把数据模型搬到**扁平地址空间**，消除结构化控制流；适合低层任务——寄存器分配、指令选择。
+:::
 
 ## 2. 对象的运行期表示
 
@@ -55,8 +58,6 @@ class vector {
 - **数组表示**：元素连续存储，**第一个字 (first word) 存长度**，随后是元素。
 - **对象表示**：第一个字指向**类信息 (Class Info)**——方法表、垃圾回收数据；后续字是对象字段（对 vector，下一个字是数组引用）。
 
-
-
 ### 2.1 方法调用的活动记录（Activation Record）
 
 执行 `vect.add(1)` 时在栈上**创建活动记录**：
@@ -70,13 +71,11 @@ class vector {
 
 ---
 
-
-
 ## 3. 符号表：编译的关键概念（Symbol Tables）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（符号表）</strong>
-符号表把<strong>标识符（字符串）映射到描述符（关于标识符的信息）</strong>。基本操作是 <strong>Lookup</strong>：给定字符串找描述符，典型实现是哈希表。
-</div>
+::: definition 定义（符号表）
+符号表把**标识符（字符串）映射到描述符（关于标识符的信息）**。基本操作是 **Lookup**：给定字符串找描述符，典型实现是哈希表。
+:::
 
 ### 3.1 符号表的层级（Hierarchy）
 
@@ -84,7 +83,7 @@ class vector {
 
 vector.add 内部的查找层级：
 
-```
+```text
 局部 i  → Locals 符号表
 参数 x  → Parameters 符号表（其父为 Fields 符号表）
 字段 v  → Fields 符号表
@@ -103,14 +102,15 @@ this    → （特殊）this 描述符
 
 ### 3.3 整体符号表结构
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（符号表的总体组织）</strong>
-<ul>
-<li><strong>程序符号表</strong>（类名 → 类描述符）</li>
-<li><strong>类描述符</strong>：含<strong>字段符号表</strong>（父表为超类字段符号表）+ <strong>方法符号表</strong>（父表为超类方法符号表）+ 对父类描述符的引用</li>
-<li><strong>方法描述符</strong>：含<strong>局部变量符号表</strong>（其父为<strong>参数符号表</strong>，参数符号表父为接收者类的字段符号表）+ 方法代码引用</li>
-<li><strong>类型符号表</strong>：基类型描述符（int、boolean）、数组类型描述符（含元素类型引用）、类描述符</li>
-</ul>
-</div>
+::: definition 定义（符号表的总体组织）
+- **程序符号表**（类名 → 类描述符）
+
+- **类描述符**：含**字段符号表**（父表为超类字段符号表）+ **方法符号表**（父表为超类方法符号表）+ 对父类描述符的引用
+
+- **方法描述符**：含**局部变量符号表**（其父为**参数符号表**，参数符号表父为接收者类的字段符号表）+ 方法代码引用
+
+- **类型符号表**：基类型描述符（int、boolean）、数组类型描述符（含元素类型引用）、类描述符
+:::
 
 ---
 
@@ -122,26 +122,31 @@ this    → （特殊）this 描述符
 
 内部节点是运算（`+`、`-`…），叶子是 **load 节点**表示变量访问：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（load 节点种类）</strong>
-<ul>
-<li><code>ldf</code>：字段访问（field descriptor，隐式访问 this）</li>
-<li><code>ldl</code>：局部变量访问（local descriptor）</li>
-<li><code>ldp</code>：参数访问（parameter descriptor）</li>
-<li><code>lda</code>：数组访问（含"数组表达式树" + "下标表达式树"）</li>
-<li><code>len</code>：数组长度运算（如 <code>v.length</code>）</li>
-</ul>
-</div>
+::: definition 定义（load 节点种类）
+- `ldf`：字段访问（field descriptor，隐式访问 this）
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（表达式 <code>v[i]+x</code> 的 IR 树）</strong>
-<pre>
-        +
+- `ldl`：局部变量访问（local descriptor）
+
+- `ldp`：参数访问（parameter descriptor）
+
+- `lda`：数组访问（含"数组表达式树" + "下标表达式树"）
+
+- `len`：数组长度运算（如 `v.length`）
+:::
+
+::: example
+**例题（表达式 `v[i]+x` 的 IR 树）**
+
+```text
++
        / \
      lda  ldp x        // ldp x：参数 x
     /   \
 ldf v   ldl i          // ldf v：字段 v；ldl i：局部 i
-</pre>
+```
+
 即"取数组 v 的第 i 个元素，再加参数 x"。
-</div>
+:::
 
 ### 4.2 赋值：store 节点
 
@@ -160,8 +165,10 @@ ldf v   ldl i          // ldf v：字段 v；ldl i：局部 i
 - **while 节点**：条件表达式树 + 循环体语句节点
 - **return 节点**：返回值表达式树
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（<code>while (i &lt; v.length) v[i]=v[i]+x;</code> 的 IR，简记法）</strong>
-<pre>
+::: example
+**例题（`while (i &lt; v.length) v[i]=v[i]+x;` 的 IR，简记法）**
+
+```text
 while
  ├─ 条件:  <
  │         ├─ ldl i
@@ -174,8 +181,8 @@ while
                 │   ├─ ldf v
                 │   └─ ldl i
                 └─ ldp x
-</pre>
-</div>
+```
+:::
 
 ---
 
@@ -210,19 +217,19 @@ else p = new polarPoint(r,t);
 y = p.distance();    // 调哪个 distance？
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（动态分派与方法表）</strong>
-被调用的方法取决于<strong>接收者的运行期类型 (type of receiver)</strong>。实现机制是<strong>方法表 (method table)</strong>：编译器在每个继承层级内给方法编号（getColor=0, distance=1, angle=2），调用点访问方法表中对应编号的条目。该机制仅适用于<strong>单继承</strong>，不支持多继承、多分派或接口。
-</div>
+::: definition 定义（动态分派与方法表）
+被调用的方法取决于**接收者的运行期类型 (type of receiver)**。实现机制是**方法表 (method table)**：编译器在每个继承层级内给方法编号（getColor=0, distance=1, angle=2），调用点访问方法表中对应编号的条目。该机制仅适用于**单继承**，不支持多继承、多分派或接口。
+:::
 
 ### 6.3 静态查找 vs. 动态查找
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（静态查找与动态查找可能不同）</strong>
-<ul>
-<li><strong>静态查找</strong>：编译期做，用于类型检查与代码生成；以方法<strong>名</strong>为索引，从接收者<strong>声明类型</strong>的方法符号表起，沿层级上溯，可能跨多张表。</li>
-<li><strong>动态查找</strong>：运行期做，用于分派调用；以方法<strong>编号</strong>为索引，<strong>只访问一张表的一个元素</strong>。</li>
-</ul>
-例：<code>point p = new cartesianPoint(); p.distance();</code> ——静态查找在 point 表里定位 distance（用于类型检查），动态分派实际调用 cartesianPoint 的 distance。
-</div>
+::: theorem 定理（静态查找与动态查找可能不同）
+- **静态查找**：编译期做，用于类型检查与代码生成；以方法**名**为索引，从接收者**声明类型**的方法符号表起，沿层级上溯，可能跨多张表。
+
+- **动态查找**：运行期做，用于分派调用；以方法**编号**为索引，**只访问一张表的一个元素**。
+
+例：`point p = new cartesianPoint(); p.distance();` ——静态查找在 point 表里定位 distance（用于类型检查），动态分派实际调用 cartesianPoint 的 distance。
+:::
 
 ---
 
@@ -230,12 +237,11 @@ y = p.distance();    // 调哪个 distance？
 
 L2–L3 讲的是**手写递归下降（自顶向下）**；与之对偶的工程路线是用**解析器生成器**（自底向上的 LR/LL 工具）。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（解析器生成器的取舍）</strong>
-<ul>
-<li><strong>不用的理由</strong>：通常比手写递归下降慢；复杂语言难以正确指定。</li>
-<li><strong>用的理由</strong>：生成"正确"的代码；适合原型；词法/语法错误处理"白送"；无需处理被改造（hacked）的具体语法树，可直接产 AST。</li>
-</ul>
-</div>
+::: definition 定义（解析器生成器的取舍）
+- **不用的理由**：通常比手写递归下降慢；复杂语言难以正确指定。
+
+- **用的理由**：生成"正确"的代码；适合原型；词法/语法错误处理"白送"；无需处理被改造（hacked）的具体语法树，可直接产 AST。
+:::
 
 - **ANTLR4**（ANother Tool for Language Recognition）：业界标准，**LL(\*)**——从左到右、最左推导、（近似）无限前看、自适应处理左递归；一份文法可生成多语言目标（Java/Scala、TypeScript、Go、C++、C#、Python、Swift…）。
 - Rust 项目推荐用 **Tree-sitter**。

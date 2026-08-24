@@ -1,4 +1,13 @@
-# L7：语义（IMP）——完整大步操作语义
+---
+title: 语义（IMP）——完整大步操作语义
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+lecture: 7
+kind: theory
+tags: []
+status: complete
+---
+# Lec 7 语义（IMP）——完整大步操作语义
 
 > 接 L6。给出 IMP 全部求值关系：布尔表达式、语句（赋值/顺序/if/while），并讨论"出错求值"
 > 记号约定：<span>$\langle \cdot, f\rangle \Downarrow \cdot$</span> 为大步求值关系，<span>$f$</span> 为帧（变量→值映射）
@@ -19,14 +28,14 @@ IMP 含赋值、if-then-else、顺序组合、while。三类项各有一个求�
 
 ## 2. 布尔表达式的推理规则
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（布尔表达式大步语义）</strong>
+::: definition 定义（布尔表达式大步语义）
 常量：
 $$\frac{}{\langle \text{true}, f\rangle \Downarrow \text{true}} \qquad \frac{}{\langle \text{false}, f\rangle \Downarrow \text{false}}$$
 比较（先把两侧算术表达式求值，再比较）：
 $$\frac{\langle e_1, f\rangle \Downarrow n_1 \quad \langle e_2, f\rangle \Downarrow n_2}{\langle e_1 = e_2, f\rangle \Downarrow (n_1 = n_2)} \qquad \frac{\langle e_1, f\rangle \Downarrow n_1 \quad \langle e_2, f\rangle \Downarrow n_2}{\langle e_1 < e_2, f\rangle \Downarrow (n_1 < n_2)}$$
 逻辑联结（结果是真值上的对应布尔运算）：
 $$\frac{\langle b_1, f\rangle \Downarrow t_1 \quad \langle b_2, f\rangle \Downarrow t_2}{\langle b_1 \wedge b_2, f\rangle \Downarrow (t_1 \wedge t_2)} \qquad \frac{\langle b, f\rangle \Downarrow t}{\langle \neg b, f\rangle \Downarrow \neg t}$$
-</div>
+:::
 
 > 注意"语法层的 <span>$\wedge$</span>"（程序里的 `&&`）在结论右侧变成了"数学/元语言层的 <span>$\wedge$</span>"（真值表运算）——区分**对象语言**与**元语言**是操作语义的关键。
 
@@ -36,25 +45,25 @@ $$\frac{\langle b_1, f\rangle \Downarrow t_1 \quad \langle b_2, f\rangle \Downar
 
 语句改变帧，关系为 <span>$\langle s, f\rangle \Downarrow f'$</span>。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（语句大步语义）</strong>
-<strong>空语句 skip</strong>（帧不变）：
+::: definition 定义（语句大步语义）
+**空语句 skip**（帧不变）：
 $$\frac{}{\langle \text{skip}, f\rangle \Downarrow f}$$
-<strong>赋值</strong>（先求右侧表达式，再更新帧）：
+**赋值**（先求右侧表达式，再更新帧）：
 $$\frac{\langle e, f\rangle \Downarrow n}{\langle x := e, f\rangle \Downarrow f[x \mapsto n]}$$
-<strong>顺序组合</strong>（前一句的终态作为后一句的初态——这就是"状态线程"）：
+**顺序组合**（前一句的终态作为后一句的初态——这就是"状态线程"）：
 $$\frac{\langle s_1, f\rangle \Downarrow f' \quad \langle s_2, f'\rangle \Downarrow f''}{\langle s_1 ; s_2, f\rangle \Downarrow f''}$$
-<strong>条件 if</strong>（按条件真值选分支，两条互斥规则）：
+**条件 if**（按条件真值选分支，两条互斥规则）：
 $$\frac{\langle b, f\rangle \Downarrow \text{true} \quad \langle s_1, f\rangle \Downarrow f'}{\langle \text{if } b \text{ then } s_1 \text{ else } s_2, f\rangle \Downarrow f'} \qquad \frac{\langle b, f\rangle \Downarrow \text{false} \quad \langle s_2, f\rangle \Downarrow f'}{\langle \text{if } b \text{ then } s_1 \text{ else } s_2, f\rangle \Downarrow f'}$$
-</div>
+:::
 
 ### 3.1 while 循环（关键：自指规则）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（while 大步语义）</strong>
-<strong>条件为假</strong>（直接结束，帧不变）：
+::: definition 定义（while 大步语义）
+**条件为假**（直接结束，帧不变）：
 $$\frac{\langle b, f\rangle \Downarrow \text{false}}{\langle \text{while } b \text{ do } s, f\rangle \Downarrow f}$$
-<strong>条件为真</strong>（执行一次循环体，再<strong>对整个 while 递归求值</strong>）：
+**条件为真**（执行一次循环体，再**对整个 while 递归求值**）：
 $$\frac{\langle b, f\rangle \Downarrow \text{true} \quad \langle s, f\rangle \Downarrow f' \quad \langle \text{while } b \text{ do } s, f'\rangle \Downarrow f''}{\langle \text{while } b \text{ do } s, f\rangle \Downarrow f''}$$
-</div>
+:::
 
 > while-true 规则的第三个前提**又是 while 自身**——这正是循环的本质。若循环不终止，则**不存在有限的推导树**，即该配置与任何 <span>$f''$</span> 都不在求值关系中（大步语义对不停机程序"无话可说"，这是它相对小步语义的局限）。
 
@@ -62,9 +71,9 @@ $$\frac{\langle b, f\rangle \Downarrow \text{true} \quad \langle s, f\rangle \Do
 
 ## 4. 出错求值（Errant Evaluations）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（卡住 / 无规则适用）</strong>
-当<strong>没有任何推理规则可应用</strong>时，求值"卡住 (stuck)"，配置与任何结果都不在关系中。典型情形：除以零（<span>$\langle e_2,f\rangle\Downarrow 0$</span> 时除法无对应规则）、访问未定义变量（<span>$f(x)$</span> 无定义）、类型不匹配。
-</div>
+::: definition 定义（卡住 / 无规则适用）
+当**没有任何推理规则可应用**时，求值"卡住 (stuck)"，配置与任何结果都不在关系中。典型情形：除以零（$\langle e_2,f\rangle\Downarrow 0$ 时除法无对应规则）、访问未定义变量（$f(x)$ 无定义）、类型不匹配。
+:::
 
 > 这把求值关系刻画为**部分函数 (partial function)**：并非每个 <span>$\langle s, f\rangle$</span> 都有结果。语言设计者可选择：让它卡住（未定义行为）、显式定义"错误"结果、或用类型系统在求值前排除这些情形（下一讲引入 Types）。
 
@@ -88,18 +97,21 @@ int eval_plus(Frame* f, Binop* e) {
 
 ## 6. 完整示例
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（推导 <code>if (x == 1) { y = 2; }</code> 在 <span>$f=\{x\mapsto1,\ y\mapsto0\}$</span> 下）</strong>
-目标：<span>$\langle \text{if } (x{=}1) \text{ then } (y{:=}2) \text{ else skip},\ f\rangle \Downarrow\ ?$</span>
-<pre>
+::: example
+**例题（推导 `if (x == 1) { y = 2; }` 在 $f=\{x\mapsto1,\ y\mapsto0\}$ 下）**
+目标：$\langle \text{if } (x{=}1) \text{ then } (y{:=}2) \text{ else skip},\ f\rangle \Downarrow\ ?$
+
+```text
 (1) ⟨x, f⟩ ⇓ 1            [变量规则, f(x)=1]
 (2) ⟨1, f⟩ ⇓ 1            [常量规则]
 (3) ⟨x = 1, f⟩ ⇓ true     [比较规则, 由(1)(2), 1=1]
 (4) ⟨2, f⟩ ⇓ 2            [常量规则]
 (5) ⟨y := 2, f⟩ ⇓ f[y↦2]  [赋值规则, 由(4)]
 (6) ⟨if (x=1) then (y:=2) else skip, f⟩ ⇓ f[y↦2]   [if-真规则, 由(3)(5)]
-</pre>
-结论：终态 <span>$f' = \{x\mapsto1,\ y\mapsto2\}$</span>。整个推导是一棵以(6)为根的<strong>推导树 (derivation tree)</strong>。
-</div>
+```
+
+结论：终态 $f' = \{x\mapsto1,\ y\mapsto2\}$。整个推导是一棵以（6）为根的**推导树 (derivation tree)**。
+:::
 
 ---
 

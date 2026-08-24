@@ -1,3 +1,12 @@
+---
+title: 性能调试
+course: 6.S984 数据中心计算
+course_id: '6.S984'
+lecture: 16
+kind: system
+tags: []
+status: complete
+---
 # Lec 16 性能调试
 
 [X-Trace: A Pervasive Network Tracing Framework, NSDI'07 ](https://www.usenix.org/legacy/event/nsdi07/tech/full_papers/fonseca/fonseca.pdf)
@@ -6,19 +15,13 @@
 
 [Sage: Practical & Scalable ML-Driven Performance Debugging in Microservices](https://www.csl.cornell.edu/~delimitrou/papers/2021.asplos.sage.pdf)
 
+## 论文阅读： X-Trace
 
+## 论文阅读：TraceWeaver
 
-# 论文阅读： X-Trace
+## 本讲导览
 
-
-
-
-
-# 论文阅读：TraceWeaver
-
-## 摘要
-
-监控和调试现代云应用是一项挑战，原因是一个简单的API可能涉及多个关联分布式微服务。为了提供这样复杂系统的观测点，分布式跟踪框架会提总微服务的调用树。然而，此类解决方案需要对分布式应用的每个组件进行插桩，以添加和传播追踪头部信息，所以在成熟的系统很难被采用。本文探讨了是否可以在不进行任何应用插桩的情况下追踪请求，我们称之为请求追踪重构（request trace reconstruction）。为此，我们开发了 TraceWeaver 系统，该系统利用生产环境中易于获取的信息（如时间戳）和测试环境中的信息（如调用图）来重构请求追踪，达到实用高精度。TraceWeaver 的核心是一个重构算法，该算法利用请求-响应时间戳有效剪枝搜索空间，并应用统计时间分析技术来重构追踪。对（1）基准微服务应用和（2）生产微服务数据集的评估表明，TraceWeaver 可实现约 90% 的高精度，并可有效应用于多种场景（如识别慢服务和 A/B 测试）
+监控和调试现代云应用是一项挑战，原因是一个简单的 API 可能涉及多个关联分布式微服务。为了提供这样复杂系统的观测点，分布式跟踪框架会提总微服务的调用树。然而，此类解决方案需要对分布式应用的每个组件进行插桩，以添加和传播追踪头部信息，所以在成熟的系统很难被采用。本文探讨了是否可以在不进行任何应用插桩的情况下追踪请求，我们称之为请求追踪重构（request trace reconstruction）。为此，我们开发了 TraceWeaver 系统，该系统利用生产环境中易于获取的信息（如时间戳）和测试环境中的信息（如调用图）来重构请求追踪，达到实用高精度。TraceWeaver 的核心是一个重构算法，该算法利用请求-响应时间戳有效剪枝搜索空间，并应用统计时间分析技术来重构追踪。对（1）基准微服务应用和（2）生产微服务数据集的评估表明，TraceWeaver 可实现约 90% 的高精度，并可有效应用于多种场景（如识别慢服务和 A/B 测试）
 
 ## 1. 介绍
 
@@ -94,9 +97,9 @@ OpenTelemetry [43] 定义了标准 API，分布式追踪框架如 Jaeger 和 Zip
 - 离线模式下，span 被收集和存储起来，按需进行分析；
 - 在线模式下，span 会被实时传递给正在运行的 TraceWeaver 实例，用于实时构建请求追踪（详见 §5.3）。
 
-# 论文阅读： Sage
+## 论文阅读： Sage
 
-## 摘要
+## 本讲导览
 
 云应用正在逐步从大型的单体服务转向由多个松耦合微服务组成的复杂图结构。尽管微服务架构带来了模块化和弹性等优势，但它也使集群管理和性能调试变得更加复杂，因为服务之间的依赖关系可能引发**反压（backpressure）**和**级联式的服务质量（QoS）违约**。
 

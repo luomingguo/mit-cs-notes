@@ -1,4 +1,13 @@
-# L19 · zk-SNARKs
+---
+title: zk-SNARKs
+course: 6.5610 应用密码学与安全（Spring 2026）
+course_id: '6.5610'
+lecture: 17
+kind: theory
+tags: []
+status: complete
+---
+# Lec 19 zk-SNARKs
 
 > MIT 6.5610 · Lecture 19 · 关键词：SNARK、简洁性、算术电路化（R1CS/QAP）、多项式承诺、Fiat–Shamir、可信设置、zk
 > *说明：以标准处理撰写，要点与本课"zk-SNARKs"一致。*
@@ -23,14 +32,12 @@
 
 ## 1. 流水线：算术电路化 → 多项式 → 承诺
 
-<div class="corollary">
-
+::: theorem
 **典型 SNARK 三段式**
 1. **算术化（arithmetization）**：把计算 $C$ 编码为代数约束系统，如 **R1CS**（一组 $\langle a_i,z\rangle\cdot\langle b_i,z\rangle=\langle c_i,z\rangle$）或进一步转成 **QAP**（多项式整除关系 $A(X)B(X)-C(X)=H(X)Z(X)$）。"计算正确" ⟺ "某多项式恒等成立"。
 2. **交互式 oracle 证明**：用 sumcheck（L15）/ PCP 类协议，让验证者通过**少数随机点求值**检验多项式恒等（Schwartz–Zippel：错误恒等在随机点几乎必露馅）。
 3. **多项式承诺（*polynomial commitment*）**：证明者先**承诺**到多项式（KZG / IPA / FRI / Merkle），之后在挑战点"打开"求值并证明打开正确 —— 这把"oracle 求值"落实为可验证的密码操作，同时压缩证明体积。
-
-</div>
+:::
 
 ---
 
@@ -43,14 +50,12 @@
 
 ## 3. 设置假设与家族
 
-<div class="example">
-
+::: example
 **几类主流方案**
 - **Groth16**：基于配对（pairing）+ **电路相关的可信设置（trusted setup）**，证明极短（~3 群元素），验证极快；但每个电路需一次 setup。
 - **PLONK / Marlin**：**通用可信设置**（一次 setup 多电路复用）。
 - **STARK / Bulletproofs**：**无可信设置**（透明），抗量子（STARK 基于哈希），代价是证明更大。
-
-</div>
+:::
 
 > ⚠️ **可信设置的"有毒废料"**：Groth16/PLONK 的 setup 会产生秘密随机数，若泄露可**伪造证明**，故需多方仪式（MPC ceremony）销毁。透明方案（STARK/Bulletproofs）避开此风险。
 
@@ -65,7 +70,7 @@
 
 ---
 
-## 5. 小结
+## 5. 本讲小结
 
 - zk-SNARK = 零知识 + 简洁 + 非交互 + 知识论证。
 - 流水线：算术化（R1CS/QAP）→ 多项式恒等 + 随机点检验 → 多项式承诺 → Fiat–Shamir 去交互 + 盲化做 ZK。

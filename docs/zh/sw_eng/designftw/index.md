@@ -1,4 +1,12 @@
-# 6.4500 Web设计：语言和用户接口
+---
+title: 6.4500 Web 设计：语言和用户接口
+course: 6.4500 Web设计：语言和用户接口
+course_id: '6.4500'
+kind: design
+tags: []
+status: complete
+---
+# 6.4500 Web 设计：语言和用户接口
 
 https://designftw.mit.edu/
 
@@ -7,8 +15,6 @@ https://designftw.mit.edu/
 ### 先修课程
 
 6.1010 fundamentals of programming
-
-
 
 ### 课程描述
 
@@ -36,8 +42,6 @@ https://designftw.mit.edu/
 - 前端框架：Vue.js（响应式编程）
 - 图形设计基础（设计与可用性密切相关）
 
-
-
 ## 参考资料
 
 - 推荐参考书： *The Design of Everyday Things: Revised and Expanded Edition*, Don Norman
@@ -47,8 +51,6 @@ https://designftw.mit.edu/
 - [CSS specifications](https://www.w3.org/Style/CSS/specs.en.html)
 - [HTML specification](https://html.spec.whatwg.org/multipage/)
 - [Javascript (ECMAScript) specification](https://www.ecma-international.org/ecma-262/10.0/index.html#Title)
-
-
 
 ### 作业
 
@@ -129,8 +131,6 @@ https://designftw.mit.edu/
 
 - [Exercise 1: Chat app final submission (100%)](https://designftw.mit.edu/assignments/hw13#ex1)
 
-
-
 ### 教程
 
 - [Studio 1](https://designftw.mit.edu/studio/1/)
@@ -147,8 +147,6 @@ https://designftw.mit.edu/
 - [Studio 12](https://designftw.mit.edu/studio/12/)
 - [Studio 13](https://designftw.mit.edu/studio/13/)
 
-
-
 ### 相关资源
 
 - [Vue Cheatsheet](https://designftw.mit.edu/resources/vue-cheatsheet/)
@@ -158,13 +156,11 @@ https://designftw.mit.edu/
 - [Git](https://designftw.mit.edu/resources/git/)
 - [URLs](https://designftw.mit.edu/resources/urls/)
 
-## 环境搭建 
-
-
+## 环境搭建
 
 ### 启动一个本地服务器
 
-如果你双击一个本地的 `.html` 文件，默认浏览器会打开它并显示内容。但如果你查看地址栏。会看到 URL 以 `file://` 开头，也就是使用的是 **file URI scheme（文件协议）**。这种 URI 协议本质上是不安全的，因为它没有明确的来源隔离，因此很多Web平台技术在`file://` 是被禁用的。 在开发过程中你需要使用**本地 Web 服务器**。
+如果你双击一个本地的 `.html` 文件，默认浏览器会打开它并显示内容。但如果你查看地址栏。会看到 URL 以 `file://` 开头，也就是使用的是 **file URI scheme（文件协议）**。这种 URI 协议本质上是不安全的，因为它没有明确的来源隔离，因此很多 Web 平台技术在`file://` 是被禁用的。 在开发过程中你需要使用**本地 Web 服务器**。
 
 有很多方法，这里说两个
 
@@ -174,47 +170,35 @@ https://designftw.mit.edu/
    npm install -g http-server
    ```
 
-2. Vscode安装Live Server扩展，点击右下角的 “Go Live”，服务器会启动，并显示使用的端口。
+2. Vscode 安装 Live Server 扩展，点击右下角的 “Go Live”，服务器会启动，并显示使用的端口。
 
 ## 实验
 
-
-
-
-
 # Lec 1 介绍 & 总览
-
-
 
 主题：
 
 - 介绍
 - 可用性设计
-- Web技术
+- Web 技术
 
 [lec1.md](./lec1.md)
 
-
-
-# Lec 2 Web网页结构：HTML
+# Lec 2 Web 网页结构：HTML
 
 主题：
 
-- HTML语义
-- 常见的HTML元素
-- DOM树
-- HTML的交互与用户输入
+- HTML 语义
+- 常见的 HTML 元素
+- DOM 树
+- HTML 的交互与用户输入
 - 响应式模板
-
-
 
 [lec2.md](./lec2.md)
 
 # Lec 3 易学性
 
 [lec3.md](./lec3.md)
-
-
 
 # Lec 4 图形设计
 
@@ -224,7 +208,7 @@ https://designftw.mit.edu/
 
 [lec5.md](./lec5.md)
 
-# Lec 6 CSS的基本概念 I
+# Lec 6 CSS 的基本概念 I
 
 [lec6.md](./lec6.md)
 
@@ -232,7 +216,7 @@ https://designftw.mit.edu/
 
 [lec7.md](./lec7.md)
 
-# Lec 8 CSS的基本概念 II
+# Lec 8 CSS 的基本概念 II
 
 [lec8.md](./lec8.md)
 
@@ -248,31 +232,25 @@ https://designftw.mit.edu/
 
 [lec11.md](./lec11.md)
 
-# Lec 12 现代JS和DOM的介绍
+# Lec 12 现代 JS 和 DOM 的介绍
 
 [JavaScript for Python Programmers](https://observablehq.com/@ballingt/javascript-for-python-programmers)
 
 [lec12.md](./lec12.md)
 
-
-
-# Lec 13 统一Web设计
+# Lec 13 统一 Web 设计
 
 [lec13.md](./lec13.md)
 
 # Lec 14 事件
 
-
-
-
-
 [lec14.md](./lec14.md)
 
-# Lec 15 设计范式 & 函数式JS
+# Lec 15 设计范式 & 函数式 JS
 
 [lec15.md](./lec15.md)
 
-# Lec 16 函数、类和this
+# Lec 16 函数、类和 this
 
 [lec16.md](./lec16.md)
 
@@ -282,10 +260,6 @@ https://designftw.mit.edu/
 
 # Lec 18 异步编程
 
-
-
-
-
 [lec18.md](./lec18.md)
 
 # Lec 19 色彩
@@ -294,15 +268,11 @@ https://designftw.mit.edu/
 
 # Lec 20 Web API
 
-浏览器有UI让用于与文档交互，也有DOM API让你的代码与文档交互。
-
-
+浏览器有 UI 让用于与文档交互，也有 DOM API 让你的代码与文档交互。
 
 [lec20.md](./lec20.md)
 
 # Lec 21 路由 & 数据可视化
-
-
 
 在引言部分，回答三个问题？
 
@@ -324,19 +294,16 @@ https://designftw.mit.edu/
 
 [lec22.md](./lec22.md)
 
-# Lec 23 Web标准
+# Lec 23 Web 标准
 
 本节关于几个问题的回答？
 
-- 今天的Web生态如何形成的？
+- 今天的 Web 生态如何形成的？
 - Web 技术是如何被制定出来的？
 - 你又能够如何参与并做出贡献？
 
-
-
 [lec23.md](./lec23.md)
 
-# Lec 24 面向AI系统的设计
+# Lec 24 面向 AI 系统的设计
 
 [lec24.md](./lec24.md)
-

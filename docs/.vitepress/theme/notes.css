@@ -1,0 +1,59 @@
+/**
+ * NOTESTYLE.md 第四节的语义容器样式。
+ *
+ * 配色是重新定的，没有沿用旧 inline style 的色值。旧笔记里红色表示「例题」、
+ * 绿色表示「推论」，和通行直觉相反，读者第一眼会误读成警告。现在语义由容器名
+ * 承载，颜色就按常规来：蓝=定义、绿=定理、紫=例、琥珀=我的理解、红=误区。
+ *
+ * 「我的理解」用最醒目的琥珀色是有意的 —— 全站只有这一种块是作者本人的判断，
+ * 是这批笔记相对讲义的增量价值所在，不该和课程内容长得一样。
+ */
+
+.note-block {
+  margin: 16px 0;
+  padding: 12px 16px 8px;
+  border-left: 4px solid var(--note-accent);
+  border-radius: 0 8px 8px 0;
+  background: var(--note-bg);
+  line-height: 1.7;
+}
+
+.note-block-title {
+  margin: 0 0 6px !important;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--note-accent);
+}
+
+/* 容器内首尾元素不要撑出多余外边距 */
+.note-block > :nth-child(2) { margin-top: 0 !important; }
+.note-block > :last-child { margin-bottom: 8px !important; }
+
+.note-block code {
+  background: var(--vp-c-bg);
+}
+
+/* 表格、代码块在窄屏里自己滚，不要把页面撑横 */
+.note-block pre,
+.note-block table {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.note-definition { --note-accent: #3b82f6; --note-bg: #eff6ff; }
+.note-theorem    { --note-accent: #16a34a; --note-bg: #f0fdf4; }
+.note-example    { --note-accent: #8b5cf6; --note-bg: #f5f3ff; }
+.note-insight    { --note-accent: #d97706; --note-bg: #fffbeb; }
+.note-pitfall    { --note-accent: #dc2626; --note-bg: #fef2f2; }
+
+.dark .note-definition { --note-accent: #60a5fa; --note-bg: rgba(59, 130, 246, 0.09); }
+.dark .note-theorem    { --note-accent: #4ade80; --note-bg: rgba(22, 163, 74, 0.11); }
+.dark .note-example    { --note-accent: #a78bfa; --note-bg: rgba(139, 92, 246, 0.11); }
+.dark .note-insight    { --note-accent: #fbbf24; --note-bg: rgba(217, 119, 6, 0.12); }
+.dark .note-pitfall    { --note-accent: #f87171; --note-bg: rgba(220, 38, 38, 0.11); }
+
+/* 「我的理解」再加一点重量，它是全站唯一的第一人称内容 */
+.note-insight {
+  border-left-width: 5px;
+}

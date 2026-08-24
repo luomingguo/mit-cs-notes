@@ -1,3 +1,12 @@
+---
+title: RISC-V 汇编：寄存器与指令
+course: 6.1904 C语言的底层汇编
+course_id: '6.1904'
+lecture: 4
+kind: system
+tags: []
+status: complete
+---
 # Lec 4 RISC-V 汇编：寄存器与指令
 
 **本节内容**
@@ -22,9 +31,13 @@ RISC-V 的指令集设计遵循三条核心原则：
 - **原则二：越小越快（smaller is faster）。** RISC-V 只有 32 个通用寄存器，而不是更多。寄存器数量越少，硬件中的信号传播距离越短，时钟周期越快。如果寄存器超过 32 个，每个寄存器字段就需要多于 5 位来编码（$2^5=32$），指令格式会更复杂，硬件也更慢。
 - **原则三：优秀的设计需要好的折中（good design demands good compromises）。** "所有指令长度固定为 32 位"和"保持单一指令格式"之间存在矛盾——不同类型的指令需要不同的字段划分。RISC-V 的折中是：所有指令都是 32 位长，但允许多种指令格式（R-type、I-type、S-type 等），由 opcode 字段区分。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>存储程序概念</strong>　现代计算机建立在两个关键思想之上：指令以数字形式表示；程序像数据一样存储在内存中，可以被读写。这就是存储程序概念（<em>stored-program concept</em>）——同一块内存既可以存放程序代码，也可以存放数据，只要改变内存中的内容，同一台计算机就可以从做会计变成写文章。这也意味着指令和数据在内存中的二进制表示没有本质区别，区别仅在于处理器如何解读它们。 </div>
+::: definition 存储程序概念
+现代计算机建立在两个关键思想之上：指令以数字形式表示；程序像数据一样存储在内存中，可以被读写。这就是存储程序概念（*stored-program concept*）——同一块内存既可以存放程序代码，也可以存放数据，只要改变内存中的内容，同一台计算机就可以从做会计变成写文章。这也意味着指令和数据在内存中的二进制表示没有本质区别，区别仅在于处理器如何解读它们。
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>数据内存 vs 指令内存</strong>　它们是内存的不同区段。PC 永远指向<strong>指令</strong>的地址，并跟踪下一条要执行的指令：顺序执行时 <code>pc = pc + 4</code>；控制流（分支/跳转）时 <code>pc = 目标地址</code>。如果 PC 指向某处，就默认那里是指令，不要把它当数据覆写。 </div>
+::: definition 数据内存 vs 指令内存
+它们是内存的不同区段。PC 永远指向**指令**的地址，并跟踪下一条要执行的指令：顺序执行时 `pc = pc + 4`；控制流（分支/跳转）时 `pc = 目标地址`。如果 PC 指向某处，就默认那里是指令，不要把它当数据覆写。
+:::
 
 ---
 
@@ -94,7 +107,9 @@ RV64 中每个通用寄存器宽 **64 位**（一个 doubleword）。一共有 *
 
 > RISC-V **没有** `subi` 指令——因为立即数是二补码表示，`addi x5, x5, -3` 就等价于减 3，再造一条减法的立即数指令是冗余的。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>符号扩展（sign extension）</strong>　I-type 的立即数字段只有 12 位，但要参与 64 位运算，必须先扩展到 64 位。RISC-V 用<strong>符号扩展</strong>：把第 11 位（立即数的最高位/符号位）复制到第 12～63 位。于是 <code>-1</code> 编码 <code>0xFFF</code> 扩展后仍是 64 位的 -1。这正是"没有 subi"能成立的底层原因。 </div>
+::: definition 符号扩展（sign extension）
+I-type 的立即数字段只有 12 位，但要参与 64 位运算，必须先扩展到 64 位。RISC-V 用**符号扩展**：把第 11 位（立即数的最高位/符号位）复制到第 12～63 位。于是 `-1` 编码 `0xFFF` 扩展后仍是 64 位的 -1。这正是"没有 subi"能成立的底层原因。
+:::
 
 **lui / auipc：构造大常数与大地址。** 12 位立即数只能表示 −2048～2047，要装入一个完整的 32 位常数需要两条指令配合：
 
@@ -113,7 +128,9 @@ RV64 中每个通用寄存器宽 **64 位**（一个 doubleword）。一共有 *
 
 **地址计算**：`内存地址 = reg[rs1] + 符号扩展(offset)`。`rs1` 是基地址寄存器，`offset` 是 12 位有符号偏移——这就是"基址偏移寻址"。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>字节寻址与对齐</strong>　内存按<strong>字节</strong>编址，相邻字节地址相差 1。因此一个 doubleword 占 8 个字节，数组中相邻 doubleword 的地址相差 <strong>8</strong>，相邻 int（word）相差 <strong>4</strong>。这就是为什么数组下标 <code>i</code> 要先乘以元素大小（左移 3 位＝×8，左移 2 位＝×4）再加基地址——这是汇编里最常见的易错点。例如长度 10 的 int 数组占 40 字节。 </div>
+::: definition 字节寻址与对齐
+内存按**字节**编址，相邻字节地址相差 1。因此一个 doubleword 占 8 个字节，数组中相邻 doubleword 的地址相差 **8**，相邻 int（word）相差 **4**。这就是为什么数组下标 `i` 要先乘以元素大小（左移 3 位＝×8，左移 2 位＝×4）再加基地址——这是汇编里最常见的易错点。例如长度 10 的 int 数组占 40 字节。
+:::
 
 ### 3.3 控制流指令
 
@@ -139,7 +156,9 @@ RV64 中每个通用寄存器宽 **64 位**（一个 doubleword）。一共有 *
 - `jal rd, label`（jump-and-link）：跳到 label，同时把返回地址（PC+4）写入 `rd`。写 `x0` 即丢弃返回地址，等价于纯跳转 `j label`。
 - `jalr rd, offset(rs1)`（jump-and-link register）：跳到 `rs1 + offset`（最低位强制清零，即 `target = (rs1 + offset) & ~1`），返回地址写入 `rd`。它能跳到寄存器算出来的任意地址，是函数返回和间接调用的基础。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>基本块（basic block）</strong>　以分支结尾、不含中间分支、也不含分支目标标签（除了开头）的指令序列。编译器的第一步就是把程序分割成基本块——它是编译优化和流水线分析的基本单元。 </div>
+::: definition 基本块（basic block）
+以分支结尾、不含中间分支、也不含分支目标标签（除了开头）的指令序列。编译器的第一步就是把程序分割成基本块——它是编译优化和流水线分析的基本单元。
+:::
 
 ### 3.4 伪指令（pseudo-instruction）
 
@@ -199,7 +218,9 @@ store 需要两个源寄存器（基址 rs1、数据 rs2）加偏移量，没有
 | U-type | 高位立即数        | lui、auipc                     |
 | J-type | 无条件跳转        | jal                            |
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>为什么 S/B 型的立即数被"打散"？</strong>　观察会发现 S-type 和 B-type 把 12 位立即数拆成几段、顺序还被打乱。这不是随意为之：这样设计能让 <code>rs1</code>、<code>rs2</code>、<code>funct3</code> 字段在<strong>所有格式中固定在相同的位置</strong>，于是寄存器读取、立即数符号位（永远在第 31 位）的提取电路可以共用，硬件译码大大简化。换言之，牺牲一点"立即数对人类的可读性"，换来硬件的规整——又是"简单源于规整"原则的体现。 </div>
+::: definition 为什么 S/B 型的立即数被"打散"？
+观察会发现 S-type 和 B-type 把 12 位立即数拆成几段、顺序还被打乱。这不是随意为之：这样设计能让 `rs1`、`rs2`、`funct3` 字段在**所有格式中固定在相同的位置**，于是寄存器读取、立即数符号位（永远在第 31 位）的提取电路可以共用，硬件译码大大简化。换言之，牺牲一点"立即数对人类的可读性"，换来硬件的规整——又是"简单源于规整"原则的体现。
+:::
 
 ---
 
@@ -230,7 +251,9 @@ L2:
 
 ## 例题
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>例题：编译 if-then-else</strong>　f、g、h、i、j 分别对应寄存器 x19 到 x23，编译 <code>if (i == j) f = g + h; else f = g - h;</code> </div>
+::: example 例题：编译 if-then-else
+f、g、h、i、j 分别对应寄存器 x19 到 x23，编译 `if (i == j) f = g + h; else f = g - h;`
+:::
 
 编译的一般技巧是：**测试与原始条件相反的条件，跳过 then 分支**。这样条件为真时不需要额外跳转，代码更高效：
 
@@ -244,7 +267,9 @@ Exit:
 
 `beq x0, x0, Exit` 是实现无条件跳转的一种方式（条件永远为真），等价于伪指令 `j Exit`。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>例题：编译 while 循环</strong>　i 对应 x22，k 对应 x24，数组 save 的基地址在 x25，编译 <code>while (save[i] == k) i += 1;</code> </div>
+::: example 例题：编译 while 循环
+i 对应 x22，k 对应 x24，数组 save 的基地址在 x25，编译 `while (save[i] == k) i += 1;`
+:::
 
 ```asm
 Loop: slli x10, x22, 3       ; x10 = i * 8（doubleword 偏移）
@@ -258,7 +283,9 @@ Exit:
 
 常见易错点：数组索引 i 要乘以元素大小（doubleword 是 8 字节）再加基地址，用左移代替乘法（左移 3 位＝×8）。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>例题：数组求和</strong>　假设有一个数组 arr 含 10 个整数，起始内存地址 0x700，分析其汇编代码。 </div>
+::: example 例题：数组求和
+假设有一个数组 arr 含 10 个整数，起始内存地址 0x700，分析其汇编代码。
+:::
 
 ![image-20260613032157368](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260613032157368.png)
 
@@ -274,7 +301,7 @@ Exit:
 
 - **PC（程序计数器）**：32 位寄存器，保存当前指令地址。每周期末更新为 PC+4 或分支/跳转目标。底部的 MUX（标 M）在两个来源间选择。
 - **指令存储器（Instr mem）**：只读，PC 作地址输入，输出 32 位指令，再拆成各字段分发。
-- **控制单元（Control）**：根据 opcode（及 funct3/funct7）译码，生成控制信号——ALU 做加还是减？数据存储器读还是写？寄存器写回口接 ALU 还是数据存储器？ 
+- **控制单元（Control）**：根据 opcode（及 funct3/funct7）译码，生成控制信号——ALU 做加还是减？数据存储器读还是写？寄存器写回口接 ALU 还是数据存储器？
 - **寄存器堆（Register file）**：32 个寄存器，两个读端口（同时读 rs1、rs2）、一个写端口（写回 rd）。读是组合逻辑，写在时钟上升沿。
 - **立即数生成器（Imm gen）**：按指令格式（I/S/B/U/J）从不同位置抽取立即数，做拼接和符号扩展，输出完整的立即数。
 - **ALU**：输入 A 来自 rs1；输入 B 经 MUX 选 rs2（R-type）或立即数（I/S/B-type）。操作由控制单元的 ALU op 信号决定，并输出"零标志"供分支判断。

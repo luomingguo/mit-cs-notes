@@ -1,6 +1,12 @@
-# 6.1904 C语言的底层汇编
-
-
+---
+title: 6.1904 C 语言的底层汇编
+course: 6.1904 C语言的底层汇编
+course_id: '6.1904'
+kind: system
+tags: []
+status: complete
+---
+# 6.1904 C 语言的底层汇编
 
 ## 先行条件
 
@@ -17,13 +23,11 @@
 | 第 5 周 | RISC-V 调用约定（calling convention）、栈（stack）           |
 | 第 6 周 | 内存布局（memory layout）、堆（heap）、动态内存分配（dynamic memory allocation） |
 
-
-
 它旨在帮助学生建立对内存和相关主题的理解，包括指针、不同数据结构在内存中的存储方式、堆栈和堆，以便对现代计算系统中操作复杂数据结构的限制有一个深入的理解。此外，该课程还研究汇编语言，以便让学生深入了解高级语言是如何被翻译成机器级指令的。
 
 *J. Steinmeyer*
 
-在线C语言运行环境： [replit](https://replit.com/languages/c)
+在线 C 语言运行环境： [replit](https://replit.com/languages/c)
 
 ### 参考书
 
@@ -31,24 +35,19 @@
 - [Digital Design: A Systems Approach](http://library.mit.edu/item/002135433), William J. Dally and R. Curtis Harting, Cambridge University Press, 1st ed., 2012.
 - [Computer Organization and Design: The Hardware Software Interface, RISC-V Edition](http://library.mit.edu/item/002588034), David A. Patterson and John L. Hennessy, Morgan Kaufmann, 1st ed., 2017.
 - [Computation Structures Online Materials](http://computationstructures.org/)
-  - 对于6.004课程，部分内容已经过时
+  - 对于 6.004 课程，部分内容已经过时
 
-
-![截屏2024-07-03 01.19.42](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/668436b408331.png)
+![截屏 2024-07-03 01.19.42](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/668436b408331.png)
 
 ## 测验
 
 [fall 2022a](resources/qf22a_quiz.pdf)	[solution](resources/qf22a_quiz_soln.pdf)
 
-[fall 2022b](resources/qf22b_quiz.pdf)	[solution](resources/qf22b_quiz_soln.pdf) 
+[fall 2022b](resources/qf22b_quiz.pdf)	[solution](resources/qf22b_quiz_soln.pdf)
 
 [spring 2022b](resources/qs22b_quiz.pdf)	[solution](resources/qs22b_quiz_soln.pdf)  
 
-[spring 2025a](resources/qs25a_quiz.pdf)	[qs25a_quiz_soln.pdf](resources/qs25a_quiz_soln.pdf) 
-
-
-
-
+[spring 2025a](resources/qs25a_quiz.pdf)	[qs25a_quiz_soln.pdf](resources/qs25a_quiz_soln.pdf)
 
 [qs24b_quiz_soln.pdf](resources/qs24b_quiz_soln.pdf)  
 
@@ -57,12 +56,6 @@
 [qs23b_quiz_soln.pdf](resources/qs23b_quiz_soln.pdf)  
 
 [qs23a_quiz_soln.pdf](resources/qs23a_quiz_soln.pdf)  
-
-
-
-
-
-
 
 # Lec 1 二进制基础
 
@@ -78,9 +71,7 @@
 
 [lec1.md](./lec1.md)
 
-
-
-# Lec 2 C语言基础
+# Lec 2 C 语言基础
 
 - **统一框架**：作用域 / 生命周期 / 链接三个正交属性，四类对象挂在同一张表上
 - **外部变量**：跨函数共享数据；逆波兰计算器实例（栈放哪、参数求值顺序陷阱、`getch`/`ungetch` 回退）
@@ -90,9 +81,7 @@
 
 [lec2.md](./lec2.md)
 
-
-
-# Lec 3 C语言的数组 & 字符串 & 结构体
+# Lec 3 C 语言的数组 & 字符串 & 结构体
 
 - **数组与指针**：指针概念、连续内存的数组、`sizeof` 运算符、指针算术五条规则
   - *踩坑*：指针大小依架构（4/8 字节）、`a` vs `&a`、数组退化丢长度、`void*` 算术、越界 UB
@@ -103,8 +92,6 @@
   - *踩坑*：`sizeof` 因对齐 padding 大于成员和、不能用 `==` 比较、赋值是浅拷贝、按值传/返回整体复制
 
 [lec3.md](./lec3.md)
-
-
 
 # Lec 4 RISC-V 汇编：寄存器与指令
 
@@ -118,8 +105,6 @@
 
 [lec4.md](./lec4.md)
 
-
-
 # Lec 5 调用约定、栈与内存布局
 
 - **调用约定与调用过程**：过程六步骤、`jal`/`jalr` 控制转移、参数/返回值寄存器、caller-saved vs callee-saved、完整寄存器约定表
@@ -130,17 +115,9 @@
 
 [lec5.md](./lec5.md)
 
-
-
 # 实验部分
 
-
-
-
-
 [lab.md](./lab.md)
-
-
 
 # 参考资料
 

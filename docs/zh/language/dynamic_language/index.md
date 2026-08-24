@@ -1,9 +1,16 @@
+---
+title: 6.112 动态计算机语言工程
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+kind: theory
+tags: []
+status: complete
+---
 # 6.112 动态计算机语言工程
 
 *Dynamic Computer Language Engineering*
 
 https://6112-fa25.github.io/lectures
-
 
 ## 课程介绍
 
@@ -19,8 +26,6 @@ https://6112-fa25.github.io/lectures
 
 Michael Carbin
 
-
-
 ### 相关资料
 
 #### 参考书
@@ -32,7 +37,7 @@ Michael Carbin
 
 你也可以参考以下教材（尤其适合对 JIT 编译感兴趣的同学）：
 
-- Cooper, Keith D., 和 Torczon, Linda，《Engineering a Compiler》（第 3 版），Morgan Kaufmann，2022。 一本理解现代编译器的优秀参考书，涵盖了本课程中涉及的许多优化技术（如数据流分析、指令调度、寄存器分配），以及一些现代编译器中的高级技术（如静态单赋值 SSA）。 
+- Cooper, Keith D., 和 Torczon, Linda，《Engineering a Compiler》（第 3 版），Morgan Kaufmann，2022。 一本理解现代编译器的优秀参考书，涵盖了本课程中涉及的许多优化技术（如数据流分析、指令调度、寄存器分配），以及一些现代编译器中的高级技术（如静态单赋值 SSA）。
 - A. W. Appel 和 J. Palsberg，《Modern Compiler Implementation in Java》，Cambridge University Press，2002。一部经典教材，带你完成一个编译器项目，代码结构设计非常清晰。内容上与 Cooper 等人的书类似。又称 “Tiger Book”，还有 C 语言版和 ML 语言版。
 - Aho, Alfred V. 等，《Compilers: Principles, Techniques, & Tools》（第 2 版），Pearson Addison-Wesley，2007。一本非常厚、非常经典的编译器参考书，主要讲如何为类 C 语言（如 Decaf）实现优化编译器。 又称 “Dragon Book”，几乎所有人都听说过。
 
@@ -47,8 +52,6 @@ Michael Carbin
 
 #### 其他
 
-
-
 **博客**
 
 - [Russ Cox’s Blog](http://research.swtch.com/) —— 他是 Go 语言的开发者之一，写了很多很有深度的文章
@@ -56,29 +59,21 @@ Michael Carbin
 - [Ralf’s Ramblings](https://www.ralfj.de/blog/) —— Ralf 写了很多流行博客，主要探讨 C++、Rust 这类系统语言背后的复杂性
 - [Embedded in Academia](https://blog.regehr.org/) —— 类似，也是讲系统和编程语言的一些深入内容
 
-
-
 **寄存器分配**
 
 - 《[Register Allocation & Spilling via Graph Coloring](http://dl.acm.org/citation.cfm?id=806984)》（图着色的寄存器分配与溢出）—— Gregory J. Chaitin，1982 年。一篇非常经典而且不长的论文，讲最基础的寄存器分配方法
 - [Linear Scan Register Allocation](https://dl.acm.org/citation.cfm?id=330250)
 -  [Iterated Register Coalescing](http://dl.acm.org/citation.cfm?id=229546)—— Lal George，1996 年。这篇论文是在 Chaitin 方法上的改进/替代。如果你觉得 Chaitin（或 Briggs 改进）不够用，这篇值得读；其实即使够用，也值得读，因为它很好地解释了各种权衡
 
-
-
 **垃圾回收**
 
 - [V8 Garbage Collection](https://v8.dev/blog/high-performance-cpp-gc) —— 介绍 V8（Chrome 使用的 JavaScript 引擎）中高性能垃圾回收的实现
 - [Understanding OCaml’s Garbage Collector](https://dev.realworldocaml.org/garbage-collector.html) —— 虽然 OCaml 是 AOT（提前编译）的语言，但它用了增量式、分代垃圾回收机制，这点很值得学习。
 
-
-
 **其他**
 
 - [B3 JIT Compilation](https://webkit.org/blog/5852/introducing-the-b3-jit-compiler/)
 - [SpiderMonkey](https://firefox-source-docs.mozilla.org/js/index.html) —— Firefox 使用的 JavaScript 引擎
-
-
 
 ### 相关课程
 
@@ -86,8 +81,6 @@ Michael Carbin
 2. [6.S050 Programming Language Design (Spring 2023)](https://people.csail.mit.edu/feser/pld-s23/index.html)
 3. [6.5110 (or 6.820) Foundations of Program Analysis](https://student.mit.edu/catalog/m6a.html#6.5110)
 4. [6.5120(or 6.822)Formal Reasoning About Programs](https://frap.csail.mit.edu/main)
-
-
 
 ### 项目
 
@@ -112,10 +105,6 @@ Michael Carbin
 
 这一阶段会让你全面理解 MITScript 的语义。必须认真完成这一部分，因为它能帮助你在后续阶段把精力集中在性能优化上，而不是继续纠结语义细节。
 
-
-
-
-
 #### 垃圾回收
 
 在这一阶段，你们需要实现一个垃圾回收器，并将其集成到第四阶段的虚拟机中。在此之前，我们并没有规定解释器应该如何为 MITScript 程序中的数据结构分配内存，因此你的实现可能会消耗大量内存，甚至发生泄漏。
@@ -133,10 +122,6 @@ load_const 2  # 将常量 2 压入栈
 
 你将学习如何把高级语言转换为低级机器可执行表示，同时理解低层抽象的设计和性能如何影响高层语言的设计。
 
-
-
-
-
 #### 代码生成和性能优化
 
 最后一阶段是一个开放性很强的阶段。在这一阶段，你们的任务是尽可能高效地实现 MITScript 程序，使其运行时间最短。
@@ -149,15 +134,9 @@ load_const 2  # 将常量 2 压入栈
 
 最后一节课是“虚拟机对抗赛”，你们的虚拟机将与其他组竞争，看谁生成的代码最快。比赛使用的程序会在比赛前一天公布，这样你们可以调试系统，但禁止针对该程序做任何专门的 hack 优化。
 
-
-
 *Prof.Michael Carbin*
 
 # Lec 1 课程总览
-
-
-
-
 
 [lec1.md](./lec1.md)
 
@@ -171,21 +150,15 @@ load_const 2  # 将常量 2 压入栈
 
 在本章结束时，我们将拥有一个功能完整且高效的扫描器，它可以接收任意一段 源代码字符串，并生成一系列 token，这些 token 会在下一章被传递给解析器（parser）使用。
 
-
-
 [lec2.md](./lec2.md)
 
 # Lec 3 语法分析 I
-
-
 
 # Lec 4 语法分析 II
 
 [lec4.md](./lec4.md)
 
 # Lec 5 语法分析 III
-
-
 
 # Lec 6 语义（导论）
 
@@ -201,63 +174,32 @@ load_const 2  # 将常量 2 压入栈
 
 # Lec 9 语义（作用域）
 
-
-
 # Lec 10 语义（闭包 I）
-
-
 
 # Lec 11 语义（闭包 II）
 
-
-
 # Lec 12 垃圾回收 I
-
-
 
 # Lec 13 垃圾回收 II
 
-
-
 # Lec 14 垃圾回收 III
-
-
 
 # Lec 15 低级虚拟机 I
 
-
-
 # Lec 16 低级虚拟机 II
-
-
 
 # Lec 17 低级虚拟机 III
 
-
-
 # Lec 18 代码生成 I
-
-
 
 # Lec 19 优化
 
-
-
 # Lec 20 代码生成 II
-
-
 
 # Lec 21 寄存器分配 I
 
-
-
 # Lec 22 寄存器分配 II
-
-
 
 # Lec 23 静态分析 I
 
-
-
 # Lec 24 静态分析 II
-

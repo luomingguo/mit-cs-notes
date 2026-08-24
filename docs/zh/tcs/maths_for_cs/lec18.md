@@ -1,4 +1,13 @@
-# Lecture 18：概率论导论
+---
+title: 概率论导论
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 18
+kind: theory
+tags: []
+status: complete
+---
+# Lec 18 概率论导论
 
 > 来源：MIT 6.1200J / 18.062J Mathematics for Computer Science，Spring 2024
 

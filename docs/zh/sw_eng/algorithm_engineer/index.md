@@ -1,3 +1,10 @@
+---
+title: Introduction
+course: 算法工程师训练
+kind: system
+tags: []
+status: complete
+---
 # Introduction
 
 6.5060/6.827 Algorithms Engineering
@@ -58,4 +65,3 @@ This is a research-oriented course on algorithm engineering, which will cover bo
 | Tuesday 5/9   | Progress in algorithms: the big trends             | Neil Thompson                            |                                                              | [How Fast Do Algorithms Improve?](https://ieeexplore.ieee.org/document/9540991)  [Building the algorithm commons: Who discovered the algorithms that underpin computing in the modern enterprise?](https://onlinelibrary.wiley.com/doi/full/10.1002/gsj.1393) |
 | Thursday 5/11 | Revisiting Matrix Multiplication                   | Tao Schardl                              | [Slides](https://people.csail.mit.edu/jshun/6506-s23/lectures/lecture24.pdf) |                                                              |
 | Tuesday 5/16  | Project Presentations  Final report due today      |                                          |                                                              |                                                              |
-

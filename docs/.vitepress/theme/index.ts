@@ -3,6 +3,7 @@ import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
 import Layout from './Layout.vue'
 import LearningPath from './LearningPath.vue'
+import './notes.css'
 
 export default {
   extends: DefaultTheme,

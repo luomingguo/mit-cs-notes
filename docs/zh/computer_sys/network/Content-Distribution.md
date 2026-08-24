@@ -1,3 +1,11 @@
+---
+title: 内容分发网络（CDN / Content Distribution）
+course: 6.5820/6.S04 计算机网络
+course_id: '6.5820'
+kind: system
+tags: []
+status: complete
+---
 # Lec 15 内容分发网络（CDN / Content Distribution）
 
 阅读资料
@@ -8,7 +16,7 @@
 
 > Part III「Overlay Networks」开篇。CDN 是建在互联网之上的覆盖网：把内容**缓存到离用户近的边缘服务器**，降低时延、卸载源站、抗突发。本讲一篇讲 CDN 背后的经典算法（Akamai），一篇讲云端**大规模实时视频分析**的调度（VideoStorm）。
 
-## 总览
+## 本讲导览
 
 - 为什么要 CDN
 - Algorithmic Nuggets：CDN 背后的几个关键算法
@@ -24,10 +32,9 @@
 
 ## 一、为什么要 CDN
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · CDN 架构</strong><br>
-在全球部署成千上万台<strong>边缘服务器（edge）</strong>，靠近用户；用户请求经 <strong>DNS 映射</strong>被导向"最优"的边缘服务器（近、负载低、健康）；边缘命中则直接回内容，未命中再回源站取并缓存。好处：低时延、卸载源站、吸收突发与抗 DDoS、就近容错。
-</div>
+::: definition 定义 · CDN 架构
+在全球部署成千上万台**边缘服务器（edge）**，靠近用户；用户请求经 **DNS 映射**被导向"最优"的边缘服务器（近、负载低、健康）；边缘命中则直接回内容，未命中再回源站取并缓存。好处：低时延、卸载源站、吸收突发与抗 DDoS、就近容错。
+:::
 
 ## 二、Algorithmic Nuggets：CDN 背后的算法
 
@@ -35,15 +42,13 @@ Maggs & Sitaraman 把 Akamai 这种超大规模 CDN 里用到的算法拆成若�
 
 ### 2.1 一致性哈希（consistent hashing）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 一致性哈希</strong><br>
-把服务器和内容对象都哈希到同一个环上；一个对象由"环上顺时针第一台服务器"负责。问题：用普通 <code>hash(obj) mod N</code> 选服务器，<strong>N 一变（加/减/宕机一台）几乎所有对象都要重新映射</strong>、缓存全失效。一致性哈希让<strong>增删一台只影响环上相邻的一小段（约 1/N 的对象）</strong>，其余映射不变。
-</div>
+::: definition 定义 · 一致性哈希
+把服务器和内容对象都哈希到同一个环上；一个对象由"环上顺时针第一台服务器"负责。问题：用普通 `hash(obj) mod N` 选服务器，**N 一变（加/减/宕机一台）几乎所有对象都要重新映射**、缓存全失效。一致性哈希让**增删一台只影响环上相邻的一小段（约 1/N 的对象）**，其余映射不变。
+:::
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 为什么 CDN（和 P2P）都爱它</strong><br>
-CDN 服务器会频繁加入/退出（扩容、故障、维护），一致性哈希让"对象→服务器"的分配在 churn 下<strong>稳定</strong>，把缓存抖动降到最小；用<strong>虚拟节点</strong>还能均衡负载。同一思想也是 P2P 的 Chord（[[Peer-to-Peer-Networks]]）的核心。
-</div>
+::: theorem 推论 · 为什么 CDN（和 P2P）都爱它
+CDN 服务器会频繁加入/退出（扩容、故障、维护），一致性哈希让"对象→服务器"的分配在 churn 下**稳定**，把缓存抖动降到最小；用**虚拟节点**还能均衡负载。同一思想也是 P2P 的 Chord（[[Peer-to-Peer-Networks]]）的核心。
+:::
 
 ### 2.2 把客户映射到集群：带约束的稳定分配
 
@@ -51,10 +56,11 @@ CDN 服务器会频繁加入/退出（扩容、故障、维护），一致性哈
 
 ### 2.3 缓存准入：第二次命中才缓存（Bloom filter）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · "cache on second hit" + Bloom filter</strong><br>
-大量对象是"只被访问一次"的长尾——把它们也缓存只会污染缓存、挤掉热门对象。策略：<strong>第一次见到某对象先不缓存，只在 Bloom filter 里记一笔；第二次再见才真正缓存</strong>。用 <strong>Bloom filter</strong>（空间极省的概率集合，有假阳无假阴）来低成本地记住"见过哪些 URL"。
-</div>
+::: definition
+**定义 · "cache on second hit" + Bloom filter**
+
+大量对象是"只被访问一次"的长尾——把它们也缓存只会污染缓存、挤掉热门对象。策略：**第一次见到某对象先不缓存，只在 Bloom filter 里记一笔；第二次再见才真正缓存**。用 **Bloom filter**（空间极省的概率集合，有假阳无假阴）来低成本地记住"见过哪些 URL"。
+:::
 
 ### 2.4 覆盖路由（overlay routing）
 
@@ -68,15 +74,13 @@ CDN 服务器会频繁加入/退出（扩容、故障、维护），一致性哈
 
 > 视角从"分发内容"转到"在云端大规模**分析**实时视频流"——成千上万路摄像头、许多查询（车牌识别、人流计数…）竞争有限的集群资源。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 每个查询的"旋钮"与两条 profile</strong><br>
-每个视频查询有可调<strong>旋钮 (knobs)</strong>：分辨率、帧率、用哪个算法/模型。VideoStorm 为每个查询维护两条曲线：<strong>resource-quality profile</strong>（投入多少资源 → 输出精度多高）和 <strong>resource-latency profile</strong>（资源 → 端到端延迟）。
-</div>
+::: definition 定义 · 每个查询的"旋钮"与两条 profile
+每个视频查询有可调**旋钮 (knobs)**：分辨率、帧率、用哪个算法/模型。VideoStorm 为每个查询维护两条曲线：**resource-quality profile**（投入多少资源 → 输出精度多高）和 **resource-latency profile**（资源 → 端到端延迟）。
+:::
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 利用"可近似 + 容忍延迟"做全局调度</strong><br>
-关键洞察：视频分析查询天然<strong>容忍近似与有界延迟</strong>（精度低一点、慢一点都还有用）。于是调度器在有限资源下，<strong>联合选择每个查询的分辨率/帧率/模型 + 资源分配</strong>，去优化全局目标（<strong>MaxMin</strong> 最小效用最大化，或 <strong>MaxSum</strong> 总效用最大化），在质量与延迟间权衡。实现上用基于 profile 的预测 + 贪心探索来高效估计这些曲线，并能做查询迁移、容忍 profile 估计误差。结果：在资源紧张时比基线显著提升整体效用。
-</div>
+::: theorem 推论 · 利用"可近似 + 容忍延迟"做全局调度
+关键洞察：视频分析查询天然**容忍近似与有界延迟**（精度低一点、慢一点都还有用）。于是调度器在有限资源下，**联合选择每个查询的分辨率/帧率/模型 + 资源分配**，去优化全局目标（**MaxMin** 最小效用最大化，或 **MaxSum** 总效用最大化），在质量与延迟间权衡。实现上用基于 profile 的预测 + 贪心探索来高效估计这些曲线，并能做查询迁移、容忍 profile 估计误差。结果：在资源紧张时比基线显著提升整体效用。
+:::
 
 > **NAS（可选）**：另一条思路——把内容感知与机器学习用进视频分发：客户端用一个**超分辨率神经网络**把低码率视频在本地"放大"还原质量，从而在带宽受限时仍获得高画质（与 [[Video-Streaming]] 的码率自适应互补）。
 

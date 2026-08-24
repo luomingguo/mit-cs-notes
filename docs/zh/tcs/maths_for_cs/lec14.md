@@ -1,4 +1,13 @@
-# Lecture 14：有向图与 DAG
+---
+title: 有向图与 DAG
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 14
+kind: theory
+tags: []
+status: complete
+---
+# Lec 14 有向图与 DAG
 
 ## 1. 有向图基础
 
@@ -119,7 +128,7 @@ SCC 对顶点构成**划分**。但与无向连通分量不同，**SCC 之间可
 - 总共恰好需要 $c$ 个阶段（$c$ 为关键路径长度）。
 
 **穿衣例子（Getting Dressed）：**
-```
+```text
 V1 = {左袜, 右袜, 裤子, 衬衫}
 V2 = {左鞋, 右鞋, 腰带, 外套}
 V3 = {围巾, 帽子}

@@ -1,13 +1,25 @@
+---
+title: '调度约束与瞬态历史寄存器（Scheduling & EHRs）'
+course: 6.1920 建构式计算机架构，CCA
+course_id: '6.1920'
+lecture: 4
+kind: system
+tags: []
+status: complete
+---
 # Lec 4 调度约束与瞬态历史寄存器（*Scheduling & EHRs*）
 > MIT 6.1920 · Constructive Computer Architecture
 > 讲师：Martin Chan / Arvind · 日期：2024-02-15
 
 ## 1. 弹性流水线与并发需求
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 弹性流水线（<em>Elastic Pipeline</em>）</strong><br>
-弹性流水线中，相邻级之间用 FIFO 解耦，使各级可独立地以最大速率工作。关键条件：上游规则的 <code>enq</code> 和下游规则的 <code>deq</code> 必须能在同一周期并发执行。</div>
+::: definition
+**定义 — 弹性流水线（*Elastic Pipeline*）**
 
-```
+弹性流水线中，相邻级之间用 FIFO 解耦，使各级可独立地以最大速率工作。关键条件：上游规则的 `enq` 和下游规则的 `deq` 必须能在同一周期并发执行。
+:::
+
+```text
 x → [inQ] → fifo1 → fifo2 → [outQ]
 ```
 
@@ -19,7 +31,7 @@ fifo1 的 `enq`（被 inQ 规则调用）和 `deq`（被 outQ 规则调用）能
 
 ### 2.1 无冲突 FIFO（*Conflict-Free FIFO, CF FIFO*）
 
-```
+```text
 enq CF deq：只要 FIFO 非满且非空，可同时执行
 enq 的效果对 deq 不可见（本周期内）
 ```
@@ -42,7 +54,9 @@ $$\text{enq} < \text{deq}$$
 - `enq` 先执行，数据立即透传给 `deq`（0 延迟，组合路径）
 - 关键应用：缓存命中（*hit Q*）需要零延迟响应
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — FIFO 类型选择</strong>　选择 FIFO 类型的核心问题是：上下游规则的调度顺序需求是什么？CF FIFO 用于无依赖情况，Pipeline FIFO 用于"先出后进"，Bypass FIFO 用于"先进即出"。三种 FIFO 均可由 1 元素或 2 元素基础 FIFO 推导而来。</div>
+::: theorem 推论 — FIFO 类型选择
+选择 FIFO 类型的核心问题是：上下游规则的调度顺序需求是什么？CF FIFO 用于无依赖情况，Pipeline FIFO 用于"先出后进"，Bypass FIFO 用于"先进即出"。三种 FIFO 均可由 1 元素或 2 元素基础 FIFO 推导而来。
+:::
 
 ---
 
@@ -68,7 +82,9 @@ endrule
 
 对于模块方法，冲突关系同样适用 RS/WS 分析，但表示为方法间的有序对。BSV 编译器自动构建冲突矩阵，生成调度逻辑。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 1 元素 FIFO 的冲突矩阵</strong></div>
+::: example 例题 — 1 元素 FIFO 的冲突矩阵
+
+:::
 
 1 元素 FIFO（`Reg#(Maybe#(t))`）：
 - `enq` 写 data，`deq` 写 data，`first` 读 data
@@ -80,9 +96,12 @@ Sol：1 元素 FIFO 中 enq 与 deq 冲突，不能并发；需换用 2 元素 F
 
 ## 5. 瞬态历史寄存器（*Ephemeral History Register, EHR*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — EHR（<em>Ephemeral History Register</em>）</strong><br>
-EHR 是一种特殊寄存器，在单个时钟周期内提供多个有序读写端口（<em>port</em>）。端口按下标排序：端口 [0] 最先，端口 [n-1] 最后。同一周期内，后面的端口能看到前面端口写入的值（组合传播），最终只有最后一次写入保存到真实寄存器。</br>
-<code>EHR#(n, type)</code> — n 个端口的 EHR。</div>
+::: definition
+**定义 — EHR（*Ephemeral History Register*）**
+
+EHR 是一种特殊寄存器，在单个时钟周期内提供多个有序读写端口（*port*）。端口按下标排序：端口 [0] 最先，端口 [n-1] 最后。同一周期内，后面的端口能看到前面端口写入的值（组合传播），最终只有最后一次写入保存到真实寄存器。</br>
+`EHR#(n, type)` — n 个端口的 EHR。
+:::
 
 ```bsv
 EHR#(2, Bit#(32)) counter <- mkEHR(0);
@@ -100,7 +119,9 @@ CF FIFO 的关键：`deq`（端口 0）和 `enq`（端口 1）不冲突且顺序
 - 用 `count_ehr[0]` 给 `deq` 递减，用 `count_ehr[1]` 给 `enq` 递增
 - 由于端口不同，写集合不重叠 → 可并发
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — EHR 是细粒度并发的关键</strong>　普通 Reg 只有一个逻辑端口（读+写），多规则同时写会冲突。EHR 通过多端口将原本冲突的写操作"分开"到不同端口，在硬件上用多路选择器实现有序传播，代价是额外的逻辑面积。</div>
+::: theorem 推论 — EHR 是细粒度并发的关键
+普通 Reg 只有一个逻辑端口（读+写），多规则同时写会冲突。EHR 通过多端口将原本冲突的写操作"分开"到不同端口，在硬件上用多路选择器实现有序传播，代价是额外的逻辑面积。
+:::
 
 ---
 
@@ -114,6 +135,6 @@ CF FIFO 的关键：`deq`（端口 0）和 `enq`（端口 1）不冲突且顺序
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 高性能 FIFO 通过不同的 enq/deq 调度关系（CF、SC）实现不同的并发语义；EHR 以多端口有序写入机制，使原本冲突的状态更新可以并发执行；三种 FIFO 均可用 EHR 实现，是构建弹性流水线处理器的基础组件。

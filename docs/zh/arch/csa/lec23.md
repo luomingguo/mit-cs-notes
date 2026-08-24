@@ -1,4 +1,13 @@
-# L23：加速器（一）（*Accelerators I*）
+---
+title: 加速器（一）（Accelerators I）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 23
+kind: system
+tags: []
+status: complete
+---
+# Lec 23 加速器（一）（*Accelerators I*）
 
 > MIT 6.5900 Fall 2024 · Joel Emer "Compute has been the oxygen of deep learning." — Ilya Sutskever 主题：算力需求、技术趋势（*Moore's / Dennard*）、Einsum 表示、卷积与张量计算、数据流（*dataflow*）与 Roofline 模型
 
@@ -256,7 +265,7 @@ for q in [0, Q):
 
 ------
 
-## 小结
+## 本讲小结
 
 - 算力需求指数增长，而 Dennard 缩放终结、撞上功耗墙，迫使转向**并行 + 专门化**的加速器；
 - **Einsum** 提供精确简洁的张量算法表示，是"关注点分离"金字塔的顶端，并支持界限分析与代数优化；

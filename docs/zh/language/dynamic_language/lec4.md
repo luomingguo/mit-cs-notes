@@ -1,4 +1,13 @@
-# L4：语法分析 II — 自顶向下解析（Top-Down Parsing）
+---
+title: 语法分析 II — 自顶向下解析（Top-Down Parsing）
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+lecture: 4
+kind: theory
+tags: []
+status: complete
+---
+# Lec 4 语法分析 II — 自顶向下解析（Top-Down Parsing）
 
 > 本讲：递归下降解析器——把解析器写成一组相互递归的过程，结构与文法同构
 
@@ -10,7 +19,7 @@
 
 本讲文法（已分优先级、左递归形式）：
 
-```
+```text
 Start → Expr
 Expr → Expr + Term | Expr - Term | Term
 Term → Term * Int  | Term / Int  | Int
@@ -20,23 +29,27 @@ Term → Term * Int  | Term / Int  | Int
 
 ## 2. 基本方法：三个动作
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（自顶向下解析的三动作）</strong>
-从 Start 出发构建<strong>最左推导 (leftmost derivation)</strong>：
-<ol>
-<li>最左符号是<strong>非终结符</strong> → 选一产生式应用（扩展）；</li>
-<li>最左符号是<strong>终结符</strong> → 与输入匹配（消耗输入）；</li>
-<li>所有终结符匹配成功 → <strong>接受</strong>。</li>
-</ol>
-关键难点：为每个非终结符<strong>选对产生式</strong>。解析器生成语法树的<strong>先序遍历</strong>（先父后子、兄弟从左到右）。
-</div>
+::: definition 定义（自顶向下解析的三动作）
+从 Start 出发构建**最左推导 (leftmost derivation)**：
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（解析 <code>2-2*2</code>，节选）</strong>
-<pre>
+- 最左符号是**非终结符** → 选一产生式应用（扩展）；
+
+- 最左符号是**终结符** → 与输入匹配（消耗输入）；
+
+- 所有终结符匹配成功 → **接受**。
+
+关键难点：为每个非终结符**选对产生式**。解析器生成语法树的**先序遍历**（先父后子、兄弟从左到右）。
+:::
+
+::: example
+**例题（解析 `2-2*2`，节选）**
+
+```text
 Start → Expr → Expr - Term → Term - Term → Int - Term
 匹配 2 → 2 - Term → 展开 Term → Term*Int → Int*Int
 匹配 2、2 → 解析完成
-</pre>
-</div>
+```
+:::
 
 ---
 
@@ -48,29 +61,30 @@ Start → Expr → Expr - Term → Term - Term → Int - Term
 
 把它当搜索问题：每个选择点试下一候选，失败则回退换一个。三要素：搜索空间（语法树）、搜索算法（解析算法）、目标（输入的语法树）。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（回溯解析 <code>2-2*2</code>）</strong>
-先试 <code>Expr → Expr + Term</code>，展到 <code>Int + Term</code>，匹配 <code>2</code> 后下一 token 是 <code>-</code>，<strong>无法匹配 +</strong> → 回溯；改用 <code>Expr → Expr - Term</code> 成功。
-</div>
+::: example
+**例题（回溯解析 `2-2*2`）**
+先试 `Expr → Expr + Term`，展到 `Int + Term`，匹配 `2` 后下一 token 是 `-`，**无法匹配 +** → 回溯；改用 `Expr → Expr - Term` 成功。
+:::
 
 ### 3.2 致命问题：左递归
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（左递归 + 自顶向下 = 死循环）</strong>
-形如 <span>$\text{Term} \to \text{Term} * \text{Num}$</span> 的产生式，展开最左非终结符会无限展 <code>Term → Term → …</code> 而不消耗输入。对策：解析时<strong>改造文法消除左递归</strong>。
-</div>
+::: theorem 定理（左递归 + 自顶向下 = 死循环）
+形如 $\text{Term} \to \text{Term} * \text{Num}$ 的产生式，展开最左非终结符会无限展 `Term → Term → …` 而不消耗输入。对策：解析时**改造文法消除左递归**。
+:::
 
 ---
 
 ## 4. 消除左递归
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（左递归消除）</strong>
-对 <span>$A \to A\alpha \mid \beta$</span>（<span>$\alpha,\beta$</span> 不以 A 开头），等价改写引入新非终结符 R：
+::: theorem 定理（左递归消除）
+对 $A \to A\alpha \mid \beta$（$\alpha,\beta$ 不以 A 开头），等价改写引入新非终结符 R：
 $$A \to \beta R, \quad R \to \alpha R, \quad R \to \varepsilon$$
 "向左长"的树变为"向右长"的树，语言不变。
-</div>
+:::
 
 实例：
 
-```
+```text
 原:  Term → Term*Int | Term/Int | Int
 新:  Term → Int Term'
      Term' → * Int Term' | / Int Term' | ε
@@ -82,13 +96,13 @@ $$A \to \beta R, \quad R \to \alpha R, \quad R \to \varepsilon$$
 
 ## 5. 预测分析（Predictive Parsing）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（预测分析）</strong>
-回溯的替代：<strong>向前看 (lookahead)</strong> 输入流的下一个 token，据此直接决定用哪条产生式。本课用<strong>一个 token 前看</strong>。
-</div>
+::: definition 定义（预测分析）
+回溯的替代：**向前看 (lookahead)** 输入流的下一个 token，据此直接决定用哪条产生式。本课用**一个 token 前看**。
+:::
 
 消左递归后的文法：
 
-```
+```text
 Start → Expr
 Expr  → Term Expr'         Term  → Int Term'
 Expr' → + Term Expr' | - Term Expr' | ε
@@ -101,9 +115,9 @@ Term' → * Int Term' | / Int Term' | ε
 
 ## 6. 递归下降解析器（手写代码）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（递归下降的构造规则）</strong>
-每个非终结符 NT 对应一个过程；过程检查当前输入符号 T，若 <span>$T \in \text{First}(\beta_k)$</span> 则应用第 k 条产生式、消耗其终结符、对其非终结符递归调用。当前符号存于全局 <code>token</code>；过程返回成功/失败（或所解析的子树）。
-</div>
+::: definition 定义（递归下降的构造规则）
+每个非终结符 NT 对应一个过程；过程检查当前输入符号 T，若 $T \in \text{First}(\beta_k)$ 则应用第 k 条产生式、消耗其终结符、对其非终结符递归调用。当前符号存于全局 `token`；过程返回成功/失败（或所解析的子树）。
+:::
 
 ```text
 Boolean Term()

@@ -1,12 +1,19 @@
-# L2：词法分析（Lexing）
+---
+title: 词法分析（Lexing）
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+lecture: 2
+kind: theory
+tags: []
+status: stub
+---
+# Lec 2 词法分析（Lexing）
 
 > Phase 1 前半。先看一个语言设计议题（语法糖），再讲词法规范（正则表达式 / 自动机）
 
 ---
 
-
-
-# Lec 2 词法分析
+## Lec 2 词法分析
 
 此项任务被称为扫描（scanning）或者是词法分析（lexing）。
 
@@ -17,8 +24,6 @@
 在本章结束时，我们将拥有一个功能完整且高效的扫描器，它可以接收任意一段 源代码字符串，并生成一系列 token，这些 token 会在下一章被传递给解析器（parser）使用
 
 ## 语言中的词元
-
-
 
 每种语言通常都有若干类别的“单词”。在典型的编程语言中，例如：
 
@@ -35,8 +40,6 @@
 - 整数 = `[0-9][0-9]*`
 - 浮点数 = `[0-9]*. [0-9]*`
 - 标志符 = `[a-z]([a-z]|[0-9])*`
-
-
 
 总得目标就是将提取源代码的词元，比如 `(2-1) + 1`
 
@@ -63,8 +66,6 @@
 - 生成式方法（generative approach）——（文法或正则表达式）
 - 识别式方法（recognition approach）——（自动机）
 
-
-
 由正则表达式生成的所有字符串的集合，称为该正则表达式的语言（language）。一般来说，这样的语言可能是（可数）无限的。语言中的一个字符串通常被称为一个 token（词元）
 
 为了说明正则表达式和语言的的关系，例如
@@ -80,8 +81,6 @@ $∑ = \{ a, b, c, 0, 1, 2 \}$​​ 可以生成：
 - `(a|b|c)(a|b|c|0|1|2)`：字母数字标识符
 - `(0 | 1 | 2)`：三进制数
 
-
-
 ## 有限状态自动机
 
 另外一种抽象方式——确定性有限状态自动机（Deterministic Finite-State Automata，DFA），其组成为：
@@ -94,17 +93,11 @@ $∑ = \{ a, b, c, 0, 1, 2 \}$​​ 可以生成：
 
 ![image-20260505221140106](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260505221140106.png)
 
-
-
 从概念上来说，就是把一个字符串“运行”在自动机中，维护当前状态和当前正在读取的字符，从起始状态开始，并从字符串的第一个字符开始处理， 在每一步中，用当前字符去匹配一条转移边，该转移的标签必须和当前字符相同，持续进行这个过程，直到到达字符串末尾，或者匹配失败为止。 如果最终停留在一个接受状态，那么该自动机就“接受”这个字符串。该自动机的语言（language）就是它所接受的所有字符串的集合。
 
 Ex(TODO)
 
-
-
 为什么？ 因为每种语言通常都有若干类别的“单词”。在典型的编程语言中，通常，每个关键字或者每一类词都会对应一个词法类别（lexical category），每个词法类别一般都用正则表达式（regexp）来定义。
-
-
 
 ## 非确定性有限状态自动机
 
@@ -129,8 +122,6 @@ NFA
 
 ![image-20260505223503135](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260505223503135.png)
 
-
-
 ## 从 NFA 到 DFA 构造
 
 我们将正则表达式转换为自动机的方法生成的是一个 NFA（非确定性有限自动机）。
@@ -139,15 +130,11 @@ NFA
 
 可以将 NFA 转换为 DFA，但 DFA 的规模可能会比 NFA 大指数级
 
-
-
-DFA中的每个状态，对应 NFA中一组状态的子集。
+DFA 中的每个状态，对应 NFA 中一组状态的子集。
 
 - DFA 的初始状态对应于：从 NFA 初始状态出发，通过 ε 转移（空转移）能够到达的所有状态集合。
 
 - 如果某个 DFA 状态所对应的 NFA 状态集合中包含至少一个 NFA 的接受状态，那么这个 DFA 状态就是接受状态。
-
-
 
 为了计算给定 DFA 状态 D 在输入字母 a 下的转移：
 
@@ -159,9 +146,7 @@ DFA中的每个状态，对应 NFA中一组状态的子集。
 - 如果 S 非空，那么就存在一条从 D 在输入 a 下的转移，该转移指向 DFA 中对应集合 S 的状态
 - 否则，D 在输入 a 下没有转移（即该路径不存在）
 
-
-
-举个 NFA 转成 DFA的例子 `(a|b)*.(a|b)*`
+举个 NFA 转成 DFA 的例子 `(a|b)*.(a|b)*`
 
 ![image-20260505224841856](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260505224841856.png)
 
@@ -183,8 +168,8 @@ DFA中的每个状态，对应 NFA中一组状态的子集。
 
 MITScript 很精简，但能力不弱：有函数（`fun`，即闭包，等同 Python 的 `lambda`）、命令行输入（`input`/`intcast`）、`while` 循环、**记录 `{}`**（本质是字典）。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（用记录 + 闭包模拟"类"）</strong>
-<pre>
+::: example 例题（用记录 + 闭包模拟"类"）
+```text
 Point = fun(a, b) {
   self = {
     x : a;  y : b;
@@ -193,13 +178,14 @@ Point = fun(a, b) {
   return self;
 };
 p1 = Point(5,5); p1.print();
-</pre>
-这段在语义上等价于 Python 的 <code>class Point</code> 定义——对象 = 一个有 x/y/print 字段的记录，方法通过 <code>self</code> 指针访问字段。
-</div>
+```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（语法糖 Syntactic Sugar）</strong>
-当一个语言特性的<strong>语法</strong>可以被翻译（reduce）为一组更简单的原语（primitives）的组合时，称该特性为<strong>语法糖</strong>。如 Python 的 class 可降解为"记录 + 闭包"。
-</div>
+这段在语义上等价于 Python 的 `class Point` 定义——对象 = 一个有 x/y/print 字段的记录，方法通过 `self` 指针访问字段。
+:::
+
+::: definition 定义（语法糖 Syntactic Sugar）
+当一个语言特性的**语法**可以被翻译（reduce）为一组更简单的原语（primitives）的组合时，称该特性为**语法糖**。如 Python 的 class 可降解为"记录 + 闭包"。
+:::
 
 > 语言设计的核心权衡：**可用性**（提供易用语法）vs. **语言复杂度**（只实现一组核心原语）。判断一个新抽象能否/应否降解为简单原语，是设计语言的关键任务。
 
@@ -207,15 +193,17 @@ p1 = Point(5,5); p1.print();
 
 ## 2. 语言定义的分层结构
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（语言定义的四层）</strong>
-<ul>
-<li><strong>字母表</strong>：语言中的字母集合 <span>$\Sigma$</span>；</li>
-<li><strong>词法结构 (lexical)</strong>：识别"词 (words)"，每词是字母序列；</li>
-<li><strong>语法结构 (syntactic)</strong>：识别"句子"，每句是词序列；</li>
-<li><strong>语义 (semantics)</strong>：程序含义（对每个输入应得什么结果）。</li>
-</ul>
+::: definition 定义（语言定义的四层）
+- **字母表**：语言中的字母集合 $\Sigma$；
+
+- **词法结构 (lexical)**：识别"词 (words)"，每词是字母序列；
+
+- **语法结构 (syntactic)**：识别"句子"，每句是词序列；
+
+- **语义 (semantics)**：程序含义（对每个输入应得什么结果）。
+
 本讲：词法（对应 Phase 1）。
-</div>
+:::
 
 ---
 
@@ -223,7 +211,7 @@ p1 = Point(5,5); p1.print();
 
 每门语言有若干词类，每类用一个正则表达式（*regular expression*）定义：
 
-```
+```text
 IfKeyword  = if          Integer    = [0-9][0-9]*
 WhileKeyword = while      Float      = [0-9]*.[0-9]*
 Operator   = + | - | * | / Identifier = [a-z]([a-z]|[0-9])*
@@ -237,13 +225,13 @@ Operator   = + | - | * | / Identifier = [a-z]([a-z]|[0-9])*
 
 ## 4. 两种对偶视角：生成式 vs. 识别式
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（生成式与识别式）</strong>
-<ul>
-<li><strong>生成式 (generative)</strong>：正则表达式 / 文法，<strong>生成</strong>语言中所有串。</li>
-<li><strong>识别式 (recognition)</strong>：自动机 (*automaton*)，<strong>判定</strong>某串是否在语言中。</li>
-</ul>
-二者哲学不同但<strong>理论等价</strong>，且可自动互转。标准做法：用正则表达式定义、自动转成自动机实现。
-</div>
+::: definition 定义（生成式与识别式）
+- **生成式 (generative)**：正则表达式 / 文法，**生成**语言中所有串。
+
+- **识别式 (recognition)**：自动机 (*automaton*)，**判定**某串是否在语言中。
+
+二者哲学不同但**理论等价**，且可自动互转。标准做法：用正则表达式定义、自动转成自动机实现。
+:::
 
 ### 4.1 正则表达式构造
 
@@ -257,12 +245,11 @@ Operator   = + | - | * | / Identifier = [a-z]([a-z]|[0-9])*
 
 由字母表 <span>$\Sigma$</span>、带初始/接受标记的状态集、带字母标签的转移构成。运行：从起始态与首字母开始，每步匹配同标签转移，到串尾停在接受态则**接受**。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（DFA vs. NFA）</strong>
-<ul>
-<li><strong>DFA</strong>：无 <span>$\varepsilon$</span> 转移，每态对每字母至多一条转移。</li>
-<li><strong>NFA</strong>：放宽两限制——允许 <span>$\varepsilon$</span>（空串）转移与同标签多转移；只要存在一条路径接受即接受。</li>
-</ul>
-</div>
+::: definition 定义（DFA vs. NFA）
+- **DFA**：无 $\varepsilon$ 转移，每态对每字母至多一条转移。
+
+- **NFA**：放宽两限制——允许 $\varepsilon$（空串）转移与同标签多转移；只要存在一条路径接受即接受。
+:::
 
 ### 5.1 正则表达式 → NFA（结构归纳）
 
@@ -276,17 +263,17 @@ Operator   = + | - | * | / Identifier = [a-z]([a-z]|[0-9])*
 
 ### 5.2 NFA → DFA（子集构造）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（子集构造 Subset Construction）</strong>
-DFA 每个状态对应 NFA 状态的一个子集；起始态 = NFA 起始态的 <span>$\varepsilon$</span>-闭包；某 DFA 状态为接受态 ⟺ 其集合含某 NFA 接受态；对字母 <span>$a$</span> 的转移 = 集合内各 NFA 态读 <span>$a$</span>（含后续 <span>$\varepsilon$</span>）可达状态的并集。代价：DFA 可能<strong>指数级</strong>大于 NFA。
-</div>
+::: definition 定义（子集构造 Subset Construction）
+DFA 每个状态对应 NFA 状态的一个子集；起始态 = NFA 起始态的 $\varepsilon$-闭包；某 DFA 状态为接受态 ⟺ 其集合含某 NFA 接受态；对字母 $a$ 的转移 = 集合内各 NFA 态读 $a$（含后续 $\varepsilon$）可达状态的并集。代价：DFA 可能**指数级**大于 NFA。
+:::
 
 ---
 
 ## 6. Phase 1 的 Lexer 任务
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（Lexer 规格）</strong>
-<strong>输入</strong>：一组词法类别（正则表达式）+ 一个输入字符串；<strong>输出</strong>：一个 token 序列，每个 token 带其匹配文本。
-</div>
+::: definition 定义（Lexer 规格）
+**输入**：一组词法类别（正则表达式）+ 一个输入字符串；**输出**：一个 token 序列，每个 token 带其匹配文本。
+:::
 
 实现路线即上面的链条：正则表达式 → NFA → DFA → 用 DFA 对输入扫描分词。
 

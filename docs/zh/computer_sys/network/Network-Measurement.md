@@ -1,3 +1,11 @@
+---
+title: 网络测量（Network Measurement）
+course: 6.5820/6.S04 计算机网络
+course_id: '6.5820'
+kind: system
+tags: []
+status: complete
+---
 # Lec 6 网络测量（Network Measurement）
 
 阅读资料
@@ -6,7 +14,7 @@
 
 > Topics：RTT Measurement、Delay Estimation、Clock Synchronization、Active/Passive Measurement。"测量"是网络一切优化与诊断的前提——拥塞控制要量 RTT、SLA 要量丢包/时延、数据中心遥测要量单向时延。本讲核心难点：**单向时延的测量依赖各机器时钟同步到极高精度**，Huygens 用纯软件做到了几十纳秒。
 
-## 总览
+## 本讲导览
 
 - 为什么测量、测什么
 - RTT vs 单向时延：为何后者需要时钟同步
@@ -29,24 +37,23 @@
 
 ## 二、RTT vs 单向时延
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · RTT 易测、单向时延难测</strong><br>
-<strong>RTT</strong> 只需<strong>同一时钟</strong>量"发出→收到回应"的时间差（ping、TCP 时间戳都行），不需要两端时钟一致。<br>
-<strong>单向时延</strong> = 收到时刻（B 的钟）− 发出时刻（A 的钟），要求 <strong>A、B 的时钟高度同步</strong>，否则测出来的是「真实单向时延 + 两钟偏差」。
-</div>
+::: definition 定义 · RTT 易测、单向时延难测
+**RTT** 只需**同一时钟**量"发出→收到回应"的时间差（ping、TCP 时间戳都行），不需要两端时钟一致。
+
+**单向时延** = 收到时刻（B 的钟）− 发出时刻（A 的钟），要求 **A、B 的时钟高度同步**，否则测出来的是「真实单向时延 + 两钟偏差」。
+:::
 
 而很多场景（路径不对称、定位单向拥塞、数据中心精细遥测）恰恰需要**单向时延**，于是问题归结为**时钟同步**。
 
 ## 三、时钟同步的难点
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>两类误差 + 一个干扰</strong>
-<ul>
-<li><strong>偏移 (offset)</strong>：两钟当前读数差；</li>
-<li><strong>频偏/漂移 (skew/drift)</strong>：晶振频率不同，偏移随时间持续累积，必须不断校正；</li>
-<li><strong>可变网络延迟</strong>：同步要靠交换时间戳报文，但报文在网络里排队的时间<strong>不固定且不对称</strong>，直接污染对偏移的估计。</li>
-</ul>
-</div>
+::: example 两类误差 + 一个干扰
+- **偏移 (offset)**：两钟当前读数差；
+
+- **频偏/漂移 (skew/drift)**：晶振频率不同，偏移随时间持续累积，必须不断校正；
+
+- **可变网络延迟**：同步要靠交换时间戳报文，但报文在网络里排队的时间**不固定且不对称**，直接污染对偏移的估计。
+:::
 
 现有方案的层次：**NTP**（软件、毫秒级，受网络抖动限制）；**PTP/IEEE 1588**（需交换机/网卡**硬件时间戳**支持，微秒级）；**GPS**（需专用接收器）。痛点：要高精度就得专用硬件。
 
@@ -54,28 +61,25 @@
 
 Huygens（Geng et al., NSDI 2018）在数据中心里**不需要专用硬件**（用现有网卡的时间戳能力），把同步精度做到**几十纳秒**——比 NTP 好约 4 个数量级，逼近 PTP。三个关键思想：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · ① 编码探针（coded probes）滤掉被排队污染的样本</strong><br>
-成对发送间隔精确已知的探针；如果两个探针到达端的间隔与发送间隔<strong>不一致</strong>，说明它们在路上<strong>遭遇了排队</strong>，时间戳被污染——直接丢弃。只保留"干净"的探针，使估计基于未受排队干扰的样本。
-</div>
+::: definition 定义 · ① 编码探针（coded probes）滤掉被排队污染的样本
+成对发送间隔精确已知的探针；如果两个探针到达端的间隔与发送间隔**不一致**，说明它们在路上**遭遇了排队**，时间戳被污染——直接丢弃。只保留"干净"的探针，使估计基于未受排队干扰的样本。
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · ② 自然网络效应（natural network effect）</strong><br>
-不只在两台机器间同步，而是让<strong>许多机器对互相</strong>交换探针。所有这些两两偏移估计之间存在<strong>必须自洽的约束</strong>（A→B、B→C、A→C 的偏移要闭合一致）。把全网的成对测量放进一个<strong>全局最小二乘</strong>问题求解，用整张网的冗余信息<strong>互相纠错</strong>，大幅压低单条链路噪声。
-</div>
+::: definition 定义 · ② 自然网络效应（natural network effect）
+不只在两台机器间同步，而是让**许多机器对互相**交换探针。所有这些两两偏移估计之间存在**必须自洽的约束**（A→B、B→C、A→C 的偏移要闭合一致）。把全网的成对测量放进一个**全局最小二乘**问题求解，用整张网的冗余信息**互相纠错**，大幅压低单条链路噪声。
+:::
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · ③ 用 SVM 拟合 + 为什么软件就够</strong><br>
-对每对机器，用 <strong>SVM（支持向量机）</strong>从一批带噪声的单向时延样本里稳健地拟合出偏移与频偏（找一条把往返两方向样本分开的"间隔最大"分隔线，对离群点鲁棒）。核心洞察：<strong>精度瓶颈不在硬件而在"如何从被网络噪声污染的样本里提取真信号"</strong>——编码探针滤噪 + 网络效应纠错 + SVM 拟合三招合起来，纯软件就能逼近专用硬件方案。这让大规模数据中心无需换硬件即可获得纳秒级同步（进而支撑精细的单向时延遥测、[[Modern-Congestion-Control]] 等）。
-</div>
+::: theorem 推论 · ③ 用 SVM 拟合 + 为什么软件就够
+对每对机器，用 **SVM（支持向量机）**从一批带噪声的单向时延样本里稳健地拟合出偏移与频偏（找一条把往返两方向样本分开的"间隔最大"分隔线，对离群点鲁棒）。核心洞察：**精度瓶颈不在硬件而在"如何从被网络噪声污染的样本里提取真信号"**——编码探针滤噪 + 网络效应纠错 + SVM 拟合三招合起来，纯软件就能逼近专用硬件方案。这让大规模数据中心无需换硬件即可获得纳秒级同步（进而支撑精细的单向时延遥测、[[Modern-Congestion-Control]] 等）。
+:::
 
 ## 五、主动测量 vs 被动测量
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 主动 vs 被动</strong><br>
-<strong>主动测量 (active)</strong>：<strong>注入</strong>探测流量来测（ping 量 RTT、traceroute 量路径、iperf 量带宽、Huygens 的探针）。可控、可测任意路径，但会<strong>增加负载</strong>、且探测包可能被网络特殊对待（如 ICMP 被限速）而失真。<br>
-<strong>被动测量 (passive)</strong>：<strong>观察已有流量</strong>（链路镜像/tap、采样、NetFlow/sFlow、交换机计数器）。不增负载、反映真实流量，但<strong>只能看到恰好经过的流量</strong>，且大流量下要采样。
-</div>
+::: definition 定义 · 主动 vs 被动
+**主动测量 (active)**：**注入**探测流量来测（ping 量 RTT、traceroute 量路径、iperf 量带宽、Huygens 的探针）。可控、可测任意路径，但会**增加负载**、且探测包可能被网络特殊对待（如 ICMP 被限速）而失真。
+
+**被动测量 (passive)**：**观察已有流量**（链路镜像/tap、采样、NetFlow/sFlow、交换机计数器）。不增负载、反映真实流量，但**只能看到恰好经过的流量**，且大流量下要采样。
+:::
 
 ## 六、论文重点
 

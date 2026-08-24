@@ -1,4 +1,13 @@
-# Lecture 01：编译器概览（Overview of Compilation）
+---
+title: 编译器概览（Overview of Compilation）
+course: 6.1100 计算机语言工程
+course_id: '6.1100'
+lecture: 1
+kind: theory
+tags: []
+status: complete
+---
+# Lec 01 编译器概览（Overview of Compilation）
 
 > 对应课程：MIT 6.1100 / 6.035 Computer Language Engineering
 > 配套复习课：R1（课程信息）、R2（递归下降分析器，主体在 L3）
@@ -10,16 +19,19 @@
 
 整个课程围绕一个**从零搭建编译器**的项目展开（"Blank page project"），分为五个阶段（Five Segments），每个阶段先发项目说明，再上 2–5 节课，然后给设计文档/检查点时间，最后提交。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（编译器的五个项目阶段）</strong>
-<ul>
-<li><strong>Phase 1</strong>：Scanner / Parser（词法 + 语法分析）——<em>个人</em>项目</li>
-<li><strong>Phase 2</strong>：IR and Semantic Checks（中间表示 + 语义检查）</li>
-<li><strong>Phase 3</strong>：x86 Code Generator（代码生成）</li>
-<li><strong>Phase 4</strong>：Dataflow Analysis（数据流分析）</li>
-<li><strong>Phase 5</strong>：Register Allocation + Optimizations（寄存器分配 + 优化，最终提交）</li>
-</ul>
+::: definition 定义（编译器的五个项目阶段）
+- **Phase 1**：Scanner / Parser（词法 + 语法分析）——*个人*项目
+
+- **Phase 2**：IR and Semantic Checks（中间表示 + 语义检查）
+
+- **Phase 3**：x86 Code Generator（代码生成）
+
+- **Phase 4**：Dataflow Analysis（数据流分析）
+
+- **Phase 5**：Register Allocation + Optimizations（寄存器分配 + 优化，最终提交）
+
 Phase 2–5 为 3–4 人小组项目；可接受语言为 Java / Scala / Rust / TypeScript。
-</div>
+:::
 
 协作政策：可以和任何人讨论，但**代码必须自己写**；使用专门的编译器构造库前需问 TA。
 
@@ -80,7 +92,7 @@ Phase 2–5 为 3–4 人小组项目；可接受语言为 Java / Scala / Rust /
 
 按项目阶段，编译可拆为：
 
-```
+```text
 源程序
   │  ① 词法 + 语法分析 (Lexical & Syntax Analysis)   → 语法树 / Token 流
   ▼
@@ -120,15 +132,21 @@ int sumcalc(int a, int b, int N) {
 
 下面逐步施加经典优化（每一步都是一道"看代码怎么变"的例题）。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（优化变换逐步推演）</strong>
-<p><strong>① 常量传播 (Constant Propagation)</strong>：<code>y</code> 被赋值 <code>0</code> 且循环内未被修改，故 <code>b*y</code> → <code>b*0</code>。</p>
-<p><strong>② 代数化简 (Algebraic Simplification)</strong>：<code>b*0</code> → <code>0</code>，于是 <code>x = x + 0</code> → <code>x = x</code>。</p>
-<p><strong>③ 复制传播 (Copy Propagation)</strong>：<code>x = x</code> 是恒等赋值，整条语句删除。</p>
-<p><strong>④ 公共子表达式消除 (Common Subexpression Elimination, CSE)</strong>：<code>(i+1)*(i+1)</code> 中 <code>i+1</code> 算两次，提取 <code>t = i+1</code>，写成 <code>t*t</code>。</p>
-<p><strong>⑤ 死代码消除 (Dead Code Elimination)</strong>：<code>y</code> 已无任何使用，删除变量 <code>y</code> 及其赋值。</p>
-<p><strong>⑥ 循环不变式外提 (Loop Invariant Code Motion)</strong>：<code>4*a/b</code> 在循环内不变，提到循环外 <code>u = (4*a/b)</code>。</p>
-<p><strong>⑦ 强度削弱 (Strength Reduction)</strong>：<code>u*i</code> 用累加器 <code>v</code>（每次循环 <code>v = v + u</code>）替代乘法；<code>4*a</code> 用移位 <code>a<<2</code> 替代乘法。</p>
-</div>
+::: example 例题（优化变换逐步推演）
+**① 常量传播 (Constant Propagation)**：`y` 被赋值 `0` 且循环内未被修改，故 `b*y` → `b*0`。
+
+**② 代数化简 (Algebraic Simplification)**：`b*0` → `0`，于是 `x = x + 0` → `x = x`。
+
+**③ 复制传播 (Copy Propagation)**：`x = x` 是恒等赋值，整条语句删除。
+
+**④ 公共子表达式消除 (Common Subexpression Elimination, CSE)**：`(i+1)*(i+1)` 中 `i+1` 算两次，提取 `t = i+1`，写成 `t*t`。
+
+**⑤ 死代码消除 (Dead Code Elimination)**：`y` 已无任何使用，删除变量 `y` 及其赋值。
+
+**⑥ 循环不变式外提 (Loop Invariant Code Motion)**：`4*a/b` 在循环内不变，提到循环外 `u = (4*a/b)`。
+
+**⑦ 强度削弱 (Strength Reduction)**：`u*i` 用累加器 `v`（每次循环 `v = v + u`）替代乘法；`4*a` 用移位 `a<<2` 替代乘法。
+:::
 
 优化后程序：
 
@@ -151,11 +169,13 @@ int sumcalc(int a, int b, int N) {
 
 ### 4.1 量化收益
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（优化的实测效果，内层循环指令数）</strong>
-<p>未优化：<code>10·mov + 5·lea + 5·add/inc + 4·div/mul + 5·cmp/br/jmp = 29</code> 条指令，执行时间 <strong>43 秒</strong>。</p>
-<p>优化后：<code>4·mov + 2·lea + 1·add/inc + 3·div/mul + 2·cmp/br/jmp = 12</code> 条指令，执行时间 <strong>17 秒</strong>。</p>
-<p>即指令数减少约 <span>$1 - \frac{12}{29} \approx 59\%$</span>，时间约 <span>$1 - \frac{17}{43} \approx 60\%$</span>。</p>
-</div>
+::: theorem 定理（优化的实测效果，内层循环指令数）
+未优化：`10·mov + 5·lea + 5·add/inc + 4·div/mul + 5·cmp/br/jmp = 29` 条指令，执行时间 **43 秒**。
+
+优化后：`4·mov + 2·lea + 1·add/inc + 3·div/mul + 2·cmp/br/jmp = 12` 条指令，执行时间 **17 秒**。
+
+即指令数减少约 $1 - \frac{12}{29} \approx 59\%$，时间约 $1 - \frac{17}{43} \approx 60\%$。
+:::
 
 > 关键洞察：绝大部分收益来自**内层循环**——这是后续"循环优化"专讲存在的理由。
 

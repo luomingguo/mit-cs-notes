@@ -1,17 +1,24 @@
+---
+title: 锁
+course: 6.1810 操作系统工程
+course_id: '6.1810'
+lecture: 12
+kind: system
+tags: []
+status: complete
+---
 # Lec 12 锁
 
 这节课，我们将关注内核和操作系统中的锁。
 
-阅读xv6内核的实现，
+阅读 xv6 内核的实现，
 
 - `kernel/spinlock.h`
 - `kernel/spinlock.c`
 
-阅读xv6第7章的实现理解锁
+阅读 xv6 第 7 章的实现理解锁
 
-
-
-## 总览
+## 本讲导览
 
 - 为什么要使用锁？
 - 锁的抽象
@@ -24,15 +31,13 @@
   - 性能
 - 示例：URAT， CAS
 
-
-
 ## 为什么使用锁？
 
 应用程序希望使用多核处理器来实现并行加速，因此内核必须处理**并行的系统调用**，从而需要并行访问内核数据（如缓冲区缓存、进程等）。锁可以帮助正确共享数据，但也可能限制并行加速。
 
 ![image-20240915023949091](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66e5d893ec9ee.png)
 
-从 2000 年开始，时钟频率并没有继续增加。基本上是停滞不前（3.3GHz左右）。所以，核心的单线程性能，也基本达到了极限，停滞不前。而另一方面，晶体管数量还在随时间增长，所以，如果你不能使用晶体管使单个核心运行得更快，唯一的选择是使用多个处理器核，处理器核的数量越来越多。所以，应用程序需要更高的性能，就需要避免竞态条件，这正是锁的作用。
+从 2000 年开始，时钟频率并没有继续增加。基本上是停滞不前（3.3GHz 左右）。所以，核心的单线程性能，也基本达到了极限，停滞不前。而另一方面，晶体管数量还在随时间增长，所以，如果你不能使用晶体管使单个核心运行得更快，唯一的选择是使用多个处理器核，处理器核的数量越来越多。所以，应用程序需要更高的性能，就需要避免竞态条件，这正是锁的作用。
 
 ## 锁的抽象
 
@@ -60,9 +65,7 @@
 
 **你有两个进程，两个进程访问一个共享数据结构。其中一个是写入者，这意味着它对共享数据结构做修改。那么你需要对这个数据结构使用锁。**
 
-所以这是一条保守的规则，或者说这是一个严格的规则。有一种编程风格称为无锁编程（Lock-Free Programming），比如RCU等，难度很大。 
-
-
+所以这是一条保守的规则，或者说这是一个严格的规则。有一种编程风格称为无锁编程（Lock-Free Programming），比如 RCU 等，难度很大。
 
 ## 锁是否可以自动的？
 
@@ -77,9 +80,7 @@ if present(table1, key1):
 
 另一个线程可能会在当前线程有机会向 `table2` 添加之前，移除 `key1`，这个故事告诉我们，需要显式控制锁的持有时间段，以避免在中间状态时出现问题
 
-
-
-### 示例： rename系统调用
+### 示例： rename 系统调用
 
 假设`rename("d1/x", "d2/y")`
 
@@ -104,7 +105,7 @@ if present(table1, key1):
 
 ### 模块化
 
-考虑一下锁的顺序，一定是全局的。所以，如果我们有一个模块 m1 调用了模块 m2 的方法。根据遵守我们的锁规则，从 f 和 g 获取的所有锁，需要是在某种全局顺序，m1和m2的调用关系，意味着，就锁而言， **m2 的内部部件必须对 m1 可见**。所以 **m1 可以确保，以适当的方式调用 m2** 。在某种程度上，它会违背一些抽象的理念。如果做的好的话， m1 不需要知道关于 m2 实现的任何信息。因此，当你设计一个更大的系统时，、模块化变得更加复杂。
+考虑一下锁的顺序，一定是全局的。所以，如果我们有一个模块 m1 调用了模块 m2 的方法。根据遵守我们的锁规则，从 f 和 g 获取的所有锁，需要是在某种全局顺序，m1 和 m2 的调用关系，意味着，就锁而言， **m2 的内部部件必须对 m1 可见**。所以 **m1 可以确保，以适当的方式调用 m2** 。在某种程度上，它会违背一些抽象的理念。如果做的好的话， m1 不需要知道关于 m2 实现的任何信息。因此，当你设计一个更大的系统时，、模块化变得更加复杂。
 
 ### 性能
 
@@ -118,9 +119,9 @@ if present(table1, key1):
 
 ## 指令与内存顺序
 
-我们通常会认为，程序是按照代码书写顺序执行的。这个模型在单线程中基本成立，但是在多线程+共享内存的情况下，这个模型是错误的。为什么顺序会被打乱？有两个主要原因：1）编译器优化，编译器可能改变 load/store 的顺序、把便来那个缓存到寄存器（不再访问内存）、甚至删除某些内存的访问。2）CPU乱序执行（Out-of-order execution），CPU为了性能，会改变指令执行顺序，例如，指令 A 和 B 没有依赖关系，CPU可以先执行 B，再执行 A。
+我们通常会认为，程序是按照代码书写顺序执行的。这个模型在单线程中基本成立，但是在多线程+共享内存的情况下，这个模型是错误的。为什么顺序会被打乱？有两个主要原因：1）编译器优化，编译器可能改变 load/store 的顺序、把便来那个缓存到寄存器（不再访问内存）、甚至删除某些内存的访问。2）CPU 乱序执行（Out-of-order execution），CPU 为了性能，会改变指令执行顺序，例如，指令 A 和 B 没有依赖关系，CPU 可以先执行 B，再执行 A。
 
-下面看一个危险的例子，push链表
+下面看一个危险的例子，push 链表
 
 ```c
 l = malloc(sizeof *l); // 分配一个新节点
@@ -131,27 +132,27 @@ list = l; // 更新链表头为新节点
 release(&listlock);// 解锁
 ```
 
-如果发生重排，第 4 行（l->next = list）被移动到 release 之后。这个时间窗口中，CPU0更新了`list = l`，释放锁。CPU1获取锁，看到了新的list，但是`l->next`还没有初始化，结果链表损坏（严重bug）
+如果发生重排，第 4 行（l->next = list）被移动到 release 之后。这个时间窗口中，CPU0 更新了`list = l`，释放锁。CPU1 获取锁，看到了新的 list，但是`l->next`还没有初始化，结果链表损坏（严重 bug）
 
-编译器和 CPU 并不是完全随意乱排，它们遵循内存模型（memory model），并提供机制让程序员控制顺序，解决方法就是内存屏障。xv6 使用 `__sync_synchronize()`禁止编译器和 CPU 在该点前后重排内存访问。在`acquire()`和`release()`都使用了内存屏障，保证acquire 之后的操作不会跑到 acquire 之前，release 之前的操作不会跑到 release 之后
+编译器和 CPU 并不是完全随意乱排，它们遵循内存模型（memory model），并提供机制让程序员控制顺序，解决方法就是内存屏障。xv6 使用 `__sync_synchronize()`禁止编译器和 CPU 在该点前后重排内存访问。在`acquire()`和`release()`都使用了内存屏障，保证 acquire 之后的操作不会跑到 acquire 之前，release 之前的操作不会跑到 release 之后
 
-## Sleep锁
+## Sleep 锁
 
-有些情况下，xv6 需要**长时间持有锁**。例如，文件系统在读写磁盘时可能需要几十毫秒。如果用 spinlock，其他进程想获取锁时，只能一直“自旋”（busy waiting），白白浪费CPU。自旋锁还有一个重要限制，持有锁时不能让出CPU（yield）。为什么？  如果允许，持有锁的线程A → yield， 线程B尝试acquire一直自旋，不会yield，因此占着CPU，线程A没法运行，无法释放锁，最终就是导致死锁。spinlock 要求在持锁期间关闭中断，如果 yield，会违反这个约束。
+有些情况下，xv6 需要**长时间持有锁**。例如，文件系统在读写磁盘时可能需要几十毫秒。如果用 spinlock，其他进程想获取锁时，只能一直“自旋”（busy waiting），白白浪费 CPU。自旋锁还有一个重要限制，持有锁时不能让出 CPU（yield）。为什么？  如果允许，持有锁的线程 A → yield， 线程 B 尝试 acquire 一直自旋，不会 yield，因此占着 CPU，线程 A 没法运行，无法释放锁，最终就是导致死锁。spinlock 要求在持锁期间关闭中断，如果 yield，会违反这个约束。
 
-我们需要一种新的锁满足：等待锁时可以让出CPU、持有锁时也允许yield/中断。解决方案：sleep-lock。sleep-lock 内部有一个locked字段，用一个 spinlock 来保护它。acquiresleep 的行为，如果锁不可用，调用sleep，原子地释放内部spinlock，让出CPU，接着等待被唤醒。如此，在等待期间，当前线程不会占用CPU、其他线程可以运行。 但是sleep锁有两个关键限制，不能在中断处理函数中使用，因为 sleep-lock 会开启中断；不能在 spinlock 临界区中使用，因为 acquiresleep 可能 yield，但是反过来是可以的， 可以在 sleep-lock 内使用 spinlock
+我们需要一种新的锁满足：等待锁时可以让出 CPU、持有锁时也允许 yield/中断。解决方案：sleep-lock。sleep-lock 内部有一个 locked 字段，用一个 spinlock 来保护它。acquiresleep 的行为，如果锁不可用，调用 sleep，原子地释放内部 spinlock，让出 CPU，接着等待被唤醒。如此，在等待期间，当前线程不会占用 CPU、其他线程可以运行。 但是 sleep 锁有两个关键限制，不能在中断处理函数中使用，因为 sleep-lock 会开启中断；不能在 spinlock 临界区中使用，因为 acquiresleep 可能 yield，但是反过来是可以的， 可以在 sleep-lock 内使用 spinlock
 
 ## 现代系统的锁实现
 
 使用锁进行编程，即使经过多年对并发原语和并行性的研究，仍然是一个具有挑战性的事情。通常，更好的做法是， 将锁封装在更高层的抽象中（例如线程安全队列）。不过 xv6 并没有这样做。如果你需要直接使用锁编程，那么最好能够检测数据竞争的工具，因为很容易遗漏加锁的约束。
 
-大多数操作系统都支持POSIX线程（Pthread）——允许一个用户进程包含多个线程，这些线程可以在不同CPU上并发运行。Pthread提供用户态锁、屏障等同步机制，还支持一种特性，可重入锁（re-entrant lock）。要在用户态支持 Pthreads，操作系统必须提供配合，例如，如果某个线程在系统调用中阻塞，同一进程的其他线程应该还能在该 CPU 上运行。如果某个线程修改了进程的地址空间，内核必须确保在其他CPU上运行该进程线程的页表（硬件状态）也要同更新。
+大多数操作系统都支持 POSIX 线程（Pthread）——允许一个用户进程包含多个线程，这些线程可以在不同 CPU 上并发运行。Pthread 提供用户态锁、屏障等同步机制，还支持一种特性，可重入锁（re-entrant lock）。要在用户态支持 Pthreads，操作系统必须提供配合，例如，如果某个线程在系统调用中阻塞，同一进程的其他线程应该还能在该 CPU 上运行。如果某个线程修改了进程的地址空间，内核必须确保在其他 CPU 上运行该进程线程的页表（硬件状态）也要同更新。
 
-虽然可以在没有原子指令的情况下实现锁，但是代价非常高，因此大多数OS都会使用原子指令。锁在高竞争情况下会很昂贵，例如，一个CPU持有锁（在本地cache中），另一个想获取锁，此时，锁所在的 cache line 必须从一个 CPU 的缓存移动到另一个 CPU，并且可能需要使其他 CPU 上的缓存副本失效。为了避免锁的开销，许多OS使用“无锁（lock-free）”数据结构和算法，例如，可以实现一种链表，查找时不需要锁，插入只需要一个原子操作。但是问题是无锁编程更加复杂，需要考虑指令重排（instruction reordering）和内存重排（memory reordering）
+虽然可以在没有原子指令的情况下实现锁，但是代价非常高，因此大多数 OS 都会使用原子指令。锁在高竞争情况下会很昂贵，例如，一个 CPU 持有锁（在本地 cache 中），另一个想获取锁，此时，锁所在的 cache line 必须从一个 CPU 的缓存移动到另一个 CPU，并且可能需要使其他 CPU 上的缓存副本失效。为了避免锁的开销，许多 OS 使用“无锁（lock-free）”数据结构和算法，例如，可以实现一种链表，查找时不需要锁，插入只需要一个原子操作。但是问题是无锁编程更加复杂，需要考虑指令重排（instruction reordering）和内存重排（memory reordering）
 
 ---
 
-# 源码精读：spinlock 与 sleeplock
+## 源码精读：spinlock 与 sleeplock
 
 > 两份参考源码 `spinlock.h` / `spinlock.c` 把前面所有概念（原子指令、内存屏障、关中断防死锁）落到几十行代码里；`sleeplock.c` 则展示「长时间持锁」如何用 spinlock + sleep/wakeup 搭出来。代码取自 xv6-riscv（rev5）。
 
@@ -188,7 +189,9 @@ acquire(struct spinlock *lk)
 }
 ```
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么是「原子交换」而不是「先读后写」？</strong>朴素写法 <code>while(lk-&gt;locked); lk-&gt;locked=1;</code> 是<strong>两步</strong>，两个 CPU 可能同时读到 0、都以为抢到——竞态。<code>__atomic_exchange_n</code> 在 RISC-V 上编译成单条 <code>amoswap.w.aq</code>，把「读旧值 + 写新值」做成<strong>一条不可分割的硬件指令</strong>，从而只有一个 CPU 能拿到旧值 0。这就是 test-and-set 的精髓。</div>
+::: theorem 为什么是「原子交换」而不是「先读后写」？
+朴素写法 `while(lk-&gt;locked); lk-&gt;locked=1;` 是**两步**，两个 CPU 可能同时读到 0、都以为抢到——竞态。`__atomic_exchange_n` 在 RISC-V 上编译成单条 `amoswap.w.aq`，把「读旧值 + 写新值」做成**一条不可分割的硬件指令**，从而只有一个 CPU 能拿到旧值 0。这就是 test-and-set 的精髓。
+:::
 
 `__ATOMIC_ACQUIRE` 是一道**内存屏障**：禁止编译器/CPU 把临界区里的 load/store 重排到拿锁**之前**，保证「先拿到锁，再访问被保护的数据」。
 
@@ -246,9 +249,13 @@ void pop_off(void) {
 }
 ```
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么持有 spinlock 期间必须关中断？</strong>设想中断处理程序也要拿同一把锁：若 CPU 已持锁、此时来中断，中断处理里再 <code>acquire</code> 同一把锁 → 自旋等待自己释放 → <strong>永远死锁</strong>。关中断杜绝了这种「自己等自己」。</div>
+::: example 为什么持有 spinlock 期间必须关中断？
+设想中断处理程序也要拿同一把锁：若 CPU 已持锁、此时来中断，中断处理里再 `acquire` 同一把锁 → 自旋等待自己释放 → **永远死锁**。关中断杜绝了这种「自己等自己」。
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么要「可嵌套」（noff 计数）而不是直接 intr_off/intr_on？</strong>一个 CPU 可能同时持有多把锁。如果每次 release 都直接开中断，那么释放第一把锁就把中断开了，而第二把锁还在手里——危险。所以用 <code>noff</code> 计数：<strong>两次 push_off 要两次 pop_off 才抵消</strong>，只有退回最外层、且记录的最初状态 <code>intena</code> 是开的，才真正恢复中断。这保证「最初中断是关的，则 push/pop 之后仍是关的」。</div>
+::: definition
+**为什么要「可嵌套」（noff 计数）而不是直接 intr_off/intr_on？**一个 CPU 可能同时持有多把锁。如果每次 release 都直接开中断，那么释放第一把锁就把中断开了，而第二把锁还在手里——危险。所以用 `noff` 计数：**两次 push_off 要两次 pop_off 才抵消**，只有退回最外层、且记录的最初状态 `intena` 是开的，才真正恢复中断。这保证「最初中断是关的，则 push/pop 之后仍是关的」。
+:::
 
 ## 6. `sleeplock.c`：长时间持锁靠 spinlock + sleep/wakeup 搭出来
 
@@ -274,11 +281,13 @@ void releasesleep(struct sleeplock *lk) {
 }
 ```
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>spinlock 与 sleeplock 的分工</strong>临界区<strong>极短</strong>（几条指令、不睡眠、可能被中断处理用）→ <strong>spinlock</strong>（忙等、关中断）；临界区<strong>长</strong>（涉及磁盘等阻塞）→ <strong>sleeplock</strong>（睡眠让出 CPU、持锁期间允许中断/yield）。注意 sleeplock 不能在中断处理或 spinlock 临界区里用（因为它会睡眠/开中断）；反过来，spinlock 可以在 sleeplock 临界区里用。</div>
+::: theorem spinlock 与 sleeplock 的分工
+临界区**极短**（几条指令、不睡眠、可能被中断处理用）→ **spinlock**（忙等、关中断）；临界区**长**（涉及磁盘等阻塞）→ **sleeplock**（睡眠让出 CPU、持锁期间允许中断/yield）。注意 sleeplock 不能在中断处理或 spinlock 临界区里用（因为它会睡眠/开中断）；反过来，spinlock 可以在 sleeplock 临界区里用。
+:::
 
 ## 7. 一张图看清两层锁
 
-```
+```text
 spinlock:  acquire ──amoswap(test&set)+关中断──> 临界区(极短,不睡) ──release+开中断──>
               │
               └── sleeplock 借它保护自己的 locked 字段：
@@ -286,6 +295,3 @@ sleeplock: acquiresleep ─ acquire(内部spinlock) ─ while(locked) sleep(让�
                                                            ▲
                               releasesleep: locked=0; wakeup ─┘
 ```
-
-
-

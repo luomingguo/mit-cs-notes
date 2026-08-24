@@ -1,30 +1,31 @@
-# Lec 5: 文件系统的组织
+---
+title: 文件系统的组织
+course: 18-746 存储系统
+course_id: '18-746'
+lecture: 5
+kind: system
+tags: []
+status: complete
+---
+# Lec 5 文件系统的组织
 
 - [UNIX Internals: The New Frontiers, CH8]()
-  - 国内FAi《深入理解UNIX系统内核》
+  - 国内 FAi《深入理解 UNIX 系统内核》
 
 - [Practical File System Design with the Be File System, CH2](https://scispace.com/pdf/practical-file-system-design-with-the-be-file-system-4wxjpr341a.pdf)
 - [Operating Systems: Three Easy Pieces, CH39](http://pages.cs.wisc.edu/~remzi/OSTEP/file-intro.pdf)
 
- 
-
-进程和地址空间分别是CPU和内存的虚拟化，两个抽象结合在一起，使得程序运行时仿佛处在一个私有、隔离的世界中，仿佛它拥有自己的处理器、内存。这种幻觉极大简化了系统编程。本节介绍另外一个关键的虚拟化技术：持久化存储。
+进程和地址空间分别是 CPU 和内存的虚拟化，两个抽象结合在一起，使得程序运行时仿佛处在一个私有、隔离的世界中，仿佛它拥有自己的处理器、内存。这种幻觉极大简化了系统编程。本节介绍另外一个关键的虚拟化技术：持久化存储。
 
 关键问题：
 
-- OS应该如何管理持久化设备？
-- 应该提供怎么样的API？
+- OS 应该如何管理持久化设备？
+- 应该提供怎么样的 API？
 - 实现中有哪些关键方面需要考虑？
-
-
 
 ## 文件与目录
 
-文件本质上只是一个字节的线性数组（linear array of bytes），你可以从其中的字节进行读取或写入。每个文件都有某种底层名称，通常是一个数字；用户并不知道。由于历史原因，文件的这种底层名称通常称为inode号（inode number）。第二个抽象是目录，和文件一样，也有一个低层名称（即 inode 号），但它的内容具有非常特定的结构：它包含一系列\<用户可读名称，低层名称\>的映射对。目录中的每一个条目都指向一个文件或者另一个目录。通过在目录中嵌套目录，用户可以构建任意的目录树（directory tree）或目录层次结构（directory hierarchy），所有的文件和目录都存储在这棵树中。
-
-
-
-
+文件本质上只是一个字节的线性数组（linear array of bytes），你可以从其中的字节进行读取或写入。每个文件都有某种底层名称，通常是一个数字；用户并不知道。由于历史原因，文件的这种底层名称通常称为 inode 号（inode number）。第二个抽象是目录，和文件一样，也有一个低层名称（即 inode 号），但它的内容具有非常特定的结构：它包含一系列\<用户可读名称，低层名称\>的映射对。目录中的每一个条目都指向一个文件或者另一个目录。通过在目录中嵌套目录，用户可以构建任意的目录树（directory tree）或目录层次结构（directory hierarchy），所有的文件和目录都存储在这棵树中。
 
 ## 文件系统接口
 
@@ -71,8 +72,6 @@ O_CREAT | O_WRONLY | O_TRUNC
 
 > 曾经有人问 UNIX 的设计者 Ken Thompson，如果重新设计 UNIX，他会做什么不同的事情？他回答说： “我会把 creat 拼成 create（多加一个 e）。”
 
-
-
 open() 的一个重要特性是它的返回值：文件描述符。文件描述符本质上是一个整数，并且在每个进程内部是私有的。从这个角度看，文件描述符其实是一种 capability（能力）。也就是说，它是一个不透明的句柄（opaque handle），持有它就意味着你拥有执行某些操作的权限。另一种理解方式是：文件描述符就像是指向一个 file 类型对象的指针。一旦你获得了这个对象，就可以调用其他“方法”来操作文件
 
 下面是 xv6 内核中的相关代码片段：
@@ -85,11 +84,7 @@ struct proc {
 };
 ```
 
-
-
 ### 读取与写入
-
-
 
 > [!IMPORTANT]
 >
@@ -103,9 +98,9 @@ struct proc {
 >
 > - -e trace=open,close,read,write 只跟踪这些系统调用，而忽略其他调用
 >
-> 
 >
-> 
+>
+>
 
 下面是使用 strace 查看 cat 做了什么的示例（为了可读性省略了一些调用）：
 
@@ -121,10 +116,6 @@ close(3) = 0
 ...
 prompt>
 ```
-
-
-
-
 
 接下来，在 strace 输出中我们看到一个有趣的操作：调用了 write() 系统调用，并且写入的目标是文件描述符 1。文件描述符 1 表示标准输出，因此这一步把字符串 “hello” 输出到了屏幕上，这正是 cat 程序的功能。
 
@@ -161,8 +152,6 @@ open file table
 
 这也是 UNIX 文件系统设计中非常经典的一层抽象。
 
-
-
 **非顺序访问**
 
 有时我们需要在文件的某个特定位置进行读写，为了实现这一点，可以使用 lseek() 系统调用。其函数原型如下：
@@ -192,11 +181,11 @@ off_t lseek(int fildes, off_t offset, int whence);
 
 ### 共享文件表项：fork() 和 dup()
 
-在许多情况下，文件描述符 到 打开文件表（Open File Table）项的映射是 1对1 的。例如一个进程可能会：
+在许多情况下，文件描述符 到 打开文件表（Open File Table）项的映射是 1 对 1 的。例如一个进程可能会：
 
 1. 打开一个文件
 2. 读取一个文件
-3. 关闭一个文件 
+3. 关闭一个文件
 
 这种情况下，该文件会在打开文件表中有一个独立表项，即使另外一个进程读取同一个文件，也有各自独立的表项。因此，每次对文件的逻辑读/写入都是相互独立的。每个进程访问文件时都有自己的 current offset（当前偏移量）。但是，一些特殊情况下，多个文件描述符会共享同一个打开文件表项，其中一种是`fork()`，当多个进程共享一个 file table entry 时， ref 会增加，只有当两个进程都关闭文件或退出时，这个表项次会被删除。
 
@@ -204,7 +193,7 @@ off_t lseek(int fildes, off_t offset, int whence);
 
 有时候共享打开文件表项是有用的，例如多个进程协同完成任务，可以同时写入同一个输出文件——共享 offset，不需要额外同步。另一种共享 open file table entry 的方式是：`dup()`、`dup2()`、`dup3()`
 
-创建一个新的 file descriptor， 但指向同一个打开文件表项，因此这两个文件描述符共享同一个offset、flags
+创建一个新的 file descriptor， 但指向同一个打开文件表项，因此这两个文件描述符共享同一个 offset、flags
 
 ```c
 int main(int argc, char *argv[]) {
@@ -221,13 +210,11 @@ int main(int argc, char *argv[]) {
 
 `dup2()` 在实现 UNIX shell 的输出重定向 时非常重要，例如`ls > file.txt`， shell 实现原理，首先`open(file.txt)`、然后`dup2(fd, STDOUT)`，最后`exec(ls)`
 
-
-
 ### fsync()立即写入磁盘
 
 通常情况下，当程序调用：
 
-```
+```text
 write()
 ```
 
@@ -249,13 +236,11 @@ assert(rc == 0);
 
 上面的代码 仍然不完全安全。有时还需要：
 
-```
+```text
 fsync(directory)
 ```
 
 即：对包含该文件的目录也执行 fsync()，原因是：如果文件是新创建的：不仅要保证文件数据写入磁盘，还要保证目录项也写入磁盘。否则，系统崩溃后可能出现：文件数据存在，但目录里没有这个文件。这类问题在很多应用程序中被忽略，导致了大量真实系统 bug。
-
-
 
 ### 原子文件更新
 
@@ -271,7 +256,7 @@ mv foo bar
 rename(char *old, char *new)
 ```
 
- rename() 的一个重要保证——原子性。一个实际例子，文本编辑器如何保存文件，想象你用emacs编辑文件，在中间插入了一行。编辑器通常不会直接修改原文件，而是这样操作：
+ rename() 的一个重要保证——原子性。一个实际例子，文本编辑器如何保存文件，想象你用 emacs 编辑文件，在中间插入了一行。编辑器通常不会直接修改原文件，而是这样操作：
 
 ```c
 int fd = open("foo.txt.tmp",
@@ -316,8 +301,6 @@ struct stat {
 };
 ```
 
-
-
 大多数文件系统会把这些信息保存在 `inode`结构里，它是文件系统中的持久化数据结构，里面保存：
 
 - 文件大小
@@ -325,15 +308,11 @@ struct stat {
 - 时间
 - 数据块的位置等信息
 
-重要的是，inode 在磁盘上，为了提高性能，活跃的inode会缓存到内存 
-
-
+重要的是，inode 在磁盘上，为了提高性能，活跃的 inode 会缓存到内存
 
 ### 删除文件
 
-用的是`unlink`而不是delete、remove，原因是在UNIX文件系统中，文件不等于文件名，文件名 只是目录的一个链接。`unlink()` 做的事情其实是删除inode的链接。
-
-
+用的是`unlink`而不是 delete、remove，原因是在 UNIX 文件系统中，文件不等于文件名，文件名 只是目录的一个链接。`unlink()` 做的事情其实是删除 inode 的链接。
 
 ### 创建目录
 
@@ -382,8 +361,6 @@ while ((d = readdir(dp)) != NULL) {
 closedir(dp);
 ```
 
-
-
 ```c
 struct dirent {
     char d_name[256];      // 文件名
@@ -395,7 +372,6 @@ struct dirent {
 ```
 
 提示：目录条目本身信息很少，只是 **名字 ↔ inode 映射**，若需要更多信息（如文件大小），可以对每个文件调用 `stat()`。
-
 
 ### 删除目录
 
@@ -456,8 +432,6 @@ ls -i file file2
 
 因此，系统引入了 符号链接。
 
-
-
 **符号链接本身是一个文件**，类型不同于普通文件或目录， 用 `stat` 可以看到区别：
 
 ```sh
@@ -514,12 +488,6 @@ rw-r--r--
 chmod 600 foo.txt # 结果: rw------- （只有文件所有者可以读写）
 ```
 
-
-
-
-
-
-
 ## 文件系统的相关对象
 
 在现代操作系统中，为了支持多种不同的文件系统（如 ext4、XFS、NTFS、BFS 等），内核设计了 **VFS（Virtual File System）抽象层**。VFS 将文件系统无关的操作与具体文件系统实现分离，使得内核可以通过统一接口访问各种文件系统，而无需关心底层实现细节。****
@@ -528,15 +496,11 @@ chmod 600 foo.txt # 结果: rw------- （只有文件所有者可以读写）
 
 ![image-20260310162052619](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260310162052619.png)
 
-`v_data`：指向文件系统私有数据结构（opaque pointer），例如：inode（如 ext4）、rnode（如 NFS）或者BFS 特有结构等等，由于它是不透明的，文件系统无关代码不能直接访问，但文件系统内部可以通过类型转换访问它。
-
-
+`v_data`：指向文件系统私有数据结构（opaque pointer），例如：inode（如 ext4）、rnode（如 NFS）或者 BFS 特有结构等等，由于它是不透明的，文件系统无关代码不能直接访问，但文件系统内部可以通过类型转换访问它。
 
 `v_op`：指向一个 `vnodeops` 结构，定义了文件的操作接口（如 open、read、write、lookup 等）。
 
-
-
-### vnodeops结构
+### vnodeops 结构
 
 ```c
 struct vnodeops {
@@ -553,13 +517,9 @@ struct vnodeops {
 
 当上层调用 `open()`, `read()`, `write()` 等系统调用时，VFS 会找到对应文件的 vnode。VFS 通过 `v_op` 调用文件系统的具体实现函数，从而完成操作。这样，内核可以统一处理文件操作，而无需了解底层文件系统细节。
 
+### vfs 层结构
 
-
-
-
-### vfs层结构
-
-像vnode一样，vfs对象有只想起私有数据和操作向量的指针。`vfs_data` 指向每个文件系统吃藕的不透明的数据结构。不像vnode，vfs对象和私有数据结构通常被分开分配。 `vfs_op`字段指向一个`vfsops`结构，其具体形式如下
+像 vnode 一样，vfs 对象有只想起私有数据和操作向量的指针。`vfs_data` 指向每个文件系统吃藕的不透明的数据结构。不像 vnode，vfs 对象和私有数据结构通常被分开分配。 `vfs_op`字段指向一个`vfsops`结构，其具体形式如下
 
 ```c
 struct vfsops {
@@ -572,26 +532,3 @@ struct vfsops {
 ```
 
 ![image-20260310163121826](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260310163121826.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

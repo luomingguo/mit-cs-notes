@@ -1,6 +1,13 @@
-
-
-# Lec 10 分布式FS & NAS接口
+---
+title: '分布式 FS & NAS 接口'
+course: 18-746 存储系统
+course_id: '18-746'
+lecture: 10
+kind: system
+tags: []
+status: complete
+---
+# Lec 10 分布式 FS & NAS 接口
 
 - The Design and Implementation of the 4.4BSD Operating System, CHAPTER 9
 - [*Scale and Performance in a Distributed File System, 1988*](https://scispace.com/pdf/scale-and-performance-in-a-distributed-file-system-41h9xbvkhz.pdf)
@@ -8,10 +15,6 @@
 - [*Operating Systems: Three Easy Pieces, CH49——NFS*](http://pages.cs.wisc.edu/~remzi/OSTEP/dist-nfs.pdf)
 - [*Operating Systems: Three Easy Pieces, CH50——AFS*](http://pages.cs.wisc.edu/~remzi/OSTEP/dist-afs.pdf)
 - [*RFC 1813 —— NFS Version 3 Protocol Specification*](http://www.faqs.org/rfcs/rfc1813.html)
-
-
-
-
 
 ## 一、本讲定位
 
@@ -136,7 +139,7 @@ int UDP_Read(int sd, struct sockaddr_in *addr, char *buffer, int n) {
 }
 ```
 
-client.c 
+client.c
 
 ```c
 #include "udp.h"
@@ -223,7 +226,7 @@ int main(int argc, char *argv[]) {
 
 #### Message Passing
 
-第二类后来成为主流，就是显式消息通信，例如RPC、HTTP、gRPC、Actor
+第二类后来成为主流，就是显式消息通信，例如 RPC、HTTP、gRPC、Actor
 
 ### 远程过程调用
 
@@ -236,7 +239,7 @@ RPC 系统通常由两部分组成：
 
 下面分别介绍这两部分。
 
-#### Stub生成器
+#### Stub 生成器
 
 Stub 生成器的工作很简单： **自动生成代码来打包函数参数和返回值，从而减少程序员手写消息打包代码的麻烦。**
 
@@ -244,46 +247,42 @@ Stub 生成器的工作很简单： **自动生成代码来打包函数参数和
 
 Stub 编译器的输入通常是 **服务器希望提供给客户端调用的接口定义**， Stub 生成器会根据这个接口生成不同的代码。。例如：
 
-```
+```text
 interface {
     int func1(int arg1);
     int func2(int arg1, int arg2);
 };
 ```
 
-对于客户端，会生成 client stub， 客户端程序只需要链接这个stub，然后想普通函数 一样调用它，例如`func1(x)`，实际上客户端 stub 在内部会执行以下步骤：
+对于客户端，会生成 client stub， 客户端程序只需要链接这个 stub，然后想普通函数 一样调用它，例如`func1(x)`，实际上客户端 stub 在内部会执行以下步骤：
 
 1. 创建消息缓冲区，通常是连续的字节数组
-2. 打包参数，将函数标志符和参数写入消息缓冲区，这个过程叫做marshaling（参数封装）、serialization（序列化）
-3. 发送消息到RPC服务器，通信细节有RPC运行时库处理
+2. 打包参数，将函数标志符和参数写入消息缓冲区，这个过程叫做 marshaling（参数封装）、serialization（序列化）
+3. 发送消息到 RPC 服务器，通信细节有 RPC 运行时库处理
 4. 等待服务器回复，因为函数调用通常是同步的
 5. 解包返回值，从回复消息中提取返回值。这个过程称为 unmarshaling、deserialization（反序列化）
 6. 将结果返回给调用者。
 
-
-
 对于服务器端也会生成相应代码，执行步骤如下：
 
 1. 解包消息，提取函数标志符和参数
-2. 调用真实函数，RPC运行时根据函数ID调用对应函数
+2. 调用真实函数，RPC 运行时根据函数 ID 调用对应函数
 3. 打包返回结果，将返回值序列化到回复消息中
 4. 发送回复，把结果发送回客户端。
 
-Stub编译器还需要处理复杂参数，例如`write(fd, buffer, size)`，参数包括文件描述符、缓冲区指针，数据大小。如果RPC接口中出现指针，系统需要知道指针指向多少数据，需要序列化哪些内容。通常有两种解决方法，1是使用预定义类型（例如buffer类型），2是在数据结构中添加注解，让编译器知道如何序列化。
-
-
+Stub 编译器还需要处理复杂参数，例如`write(fd, buffer, size)`，参数包括文件描述符、缓冲区指针，数据大小。如果 RPC 接口中出现指针，系统需要知道指针指向多少数据，需要序列化哪些内容。通常有两种解决方法，1 是使用预定义类型（例如 buffer 类型），2 是在数据结构中添加注解，让编译器知道如何序列化。
 
 服务器的并发模型
 
 最简单的服务器结构，一次只能处理一个
 
-```
+```text
 while(true)
     接收请求
     处理请求
 ```
 
-这种方式效率很低，大多数RPC服务器采用并发模型。常见的是 **线程池（thread pool）**，服务器启动时创建固定数量线程。工作流程：
+这种方式效率很低，大多数 RPC 服务器采用并发模型。常见的是 **线程池（thread pool）**，服务器启动时创建固定数量线程。工作流程：
 
 1. 主线程接收请求
 2. 将请求分发给 worker 线程
@@ -300,51 +299,35 @@ while(true)
 - 编程复杂度增加
 - 需要锁和同步机制
 
-
-
 #### 运行时库
 
 RPC 系统的大部分复杂工作都在运行时库中完成，例如性能优化、可靠性处理。下面介绍几个关键问题。
 
-
-
 服务定位（Naming）
 
-客户端需要知道服务器在哪，最简单的方法是使用主机名、IP地址、端口号。更复杂的系统会用DNS、服务器发现系统。
+客户端需要知道服务器在哪，最简单的方法是使用主机名、IP 地址、端口号。更复杂的系统会用 DNS、服务器发现系统。
 
+UDP 还是 TCP
 
-
-UDP还是TCP
-
-很多RPC系统会用UDP，其优点是消息更少、延迟更低；缺点是不可靠；比如自己实现超时充实、ACK和序列号机制。通过序列号可以实现，每个RPC恰好执行一次。
-
-
+很多 RPC 系统会用 UDP，其优点是消息更少、延迟更低；缺点是不可靠；比如自己实现超时充实、ACK 和序列号机制。通过序列号可以实现，每个 RPC 恰好执行一次。
 
 大消息处理
 
-有些 RPC 参数可能非常大，超过一个网络包大小。解决方法，1是网络协议负责分片和重组，2是RPC运行时自己实现分片
-
-
+有些 RPC 参数可能非常大，超过一个网络包大小。解决方法，1 是网络协议负责分片和重组，2 是 RPC 运行时自己实现分片
 
 字节序问题
 
-RPC需要统一格式
+RPC 需要统一格式
 
+同步 RPC 与异步 RPC
 
-
-同步RPC与异步RPC
-
-异步RPC流程：
+异步 RPC 流程：
 
 1. 客户端发送 RPC 请求
 2. 立即返回
 3. 客户端继续做其他工作
 
 之后再查询 RPC 结果。
-
-
-
-
 
 端到端原则认为：某些功能只有在系统的最高层（应用层）才能真正正确实现。例如 **可靠文件传输**。即使网络层保证可靠：数据仍可能：在发送端内存损坏、在接收端写入磁盘时损坏。因此真正的可靠性检查必须在应用层完成。例如：传输完成后，计算文件 checksum，比较发送端和接收端，只有这样才能保证真正可靠。
 
@@ -353,8 +336,6 @@ RPC需要统一格式
 Sun 的网络文件系统是最早也最成功的分布式文件系统之一。Sun 采取了一个不寻常的策略：它开发的不是一个封闭产品，而是一个开放协议（*open protocol*），精确定义客户端和服务器之间的消息格式。任何厂商都可以实现自己的 NFS 服务器并在市场上竞争，同时保持互操作性。这种开放市场策略极大推动了 NFS 的普及。
 
 ![image-20260305205904932](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260305205904932.png)
-
-
 
 ### 3.1  设计核心： 无状态
 
@@ -373,28 +354,3 @@ NFSv2 的首要设计目标是服务器崩溃后的快速恢复。实现方式�
 - CREATE / REMOVE / MKDIR / RMDIR / READDIR 等。
 
 一次完整的文件读取流程：应用调 open("/foo/bar")，客户端文件系统发两次 LOOKUP（先查 foo、再查 bar）得到 bar 的文件句柄，在本地打开文件表里分配描述符、记录句柄和当前偏移量 0。应用调 read，客户端用记录的句柄和偏移量发 READ 给服务器，收到数据后更新偏移量。close 时只清理本地结构，不需要和服务器通信。注意所有状态都在客户端维护，服务器完全无状态。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

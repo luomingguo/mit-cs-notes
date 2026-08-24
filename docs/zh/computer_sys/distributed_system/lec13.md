@@ -1,3 +1,12 @@
+---
+title: 乐观并发控制：FaRM
+course: 6.5840 分布式系统（Spring 2026）
+course_id: '6.5840'
+lecture: 13
+kind: system
+tags: []
+status: complete
+---
 # Lec 13 乐观并发控制：FaRM
 
 > **阅读材料**
@@ -33,12 +42,9 @@
 
 ### 2.2 NVRAM：非易失内存（消灭磁盘写）
 
-<div style="background-color:#eef4ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>📘 定义：NVRAM（Non-Volatile RAM）</strong>
-
-
+::: definition 📘 定义：NVRAM（Non-Volatile RAM）
 写只落到 RAM（~200ns）而非磁盘（HDD ~10ms / SSD ~100µs），消灭持久化写这个巨大瓶颈。但 RAM 断电即失，靠下述机制变"非易失"：
-</div>
+:::
 
 为什么不能简单地"写到 $f+1$ 台机器的 RAM"就算持久？因为**断电故障并不独立**——它可能同时击中 100% 的机器。FaRM 的做法：
 
@@ -60,14 +66,13 @@ NVRAM 消灭了持久化写瓶颈，只剩**网络**和 **CPU** 两个瓶颈。
 
 为什么网络常是瓶颈？单 DC 内光速延迟很低，但**网络数据处理的 CPU 成本很高**。传统 RPC over TCP over LAN 要经过：系统调用 → 拷贝消息 → 中断 → 上下文切换……每包 CPU 成本让小消息 RPC 很难超过每秒几十万次，而线速（如 10 Gbps）通常并非瓶颈。FaRM 用两招破局：
 
-<div style="background-color:#eef4ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>📘 定义：内核旁路（Kernel Bypass）与单边 RDMA（One-sided RDMA）</strong>
-
+::: definition
+**📘 定义：内核旁路（Kernel Bypass）与单边 RDMA（One-sided RDMA）**
 
 **内核旁路**：应用直接和网卡（NIC）交互，无系统调用、无内核；NIC 直接 DMA 进出用户态 RAM；FaRM 软件**轮询（polling）** DMA 区域收发消息（专门钉住 CPU 核做轮询，省掉中断/系统调用/用户-内核拷贝/上下文切换）。
 
 **单边 RDMA**：一台机器的应用借 RDMA 网卡**直接读写另一台机器的内存，完全不惊动对方 CPU**；按缓存行原子读取。一台服务器吞吐 10M+ ops/s，延迟 ~5µs；单次单边读/写最快可低至 1/18 µs。
-</div>
+:::
 
 > [!NOTE]
 > FaRM 也会用 RDMA 来实现一种"类 RPC"：发送方用 RDMA 把请求**写入**接收方正在轮询的内存区，接收方同样方式回复——这比传统 RPC 快得多（无中断、无用户/内核切换）。FaRM 的 **LOCK** 阶段就是这样用 RDMA 的；而 **VALIDATE** 阶段用的是纯**单边读**。
@@ -84,12 +89,9 @@ NVRAM 消灭了持久化写瓶颈，只剩**网络**和 **CPU** 两个瓶颈。
 | 写   | 就地修改                            | 提交前**不安装**，本地缓写                         |
 | 冲突 | 造成等待/延迟                       | 提交时**验证**：无冲突则提交，有冲突则**中止重试** |
 
-<div style="background-color:#ecfdf3;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>✅ 关键结论：FaRM 选 OCC 的根本原因</strong>
-
-
+::: insight ✅ 关键结论：FaRM 选 OCC 的根本原因
 OCC 的"读不加锁"让 FaRM 可以用**单边 RDMA 读**取数据——服务器 CPU **完全不必参与读**。而此前我们见过的协议（查/置锁、查租约、确认已持久化）都要求服务器**主动参与**，与单边 RDMA 不兼容。"乐观"赌的是**冲突很少**：若冲突频繁，OCC 会产生大量中止，性能反而崩。
-</div>
+:::
 
 ---
 
@@ -129,12 +131,9 @@ Primary 处理 COMMIT-PRIMARY: 写入新值 → version#++ → 清锁标志
 
 **LOCK（提交协议第一条消息）**：TC 用 RDMA 向**每个被写对象的主**追加一条 LOCK 日志记录（含 oid、事务读到的 version#、新值）。它**既是预写日志（WAL）条目，又是发给主的 RPC 请求**，落在主的 NVRAM 里、可挺过断电。主处理 LOCK 时：
 
-<div style="background-color:#ecfdf3;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>✅ 关键结论：LOCK 的原子检查</strong>
-
-
+::: insight ✅ 关键结论：LOCK 的原子检查
 主轮询到 LOCK 后：若对象**已被锁**、或 **version# ≠ 事务读到的值**，回 "no"；否则**置锁标志并回 "yes"，但暂不改数据**。检查锁 + 检查版本 + 置锁这三步用**原子 compare-and-swap（CAS）** 完成（锁标志是 version# 的最高位），以防别的 CPU 也在处理 LOCK、或有客户端正用 RDMA 在读。
-</div>
+:::
 
 TC 等齐所有 LOCK 回复：任一为 "no" 即**中止**（向各主追加 ABORT 以释放锁，`txCommit()` 返回 "no"）。
 
@@ -142,12 +141,9 @@ TC 等齐所有 LOCK 回复：任一为 "no" 即**中止**（向各主追加 ABO
 
 **COMMIT-BACKUP / COMMIT-PRIMARY**：TC 向各**备**追加 COMMIT-BACKUP（等硬件 ack），再向各**主**追加 COMMIT-PRIMARY（只等 RDMA **硬件 ack**——表示已安全落在主的 NVRAM，**不等**主处理日志），随后 `txCommit()` 返回 "yes"。主之后处理 COMMIT-PRIMARY 时才：拷新值入对象内存、version# 自增、清锁。
 
-<div style="background-color:#eef4ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>📘 定义：提交点（Commit Point）</strong>
-
-
+::: definition 📘 定义：提交点（Commit Point）
 **写下第一个 COMMIT-PRIMARY 的时刻**即提交点——从那一刻起事务结果就可能被揭示（主写值并解锁）。**纯只读事务**只用单边 RDMA 读，无写、无日志记录、无锁——**极快**。
-</div>
+:::
 
 ---
 
@@ -155,9 +151,9 @@ TC 等齐所有 LOCK 回复：任一为 "no" 即**中止**（向各主追加 ABO
 
 直觉：验证就是在问"这次执行是否等同于一次只跑一个"。若期间**没有冲突事务**，版本号不会变；若**有冲突**，必有一方在 LOCK 或 VALIDATE 时看到锁或变化的版本号，从而中止。
 
-<div style="background-color:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>🔬 例子 1：T1、T2 都做 x = x + 1</strong>
-</div>
+::: example 🔬 例子 1：T1、T2 都做 x = x + 1
+
+:::
 
 可串行化允许的结果（等价于逐个跑）：`x=2`（两方都"成功"）、`x=1`（一方成功一方中止）、`x=0`（两方都中止）。记号 `Rx0`=读到 x=0、`Lx`=锁 x、`Cx`=提交 x：
 
@@ -168,10 +164,9 @@ TC 等齐所有 LOCK 回复：任一为 "no" 即**中止**（向各主追加 ABO
 
 同步/交错时，后到的 LOCK 会发现 version# 已变（或被锁）而中止；错开时两者都能提交得 `x=2`。无论哪种交错，结果都落在可串行化允许的集合里。
 
+::: example 🔬 例子 2：经典 VALIDATE 测试（x、y 初值为 0）
 
-<div style="background-color:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>🔬 例子 2：经典 VALIDATE 测试（x、y 初值为 0）</strong>
-</div>
+:::
 
 `T1: if x==0 then y=1`；`T2: if y==0 then x=1`。可串行化的合法结果：`T1,T2 → y=1,x=0`；`T2,T1 → x=1,y=0`；中止可留 `x=0,y=0`。但**禁止 `x=1,y=1`**。
 
@@ -182,15 +177,13 @@ TC 等齐所有 LOCK 回复：任一为 "no" 即**中止**（向各主追加 ABO
 
 同步时两个 LOCK 都成功、但两个 VALIDATE 都因看到对方锁位而失败 → **两者都中止**（合法）。错开时 T1 提交、T2 的 `Vy` 看到 T1 的锁或更高版本而中止。关键：**不可能两个 V 都排在对方的 L 之前**，所以永远产生不出被禁止的 `x=1,y=1`。VALIDATE 既正确又快（一次单边读，而非 LOCK+COMMIT 两次写）。
 
-
 ---
 
 ## 7. 容错与恢复
 
-<div style="background-color:#ecfdf3;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>✅ 关键结论：恢复的核心准则</strong>
+::: insight ✅ 关键结论：恢复的核心准则
 若一个事务被故障打断，**而客户端可能已被告知它提交、或其提交值可能已被别的事务读到**，那么恢复时**必须保留并完成**该事务。
-</div>
+:::
 
 由 Figure 4：已提交的写可能在**第一个 COMMIT-PRIMARY 发出**时就被揭示，所以到那时，该事务的所有写必须已在**所有相关分片的全部 $f+1$ 个副本**上。**LOCK + COMMIT-BACKUP 正好做到这点**：LOCK 把新值告诉所有主，COMMIT-BACKUP 把新值告诉所有备；TC 在收齐所有 LOCK 与 COMMIT-BACKUP 之前**不发** COMMIT-PRIMARY（备可能还没处理 COMMIT-BACKUP，但已在其 NVRAM 日志里）。
 
@@ -222,9 +215,9 @@ TC 等齐所有 LOCK 回复：任一为 "no" 即**中止**（向各主追加 ABO
 
 两者都**分片、复制、用 2PC 做事务**，但优化方向相反：
 
-<div style="background-color:#ecfdf3;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>✅ 关键对比</strong>
-</div> 
+::: theorem ✅ 关键对比
+
+:::
 
 |          | Spanner                              | FaRM                                     |
 | -------- | ------------------------------------ | ---------------------------------------- |
@@ -241,13 +234,15 @@ TC 等齐所有 LOCK 回复：任一为 "no" 即**中止**（向各主追加 ABO
 
 ## 10. 小结与工程视角
 
-<div style="background-color:#ecfdf3;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>✅ 一图流记忆</strong>
-NVRAM（电池+SSD）消灭磁盘写 + 单边 RDMA/内核旁路消灭网络-CPU 开销 + OCC 让读无需服务器参与<br>
-⇒ 微秒级分布式事务；<br>
-LOCK（WAL+RPC，CAS 原子置锁）→ VALIDATE（只读对象单边重读）→ COMMIT-BACKUP → COMMIT-PRIMARY（提交点）<br>
+::: insight ✅ 一图流记忆
+NVRAM（电池+SSD）消灭磁盘写 + 单边 RDMA/内核旁路消灭网络-CPU 开销 + OCC 让读无需服务器参与
+
+⇒ 微秒级分布式事务；
+
+LOCK（WAL+RPC，CAS 原子置锁）→ VALIDATE（只读对象单边重读）→ COMMIT-BACKUP → COMMIT-PRIMARY（提交点）
+
 ⇒ 原子提交 + 可串行化 + 可恢复。
-</div>
+:::
 
 - **超高速分布式事务**：硬件异构（NVRAM、RDMA）但未来可能普及；性能不仅来自硬件，更来自**同时**优化网络、持久化、CPU 三者（前人多只优化其一），以及大量用单边 RDMA 替代完整 RPC。
 - **对你（分布式 SaaS）的可借鉴点**：① 若自配电池/UPS，可改造你的 Raft / k-v 服务利用电池做快速持久化；② OCC 适合**读多写少、冲突稀疏**的负载（很多 SaaS 读路径符合）；③ "用版本号 + 原子 CAS 做无锁校验"是高并发计数/库存场景的通用模式；④ FaRM 只在"需要每秒百万级事务"时才划算——几千 TPS 直接用成熟的 MySQL 即可。

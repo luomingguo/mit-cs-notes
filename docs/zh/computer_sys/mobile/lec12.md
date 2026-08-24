@@ -1,11 +1,21 @@
-# Lec 12 — 海洋物联网（*Ocean IoT*）
+---
+title: 海洋物联网（Ocean IoT）
+course: 6.1820 移动和传感器计算
+course_id: '6.1820'
+lecture: 12
+kind: system
+tags: []
+status: complete
+---
+# Lec 12 海洋物联网（*Ocean IoT*）
 > MIT 6.1820/MAS.453 · Mobile and Sensor Computing
 > 阅读材料：PAB [ACM SIGCOMM'19]
 
 ## 1. 动机：为什么是海洋？
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 海洋的独特重要性</strong><br>
-海洋覆盖地球表面 70% 以上，却几乎被现有 300 亿 IoT 设备中的 99.9999% 所忽视。已知超过 80% 的海底从未被观测，约 80% 的海洋生物尚未被发现。海洋是世界上增长最快的食品行业（水产养殖）来源，也是地球气候系统中储热能力远超大气层的关键组成。</div>
+::: definition 定义 — 海洋的独特重要性
+海洋覆盖地球表面 70% 以上，却几乎被现有 300 亿 IoT 设备中的 99.9999% 所忽视。已知超过 80% 的海底从未被观测，约 80% 的海洋生物尚未被发现。海洋是世界上增长最快的食品行业（水产养殖）来源，也是地球气候系统中储热能力远超大气层的关键组成。
+:::
 
 **将 IoT 带入水下的核心挑战**：
 
@@ -27,12 +37,17 @@
 | 传统水声调制解调器（*Modem*）| 传感器主动发射声波信号 | 数百瓦 |
 | PAB（无电池）| 传感器反射已有的声波信号 | 数百微瓦（$\mu$W）|
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 功耗降低 100 万倍</strong>　PAB 功耗约为传统水声通信的 $1/10^6$，这使无电池水下传感器成为可能，彻底改变了水下 IoT 的部署规模潜力。</div>
+::: theorem 推论 — 功耗降低 100 万倍
+PAB 功耗约为传统水声通信的 $1/10^6$，这使无电池水下传感器成为可能，彻底改变了水下 IoT 的部署规模潜力。
+:::
 
 ### 2.2 压电效应（*Piezoelectric Effect*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 压电效应（<em>Piezoelectricity</em>）</strong><br>
-压电材料受到机械应力（声波压力）时产生电压；反之施加电压时会产生机械变形（振动）。PAB 传感器利用压电陶瓷圆柱既作为能量收集器，又作为可编程声学反射器。</div>
+::: definition
+**定义 — 压电效应（*Piezoelectricity*）**
+
+压电材料受到机械应力（声波压力）时产生电压；反之施加电压时会产生机械变形（振动）。PAB 传感器利用压电陶瓷圆柱既作为能量收集器，又作为可编程声学反射器。
+:::
 
 **工作模式切换**：
 
@@ -84,7 +99,9 @@ $$\phi = \frac{2\pi d}{\lambda}$$
 
 $$d = \frac{\phi_\text{unwrapped} \cdot \lambda}{2\pi}$$
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 水下声速与相位分辨率</strong></div>
+::: example 例题 — 水下声速与相位分辨率
+
+:::
 
 水中声速 $v_\text{sound} \approx 1500$ m/s，工作频率 $f = 15$ kHz，则波长：
 
@@ -119,6 +136,6 @@ Sol：在河流实验中，实测定位精度约为 **10 cm**，证明了相位�
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 PAB 通过压电反向散射实现无电池水下通信（功耗降低 $10^6$ 倍），可编程谐振频率偏移解决了多节点 FDMA 的难题；水下定位通过相位测量规避随机唤醒延迟，实验精度约 10 cm，为将 IoT 大规模推广至地球上最广阔、最未探索的区域——海洋——奠定了技术基础。

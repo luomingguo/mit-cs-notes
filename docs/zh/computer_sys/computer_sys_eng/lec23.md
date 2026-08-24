@@ -1,3 +1,12 @@
+---
+title: 安全通道
+course: 6.1800 计算机系统工程
+course_id: '6.1800'
+lecture: 23
+kind: system
+tags: []
+status: complete
+---
 # Lec 23 安全通道
 
 > 阅读参考书 §11.3-11.5
@@ -5,21 +14,17 @@
 思考题
 
 - 给定一个结合了加密、MAC（消息认证码）和签名的协议，判断它是否提供了机密性（confidentiality） 和/或 完整性（integrity），以及它是否能够抵御重放攻击和反射攻击。
-  - 你不需要理解加密/解密、MAC或签名/验证背后的数学原理。我们只会问你关于将这些函数作为构建模块的方案。你应该理解它们提供的属性以及它们如何在安全通道中正确使用，但不需要理解，例如，加密提供机密性但不提供完整性的数学原因。
-- 给定p 和 g，在两方之间执行Diffie-Hellman密钥交换
-- 解释对Diffie-Hellman密钥交换的攻击
+  - 你不需要理解加密/解密、MAC 或签名/验证背后的数学原理。我们只会问你关于将这些函数作为构建模块的方案。你应该理解它们提供的属性以及它们如何在安全通道中正确使用，但不需要理解，例如，加密提供机密性但不提供完整性的数学原因。
+- 给定 p 和 g，在两方之间执行 Diffie-Hellman 密钥交换
+- 解释对 Diffie-Hellman 密钥交换的攻击
 - 解释如何用公钥密码学来验证用户身份，包括证书的创建和分发方式
-- 你不需要理解TLS握手细节，尽管你应该能够识别其中的熟悉元素（序列号、密钥等）
-
-
-
-
+- 你不需要理解 TLS 握手细节，尽管你应该能够识别其中的熟悉元素（序列号、密钥等）
 
 ## 引入
 
 到目前为止，我们已经处理了对手尝试在服务器上访问数据的问题。现在我们的对手开始从外部，即从网络中观察数据。
 
-有些数据包的有效载荷可能会反映出你正在干嘛， 即使你看不懂Header信息。有时，流量很容易与 个人 联系起来，无论是在数据包头还是数据包数据中.
+有些数据包的有效载荷可能会反映出你正在干嘛， 即使你看不懂 Header 信息。有时，流量很容易与 个人 联系起来，无论是在数据包头还是数据包数据中.
 
 ![image-20250909143621857](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250909143621857.png)
 
@@ -43,7 +48,7 @@ decrypt(34fbcbd1, "0x47348f63a67926cd393d4b93c58f7
 
 ```
 
-性质：给定密文（ciphertext），几乎不可能在不知道key的情况下获取message。
+性质：给定密文（ciphertext），几乎不可能在不知道 key 的情况下获取 message。
 
 ![image-20250909144158679](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250909144158679.png)
 
@@ -53,15 +58,11 @@ decrypt(34fbcbd1, "0x47348f63a67926cd393d4b93c58f7
 
 区别于机密性
 
-基于Key的认证模型
+基于 Key 的认证模型
 
 签名和认证的性质
 
-Key分布
-
-
-
-
+Key 分布
 
 ## 消息机密性
 
@@ -75,43 +76,41 @@ Key分布
 
 为了说明安全协议的必要性，我们研究两个用于密钥分发的协议。我们已经看到，密钥分发基于名称发现协议（name discovery protocol），而该协议始于受信任的物理交付。因此，我们假设 Alice 曾与 Charles 线下见过面，Charles 也曾与 Bob 线下见过面。那么，问题来了：是否存在这样一个协议，使得 Alice 和 Bob （他们从未见过面）能够在不受信任的网络上安全地交换密钥？
 
-**公钥方案**相对更简单。假设Alice和Bob都已经知道Charles的公钥（因为他们分别见过），Charles都知道Alice和Bob各自的公钥。如果这两者都信任Charles，那么可以通过Charles来交换密钥。具体协议流程：
+**公钥方案**相对更简单。假设 Alice 和 Bob 都已经知道 Charles 的公钥（因为他们分别见过），Charles 都知道 Alice 和 Bob 各自的公钥。如果这两者都信任 Charles，那么可以通过 Charles 来交换密钥。具体协议流程：
 
-1. Alice向Charles发送请求（不需要加密或签名）：Alice $\rightarrow$ Charles: {"请给我Bob的密钥"}
+1. Alice 向 Charles 发送请求（不需要加密或签名）：Alice $\rightarrow$ Charles: {"请给我 Bob 的密钥"}
 
-他无法确认消息是否真的来自Alice，因为网络协议的源地址目标地址不经过身份认证
+他无法确认消息是否真的来自 Alice，因为网络协议的源地址目标地址不经过身份认证
 
-2. Charles回复Alice： Charles $\rightarrow$ Alice: {"要与Bob通信，请使用公钥$K_{Bpub}$"}$_{Cpriv}$
+2. Charles 回复 Alice： Charles $\rightarrow$ Alice: {"要与 Bob 通信，请使用公钥$K_{Bpub}$"}$_{Cpriv}$
 
-这里，$\{M\}_k$记号表示使用密钥k对消息M进行签名。这个例子中，消息使用了Charles的私钥（Cpriv）进行签名，消息中包含了Bob的公钥Bpub。当Alice收到这条消息后，她可以通过Charles的公钥（Cpub）进行验证。如果验证成功，则说明这条消息确实来自Charles，不会被篡改。
+这里，$\{M\}_k$记号表示使用密钥 k 对消息 M 进行签名。这个例子中，消息使用了 Charles 的私钥（Cpriv）进行签名，消息中包含了 Bob 的公钥 Bpub。当 Alice 收到这条消息后，她可以通过 Charles 的公钥（Cpub）进行验证。如果验证成功，则说明这条消息确实来自 Charles，不会被篡改。
 
-为了说明缺乏明确性（explicit）可能带来的问题，假设前面提到的消息2编程以下版本
+为了说明缺乏明确性（explicit）可能带来的问题，假设前面提到的消息 2 编程以下版本
 
-2. Charles回复Alice： Charles $\rightarrow$ Alice: {"请使用公钥$K_{Bpub}$"}$_{Cpriv}$
+2. Charles 回复 Alice： Charles $\rightarrow$ Alice: {"请使用公钥$K_{Bpub}$"}$_{Cpriv}$
 
-Alice 无法确定 KBpub 是谁的公钥，这时，一个恶意的对手Lucifer（曾与Charles见过面，但是不知道Lucifer是恶意的）可以利用这点发动攻击。攻击方式如下：
+Alice 无法确定 KBpub 是谁的公钥，这时，一个恶意的对手 Lucifer（曾与 Charles 见过面，但是不知道 Lucifer 是恶意的）可以利用这点发动攻击。攻击方式如下：
 
-1. Lucifer向Charles请求自己的公钥：Lucifer $\rightarrow$​ Charles: {"请给我Lucifer的密钥"}
-2. Charles回复Lucifer： Charles $\rightarrow$ Lucifer: {"请使用公钥$K_{Lpub}$"}$_{Cpriv}$​
-3. Alice请求Bob公钥： Alice $\rightarrow$ Charles: {"请给我Bob的密钥"}
+1. Lucifer 向 Charles 请求自己的公钥：Lucifer $\rightarrow$​ Charles: {"请给我 Lucifer 的密钥"}
+2. Charles 回复 Lucifer： Charles $\rightarrow$ Lucifer: {"请使用公钥$K_{Lpub}$"}$_{Cpriv}$​
+3. Alice 请求 Bob 公钥： Alice $\rightarrow$ Charles: {"请给我 Bob 的密钥"}
 
 这时，Lucifer 拦截 Charles 的回复，并用**之前存下的回复替换掉它**，然后转发给 Alice
 
 4. （伪造） $\rightarrow$ Alice： {"请使用公钥$K_{Lpub}$"}$_{Cpriv}$
 
- Charles 的公钥可以验证这条消息的签名，但 Alice 误以为 KLpub（Lucifer 的公钥）是 Bob 的公钥。Lucifer 如果能拦截 Alice 发送给 Bob 的消息，他就可以冒充Bob。
+ Charles 的公钥可以验证这条消息的签名，但 Alice 误以为 KLpub（Lucifer 的公钥）是 Bob 的公钥。Lucifer 如果能拦截 Alice 发送给 Bob 的消息，他就可以冒充 Bob。
 
-如何防止这种攻击？ 如同前面所说，保持明确性，要与Bob通信，请使用公钥KBpub。
+如何防止这种攻击？ 如同前面所说，保持明确性，要与 Bob 通信，请使用公钥 KBpub。
 
-回到正确的协议，当Alice收到Charles的回复后，她可以使用自己的私钥签名任何想要发送给Bob的消息，并且使用Bob的公钥加密该消息；Bob的回复也可以采用相同的方法，即Bob通过类似的方式从Charles那里获取Alice的公钥。
+回到正确的协议，当 Alice 收到 Charles 的回复后，她可以使用自己的私钥签名任何想要发送给 Bob 的消息，并且使用 Bob 的公钥加密该消息；Bob 的回复也可以采用相同的方法，即 Bob 通过类似的方式从 Charles 那里获取 Alice 的公钥。
 
-> 为什么Bob不能直接把公钥发给Alice？
+> 为什么 Bob 不能直接把公钥发给 Alice？
 
-Bob 无法 通过不安全的信道直接发送自己的公钥给 Alice，即使他对公钥进行签名也不行。原因是：Alice无法相信 一个由未知公钥签名的消息，即公钥自己证明自己的身份是不可信的。如果 Alice 收到 Charles 签名的消息（类似消息 2），她就可以相信该消息的真实性，前提是她信任 Charles 能够谨慎地进行公钥绑定。
+Bob 无法 通过不安全的信道直接发送自己的公钥给 Alice，即使他对公钥进行签名也不行。原因是：Alice 无法相信 一个由未知公钥签名的消息，即公钥自己证明自己的身份是不可信的。如果 Alice 收到 Charles 签名的消息（类似消息 2），她就可以相信该消息的真实性，前提是她信任 Charles 能够谨慎地进行公钥绑定。
 
-Charles作为证书颁发机构（CA），这样的消息（消息2）被称为证书，它包含 Bob 的名字和公钥，证明 Bob 和该公钥之间的绑定关系。如果 **Bob 事先从 Charles 那里获得了这份证书**，他也可以直接**把这份证书发送给 Alice**，而不需要 Alice 额外向 Charles 询问 Bob 的公钥。在该协议中，Charles 的角色是证书颁发机构（Certificate Authority, CA），负责验证公钥的归属并提供可信的公钥分发服务。这种基于证书的公钥分发方法，后来发展为公钥基础设施（PKI），并被广泛应用于 SSL/TLS 证书、电子签名 等安全通信场景
-
-
+Charles 作为证书颁发机构（CA），这样的消息（消息 2）被称为证书，它包含 Bob 的名字和公钥，证明 Bob 和该公钥之间的绑定关系。如果 **Bob 事先从 Charles 那里获得了这份证书**，他也可以直接**把这份证书发送给 Alice**，而不需要 Alice 额外向 Charles 询问 Bob 的公钥。在该协议中，Charles 的角色是证书颁发机构（Certificate Authority, CA），负责验证公钥的归属并提供可信的公钥分发服务。这种基于证书的公钥分发方法，后来发展为公钥基础设施（PKI），并被广泛应用于 SSL/TLS 证书、电子签名 等安全通信场景
 
 ### 设计安全协议
 
@@ -126,36 +125,34 @@ Charles作为证书颁发机构（CA），这样的消息（消息2）被称为�
 
 为了说明设计安全协议时遇到的问题，我们将介绍两个简单的认证协议。第二个协议使用了质询-响应机制
 
-
-
 ### 一个错误的密钥交换协议
 
 质询-响应协议（challenge-response protocol）在 SSL/TLS 之上运行时，假设 SSL/TLS 能够建立一个机密且经过认证的通信信道，而这需要通信双方能够在不受信任的网络上安全地交换密钥。这种密钥交换是可行的，但必须谨慎处理。我们考虑两种不同的密钥交换协议。第一个协议是不正确的，而第二个（据目前所知）是正确的。这两个协议的目标相同，即让双方使用公钥系统协商一个共享密钥，该密钥可用于加密通信。
 
 在第一个协议中，有三方参与：Alice、Bob 和证书授权机构（CA）。协议流程如下：
 
-1. Alice $\rightarrow$ CA: {"请给我Alice和Bob的证书"}
-2. CA $\rightarrow$ Alice：{"这里是是证书：", {Alice， A$_{pub}$， T}$_{CApriv}$, {Bob， B$_{pub}$， T}$_{CApriv}$} 
+1. Alice $\rightarrow$ CA: {"请给我 Alice 和 Bob 的证书"}
+2. CA $\rightarrow$ Alice：{"这里是是证书：", {Alice， A$_{pub}$， T}$_{CApriv}$, {Bob， B$_{pub}$， T}$_{CApriv}$}
 
-这个协议中，CA返回了Alice和Bob的证书，这个证书将名称绑定到了各自的公钥，每个证书斗殴一个时间戳来判断证书是否是新鲜的，并且由CA签名。拿到 CA 提供的证书后，Alice 构造一个加密消息发送给 Bob：
+这个协议中，CA 返回了 Alice 和 Bob 的证书，这个证书将名称绑定到了各自的公钥，每个证书斗殴一个时间戳来判断证书是否是新鲜的，并且由 CA 签名。拿到 CA 提供的证书后，Alice 构造一个加密消息发送给 Bob：
 
 3. Alice $\rightarrow$ Bob: {"这是我的证书和一个提议的密钥: ", " {Alice， A$_{pub}$， T}$_{CApriv}$",  {K$_{AB}$, T}$_{Apriv}$}$^{Bpub}$
 
-该消息包含 Alice 的证书以及她提议的共享密钥（$K_{AB}$）。Bob可以使用CA的公钥验证Apub是否确实来自Alice。共享密钥$K_{AB}$由Alice使用她的私钥签名，Bob可以用$A_{pub}$验证其真实性。该消息整体使用Bob公钥加密，因此只有Bob能够读取$K_{AB}$，随后Alice用$K_{AB}$加密消息发送给Bob：
+该消息包含 Alice 的证书以及她提议的共享密钥（$K_{AB}$）。Bob 可以使用 CA 的公钥验证 Apub 是否确实来自 Alice。共享密钥$K_{AB}$由 Alice 使用她的私钥签名，Bob 可以用$A_{pub}$验证其真实性。该消息整体使用 Bob 公钥加密，因此只有 Bob 能够读取$K_{AB}$，随后 Alice 用$K_{AB}$加密消息发送给 Bob：
 
 4. Alice ⇒ Bob：{"这是我的消息：", …… T}$^{K_{AB}}$
 
 这个协议存在什么问题？提示：注意 Alice 在消息 3 中只对部分内容进行了签名，而不是对整条消息签名。请记住，我们应该假设协议的某些参与方可能是攻击者。
 
-这个协议存在潜在问题的原因应该是显而易见的，因为它违反了 **显式设计原则**（be explicit design principle）。协议的核心部分出现在消息 3 中，其中包含 Alice 提议的共享密钥：{K$_{AB}$, T}$_{Apriv}$， Alice告诉Bob，KAB在时间T时是Alice和Bob之间的合适的密钥。但是缺少**Alice和Bob的名字**。这意味着这段消息的解释取决于对话的上下文。因此，Bob 可以利用这部分消息伪装成 Alice。例如，Bob 可以向 Charles 发送一条消息，声称自己是 Alice，并提议使用 KAB 进行加密通信。
+这个协议存在潜在问题的原因应该是显而易见的，因为它违反了 **显式设计原则**（be explicit design principle）。协议的核心部分出现在消息 3 中，其中包含 Alice 提议的共享密钥：{K$_{AB}$, T}$_{Apriv}$， Alice 告诉 Bob，KAB 在时间 T 时是 Alice 和 Bob 之间的合适的密钥。但是缺少**Alice 和 Bob 的名字**。这意味着这段消息的解释取决于对话的上下文。因此，Bob 可以利用这部分消息伪装成 Alice。例如，Bob 可以向 Charles 发送一条消息，声称自己是 Alice，并提议使用 KAB 进行加密通信。
 
-假设Bob想冒充Alice与Charles进行通信，他可以按照以下步骤操作：
+假设 Bob 想冒充 Alice 与 Charles 进行通信，他可以按照以下步骤操作：
 
-1. Bob $\rightarrow$ CA ：{"请给我Bob和Charles的证书"}
+1. Bob $\rightarrow$ CA ：{"请给我 Bob 和 Charles 的证书"}
 2. CA $\rightarrow$ Bob：{"这里是证书：", {Bob, B$_{pub}, T'$}$_{CApriv}$，{Charles, C$_{pub}$, T'}$_{CApriv}$}
 3. Bob $\rightarrow$ Charles：{"这是我的证书和一个提议的密钥: ", " {Alice， A$_{pub}$， T}$_{CApriv}$",  {K$_{AB}$, T}$_{Apriv}$}$^{Cpub}$
 
-Bob 精心构造了消息 3， 他在消息中放入了 Alice 的证书（这是他从与 Alice 交谈时获取的），而不是提议一个新的密钥，他直接插入了Alice签名的KAB提议。Charles 无法判断这条消息 3 并非来自 Alice。事实上，他会认为这条消息确实是 Alice 发送的，因为{KAB, T} 是用 Alice 的私钥签名的。因此，Charles 误以为他拥有了一个仅与 Alice 共享的密钥，但实际上 **Bob 也掌握了 KAB**
+Bob 精心构造了消息 3， 他在消息中放入了 Alice 的证书（这是他从与 Alice 交谈时获取的），而不是提议一个新的密钥，他直接插入了 Alice 签名的 KAB 提议。Charles 无法判断这条消息 3 并非来自 Alice。事实上，他会认为这条消息确实是 Alice 发送的，因为{KAB, T} 是用 Alice 的私钥签名的。因此，Charles 误以为他拥有了一个仅与 Alice 共享的密钥，但实际上 **Bob 也掌握了 KAB**
 
 然后，Bob 可以向 Charles 发送消息：
 

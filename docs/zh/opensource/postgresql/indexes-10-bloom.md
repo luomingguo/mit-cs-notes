@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 索引 — 10（Bloom 索引）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 索引 — 10（Bloom 索引）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/452968/ （作者 Egor Rogov，PostgresPro）
@@ -55,7 +62,7 @@ Bloom 索引的物理结构非常简单——一个元页面后面跟着一系�
 
 单字段过滤（只用乘客姓名）：
 
-```
+```text
 Bitmap Heap Scan on flights_bi
   Recheck Cond: (passenger_name = 'MIROSLAV SIDOROV'::text)
   Rows Removed by Index Recheck: 38562
@@ -120,7 +127,7 @@ DEFAULT FOR TYPE interval USING bloom AS
 
 原文的建议非常明确：Bloom 索引适合那种"字段数量很多、表本身很宽、并且典型查询会对其中若干个字段做等值过滤"的场景——这类场景下，为每种可能的字段组合分别建多列 B-tree 索引会导致索引数量爆炸、维护成本失控，而一个 Bloom 索引就能同时较好地服务多种字段组合的查询,是一种务实的空间换查全能力的折中方案。同时原文再次强调:公式给出的参数只是实验的起点,布隆过滤器终究是一种概率型结构,实际效果需要结合真实查询模式和数据分布反复验证调优。
 
-## 小结
+## 本讲小结
 
 Bloom 索引把经典的布隆过滤器概率结构直接映射到数据库索引场景：每行一个独立的比特签名，靠多个哈希函数的置位模式判断"可能匹配"，用完全扁平、无导航结构的物理组织换取极简的存储和更新逻辑。它最大的价值在于解决了"宽表多字段任意组合等值查询"这个 B-tree 和 Hash 都不擅长应对的痛点——不需要为每种字段组合分别建索引,一个 Bloom 索引就能覆盖多种查询模式的过滤加速,代价是需要回表核实假阳性、且完全不支持范围查询和 NULL。
 

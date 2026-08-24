@@ -1,4 +1,13 @@
-# L15：低级虚拟机 I（Low-Level Virtual Machines I）——从 AST 解释器到字节码 VM
+---
+title: 低级虚拟机 I（Low-Level Virtual Machines I）——从 AST 解释器到字节码 VM
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+lecture: 15
+kind: theory
+tags: []
+status: complete
+---
+# Lec 15 低级虚拟机 I（Low-Level Virtual Machines I）——从 AST 解释器到字节码 VM
 
 > 进入 Phase 4。本讲回答两个问题：**为什么**要用虚拟机（而不是直接解释 AST），以及 VM 的**组织结构**（代码 / 栈 / 堆）。以 MITScript 的字节码 VM 为主线，对照 Crafting Interpreters 第 14~15 章。
 
@@ -18,19 +27,19 @@
 
 本讲开始把"程序怎么运行"从**递归遍历 AST**转向**在一台抽象机器上执行指令**。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（虚拟机的两个层次）</strong>
-<ul>
-<li><strong>语言（"What"）</strong>：语法 + 语义，描述"程序是什么、应得到什么结果"。</li>
-<li><strong>虚拟机（"How"）</strong>：描述"怎么算出来"。包含
-  <ul>
-  <li><strong>指令集 (Instruction Set)</strong>：每条指令做一个单一操作；</li>
-  <li><strong>执行组织 (Execution Organization)</strong>：代码、栈、堆的布局；</li>
-  <li><strong>托管运行时 (Managed Runtime)</strong>：数据类型的表示 + 垃圾回收。</li>
-  </ul>
-</li>
-</ul>
-最终再往下还有<strong>机器码 (Machine Code)</strong>：也有自己的指令集和执行组织（段、栈、页）。
-</div>
+::: definition 定义（虚拟机的两个层次）
+- **语言（"What"）**：语法 + 语义，描述"程序是什么、应得到什么结果"。
+
+- **虚拟机（"How"）**：描述"怎么算出来"。包含
+
+- **指令集 (Instruction Set)**：每条指令做一个单一操作；
+
+- **执行组织 (Execution Organization)**：代码、栈、堆的布局；
+
+- **托管运行时 (Managed Runtime)**：数据类型的表示 + 垃圾回收。
+
+最终再往下还有**机器码 (Machine Code)**：也有自己的指令集和执行组织（段、栈、页）。
+:::
 
 层级图：`Language → High-Level VM → Low-Level VM → Machine Code`。本讲聚焦 **High-Level VM**（字节码层）。
 
@@ -40,7 +49,7 @@
 
 源程序：
 
-```
+```text
 f = fun(y) {
     x = y + 2;
 };
@@ -51,7 +60,7 @@ f(1);
 
 外层（顶层）函数：
 
-```
+```text
 function {
   functions  = [ <内层函数> ],
   constants  = [None, 0, 1],
@@ -73,7 +82,7 @@ function {
 
 内层函数 `fun(y){ x = y + 2; }`：
 
-```
+```text
 function {
   local_vars = [y, x],
   constants  = [None, 2],
@@ -120,15 +129,17 @@ int eval_plus(Frame *f, Binop *e) {
 }
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（递归解释器的优缺点）</strong>
-<strong>优点：</strong>语义是递归推理规则，"很容易"直接映射成递归解释器；实现与语义一一对应（非结构化控制流稍乱，但基本贴合）。<br>
-<strong>缺点（很慢！）：</strong>
-<ul>
-<li>解释器在不停地<strong>遍历一个庞大的数据结构（AST）</strong>；</li>
-<li>深层递归调用开销很高；</li>
-<li>一句简单的 <code>x = 2+2</code> 可能要执行成千上万条机器指令。</li>
-</ul>
-</div>
+::: definition 定义（递归解释器的优缺点）
+**优点：**语义是递归推理规则，"很容易"直接映射成递归解释器；实现与语义一一对应（非结构化控制流稍乱，但基本贴合）。
+
+**缺点（很慢！）：**
+
+- 解释器在不停地**遍历一个庞大的数据结构（AST）**；
+
+- 深层递归调用开销很高；
+
+- 一句简单的 `x = 2+2` 可能要执行成千上万条机器指令。
+:::
 
 ### 2.2 动态语言更慢：一次加法的真实代价
 
@@ -158,7 +169,7 @@ add $r2, $r1   ; y + 2
 - **字节码 VM**（上面的 instructions）；
 - **中间表示 IR**（带 SSA 风味的伪指令）：
 
-```
+```text
 function __function_1 (y) {
   %x = alloca int64_t
   %0 = %y
@@ -190,14 +201,15 @@ __function_1:
 
 ## 3. 为什么用虚拟机？（VM 的价值）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（Virtual Machine: Why?）</strong>
-<ul>
-<li><strong>更快</strong>：解释字节码比遍历原始 AST 快得多（指令紧凑、线性、无需指针追逐）；</li>
-<li><strong>抽象层 / 可移植</strong>：在代码与硬件之间插一层抽象，同一份字节码可跑在任意微处理器上；</li>
-<li><strong>一次性优化机会</strong>：可在这一层做<strong>与机器无关</strong>的分析与优化，且只做一次——例如类型检查消除、死代码消除、代数化简；</li>
-<li><strong>更易编译到机器码</strong>：相对 AST，从字节码/IR 生成机器码要容易得多。</li>
-</ul>
-</div>
+::: theorem 定理（Virtual Machine: Why?）
+- **更快**：解释字节码比遍历原始 AST 快得多（指令紧凑、线性、无需指针追逐）；
+
+- **抽象层 / 可移植**：在代码与硬件之间插一层抽象，同一份字节码可跑在任意微处理器上；
+
+- **一次性优化机会**：可在这一层做**与机器无关**的分析与优化，且只做一次——例如类型检查消除、死代码消除、代数化简；
+
+- **更易编译到机器码**：相对 AST，从字节码/IR 生成机器码要容易得多。
+:::
 
 > 历史注脚：Java 字节码当年的卖点正是"平台中立"——机顶盒等嵌入式设备处理器五花八门（成本/性能/体积各异），字节码能跑在任意微处理器上是成功关键。P-code（1960s）是最早的字节码虚拟机思想；LLVM 更像是**编译器中间表示**而非可执行 VM。
 
@@ -205,19 +217,19 @@ __function_1:
 
 ## 4. VM 的执行组织：代码、栈、堆
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（三大区域）</strong>
-<ul>
-<li><strong>代码 (Code)</strong>：指令、函数、元数据（constants / names / functions 列表）。<strong>只读、静态</strong>。</li>
-<li><strong>栈 (Stack)</strong>：每次函数调用一个<strong>帧 (Frame)</strong>，帧内含：
-  <ul>
-  <li><strong>Locals</strong>：局部变量槽；</li>
-  <li><strong>IP（Instruction Pointer）</strong>：当前指令指针；</li>
-  <li><strong>Operand Stack（操作数栈）</strong>：指令的临时计算栈。</li>
-  </ul>
-</li>
-<li><strong>堆 (Heap)</strong>：关联数组式存储 + <strong>Globals（全局变量）</strong>；闭包、Record 等对象都分配在这里。</li>
-</ul>
-</div>
+::: definition 定义（三大区域）
+- **代码 (Code)**：指令、函数、元数据（constants / names / functions 列表）。**只读、静态**。
+
+- **栈 (Stack)**：每次函数调用一个**帧 (Frame)**，帧内含：
+
+- **Locals**：局部变量槽；
+
+- **IP（Instruction Pointer）**：当前指令指针；
+
+- **Operand Stack（操作数栈）**：指令的临时计算栈。
+
+- **堆 (Heap)**：关联数组式存储 + **Globals（全局变量）**；闭包、Record 等对象都分配在这里。
+:::
 
 > 这是一台**基于栈的虚拟机 (stack-based VM)**：指令不写寄存器号，而是隐式地从操作数栈弹出输入、把结果压回栈。Python VM、JVM 都是这种风格。
 
@@ -247,7 +259,7 @@ __function_1:
 
 MITScript 用注释精确规定每条指令的**操作数**与**栈效应**。几个代表：
 
-```
+```text
 // load_const i —— 把常量压栈
 // Operand 0: 常量在所属函数 constants 列表中的下标
 // Stack: S => S :: f.constants()[i]
@@ -271,13 +283,13 @@ StoreLocal
 Add
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（栈式指令集的一般特征）</strong>
-<ul>
-<li><strong>显式寻址存储</strong>：globals、locals 各有对应的存取指令（load/store_global、load/store_local）；</li>
-<li>每条<strong>简单指令只做一个操作</strong>；</li>
-<li><strong>显式控制流</strong>：通过 call/return 和跳转（jump，下一讲）实现。</li>
-</ul>
-</div>
+::: definition 定义（栈式指令集的一般特征）
+- **显式寻址存储**：globals、locals 各有对应的存取指令（load/store_global、load/store_local）；
+
+- 每条**简单指令只做一个操作**；
+
+- **显式控制流**：通过 call/return 和跳转（jump，下一讲）实现。
+:::
 
 > 记法约定：`S :: x` 表示栈 S 顶上再压一个 x；二元运算从栈顶弹两个、压一个结果回去。
 

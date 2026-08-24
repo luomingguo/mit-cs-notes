@@ -1,3 +1,12 @@
+---
+title: 静态检查
+course: 6.1020 软件构造基础
+course_id: '6.1020'
+lecture: 1
+kind: design
+tags: []
+status: complete
+---
 # Lec 1 静态检查
 
 本节主要讲两个主题：
@@ -23,7 +32,7 @@
 
 由于奇数运算规则，序列可能在最终降至 1 之前反复起伏。数学界猜想**所有冰雹终将坠落**——即对于任意起始值 n，序列最终都会收敛到 1——但这仍是未解之谜。其名称源自冰雹在云层中上下反弹，直至重量足够才坠落地面的自然现象。
 
-以下是用代码实现从n出发，打印冰雹序列的代码。我们用python和TypeScript对比
+以下是用代码实现从 n 出发，打印冰雹序列的代码。我们用 python 和 TypeScript 对比
 
 ```python
 # python实现
@@ -53,8 +62,8 @@ console.log(n);
 
 以下语法上遇到注意的点：
 
-- JS在条件语句`if`和`while`需要括号，而Py不需要
-- JS结尾需要用分号。但这是可选的，因为每行JS都会被添加上分号。但是最好保持加分号的良好习惯
+- JS 在条件语句`if`和`while`需要括号，而 Py 不需要
+- JS 结尾需要用分号。但这是可选的，因为每行 JS 都会被添加上分号。但是最好保持加分号的良好习惯
 - **比较运算符的陷阱**。JavaScript 中 `==` 和 `!=` 会执行自动类型转换（例如 `0 == ""` 返回 `true`），这常导致意外结果。因此专业开发者只使用严格比较符 `===` 和 `!==`（如 `0 === ""` 返回 `false`）。从 Python 转来的学习者需特别注意这一差异。
 
 ## 类型
@@ -110,7 +119,7 @@ function hello(name) {
 let greeting = hello('types');
 ```
 
-Pytho能够允许支持静态类型，比如
+Pytho 能够允许支持静态类型，比如
 
 ```python
 def hello(name: str) -> str:
@@ -121,9 +130,7 @@ def hello(name: str) -> str:
 
 渐进式类型（Gradual Typing）允许代码中部分模块使用静态类型，其余保持动态类型，为原型快速迭代到系统稳定维护提供了平滑过渡路径。
 
-
-
-### TypeScript的数字类型陷阱
+### TypeScript 的数字类型陷阱
 
 TypeScript 的 `number` 类型存在与数学实数不符的特殊行为：
 
@@ -194,12 +201,12 @@ function hailstoneSequence(n: number): Array<number> {
 
 - 值的可变性。
   - 不可变类型：创建后值不可修改。
-    - 例如TS/Py的string
+    - 例如 TS/Py 的 string
   - 可变类型：允许内容修改
-    - 例如TS的Array和Python的list 支持增删改操作
+    - 例如 TS 的 Array 和 Python 的 list 支持增删改操作
 - 引用的可重赋值性（Reassignment）
   - TypeScript 通过 `const` 声明不可重新赋值的常量
-  - Python默认所有变量都可重新赋值
+  - Python 默认所有变量都可重新赋值
 
 尽可能多地使用 `const` 是一个好习惯。就像变量的类型声明一样，这些声明是重要的文档，对代码的阅读者有用，并且由编译器进行静态检查。
 
@@ -218,8 +225,6 @@ function hailstoneSequence(n: number): Array<number> {
 > - 开发者自己会遗忘
 > - 后续维护者只能靠猜测
 
-
-
 ### 编程的双重目标
 
 1. **与计算机对话**
@@ -233,7 +238,7 @@ function hailstoneSequence(n: number): Array<number> {
 
 - ❌ 编写大量代码后一次性测试
 - ❌ 假设所有细节都记在脑子里（包括使用者）
-- ❌ 乐观认为"要么没bug，要么很容易修复"
+- ❌ 乐观认为"要么没 bug，要么很容易修复"
 
 **工程实践（推荐）**
 
@@ -241,9 +246,7 @@ function hailstoneSequence(n: number): Array<number> {
 - ✅ **假设文档化**：明确记录代码依赖的前提条件
 - ✅ **防御性编程**：通过静态检查等机制防范错误（包括防范自己犯蠢）
 
-
-
-## 为啥选用TypeScript
+## 为啥选用 TypeScript
 
 安全性是首要原因。TypeScript 具备静态检查能力（主要是类型检查，也包括其他静态验证，例如确保代码返回了声明要返回的值）。本课程聚焦软件工程，而"减少错误"正是软件工程的核心原则
 
@@ -257,10 +260,10 @@ function hailstoneSequence(n: number): Array<number> {
 
 当然，选择 JavaScript 也有遗憾。其语言规模庞大，历经数十年发展积累了过多特性；继承了 C/C++ 等旧式语言的包袱——例如从 C 沿袭而来的 switch 语句就是个过时且不安全的语法结构；JavaScript 早期设计也存在缺陷，比如使 `0 == ""` 返回 true 的类型转换规则，或是 `[] + []` 莫名生成空字符串的行为，动态检查机制也弱于其他语言。TypeScript 修复了部分问题，但并未完全解决。如今 JavaScript 许多特性因使用风险已被开发者弃用。
 
-## 总结
+## 本讲小结
 
 我们今天介绍的核心概念是静态检查。以下是这一概念与课程目标之间的关系：
 
-- **避免出BUG（Safe from bugs）**：静态检查通过在运行前捕捉类型错误和其他 bug，有助于提高程序的安全性。
+- **避免出 BUG（Safe from bugs）**：静态检查通过在运行前捕捉类型错误和其他 bug，有助于提高程序的安全性。
 - **易于理解（Easy to understand）**：因为类型在代码中是显式声明的，静态检查有助于提升代码的可理解性。
 - **便于修改（Ready for change）**：当你修改代码时，静态检查可以指出需要一同更改的其他部分，从而使代码更易于维护和演进。

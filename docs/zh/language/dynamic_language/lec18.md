@@ -1,4 +1,13 @@
-# L18：代码生成 I（Code Generation I）——为什么要编译到机器码
+---
+title: 代码生成 I（Code Generation I）——为什么要编译到机器码
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+lecture: 18
+kind: theory
+tags: []
+status: complete
+---
+# Lec 18 代码生成 I（Code Generation I）——为什么要编译到机器码
 
 > 进入 Phase 5。本讲讲**动机**：解释字节码到底慢在哪、性能问题的三类来源、以及把字节码"部分求值/特化"为机器码能省下多少（指令数从上千降到 9）。并梳理**何时编译**（静态 / AOT / JIT / 自适应）。
 
@@ -10,7 +19,7 @@
 
 字节码：
 
-```
+```text
 load_local 0    load_const 1
 sub             store_local 1
 load_const 0    return
@@ -18,7 +27,7 @@ load_const 0    return
 
 IR（带 alloca 的 SSA 风格）：
 
-```
+```text
 function __function_1 (y) {
   %x = alloca int64_t
   %2 = sub %y 2
@@ -47,25 +56,27 @@ __function_1:
 
 ## 2. 翻译任务的本质矛盾
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（Language ↔ Machine 的鸿沟）</strong>
+::: definition 定义（Language ↔ Machine 的鸿沟）
 <table>
 <tr><th>语言侧</th><th>机器侧</th></tr>
 <tr><td>资源无限（任意多变量/临时值）</td><td>资源有限（寄存器、CPU、ALU 数量固定）</td></tr>
 <tr><td>没有性能规格说明</td><td>对性能极度敏感</td></tr>
 </table>
+
 代码生成的任务就是把"无限资源、无性能约束"的语言，映射到"有限资源、性能敏感"的机器上。
-</div>
+:::
 
 ### 2.1 性能问题的三大来源
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（性能问题来源）</strong>
-<ul>
-<li><strong>实现 (Implementation)</strong>：实现方式太朴素（如解释器循环本身的开销）；</li>
-<li><strong>语言/抽象 (Language/Abstraction)</strong>：语言本身强制了一个非最优的抽象——动态语言到处要类型检查、对象 shape 还会变；</li>
-<li><strong>机器限制 (Machine Limitations)</strong>：已经把机器能力用到极限了（这是"好问题"）。</li>
-</ul>
+::: definition 定义（性能问题来源）
+- **实现 (Implementation)**：实现方式太朴素（如解释器循环本身的开销）；
+
+- **语言/抽象 (Language/Abstraction)**：语言本身强制了一个非最优的抽象——动态语言到处要类型检查、对象 shape 还会变；
+
+- **机器限制 (Machine Limitations)**：已经把机器能力用到极限了（这是"好问题"）。
+
 前两类是我们能优化的，第三类是物理上限。
-</div>
+:::
 
 ---
 
@@ -98,41 +109,41 @@ void interpret(Function *func) {
 
 ### 3.1 解释器循环（实现问题）
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>问题（数据依赖的控制流）</strong>
-<ul>
-<li><strong>问题</strong>：控制流依赖于操作码（switch 的分发）；</li>
-<li><strong>症状</strong>：在<strong>流水线处理器</strong>上性能差——每条字节码执行完后，下一条取哪儿不确定，<strong>分支预测失败、流水线停顿</strong>，直到地址解析出来；</li>
-<li><strong>解法</strong>：对控制流做<strong>部分求值</strong>，消除集中式分发跳转 → <strong>线索化代码 (Threaded Code)</strong>。</li>
-</ul>
-</div>
+::: example 问题（数据依赖的控制流）
+- **问题**：控制流依赖于操作码（switch 的分发）；
+
+- **症状**：在**流水线处理器**上性能差——每条字节码执行完后，下一条取哪儿不确定，**分支预测失败、流水线停顿**，直到地址解析出来；
+
+- **解法**：对控制流做**部分求值**，消除集中式分发跳转 → **线索化代码 (Threaded Code)**。
+:::
 
 ### 3.2 操作数栈（语言/抽象问题：栈式 VM）
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>问题（临时值进内存）</strong>
-<ul>
-<li><strong>问题</strong>：中间结果都存到（内存里的）操作数栈；</li>
-<li><strong>症状</strong>：内存慢，而片上寄存器明明可用却没用上；</li>
-<li><strong>解法</strong>：用寄存器存临时值 → <strong>栈缓存 (Stack Caching)</strong>（本质是寄存器分配）。</li>
-</ul>
-</div>
+::: example 问题（临时值进内存）
+- **问题**：中间结果都存到（内存里的）操作数栈；
+
+- **症状**：内存慢，而片上寄存器明明可用却没用上；
+
+- **解法**：用寄存器存临时值 → **栈缓存 (Stack Caching)**（本质是寄存器分配）。
+:::
 
 ### 3.3 装箱值（语言问题）
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>问题（值是堆对象）</strong>
-<ul>
-<li><strong>问题</strong>：整数、布尔等都是对象（<code>new Integer(...)</code>）；</li>
-<li><strong>症状</strong>：大量内存访问与内存分配，极慢；</li>
-<li><strong>解法</strong>：<strong>拆箱 (Unbox)</strong> 整数（配合标签指针 tagged pointers）。</li>
-</ul>
-</div>
+::: example 问题（值是堆对象）
+- **问题**：整数、布尔等都是对象（`new Integer(...)`）；
+
+- **症状**：大量内存访问与内存分配，极慢；
+
+- **解法**：**拆箱 (Unbox)** 整数（配合标签指针 tagged pointers）。
+:::
 
 ---
 
 ## 4. 部分求值：把字节码"摊平"成直线代码
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（部分求值 Partial Evaluation）</strong>
-针对<strong>静态已知的信息</strong>特化代码（一种通用技术）。这里：操作码、操作数下标在编译期都已知，于是可以把解释器循环"展开"成针对这段字节码的专用函数，<strong>消除 switch 分发</strong>。
-</div>
+::: definition 定义（部分求值 Partial Evaluation）
+针对**静态已知的信息**特化代码（一种通用技术）。这里：操作码、操作数下标在编译期都已知，于是可以把解释器循环"展开"成针对这段字节码的专用函数，**消除 switch 分发**。
+:::
 
 对上面的 `load_local 0; load_const 1; sub; store_local 1; load_const 0; return`，部分求值出专用函数：
 
@@ -167,49 +178,49 @@ __execute_0:
   ret
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（优化收益，对这段代码）</strong>
-<ul>
-<li>指令数：<strong>&gt;1000s → 9</strong></li>
-<li>函数调用：<strong>10s → 1</strong></li>
-<li>内存访问：<strong>100s → 2</strong></li>
-<li>内存分配：<strong>&gt;1 → 0</strong></li>
-</ul>
-</div>
+::: theorem 定理（优化收益，对这段代码）
+- 指令数：**&gt;1000s → 9**
+
+- 函数调用：**10s → 1**
+
+- 内存访问：**100s → 2**
+
+- 内存分配：**&gt;1 → 0**
+:::
 
 ---
 
 ## 5. "怎么做"：用到的多种优化
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（关键优化技术）</strong>
-<ul>
-<li><strong>栈缓存 (Stack Caching)</strong> ≈ 寄存器分配：临时值尽量放寄存器而非栈；</li>
-<li><strong>标签指针 (Tagged Pointers)</strong>：把小整数等直接编码进指针的低位，避免堆访问（运行时表示优化）；</li>
-<li><strong>抽象解释 / 基于数据的优化</strong>：
-  <ul>
-  <li><strong>特化 (Specialization)</strong>：已知 x、y 都是整数时，<code>x + y</code> 直接用算术指令、跳过类型检查；</li>
-  <li><strong>常量折叠 (Constant Folding)</strong>：<code>1 + 2 ⇒ 3</code>；</li>
-  <li><strong>强度削减 (Strength Reduction)</strong>：<code>x / 2 ⇒ x &gt;&gt; 1</code>。</li>
-  </ul>
-</li>
-</ul>
-</div>
+::: definition 定义（关键优化技术）
+- **栈缓存 (Stack Caching)** ≈ 寄存器分配：临时值尽量放寄存器而非栈；
+
+- **标签指针 (Tagged Pointers)**：把小整数等直接编码进指针的低位，避免堆访问（运行时表示优化）；
+
+- **抽象解释 / 基于数据的优化**：
+
+- **特化 (Specialization)**：已知 x、y 都是整数时，`x + y` 直接用算术指令、跳过类型检查；
+
+- **常量折叠 (Constant Folding)**：`1 + 2 ⇒ 3`；
+
+- **强度削减 (Strength Reduction)**：`x / 2 ⇒ x &gt;&gt; 1`。
+:::
 
 ---
 
 ## 6. 何时编译？（When）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（编译时机分类）</strong>
-<ul>
-<li><strong>静态 (Static)</strong>：部署前就把应用编译好（C/C++/Fortran）；</li>
-<li><strong>动态 (Dynamic)</strong>：
-  <ul>
-  <li><strong>提前编译 AOT (Ahead-of-Time)</strong>：分发中间表示，<strong>加载时</strong>编译；</li>
-  <li><strong>即时编译 JIT (Just-in-Time)</strong>：按需编译——某个块/函数/模块只有在<strong>真要执行时</strong>才编译；</li>
-  <li><strong>自适应 / 剖析驱动 (Adaptive / Profile-Driven)</strong>：先解释执行一次或多次，<strong>收集热点信息后再编译</strong>。</li>
-  </ul>
-</li>
-</ul>
-</div>
+::: definition 定义（编译时机分类）
+- **静态 (Static)**：部署前就把应用编译好（C/C++/Fortran）；
+
+- **动态 (Dynamic)**：
+
+- **提前编译 AOT (Ahead-of-Time)**：分发中间表示，**加载时**编译；
+
+- **即时编译 JIT (Just-in-Time)**：按需编译——某个块/函数/模块只有在**真要执行时**才编译；
+
+- **自适应 / 剖析驱动 (Adaptive / Profile-Driven)**：先解释执行一次或多次，**收集热点信息后再编译**。
+:::
 
 ### 6.1 不同语言的选择
 
@@ -225,12 +236,11 @@ __execute_0:
 
 ## 7. 接下来两讲的路线
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（后续安排）</strong>
-<ul>
-<li><strong>未优化代码生成</strong>：把 VM 表示<strong>直接映射</strong>到机器表示。目标——<strong>熟悉机器</strong>（L20）；</li>
-<li><strong>高级代码生成</strong>：先生成可做<strong>静态分析</strong>的中间表示，再据分析做更高效的代码生成（L19 优化、L21–L22 寄存器分配、L23–L24 静态分析）。</li>
-</ul>
-</div>
+::: definition 定义（后续安排）
+- **未优化代码生成**：把 VM 表示**直接映射**到机器表示。目标——**熟悉机器**（L20）；
+
+- **高级代码生成**：先生成可做**静态分析**的中间表示，再据分析做更高效的代码生成（L19 优化、L21–L22 寄存器分配、L23–L24 静态分析）。
+:::
 
 ---
 

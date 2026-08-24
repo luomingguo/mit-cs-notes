@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 索引 — 1（导论）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 索引 — 1（导论）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/441962/ （作者 Egor Rogov，PostgresPro）
@@ -175,6 +182,6 @@ postgres=# set enable_indexscan=on;
 postgres=# create index concurrently on t(a);
 ```
 
-## 小结
+## 本讲小结
 
 这一篇作为系列开篇，建立了理解所有具体索引类型所需的公共词汇表：TID 如何定位行、索引引擎与访问方法的职责划分、三种扫描方式（Index Scan / Bitmap Scan / Seq Scan）各自的适用场景、选择性和相关性对优化器决策的影响、仅索引扫描依赖可见性图的机制、以及多列索引、表达式索引、部分索引、排序能力、并发建索引这几个横切特性。后续每一篇讲具体索引类型时，都会回过头来对照这些通用概念，说明该类型支持或不支持哪些特性。

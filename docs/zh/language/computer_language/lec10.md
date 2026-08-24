@@ -1,4 +1,13 @@
-# Lecture 10：寄存器分配（Register Allocation）
+---
+title: 寄存器分配（Register Allocation）
+course: 6.1100 计算机语言工程
+course_id: '6.1100'
+lecture: 10
+kind: theory
+tags: []
+status: complete
+---
+# Lec 10 寄存器分配（Register Allocation）
 
 > 配套复习课：R10 寄存器分配 + 窥孔优化（第 8–9 节）——这是项目 Phase 5 的核心
 > 关键概念：webs、干涉图、图着色、溢出、拆分
@@ -9,9 +18,9 @@
 
 程序在 def 与 use 之间须存储值，两种选择：① 定义时存内存、使用时取内存；② 定义时存寄存器、使用时读寄存器。**寄存器分配**就是在有限寄存器里决定存哪些值。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（寄存器分配的重要性）</strong>
-它<strong>影响几乎每条语句</strong>，消除昂贵的内存指令、直接操作寄存器使指令数下降，<strong>很可能是影响最大的优化</strong>。寄存器比内存快（带宽约 4 倍、延迟约 3 倍），但数量少——通常 16 个整型 + 16 个浮点，且部分有固定用途（如 RSP、RBP）。
-</div>
+::: theorem 定理（寄存器分配的重要性）
+它**影响几乎每条语句**，消除昂贵的内存指令、直接操作寄存器使指令数下降，**很可能是影响最大的优化**。寄存器比内存快（带宽约 4 倍、延迟约 3 倍），但数量少——通常 16 个整型 + 16 个浮点，且部分有固定用途（如 RSP、RBP）。
+:::
 
 可放入寄存器的：编译器临时变量、局部标量、大常量、数组元素/对象字段（涉及别名分析）。寄存器集按数据类型分（浮点值进浮点寄存器）。
 
@@ -19,40 +28,39 @@
 
 ## 2. 两条关键思想
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（寄存器复用的两条规则）</strong>
-<ul>
-<li><strong>当一个临时变量死亡，其寄存器可被复用。</strong></li>
-<li><strong>两个同时活跃的临时变量不能用同一寄存器。</strong></li>
-</ul>
-</div>
+::: theorem 定理（寄存器复用的两条规则）
+- **当一个临时变量死亡，其寄存器可被复用。**
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（复用 vs. 冲突）</strong>
-<pre>
+- **两个同时活跃的临时变量不能用同一寄存器。**
+:::
+
+::: example 例题（复用 vs. 冲突）
+```text
 a=c+d; e=a+b; f=e-1;   (a、e 用后即死)  → a、e、f 可同寄存器 r1
 a=c+d; e=a+b; f=e-a;   (a 在 f 处仍活) → e 与 a 不能同寄存器
 当活跃变量多于寄存器：拆分活跃区间——把值 store 到内存、用时再 load 回。
-</pre>
-</div>
+```
+:::
 
 ---
 
 ## 3. 基于 Web 的寄存器分配流程
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（流程）</strong>
+::: definition 定义（流程）
 确定每个值的活跃区间（web）→ 确定重叠区间（干涉）→ 计算每个 web 保留在寄存器的收益（溢出代价）→ 决定哪些 web 得寄存器（分配）→ 必要时拆分 web（溢出与拆分）→ 给 web 分配硬寄存器（指派）→ 生成含溢出的代码。
-</div>
+:::
 
 ### 3.1 Web
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（Web）</strong>
-起点是 def-use 链（连接定义到所有可达使用）。归并条件：一个定义与它能到达的所有使用须同一 web；到达同一使用的所有定义须同一 web（用并查集 union-find）。Web 是寄存器分配的<strong>单位</strong>——若分到寄存器 R，则其所有定义写入 R、所有使用从 R 读；若分到内存 M 同理。
-</div>
+::: definition 定义（Web）
+起点是 def-use 链（连接定义到所有可达使用）。归并条件：一个定义与它能到达的所有使用须同一 web；到达同一使用的所有定义须同一 web（用并查集 union-find）。Web 是寄存器分配的**单位**——若分到寄存器 R，则其所有定义写入 R、所有使用从 R 读；若分到内存 M 同理。
+:::
 
 ### 3.2 活跃区间与干涉
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（凸集、活跃区间、干涉）</strong>
-集合 <span>$S$</span> <strong>凸 (convex)</strong>：若 <span>$A,B \in S$</span> 且 <span>$C$</span> 在 <span>$A$</span> 到 <span>$B$</span> 的路径上，则 <span>$C \in S$</span>。web 的<strong>活跃区间 (live range)</strong> 是包含其所有 def/use 的最小凸指令集。两个 web <strong>干涉 (interfere)</strong> 当其活跃区间重叠（交非空）——干涉则须存不同寄存器/内存位置。
-</div>
+::: definition 定义（凸集、活跃区间、干涉）
+集合 $S$ **凸 (convex)**：若 $A,B \in S$ 且 $C$ 在 $A$ 到 $B$ 的路径上，则 $C \in S$。web 的**活跃区间 (live range)** 是包含其所有 def/use 的最小凸指令集。两个 web **干涉 (interfere)** 当其活跃区间重叠（交非空）——干涉则须存不同寄存器/内存位置。
+:::
 
 **干涉图 (interference graph)**：节点是 web，两 web 干涉则连边。
 
@@ -60,21 +68,23 @@ a=c+d; e=a+b; f=e-a;   (a 在 f 处仍活) → e 与 a 不能同寄存器
 
 ## 4. 图着色（Graph Coloring）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（寄存器分配即图着色）</strong>
-每个 web 分一个寄存器（颜色）；干涉（有边）的两节点不能同色。这是图论经典问题，<strong>NP 完全</strong>，但寄存器分配有好的启发式。
-</div>
+::: definition 定义（寄存器分配即图着色）
+每个 web 分一个寄存器（颜色）；干涉（有边）的两节点不能同色。这是图论经典问题，**NP 完全**，但寄存器分配有好的启发式。
+:::
 
 ### 4.1 着色启发式（Chaitin 风格）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（N 色着色启发式）</strong>
-若节点<strong>度 < N</strong>，则总能着色（给其余节点着完色后至少剩一种颜色给它）。算法：
-<ol>
-<li>反复移除度 < N 的节点，压入栈；</li>
-<li>当所有剩余节点度 ≥ N，选一个节点<strong>溢出 (spill)</strong> 并移除；</li>
-<li>栈空后开始着色：依次弹出节点，赋一个与其已着色邻居不同的颜色（因移除时度 < N，必有可用色）。</li>
-</ol>
+::: theorem 定理（N 色着色启发式）
+若节点**度 < N**，则总能着色（给其余节点着完色后至少剩一种颜色给它）。算法：
+
+- 反复移除度 < N 的节点，压入栈；
+
+- 当所有剩余节点度 ≥ N，选一个节点**溢出 (spill)** 并移除；
+
+- 栈空后开始着色：依次弹出节点，赋一个与其已着色邻居不同的颜色（因移除时度 < N，必有可用色）。
+
 注意度 ≥ N 不代表不可着色，仍可能 N 色可着。
-</div>
+:::
 
 ---
 
@@ -86,22 +96,22 @@ a=c+d; e=a+b; f=e-a;   (a 在 f 处仍活) → e 与 a 不能同寄存器
 
 选哪个 web 溢出？度 ≥ N 且溢出代价最小者。**理想溢出代价**是额外 load/store 的动态成本，但不可知（分支走向、循环次数未知），故用**静态近似**（profiling 或基于 CFG 结构的启发式）。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（一种溢出代价计算，偏好循环内的值）</strong>
+::: definition 定义（一种溢出代价计算，偏好循环内的值）
 假设循环执行 10（或 100）次：
 $$\text{spillCost} = \sum_{\text{def 点}} \text{storeCost}\cdot 10^{\text{循环嵌套深度}} + \sum_{\text{use 点}} \text{loadCost}\cdot 10^{\text{循环嵌套深度}}$$
 选 spillCost 最低的 web 溢出。
-</div>
+:::
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（1 个寄存器时溢出谁？）</strong>
-x 的代价 = <code>storeCost + loadCost</code>；y 在循环内代价 = <code>9·storeCost + 9·loadCost</code>。应溢出代价较低的 <strong>x</strong>。
-</div>
+::: example 例题（1 个寄存器时溢出谁？）
+x 的代价 = `storeCost + loadCost`；y 在循环内代价 = `9·storeCost + 9·loadCost`。应溢出代价较低的 **x**。
+:::
 
 ### 5.2 拆分而非溢出
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（拆分启发式与代价/收益）</strong>
+::: theorem 定理（拆分启发式与代价/收益）
 在图非 R-可着色的程序点（活跃 web 数 > N），挑一个在该点最大封闭块内未被使用的 web，在对应边处拆分（store 出去、需要时 load 回），重建干涉图并重试着色。
-拆分<strong>代价</strong> ∝ 被拆边动态跨越次数（用循环嵌套估计）；<strong>收益</strong> = 提升所干涉节点的可着色性（用干涉图中的度近似）。贪心：选收益/代价比最高的活跃区间。
-</div>
+拆分**代价** ∝ 被拆边动态跨越次数（用循环嵌套估计）；**收益** = 提升所干涉节点的可着色性（用干涉图中的度近似）。贪心：选收益/代价比最高的活跃区间。
+:::
 
 ---
 
@@ -118,14 +128,15 @@ x 的代价 = <code>storeCost + loadCost</code>；y 在循环内代价 = <code>9
 
 Martin 的幻灯片覆盖**非 SSA IR** 的技术。若用 SSA：可先 de-SSA 再分配，或**直接在 SSA 上分配**（Hack）。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（SSA 寄存器分配的优势）</strong>
-<ul>
-<li>SSA 的干涉图是<strong>弦图 (chordal)</strong> ⟹ <strong>多项式时间</strong>最优着色；</li>
-<li>所需寄存器数 = 程序点处<strong>最大同时活跃变量数</strong>；</li>
-<li>把<strong>溢出决策与着色解耦</strong>。</li>
-</ul>
+::: theorem 定理（SSA 寄存器分配的优势）
+- SSA 的干涉图是**弦图 (chordal)** ⟹ **多项式时间**最优着色；
+
+- 所需寄存器数 = 程序点处**最大同时活跃变量数**；
+
+- 把**溢出决策与着色解耦**。
+
 挑战：在不破坏 SSA 的前提下插入溢出；实现多项式着色算法。
-</div>
+:::
 
 **路线**：① 算溢出代价 → ② 插入溢出与重载 → ③ 重建 SSA → ④ 着色 → ⑤ de-SSA。
 
@@ -140,9 +151,9 @@ Martin 的幻灯片覆盖**非 SSA IR** 的技术。若用 SSA：可先 de-SSA �
 
 ## 8. 补充（R10-2）：窥孔优化（Peephole Optimization）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（窥孔优化）</strong>
+::: definition 定义（窥孔优化）
 汇编层面的优化：取一小段汇编，变换为更优的等价段；常可与代码生成同时进行（第一遍就尽量发好代码）。
-</div>
+:::
 
 应当避免发出的冗余：`movq %r8,%r9; movq %r9,%r8`、`pushq %rax; popq %rax`、连续两次写同一寄存器等。
 

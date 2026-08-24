@@ -1,4 +1,13 @@
-# L23：静态分析 I（Static Analysis I）——数据流分析框架与格
+---
+title: 静态分析 I（Static Analysis I）——数据流分析框架与格
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+lecture: 23
+kind: theory
+tags: []
+status: complete
+---
+# Lec 23 静态分析 I（Static Analysis I）——数据流分析框架与格
 
 > 把前面零散用过的分析（类型分析、值分析/常量传播、活跃性）统一到一个**通用静态分析框架**。本讲讲清楚五个关键概念：**事实 (Facts)、合并 (Merging)、转移函数 (Transfer Functions)、算法 (Chaotic Iteration)、终止 (Fixpoints)**，并引入**格 (lattice)** 来刻画分析的精度与合并操作。
 
@@ -6,15 +15,17 @@
 
 ## 1. 回顾：我们已经用过的优化
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（高级优化清单）</strong>
-<ul>
-<li><strong>类型分析</strong>：尽量确定操作数类型（→ 消除类型检查）；</li>
-<li><strong>形状分析</strong>：尽量确定操作数形状（如 record <code>{a:1,b:2}</code> 的字段集 <code>{a,b}</code>）；</li>
-<li><strong>值分析</strong>：尽量确定操作数值（→ 常量传播）；</li>
-<li><strong>依赖与活跃性分析</strong>：→ 死代码消除、寄存器分配。</li>
-</ul>
+::: definition 定义（高级优化清单）
+- **类型分析**：尽量确定操作数类型（→ 消除类型检查）；
+
+- **形状分析**：尽量确定操作数形状（如 record `{a:1,b:2}` 的字段集 `{a,b}`）；
+
+- **值分析**：尽量确定操作数值（→ 常量传播）；
+
+- **依赖与活跃性分析**：→ 死代码消除、寄存器分配。
+
 四条 takeaway 同 L19：可推断的信息很多、IR 是编码载体、从变换后程序生成代码、优化彼此交互需多轮。
-</div>
+:::
 
 > 优化的版图自 1960s 起极其丰富——Frances Allen 1966 的《Program Optimization》奠定了系统化分析与变换的概念基础（图灵奖引文）。**用基准测试 (benchmarks) 指导选哪些优化。** 更多内容见 P5 概览、6.035、Berkeley CS294。
 
@@ -26,7 +37,7 @@
 
 例子（CFG，循环里 `s = s + a*b`）：
 
-```
+```text
 s = 0; a = 4; i = 0;
 if (k == 0):  b = 1;   else:  b = 2;
 while (i < n):
@@ -35,12 +46,11 @@ while (i < n):
 return s
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（a 是常量吗？b 是常量吗？）</strong>
-<ul>
-<li><code>s = s + a*b</code> 处 <strong>a 是常量 4</strong>？—— <strong>是！</strong> 因为<strong>所有到达此处的定义 (reaching definitions)</strong> 都是 <code>a = 4</code>。</li>
-<li><strong>b 是常量</strong>？—— <strong>否！</strong> 一条到达定义是 <code>b = 1</code>，另一条是 <code>b = 2</code>（来自 if 的两支），合并后值不唯一。</li>
-</ul>
-</div>
+::: example 例题（a 是常量吗？b 是常量吗？）
+- `s = s + a*b` 处 **a 是常量 4**？—— **是！** 因为**所有到达此处的定义 (reaching definitions)** 都是 `a = 4`。
+
+- **b 是常量**？—— **否！** 一条到达定义是 `b = 1`，另一条是 `b = 2`（来自 if 的两支），合并后值不唯一。
+:::
 
 于是可做**常量传播变换**：`s = s + a*b` → `s = s + 4*b`（a 换成 4，b 不能换）。
 
@@ -50,27 +60,29 @@ return s
 
 ## 3. 静态分析的五个关键概念
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（Static Analysis: Key Concepts）</strong>
-<ol>
-<li><strong>事实 (Facts)</strong>：要追踪的性质空间——一个集合，更确切地是一个<strong>格 (lattice)</strong>，以支持控制流、循环与终止性推理；</li>
-<li><strong>符号/抽象执行 (Transfer Functions)</strong>：如何刻画一个基本块对事实的<strong>影响</strong>；</li>
-<li><strong>合并 (Merging)</strong>：多分支汇合时如何合并事实（join / meet）；</li>
-<li><strong>算法 (Chaotic Iteration)</strong>：如何计算（混沌迭代 / 工作表）；</li>
-<li><strong>终止 (Termination)</strong>：分析何时停（<strong>不动点 fixpoint</strong>）。</li>
-</ol>
-</div>
+::: definition 定义（Static Analysis: Key Concepts）
+- **事实 (Facts)**：要追踪的性质空间——一个集合，更确切地是一个**格 (lattice)**，以支持控制流、循环与终止性推理；
+
+- **符号/抽象执行 (Transfer Functions)**：如何刻画一个基本块对事实的**影响**；
+
+- **合并 (Merging)**：多分支汇合时如何合并事实（join / meet）；
+
+- **算法 (Chaotic Iteration)**：如何计算（混沌迭代 / 工作表）；
+
+- **终止 (Termination)**：分析何时停（**不动点 fixpoint**）。
+:::
 
 ---
 
 ## 4. 通用分析框架：数据流分析 vs 抽象解释
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（两大框架）</strong>
-<ul>
-<li><strong>数据流分析 (Dataflow Analysis)</strong>：Kildall, 1973；传统用于编译优化；</li>
-<li><strong>抽象解释 (Abstract Interpretation)</strong>：Cousot & Cousot, 1977；意图相近但理论更丰富。</li>
-</ul>
-共同点：把分析问题<strong>表述成 CFG 上的一组方程</strong>，求解之。
-</div>
+::: definition 定义（两大框架）
+- **数据流分析 (Dataflow Analysis)**：Kildall, 1973；传统用于编译优化；
+
+- **抽象解释 (Abstract Interpretation)**：Cousot & Cousot, 1977；意图相近但理论更丰富。
+
+共同点：把分析问题**表述成 CFG 上的一组方程**，求解之。
+:::
 
 > 我们在 L21 写过的活跃性方程（IN/OUT/USE/DEF + 工作表）正是这个框架的一个实例；本讲把它一般化。
 
@@ -78,15 +90,17 @@ return s
 
 ## 5. 事实 / 性质：选择追踪什么
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（分析 = 它追踪的一组事实/性质）</strong>
+::: definition 定义（分析 = 它追踪的一组事实/性质）
 不同分析 = 不同的事实空间：
-<ul>
-<li><strong>常量分析</strong>：变量的事实是 Z 中一个已知值（例：常量传播）；</li>
-<li><strong>符号分析 (Sign)</strong>：事实 ∈ {0, 正, 负}；</li>
-<li><strong>区间分析 (Range)</strong>：事实是闭区间 [a,b]（a,b 整数）；用于缩小整数表示位宽或检查溢出（Stephenson, Babb, Amarasinghe, <em>Bitwidth Analysis</em>, PLDI'00）；</li>
-<li><strong>值集合 (Value Set)</strong>：追踪变量可能取值的集合；用于对少量取值特化代码。</li>
-</ul>
-</div>
+
+- **常量分析**：变量的事实是 Z 中一个已知值（例：常量传播）；
+
+- **符号分析 (Sign)**：事实 ∈ {0, 正, 负}；
+
+- **区间分析 (Range)**：事实是闭区间 [a,b]（a,b 整数）；用于缩小整数表示位宽或检查溢出（Stephenson, Babb, Amarasinghe, *Bitwidth Analysis*, PLDI'00）；
+
+- **值集合 (Value Set)**：追踪变量可能取值的集合；用于对少量取值特化代码。
+:::
 
 > 精度从粗到细：符号 ⊂ 区间 ⊂ 值集合 ⊂ 精确值——越精确越能优化，但越贵、越难收敛。选哪种是工程权衡。
 
@@ -94,15 +108,17 @@ return s
 
 ## 6. 合并事实（Merging）与精度
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（合并 Merging）</strong>
-在控制流<strong>汇合点</strong>，要把多条分支的事实合并成一个新事实：
-<ul>
-<li>新事实应是两支事实的<strong>并 (union)</strong>；</li>
-<li>新事实仍须落在该分析的事实集合内；</li>
-<li>常常是<strong>过近似 (overapproximation)</strong>——合并结果的取值集合可能比真正的并集还大。</li>
-</ul>
-由此引入<strong>精度 (precision)</strong> 概念：分析可能追踪不到最精确的事实。
-</div>
+::: definition 定义（合并 Merging）
+在控制流**汇合点**，要把多条分支的事实合并成一个新事实：
+
+- 新事实应是两支事实的**并 (union)**；
+
+- 新事实仍须落在该分析的事实集合内；
+
+- 常常是**过近似 (overapproximation)**——合并结果的取值集合可能比真正的并集还大。
+
+由此引入**精度 (precision)** 概念：分析可能追踪不到最精确的事实。
+:::
 
 ### 6.1 不同分析合并同一对值的结果
 
@@ -119,10 +135,11 @@ return s
 
 ### 6.2 关键问题：合并用哪个事实？"?" 是什么？
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（用格来回答合并）</strong>
-把事实放进一个<strong>格 (lattice)</strong>——它给事实之间建立<strong>精度的偏序关系</strong>，并提供把事实并起来的运算（join/meet）。合并 = 在格上取相关元素的<strong>最小上界 (join)</strong>（或对偶的 meet）。<br>
-那个 "?" 通常就是格的<strong>顶 ⊤（"不知道/任意"）</strong>；对偶的<strong>底 ⊥</strong> 表示"尚无信息"。
-</div>
+::: theorem 定理（用格来回答合并）
+把事实放进一个**格 (lattice)**——它给事实之间建立**精度的偏序关系**，并提供把事实并起来的运算（join/meet）。合并 = 在格上取相关元素的**最小上界 (join)**（或对偶的 meet）。
+
+那个 "?" 通常就是格的**顶 ⊤（"不知道/任意"）**；对偶的**底 ⊥** 表示"尚无信息"。
+:::
 
 > 格的引入解决三件事：① 合并有了良定义的运算（join）；② 精度有了序（越往上越粗）；③ 配合"格高度有限 + 转移函数单调"可证明**不动点迭代必终止**（详见 L24）。
 
@@ -130,13 +147,13 @@ return s
 
 ## 7. 算法预告：混沌迭代（Chaotic Iteration）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（Chaotic Iteration）</strong>
-反复对 CFG 各结点套用"转移函数 + 合并"，直到所有结点的事实不再变化（达到<strong>不动点</strong>）。结点处理顺序可以任意（"混沌"），只要持续直到稳定即可——这与 L21 活跃性的工作表算法是同一思想。
-</div>
+::: definition 定义（Chaotic Iteration）
+反复对 CFG 各结点套用"转移函数 + 合并"，直到所有结点的事实不再变化（达到**不动点**）。结点处理顺序可以任意（"混沌"），只要持续直到稳定即可——这与 L21 活跃性的工作表算法是同一思想。
+:::
 
 例（示意，求各点的事实）：
 
-```
+```text
 y=0; t=1;
 x=x+1;  y=y+2;  t=t+2;
 y=t-1;

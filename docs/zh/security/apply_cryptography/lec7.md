@@ -1,4 +1,13 @@
-# L7 · 公钥加密：从 LWE 构造（Regev）
+---
+title: 公钥加密：从 LWE 构造（Regev）
+course: 6.5610 应用密码学与安全（Spring 2026）
+course_id: '6.5610'
+lecture: 7
+kind: theory
+tags: []
+status: complete
+---
+# Lec 7 公钥加密：从 LWE 构造（Regev）
 
 > MIT 6.5610 · Lecture 7 · 关键词：LWE 假设、带噪线性方程、Regev 加密、解密正确性、噪声预算、后量子、格归约
 > *说明：以标准 Regev (2005) 处理撰写，要点与本课"PKE from LWE"一致。*
@@ -15,15 +24,13 @@
 
 参数：维度 $n$、模数 $q$、误差分布 $\chi$（小幅度、如离散高斯）。秘密 $\mathbf{s}\in\mathbb{Z}_q^n$。
 
-<div class="definition">
-
+::: definition
 **LWE 分布**：随机取 $\mathbf{a}_i\xleftarrow{R}\mathbb{Z}_q^n$ 与小误差 $e_i\leftarrow\chi$，给出样本
 $$(\mathbf{a}_i,\ b_i=\langle\mathbf{a}_i,\mathbf{s}\rangle + e_i \bmod q).$$
 
 **判定-LWE**：区分上述样本与均匀随机 $(\mathbf{a}_i, u_i)$ 困难。
 **搜索-LWE**：由多个样本恢复 $\mathbf{s}$ 困难。
-
-</div>
+:::
 
 > 🔎 **为何难**：若 $e_i=0$，收集 $n$ 个样本做高斯消元即解出 $\mathbf{s}$。**误差破坏了消元**——任何线性组合都会累积/放大噪声，使消元失效。判定-LWE 与搜索-LWE 多项式等价；且 Regev 证明（量子归约）LWE **最坏情况**困难性可归约到格问题（如 GapSVP/SIVP），是"最坏-平均"归约的典范，赋予 LWE 很强的可信度。
 
@@ -33,15 +40,13 @@ $$(\mathbf{a}_i,\ b_i=\langle\mathbf{a}_i,\mathbf{s}\rangle + e_i \bmod q).$$
 
 设 $q$ 为模数，消息为单比特 $\mu\in\{0,1\}$。
 
-<div class="corollary">
-
+::: theorem
 **Regev PKE（单比特版）**
 - **KeyGen**：私钥 $\mathbf{s}\in\mathbb{Z}_q^n$；公钥为 $m$ 个 LWE 样本，写成矩阵形式 $(\mathbf{A},\ \mathbf{b}=\mathbf{A}\mathbf{s}+\mathbf{e})$，$\mathbf{A}\in\mathbb{Z}_q^{m\times n}$。
 - **Enc$(\mu)$**：选随机 $\mathbf{r}\in\{0,1\}^m$，输出
-  $$\mathbf{c}_1=\mathbf{A}^\top\mathbf{r},\qquad c_2=\mathbf{b}^\top\mathbf{r}+\mu\cdot\lfloor q/2\rfloor.$$
+$$\mathbf{c}_1=\mathbf{A}^\top\mathbf{r},\qquad c_2=\mathbf{b}^\top\mathbf{r}+\mu\cdot\lfloor q/2\rfloor.$$
 - **Dec**：计算 $c_2-\mathbf{s}^\top\mathbf{c}_1 = \mathbf{e}^\top\mathbf{r}+\mu\lfloor q/2\rfloor$。若结果接近 $0$ 判 $\mu=0$，接近 $q/2$ 判 $\mu=1$。
-
-</div>
+:::
 
 **解密正确性 / 噪声预算**：
 $$c_2-\mathbf{s}^\top\mathbf{c}_1 = (\mathbf{A}\mathbf{s}+\mathbf{e})^\top\mathbf{r}+\mu\lfloor q/2\rfloor - \mathbf{s}^\top\mathbf{A}^\top\mathbf{r}=\underbrace{\mathbf{e}^\top\mathbf{r}}_{\text{小噪声}}+\mu\lfloor q/2\rfloor.$$
@@ -68,7 +73,7 @@ $$c_2-\mathbf{s}^\top\mathbf{c}_1 = (\mathbf{A}\mathbf{s}+\mathbf{e})^\top\mathb
 
 ---
 
-## 5. 小结
+## 5. 本讲小结
 
 - LWE = "带噪线性方程难解"；判定/搜索等价，且有最坏-平均格归约背书。
 - Regev PKE：公钥是 LWE 样本，加密 = 用随机子集和掩盖 $\mu\lfloor q/2\rfloor$，解密靠噪声 $< q/4$。

@@ -1,4 +1,13 @@
-# L22：安全（*Security*）
+---
+title: 安全（Security）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 22
+kind: system
+tags: []
+status: complete
+---
+# Lec 22 安全（*Security*）
 
 > MIT 6.5900 Fall 2024 · Joel Emer 主题：侧信道（*side channel*）、信息泄露、攻击的通信模型、Cache 信道、推测执行攻击（*Meltdown* / *Spectre*）
 
@@ -96,7 +105,7 @@ def check(input):
 
 ### 简单 Cache 信道
 
-```
+```text
 进程 1（发送方）          进程 2（接收方）
 write to set            if (send '0')
                             idle
@@ -121,7 +130,7 @@ if secret == 1:
 
 平方-乘（*square-and-multiply*）幂运算中存在**依赖秘密的内存访问**，从而成为发送方：
 
-```
+```text
 r = 1
 for i = n-1 down to 0 do
     r = sqrt(r); r = mod(r, m)
@@ -172,7 +181,7 @@ return r
 
 > 把 RSA 中依赖秘密的分支改为无分支的条件移动：
 
-```
+```text
 p = (e_i == 1)
 r2 = mul(r, b)
 r2 = mod(r, m)
@@ -263,7 +272,7 @@ if (x < array1_size)
 
 ------
 
-## 小结
+## 本讲小结
 
 - ISA 是**与时序无关**的接口，只规定"做什么"而不规定"何时做"，也不规定微架构状态；
 - 实现细节（如推测执行）与时序行为（微架构状态、功耗）被用来突破安全机制；

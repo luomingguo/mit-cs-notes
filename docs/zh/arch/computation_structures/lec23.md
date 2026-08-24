@@ -1,22 +1,27 @@
-# Lec 23 旁路技术和EHR
+---
+title: 旁路技术和 EHR
+course: 6.1910 计算结构（Fall 25）
+course_id: '6.1910'
+lecture: 23
+kind: system
+tags: []
+status: complete
+---
+# Lec 23 旁路技术和 EHR
 
-旁路技术（bypassing， 又叫 forwarding）是一种为了减少stall，在数据的生产-消费者之间的提供额外的数据通路的技术。常规途经而言，一个值会被写回寄存器文件（register file），然后由 decode 阶段读取。而Bypassing允许值被计算出来的同时，就直接被decode阶段使用，而不等写回。旁路技术的**副作用**：Bypassing 会引入新的组合逻辑路径，可能导致组合延迟增加，从而延长时钟周期，也会增加芯片面积。bypass的效率取决于它被使用的频率。
+旁路技术（bypassing， 又叫 forwarding）是一种为了减少 stall，在数据的生产-消费者之间的提供额外的数据通路的技术。常规途经而言，一个值会被写回寄存器文件（register file），然后由 decode 阶段读取。而 Bypassing 允许值被计算出来的同时，就直接被 decode 阶段使用，而不等写回。旁路技术的**副作用**：Bypassing 会引入新的组合逻辑路径，可能导致组合延迟增加，从而延长时钟周期，也会增加芯片面积。bypass 的效率取决于它被使用的频率。
 
 ![image-20250422064445680](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/68354a192fba3.png)
 
+EHR（Ephemeral History Registers）是 Bluespec 中一种机制，用于精确控制寄存器的写入和读取，搭配 bypassing 使用时，可以实现更灵活的控制路径数据传递和调度。
 
+## 本讲导览
 
-EHR（Ephemeral History Registers）是Bluespec 中一种机制，用于精确控制寄存器的写入和读取，搭配 bypassing 使用时，可以实现更灵活的控制路径数据传递和调度。
+- Bluespec 中的旁路技术
 
-## Outline
+## Bluespec 中旁路技术
 
-- Bluespec中的旁路技术
-
-
-
-## Bluespec中旁路技术
-
-在Bluespec看来，Bypassing是一种作为减少的周期数，即减少两个有冲突的规则或方法之间执行所需的时钟周期数。举个例子：
+在 Bluespec 看来，Bypassing 是一种作为减少的周期数，即减少两个有冲突的规则或方法之间执行所需的时钟周期数。举个例子：
 
 > 假设你设计了一个 FIFO，如果已经满了，通常不能 `enq`（入队）
 
@@ -26,7 +31,7 @@ EHR（Ephemeral History Registers）是Bluespec 中一种机制，用于精确�
 
 **目标**： 让 `ra` 和 `rb` 在**同一个周期**并发执行，并且让 `rb` 用到的是 `ra` 刚刚计算出的新值 `x`，外加一个约束`ra < rb`（表示：ra 的优先级比 rb 高，ra 在 rb 之前执行）
 
-```
+```text
 rule ra;
 	x <= y + 1;  // 读取 y，写入 x
 endrule
@@ -50,8 +55,6 @@ Solution：register 是时钟边沿触发的，它的输入值在当前周期写
 
 EHR（Ephemeral History Register） 是为了解决普通寄存器无法在同一周期内完成通信的问题而设计的。一个“会记住这个周期你已经写过什么”的寄存器 —— 所以即使是在同一个周期中先写再读，读操作也能看到写操作的值。
 
-
-
 ## EHR
 
 我们可以看到有一个触发器
@@ -65,7 +68,7 @@ EHR（Ephemeral History Register） 是为了解决普通寄存器无法在同�
 
 `w[i+1]`领先于`w[i]`，即 w[i] $\prec$​ w[i+1]
 
-且r[0] $\prec$ w[0]； r[1] $\prec$ w[1]
+且 r[0] $\prec$ w[0]； r[1] $\prec$ w[1]
 
 | w[0].enable | w[1].enable | r[1]      | r[0] |
 | ----------- | ----------- | --------- | ---- |
@@ -74,15 +77,11 @@ EHR（Ephemeral History Register） 是为了解决普通寄存器无法在同�
 | 1           | 0           | w[0].data |      |
 | 1           | 1           | w[0].data |      |
 
-
-
 ### 寄存器 和 EHRs 的冲突矩阵
 
 CF: f 和 g 不冲突且不影响
 
 C：冲突，不能同时调用
-
-
 
 **寄存器**
 
@@ -100,25 +99,8 @@ C：冲突，不能同时调用
 | EHR.r1 | CF      | $\succ$ | CF      | $\prec$ |
 | EHR.w1 | $\succ$ | $\succ$ | $\succ$ | C       |
 
+## 用 EHR 设计 FIFO
 
-
-
-
-
-
-
-
-## 用EHR设计FIFO
-
-1. 无冲突FIFO。 当 FIFO 不满也不空的时候，enq和deq可以同时进行，但是当前周期入队的值不会被同一个周期的出队看到。**入队和出队是解耦的**，互相看不到对方的“当前操作”。
-2. 流水线型FIFO。正常来说：向满的 FIFO 入队是不允许的。但如果在同一个周期中同时执行一个 `deq`，那就允许 `enq`，因为 `deq` 腾出空间，`enq` 正好填补进去。
-3. 旁路FIFO。正常来说：从空的 FIFO 出队是不允许的；但如果你在同一个周期中同时执行 enq，则允许出队；这个新入队的数据会直接送给出队口，好像绕过 FIFO 存储一样
-
-
-
-
-
-
-
-
-
+1. 无冲突 FIFO。 当 FIFO 不满也不空的时候，enq 和 deq 可以同时进行，但是当前周期入队的值不会被同一个周期的出队看到。**入队和出队是解耦的**，互相看不到对方的“当前操作”。
+2. 流水线型 FIFO。正常来说：向满的 FIFO 入队是不允许的。但如果在同一个周期中同时执行一个 `deq`，那就允许 `enq`，因为 `deq` 腾出空间，`enq` 正好填补进去。
+3. 旁路 FIFO。正常来说：从空的 FIFO 出队是不允许的；但如果你在同一个周期中同时执行 enq，则允许出队；这个新入队的数据会直接送给出队口，好像绕过 FIFO 存储一样

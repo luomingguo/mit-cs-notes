@@ -1,10 +1,18 @@
+---
+title: 18-746 存储系统
+course: 18-746 存储系统
+course_id: '18-746'
+kind: system
+tags: []
+status: complete
+---
 # 18-746 存储系统
 
 [18-746 Storage Systems (Fall 2022): Syllabus (cmu.edu)](https://course.ece.cmu.edu/~ece746/old/fall22/schedule.html)
 
 [18-746 Storage Systems (Fall 2025): Syllabus (cmu.edu)](https://course.ece.cmu.edu/~ece746/readinglist.html)
 
-## 课程描述 
+## 课程描述
 
 存储系统是计算机系统中最迷人且最重要的部分之一。它们往往主导着系统的性能，而其他组件的故障通常通过从存储的数据中重新启动来解决。实际上，存储系统保存着大多数组织的“皇冠上的宝石”：它们的信息（从源代码到微软的软件，再到每个电子商务网站的销售数据库，以及推动大数据和机器学习革命的日志和索引）。在这一关键的计算机系统领域中，对优秀人才和更好解决方案的需求持续增长。
 
@@ -12,20 +20,20 @@
 
 ## 课程内容
 
-1. 概述 & Flash SSD操作
+1. 概述 & Flash SSD 操作
 2. 磁盘驱动操作
 3. 文件系统存储布局
 4. 缓存与文件系统完整性
 5. 磁盘阵列组织
-6. 数据中心NAND闪存SSD的当前和未来角色
-7. 分布式文件系统和NAS接口
+6. 数据中心 NAND 闪存 SSD 的当前和未来角色
+7. 分布式文件系统和 NAS 接口
 8. 软硬件协同设计扩展全闪存存储
 9. 极度可扩展的存储
 10. 可靠性增强技术
 11. 可扩展表存储
 12. 谷歌文件系统的演变
 13. 备份和数据保护
-14. LSM树及其应用
+14. LSM 树及其应用
 15. Azure HPC Cache and vFXT
 
 ## 实验
@@ -34,7 +42,7 @@ https://github.com/Guo-lab/CloudFS_Design
 
 https://github.com/Ishant89/CloudFS
 
-# Lec 1 概述 & Flash SSD操作 I
+# Lec 1 概述 & Flash SSD 操作 I
 
 - Amvrosiadis, George and Ganger, Greg
   [*18-746/15-746 Course Syllabus*](https://course.ece.cmu.edu/~ece746/papers//Syllabus.pdf)
@@ -61,15 +69,9 @@ https://github.com/Ishant89/CloudFS
 - Sara McAllister and Yucong Sherry Wang and Benjamin Berg and Daniel S. Berger and George Amvrosiadis and Nathan Beckmann and Gregory R. Ganger
   [*FairyWREN: A Sustainable Cache for Emerging Write-Read-Erase Flash Interfaces*](https://www.usenix.org/system/files/osdi24-mcallister.pdf)
 
-
-
 [lec2.md](./lec2.md)
 
 # Lec 3 磁盘驱动操作
-
-
-
-
 
 [lec3.md](./lec3.md)
 
@@ -78,13 +80,11 @@ https://github.com/Ishant89/CloudFS
 - [*The Design and Implementation of the 4.4BSD Operating System*](https://course.ece.cmu.edu/~ece746/papers//textbook_chapters/McKusick-The_Design_and_Implementation_of_the_4.4BSD_Operating_System_Chapter_8.pdf)
 - [*Operating Systems: Three Easy Pieces*](http://pages.cs.wisc.edu/~remzi/OSTEP/file-implementation.pdf)
 - [*BTRFS: The Linux B-Tree Filesystem, 13*](http://vtucs.com/wp-content/uploads/2015/02/btree-report.pdf)
-  - 
+  -
 - [*F2FS: A New File System for Flash Storage,15*](https://www.usenix.org/conference/fast15/technical-sessions/presentation/lee)
   - 专门为闪存设计的文件系统
 - [*TABLEFS: Enhancing Metadata Efficiency in the Local File System, 13*](https://www.pdl.cmu.edu/PDL-FTP/FS/CMU-PDL-13-102.pdf)
   - 把“文件系统的元数据”存进一个 KV 存储（类似数据库）里
-
-
 
 [lec4.md](./lec4.md)
 
@@ -97,11 +97,7 @@ https://github.com/Ishant89/CloudFS
 - Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau
   [*Operating Systems: Three Easy Pieces*](http://pages.cs.wisc.edu/~remzi/OSTEP/file-intro.pdf)
 
-
-
 [lec5.md](./lec5.md)
-
-
 
 # Lec 6 文件系统组织：缓存和文件系统集成
 
@@ -116,13 +112,9 @@ https://github.com/Ishant89/CloudFS
   [*Recon: Verifying File System Consistency at Runtime*](https://course.ece.cmu.edu/~ece746/papers//papers/Fryer.pdf)
   In *Proceedings of the 10th USENIX Conference on File and Storage Technologies*, 2012, pages 7--7
 
-
-
 [lec6.md](./lec6.md)
 
 # Lec 7 缓存和文件系统集成
-
-
 
 [lec7.md](./lec7.md)
 
@@ -134,10 +126,6 @@ https://github.com/Ishant89/CloudFS
 - [*Disk Failures in the Real World: What Does an MTTF of 1,000,000 Hours Mean to You?*](./lec8-Disk Failures in the Real World- What Does an MTTF of 1,000,000 Hours Mean to You?.pdf)
 - [*Flash Reliability in Production: The Expected and the Unexpected, fast16*](./lec8-Flash Reliability in Production- The Expected and the Unexpected.pdf)
 
-
-
-
-
 [lec8.md](./lec8.md)
 
 # Lec 9 磁盘阵列系统
@@ -147,15 +135,9 @@ https://github.com/Ishant89/CloudFS
 - [*Mean Time to Meaningless: MTTDL, Markov Models, and Storage System Reliability, 2010*](./lec9-Mean Time to Meaningless- MTTDL, Markov Models, and Storage System Reliability.pdf)
 - [*Parity Lost and Parity Regained*](https://www.usenix.org/legacy/events/fast08/tech/full_papers/krioukov/krioukov.pdf)
 
-
-
 [lec9.md](./lec9.md)
 
-
-
-
-
-# Lec 10 分布式FS & NAS接口
+# Lec 10 分布式 FS & NAS 接口
 
 - The Design and Implementation of the 4.4BSD Operating System, CHAPTER 9
 - [*Scale and Performance in a Distributed File System, 1988*](https://scispace.com/pdf/scale-and-performance-in-a-distributed-file-system-41h9xbvkhz.pdf)
@@ -178,8 +160,6 @@ https://github.com/Ishant89/CloudFS
 
 [GFS]()
 
-
-
 [lec12.md](./lec12.md)
 
 '\
@@ -188,21 +168,11 @@ https://github.com/Ishant89/CloudFS
 
 # Lec 13 加强可靠性技术
 
-
-
 - [*Architectures and Algorithms for On-line Failure Recovery in Redundant Disk Arrays'94*](http://www.pdl.cmu.edu/PDL-FTP/Declustering/DAPD.abstract.shtml)
 - [*Scalable Performance of the Panasas Parallel File System'08*](https://www.cs.cmu.edu/~garth/papers/welch-fast08.pdf)
 - [Tiger: Disk-Adaptive Redundancy  Without Placement Restrictions'22](https://www.usenix.org/system/files/osdi22-kadekodi.pdf)
 
-
-
-
-
-
-
 [lec13.md](./lec13.md)
-
-
 
 # Lec 14 可扩展的表存储
 
@@ -211,34 +181,24 @@ https://github.com/Ishant89/CloudFS
 - [*MapReduce: Simplified Data Processing on Large Clusters, osdi'04*](https://research.google/pubs/pub62/)
 - [The Chubby lock service for loosely-coupled distributed systems'06](https://research.google/pubs/the-chubby-lock-service-for-loosely-coupled-distributed-systems/)
 
-
-
-
-
 [lec14.md](./lec14.md)
-
-
 
 # Lec 15 备份和数据保护
 
 - [*Designing for Disasters*](https://www.usenix.org/legacy/publications/library/proceedings/fast04/tech/full_papers/keeton/keeton.pdf)
 - [*Getting Back Up: Understanding How Enterprise Data Backups Fail, 16*](https://www.usenix.org/system/files/conference/atc16/atc16_paper-amvrosiadis.pdf)
 
-
-
 [lec15.md](./lec15.md)
 
-# Lec 16 LSM树及其应用
+# Lec 16 LSM 树及其应用
 
 - [LSM-Tree](https://www.cs.umb.edu/~poneil/lsmtree.pdf)
-- [Ren13](https://course.ece.cmu.edu/~ece746/papers//papers/tablefs.pdf), 
+- [Ren13](https://course.ece.cmu.edu/~ece746/papers//papers/tablefs.pdf),
 - [Zheng20](https://course.ece.cmu.edu/~ece746/papers//papers/deltafs-imds.pdf)
-
-
 
 [lec16.md](./lec16.md)
 
-# Lec 17 Google文件系统革新
+# Lec 17 Google 文件系统革新
 
 - [*The Tail at Scale, 2013*](https://www.barroso.org/publications/TheTailAtScale.pdf)
 - [Using the CAS Standards in Assessment Projects, 2013](./lec17-Using the CAS Standards in Assessment Projects.pdf)

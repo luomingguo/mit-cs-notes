@@ -1,4 +1,13 @@
-# L13：目录式缓存一致性（*Directory-Based Cache Coherence*）
+---
+title: 目录式缓存一致性（Directory-Based Cache Coherence）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 13
+kind: system
+tags: []
+status: complete
+---
+# Lec 13 目录式缓存一致性（*Directory-Based Cache Coherence*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez 主题：目录式 vs 侦听式、MSI 目录协议、MSHR、目录组织与不精确表示、协议竞争与死锁、多级层级与原子操作
 
@@ -54,7 +63,7 @@
 
 由数据请求触发：
 
-```
+```text
 Un --ShReq--> Sh : Sharers = {P}; ShResp
 Sh --ShReq--> Sh : Sharers += {P}; ShResp
 Un --ExReq--> Ex : Sharers = {P}; ExResp
@@ -157,7 +166,7 @@ MSHR 保存 Cache 之外的 load 缺失与写。
 
 ### Load-reserve & Store-conditional
 
-```
+```text
 Load-reserve R, (a):           Store-conditional (a), R:
     <flag, adr> ← <1, a>           if <flag, adr> == <1, a>
     R ← M[a]                           then 取消其他处理器对 a 的预约; M[a] ← R; status ← succeed
@@ -166,7 +175,7 @@ Load-reserve R, (a):           Store-conditional (a), R:
 
 > 若 Cache 收到对预约寄存器地址的作废，预约位清 0。用 LR/SC 实现 swap：
 
-```
+```bash
 # Swap(R1, mutex):
 L: Ld-Reserve R2, (mutex)
    St-Conditional (mutex), R1
@@ -178,7 +187,7 @@ L: Ld-Reserve R2, (mutex)
 
 ------
 
-## 小结
+## 本讲小结
 
 - 目录式一致性只向相关 Cache 发消息，以**额外目录存储**换取**可扩展性**，目录是排序点，支持无序网络；
 - MSI 目录协议用目录状态 Un/Sh/Ex 与共享者集合，配 InvReq/DownReq/WbReq 等消息；**MSHR** 管理在途缺失与写；

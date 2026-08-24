@@ -1,6 +1,15 @@
+---
+title: 随机变量
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 21
+kind: theory
+tags: []
+status: complete
+---
 # Lec 17 随机变量
 
-# Lecture 21：随机变量
+## Lecture 21：随机变量
 
 > 来源：MIT 6.1200J / 18.062J Mathematics for Computer Science，Spring 2024
 
@@ -107,5 +116,3 @@ $$f_{n,p}(\alpha n) \approx \frac{1}{\sqrt{2\pi\alpha(1-\alpha)n}} \cdot \left(\
 - $f(50) \approx 0.08$（在均值处仍很小）
 - $f(25) \approx 1.9 \times 10^{-7}$（极其微小）
 - 事实上，$\Pr[X = 25] > \Pr[X < 25]$（两者均极小）
-
-

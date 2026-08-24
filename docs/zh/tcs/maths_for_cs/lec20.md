@@ -1,4 +1,13 @@
-# Lecture 20：独立性
+---
+title: 独立性
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 20
+kind: theory
+tags: []
+status: complete
+---
+# Lec 20 独立性
 
 > 来源：MIT 6.1200J / 18.062J Mathematics for Computer Science，Spring 2024
 

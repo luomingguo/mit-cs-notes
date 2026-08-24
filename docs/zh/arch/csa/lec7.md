@@ -1,4 +1,13 @@
-# L07：复杂流水线——乱序执行、寄存器重命名与异常（*Out-of-Order Execution, Register Renaming, and Exceptions*）
+---
+title: '复杂流水线——乱序执行、寄存器重命名与异常（Out-of-Order Execution, Register Renaming, and Exceptions）'
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 7
+kind: system
+tags: []
+status: complete
+---
+# Lec 07 复杂流水线——乱序执行、寄存器重命名与异常（*Out-of-Order Execution, Register Renaming, and Exceptions*）
 
 > MIT 6.5900 Fall 2024 · Joel Emer 主题：记分牌回顾、按序发射的限制、乱序发射、Little's Law 与寄存器数、Tomasulo 重命名、重排序缓冲（*ROB*）、精确异常
 
@@ -14,7 +23,7 @@
 
 例（含一条 long 延迟的 FLD）：
 
-```
+```text
 1 FLD   f2, 34(x12)   延迟 1
 2 FLD   f4, 45(x13)   延迟 long
 3 FMUL.D f6, f4, f2   延迟 3
@@ -53,7 +62,7 @@ $$ T = \frac{N}{L} $$
 
 为每个寄存器写**提供一个新位置**，从而**消除 WAR 与 WAW 冒险**（重命名 ⇒ 额外存储）。
 
-```
+```text
 in-order:     1 (2,1) . . . . . . 2 3 4 4 3 5 . . . 5 6 6
 out-of-order: 1 (2,1) 4 4 5 . . . (2,5) 3 . . 3 6 6   # f4 重命名为 f4'
 ```
@@ -151,7 +160,7 @@ ROB 空间低效——一个数据值可能存于 ROB 多处。
 
 ------
 
-## 小结
+## 本讲小结
 
 - 按序发射受 WAR/WAW 与寄存器数限制；**乱序发射**仅靠自身提升有限，**寄存器重命名**（Tomasulo）消除 WAR/WAW 才是关键；
 - **Little's Law** 说明寄存器数限制在飞指令数从而限制吞吐；重命名提供额外存储以容纳更多在飞指令；

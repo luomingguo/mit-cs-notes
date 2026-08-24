@@ -1,4 +1,13 @@
-# Lecture 12：数据流分析的理论基础（Foundations of Dataflow Analysis）
+---
+title: 数据流分析的理论基础（Foundations of Dataflow Analysis）
+course: 6.1100 计算机语言工程
+course_id: '6.1100'
+lecture: 12
+kind: theory
+tags: []
+status: complete
+---
+# Lec 12 数据流分析的理论基础（Foundations of Dataflow Analysis）
 
 > 内容：格论、偏序、传递函数、单调性/分配性、工作表算法、抽象函数与路径汇合解
 > 这是 L8 数据流分析的**形式化数学基础**
@@ -18,37 +27,37 @@
 
 ## 2. 偏序与格（Partial Orders & Lattices）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（偏序 Partial Order）</strong>
-集合 <span>$P$</span> 上的偏序 <span>$\le$</span> 满足对所有 <span>$x,y,z$</span>：自反 <span>$x\le x$</span>、反对称 <span>$x\le y \wedge y\le x \Rightarrow x=y$</span>、传递 <span>$x\le y \wedge y\le z \Rightarrow x\le z$</span>。
-</div>
+::: definition 定义（偏序 Partial Order）
+集合 $P$ 上的偏序 $\le$ 满足对所有 $x,y,z$：自反 $x\le x$、反对称 $x\le y \wedge y\le x \Rightarrow x=y$、传递 $x\le y \wedge y\le z \Rightarrow x\le z$。
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（上/下界、lub/glb）</strong>
-对 <span>$S \subseteq P$</span>：
-<ul>
-<li><strong>上界</strong> <span>$x$</span>：<span>$\forall y\in S.\ y\le x$</span>；<strong>最小上界 (lub)</strong> 记 <span>$\vee S$</span>（join、supremum），<span>$x\vee y$</span> 是 <span>$\{x,y\}$</span> 的 lub。</li>
-<li><strong>下界</strong> <span>$x$</span>：<span>$\forall y\in S.\ x\le y$</span>；<strong>最大下界 (glb)</strong> 记 <span>$\wedge S$</span>（meet、infimum），<span>$x\wedge y$</span> 是 <span>$\{x,y\}$</span> 的 glb。</li>
-</ul>
-</div>
+::: definition 定义（上/下界、lub/glb）
+对 $S \subseteq P$：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（格、完全格、Top/Bottom）</strong>
-若对所有 <span>$x,y\in P$</span>，<span>$x\wedge y$</span> 与 <span>$x\vee y$</span> 都存在，则 <span>$P$</span> 是<strong>格 (lattice)</strong>。若对所有 <span>$S\subseteq P$</span>，<span>$\wedge S$</span> 与 <span>$\vee S$</span> 都存在，则是<strong>完全格 (complete lattice)</strong>；<strong>所有有限格都完全</strong>。最大元为 <strong>top</strong>，最小元为 <strong>bottom (<span>$\bot$</span>)</strong>。
-</div>
+- **上界** $x$：$\forall y\in S.\ y\le x$；**最小上界 (lub)** 记 $\vee S$（join、supremum），$x\vee y$ 是 $\{x,y\}$ 的 lub。
+
+- **下界** $x$：$\forall y\in S.\ x\le y$；**最大下界 (glb)** 记 $\wedge S$（meet、infimum），$x\wedge y$ 是 $\{x,y\}$ 的 glb。
+:::
+
+::: definition 定义（格、完全格、Top/Bottom）
+若对所有 $x,y\in P$，$x\wedge y$ 与 $x\vee y$ 都存在，则 $P$ 是**格 (lattice)**。若对所有 $S\subseteq P$，$\wedge S$ 与 $\vee S$ 都存在，则是**完全格 (complete lattice)**；**所有有限格都完全**。最大元为 **top**，最小元为 **bottom ($\bot$)**。
+:::
 
 > 例：整数 <span>$I$</span> 在 max/min 下是格但不完全（<span>$\vee I$</span> 不存在），<span>$I\cup\{+\infty,-\infty\}$</span> 完全。布尔超立方 <span>$\{0,1\}^n$</span>（<span>$x\le y$</span> ⟺ 按位与 = <span>$x$</span>）是完全格，用 Hasse 图表示覆盖关系。
 
 ### 2.1 <span>$\le$</span>、<span>$\wedge$</span>、<span>$\vee$</span> 的等价联系
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（三者等价）</strong>
-以下三条等价：<span>$x\le y$</span> ⟺ <span>$x\vee y = y$</span> ⟺ <span>$x\wedge y = x$</span>。
-</div>
+::: theorem 定理（三者等价）
+以下三条等价：$x\le y$ ⟺ $x\vee y = y$ ⟺ $x\wedge y = x$。
+:::
 
 可反过来**用 <span>$\vee,\wedge$</span> 定义 <span>$\le$</span>**：取满足结合、交换、幂等、吸收律的任意 <span>$\vee,\wedge$</span>，定义 <span>$x\le y$</span> 当 <span>$x\vee y=y$</span>，可证 <span>$\le$</span> 是偏序，且 <span>$x\vee y=\sup\{x,y\}$</span>、<span>$x\wedge y=\inf\{x,y\}$</span>。这把格视作信息组合的代数结构（<span>$\vee$</span> 为"或/合并"，<span>$\wedge$</span> 为"与"）。
 
 ### 2.2 链与升链条件
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（链、升链条件 ACC）</strong>
-<span>$S$</span> 是<strong>链 (chain)</strong>：<span>$\forall x,y\in S.\ x\le y \vee y\le x$</span>。<span>$P$</span> 满足<strong>升链条件 (ascending chain condition)</strong>：对任意升序列 <span>$x_1\le x_2\le\cdots$</span>，存在 <span>$n$</span> 使 <span>$x_n = x_{n+1}=\cdots$</span>（即无限升链不存在）。
-</div>
+::: definition 定义（链、升链条件 ACC）
+$S$ 是**链 (chain)**：$\forall x,y\in S.\ x\le y \vee y\le x$。$P$ 满足**升链条件 (ascending chain condition)**：对任意升序列 $x_1\le x_2\le\cdots$，存在 $n$ 使 $x_n = x_{n+1}=\cdots$（即无限升链不存在）。
+:::
 
 > ACC 是数据流分析**终止性**的关键：解算法产生每点的递增值序列，ACC 保证有限步收敛。
 
@@ -56,33 +65,35 @@
 
 ## 3. 传递函数（Transfer Functions）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（传递函数族 F 的条件）</strong>
-每个分析问题有一族传递函数 <span>$f: P\to P$</span>：
-<ul>
-<li>含<strong>恒等函数</strong> <span>$i\in F$</span>；</li>
-<li>对<strong>复合封闭</strong>：<span>$f,g\in F \Rightarrow \lambda x.f(g(x))\in F$</span>；</li>
-<li>每个 <span>$f$</span> <strong>单调 (monotone)</strong>：<span>$x\le y \Rightarrow f(x)\le f(y)$</span>；</li>
-<li>有时还<strong>分配 (distributive)</strong>：<span>$f(x\vee y)=f(x)\vee f(y)$</span>。</li>
-</ul>
-</div>
+::: definition 定义（传递函数族 F 的条件）
+每个分析问题有一族传递函数 $f: P\to P$：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（分配蕴含单调）</strong>
-若 <span>$f(x\vee y)=f(x)\vee f(y)$</span>，则由 <span>$x\vee y=y$</span> 得 <span>$f(y)=f(x\vee y)=f(x)\vee f(y)$</span>，即 <span>$f(x)\le f(y)$</span>。故分配 ⟹ 单调（反之不然）。
-</div>
+- 含**恒等函数** $i\in F$；
+
+- 对**复合封闭**：$f,g\in F \Rightarrow \lambda x.f(g(x))\in F$；
+
+- 每个 $f$ **单调 (monotone)**：$x\le y \Rightarrow f(x)\le f(y)$；
+
+- 有时还**分配 (distributive)**：$f(x\vee y)=f(x)\vee f(y)$。
+:::
+
+::: theorem 定理（分配蕴含单调）
+若 $f(x\vee y)=f(x)\vee f(y)$，则由 $x\vee y=y$ 得 $f(y)=f(x\vee y)=f(x)\vee f(y)$，即 $f(x)\le f(y)$。故分配 ⟹ 单调（反之不然）。
+:::
 
 ---
 
 ## 4. 前向数据流分析框架
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（前向数据流方程）</strong>
-每节点 <span>$n$</span> 有 <span>$in_n$</span>（前）、<span>$out_n$</span>（后）、传递函数 <span>$f_n$</span>。解须满足：
+::: definition 定义（前向数据流方程）
+每节点 $n$ 有 $in_n$（前）、$out_n$（后）、传递函数 $f_n$。解须满足：
 $$out_n = f_n(in_n), \qquad in_n = \bigvee_{m\in pred(n)} out_m \ (n\ne n_0), \qquad in_{n_0} = I$$
-其中 <span>$I$</span> 概括程序起点的信息。
-</div>
+其中 $I$ 概括程序起点的信息。
+:::
 
 **工作表算法**（前向）：
 
-```
+```text
 for each n: out_n = f_n(⊥)
 in_{n0} = I; out_{n0} = f_{n0}(I); worklist = N - {n0}
 while worklist ≠ ∅:
@@ -92,10 +103,10 @@ while worklist ≠ ∅:
     if out_n 改变: worklist ∪= succ(n)
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（正确性与终止性）</strong>
-<strong>正确性</strong>：每处理 <span>$n$</span> 即令 <span>$out_n=f_n(in_n)$</span>；每当 <span>$out_m$</span> 变就把 <span>$succ(m)$</span> 入表，故最终解满足全部方程。
-<strong>终止性</strong>：<span>$in_n/out_n$</span> 取值序列是链，若停止增长则工作表清空；若格满足升链条件（如有限格）则必终止。无 ACC 时用<strong>加宽算子 (widening)</strong>——检测可能属无限升链的值，人为升到链的 lub（如把大小 ≥ n 的集合升到 TOP）。
-</div>
+::: theorem 定理（正确性与终止性）
+**正确性**：每处理 $n$ 即令 $out_n=f_n(in_n)$；每当 $out_m$ 变就把 $succ(m)$ 入表，故最终解满足全部方程。
+**终止性**：$in_n/out_n$ 取值序列是链，若停止增长则工作表清空；若格满足升链条件（如有限格）则必终止。无 ACC 时用**加宽算子 (widening)**——检测可能属无限升链的值，人为升到链的 lub（如把大小 ≥ n 的集合升到 TOP）。
+:::
 
 ---
 
@@ -131,15 +142,15 @@ $$in_n = f_n(out_n), \qquad out_n = \bigvee_{m\in succ(n)} in_m \ (n\notin N_{fi
 
 ## 7. 分析结果的语义：抽象函数与正确性
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（程序执行与抽象函数）</strong>
-程序状态 <span>$s$</span> 是变量到值的映射，<span>$\langle s,n\rangle$</span> 表示状态 <span>$s$</span> 在节点 <span>$n$</span>。执行是轨迹 <span>$\langle s_0,n_0\rangle;\dots;\langle s_k,n_k\rangle$</span>。<strong>抽象函数 (abstraction function)</strong> <span>$AF: ST\to P$</span> 把具体状态映到格元素，赋予分析结果意义。
-</div>
+::: definition 定义（程序执行与抽象函数）
+程序状态 $s$ 是变量到值的映射，$\langle s,n\rangle$ 表示状态 $s$ 在节点 $n$。执行是轨迹 $\langle s_0,n_0\rangle;\dots;\langle s_k,n_k\rangle$。**抽象函数 (abstraction function)** $AF: ST\to P$ 把具体状态映到格元素，赋予分析结果意义。
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（正确性条件 / 健全性 Soundness）</strong>
-对任意执行 <span>$\langle s_0,n_0\rangle;\dots;\langle s_k,n_k\rangle$</span> 与其中 <span>$s=s_i, n=n_i$</span>，有
+::: theorem 定理（正确性条件 / 健全性 Soundness）
+对任意执行 $\langle s_0,n_0\rangle;\dots;\langle s_k,n_k\rangle$ 与其中 $s=s_i, n=n_i$，有
 $$AF(s) \le in_n$$
-即分析在 <span>$n$</span> 前产生的结果"安全地高估"了任意实际执行的抽象。可对执行长度归纳证明（用传递函数单调性）。
-</div>
+即分析在 $n$ 前产生的结果"安全地高估"了任意实际执行的抽象。可对执行长度归纳证明（用传递函数单调性）。
+:::
 
 ### 7.1 例：符号分析（Sign Analysis）
 
@@ -158,36 +169,37 @@ a=1; if(...) b=-1 else b=1; c=a*b;
 
 ## 8. 路径汇合解与分配性（Meet Over Paths & Distributivity）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（理想解：路径汇合解 MOP）</strong>
-对到达 <span>$n$</span> 的路径 <span>$p = n_0,n_1,\dots,n_k,n$</span>，<span>$f_p(\bot) = f_{n_k}(\cdots f_{n_0}(\bot)\cdots)$</span>。理想解应满足
+::: definition 定义（理想解：路径汇合解 MOP）
+对到达 $n$ 的路径 $p = n_0,n_1,\dots,n_k,n$，$f_p(\bot) = f_{n_k}(\cdots f_{n_0}(\bot)\cdots)$。理想解应满足
 $$\bigvee\{f_p(\bot) : p\text{ 是到 }n\text{ 的路径}\} = in_n$$
-</div>
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（工作表解 vs. MOP）</strong>
-<ul>
-<li>工作表算法总产生满足"对所有到 <span>$n$</span> 的路径 <span>$p$</span>，<span>$f_p(\bot)\le in_n$</span>"的解（归纳 + 单调性证明），即工作表解 ≤（不优于）MOP。</li>
-<li>若框架<strong>分配</strong>，则工作表算法恰好产生 <strong>MOP 解</strong>（分配保持精度）。</li>
-</ul>
-</div>
+::: theorem 定理（工作表解 vs. MOP）
+- 工作表算法总产生满足"对所有到 $n$ 的路径 $p$，$f_p(\bot)\le in_n$"的解（归纳 + 单调性证明），即工作表解 ≤（不优于）MOP。
+
+- 若框架**分配**，则工作表算法恰好产生 **MOP 解**（分配保持精度）。
+:::
 
 ### 8.1 缺乏分配性的反例（常量计算器）
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（常量传播不分配）</strong>
-平坦整数格。考虑 <code>c = a+b</code> 的传递函数 <span>$f$</span>：
-<pre>
+::: example 例题（常量传播不分配）
+平坦整数格。考虑 `c = a+b` 的传递函数 $f$：
+
+```text
 f([a→3,b→2]) ∨ f([a→2,b→3]) = [a→TOP,b→TOP,c→5]      （先算后并：c=5 精确）
 f([a→3,b→2] ∨ [a→2,b→3]) = f([a→TOP,b→TOP]) = [...,c→TOP]  （先并后算：c=TOP 粗）
-</pre>
+```
+
 两者不等 ⟹ 不分配，工作表解（c→TOP）不如 MOP（c→5）精确。
-</div>
+:::
 
 **补救**：在不同路径上保留值的组合 `{[a→2,b→3],[a→3,b→2]}` 可恢复分配，但**组合爆炸**（指数）且无限升链致不终止；用加宽算子消爆炸（按变量粒度），但损失精度。
 
 ### 8.2 多个不动点
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（最小不动点）</strong>
-数据流分析生成<strong>最小不动点 (least fixed point)</strong>；方程可能有多个不动点（如可用表达式在含环 CFG 上既有全 0 解也有全 1 解），算法选最小（最保守安全）的那个。
-</div>
+::: theorem 定理（最小不动点）
+数据流分析生成**最小不动点 (least fixed point)**；方程可能有多个不动点（如可用表达式在含环 CFG 上既有全 0 解也有全 1 解），算法选最小（最保守安全）的那个。
+:::
 
 ---
 

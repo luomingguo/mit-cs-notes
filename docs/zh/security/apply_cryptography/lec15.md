@@ -1,4 +1,13 @@
-# L15 · Sumcheck 协议
+---
+title: Sumcheck 协议
+course: 6.5610 应用密码学与安全（Spring 2026）
+course_id: '6.5610'
+lecture: 15
+kind: theory
+tags: []
+status: complete
+---
+# Lec 15 Sumcheck 协议
 
 > MIT 6.5610 · Lecture 15 · 关键词：sumcheck、多元多项式、交互式证明、可靠性、Schwartz–Zippel、复杂度
 > *说明：以标准处理撰写（LFKN 1992），要点与本课"Sumcheck Protocol"一致。*
@@ -17,17 +26,15 @@ $$H = \sum_{b_1\in\{0,1\}}\sum_{b_2\in\{0,1\}}\cdots\sum_{b_n\in\{0,1\}} g(b_1,\
 
 设 $g$ 在每个变量上次数 $\le d$。
 
-<div class="corollary">
-
+::: theorem
 **Sumcheck 第 $i$ 轮**
 - $P$ 发单变量多项式
-  $$g_i(X_i) = \sum_{b_{i+1},\dots,b_n\in\{0,1\}} g(r_1,\dots,r_{i-1}, X_i, b_{i+1},\dots,b_n),$$
-  即固定前 $i-1$ 个变量为已抽取的随机 $r$、第 $i$ 个为自由变量、其余求和。
+$$g_i(X_i) = \sum_{b_{i+1},\dots,b_n\in\{0,1\}} g(r_1,\dots,r_{i-1}, X_i, b_{i+1},\dots,b_n),$$
+即固定前 $i-1$ 个变量为已抽取的随机 $r$、第 $i$ 个为自由变量、其余求和。
 - $V$ 检查 $g_i(0)+g_i(1)$ 是否等于上一轮约定的值（第 1 轮检查 $g_1(0)+g_1(1)=H$）。
 - $V$ 抽随机 $r_i\xleftarrow{R}\mathbb{F}$，把约定值更新为 $g_i(r_i)$，进入下一轮。
 - **末轮**：所有变量定为随机点 $\mathbf{r}$，$V$ 自行**单点求值** $g(\mathbf{r})$ 与最后约定值比对（这一次求值 $V$ 可独立完成，或借助预言机）。
-
-</div>
+:::
 
 ---
 
@@ -35,12 +42,10 @@ $$H = \sum_{b_1\in\{0,1\}}\sum_{b_2\in\{0,1\}}\cdots\sum_{b_n\in\{0,1\}} g(b_1,\
 
 > 🔎 **核心论证**：若 $P$ 一开始谎报 $H'\ne H$，则它在某轮必须发一个**错误的** $g_i$。$V$ 在随机点 $r_i$ 处求值时，两个不同的次数 $\le d$ 多项式至多在 $d$ 个点相等（**Schwartz–Zippel / 多项式恒等检验**），故 $V$ 抽到"恰好相等"的坏点概率 $\le d/|\mathbb{F}|$。错误像滚雪球一样被推到下一轮，最终在末轮单点求值处**几乎必然暴露**。总作弊成功率 $\le nd/|\mathbb{F}|$，取大域即可忽略。
 
-<div class="definition">
-
+::: definition
 **完备性**：诚实 $P$ 必通过。
 **可靠性**：谎报者通过概率 $\le nd/|\mathbb{F}|$。
-
-</div>
+:::
 
 ---
 
@@ -62,7 +67,7 @@ $$H = \sum_{b_1\in\{0,1\}}\sum_{b_2\in\{0,1\}}\cdots\sum_{b_n\in\{0,1\}} g(b_1,\
 
 ---
 
-## 5. 小结
+## 5. 本讲小结
 
 - Sumcheck 验证 $2^n$ 项求和，仅需 $O(n)$ 轮、验证者 $O(nd)$。
 - 每轮"剥"一个变量：$P$ 发单变量多项式，$V$ 查一致性并随机降维。

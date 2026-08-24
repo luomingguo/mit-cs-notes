@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 索引 — 8（RUM 索引）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 索引 — 8（RUM 索引）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/452116/ （作者 Egor Rogov，PostgresPro）
@@ -103,7 +110,7 @@ GIN 方案下，执行计划显示出位图扫描找到 1776 个候选，但真�
 
 RUM 并非没有代价。原文给出的实测索引体积对比（同一份邮件归档数据）：
 
-```
+```text
 RUM: 457 MB | GIN: 179 MB | GiST: 125 MB | B-tree: 546 MB
 ```
 
@@ -126,6 +133,6 @@ RUM: 457 MB | GIN: 179 MB | GiST: 125 MB | B-tree: 546 MB
 
 **列级**：`distance_orderable`: **支持**（对应前面演示的 `<=>` 相关度排序能力，这也是 GIN 不具备的）；`orderable`（简单的 asc/desc 排序）: 不支持。
 
-## 小结
+## 本讲小结
 
 RUM 可以理解成"用更大的索引体积和更高的 WAL 开销，换取全文检索场景下短语搜索的精确性和相关度排序的原生支持"。它的核心改动只有一点——在 GIN 的出现列表里额外塞入位置信息——但由此解锁了索引扫描能力、距离排序操作符 `<=>`，以及针对辅助字段的附加排序机制。对于本身查询量大、对短语匹配和相关度排序有硬需求的全文检索系统，RUM 值得作为 GIN 的进阶替代方案来评估;但如果写入压力很大、WAL 体积和复制带宽是主要瓶颈，则需要谨慎权衡。下一篇将转向一种设计思路完全不同、面向超大规模有序数据的轻量级索引——BRIN。

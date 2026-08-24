@@ -1,4 +1,13 @@
-# Lecture 16：计数
+---
+title: 计数
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 16
+kind: theory
+tags: []
+status: complete
+---
+# Lec 16 计数
 
 ## 1. 规则回顾
 

@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 索引 — 7（GIN 索引）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 索引 — 7（GIN 索引）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/448746/ （作者 Egor Rogov，PostgresPro）
@@ -55,7 +62,7 @@ create index on ts using gin(doc_tsv);
 3. 分别取出各自的 TID 列表——"mani" 只出现在 (0,2)；"slitter" 出现在 (0,1)、(0,2)、(1,2)、(1,3)、(2,2)；
 4. 用一致性函数（consistent）按布尔 AND 逻辑核对每个候选 TID 是否同时满足两个词位都出现的条件：
 
-```
+```text
    TID  | mani | slitter | consistency
 -------+------+---------+----------------
  (0,1) |    f |       T |              f 
@@ -171,7 +178,7 @@ and departure_city = 'Moscow';
 - **jsonb_ops**（默认）：为 JSON 文档里的所有键、值、数组元素都建立索引条目，功能最全但索引也最大；
 - **jsonb_path_ops**：只针对"路径 + 叶子值"的组合建索引条目，专门优化路径查询场景,索引更紧凑但支持的操作符范围更窄。
 
-支持的操作符/策略包括：`?`（顶层键是否存在，策略9）、`?|`（是否存在若干顶层键之一，策略10）、`?&`（是否所有列出的顶层键都存在，策略11）、`@>`（顶层是否包含某 JSON 值，策略7）。
+支持的操作符/策略包括：`?`（顶层键是否存在，策略 9）、`?|`（是否存在若干顶层键之一，策略 10）、`?&`（是否所有列出的顶层键都存在，策略 11）、`@>`（顶层是否包含某 JSON 值，策略 7）。
 
 示例：
 
@@ -231,6 +238,6 @@ select * from gin_metapage_info(get_raw_page('mail_messages_tsv_idx',0));
 - **btree_gin**：让普通标量类型也能接入 GIN,支撑多列联合索引；
 - **jsquery**：一种 JSON 查询语言扩展（非 PostgreSQL 标准内置）,也基于 GIN 索引实现。
 
-## 小结
+## 本讲小结
 
 GIN 是"一对多"场景（一个字段值内部包含多个可检索元素）的专用解法：数组、jsonb、tsvector 都属于这一类。它通过"元素 B-tree + 出现列表/出现树"的两层结构,把复合值拆解重组,换来了比同类 GiST 方案更高的准确度和更紧凑的存储,但代价是更新开销显著更高——为此专门设计了 fastupdate + 待处理列表机制做写入延迟优化。GIN 也擅长部分匹配（前缀搜索）和根据词频智能安排检索顺序,这些都是其倒排结构的自然产物。下一篇会介绍 GIN 的"进化版"扩展——RUM 索引,看它如何弥补 GIN 在短语搜索和相关性排序上的不足。

@@ -1,11 +1,23 @@
-# Lec 13 — 农业物联网（*Agriculture IoT*）
+---
+title: 农业物联网（Agriculture IoT）
+course: 6.1820 移动和传感器计算
+course_id: '6.1820'
+lecture: 13
+kind: system
+tags: []
+status: complete
+---
+# Lec 13 农业物联网（*Agriculture IoT*）
 > MIT 6.1820/MAS.453 · Mobile and Sensor Computing
 > 阅读材料：FarmBeats [NSDI'17]，AgriTera [MobiCom'23]
 
 ## 1. 背景：为什么是农业？
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 精准农业（<em>Precision Agriculture / Data-Driven Agriculture</em>）</strong><br>
-利用大量传感器数据（土壤湿度、温度、pH、气象等）驱动决策，减少资源浪费，提高产量与可持续性。联合国预测：全球农业产量到 2050 年需翻倍才能满足人口需求，而可耕地和水资源正在减少，精准农业是解决方案的关键组成。</div>
+::: definition
+**定义 — 精准农业（*Precision Agriculture / Data-Driven Agriculture*）**
+
+利用大量传感器数据（土壤湿度、温度、pH、气象等）驱动决策，减少资源浪费，提高产量与可持续性。联合国预测：全球农业产量到 2050 年需翻倍才能满足人口需求，而可耕地和水资源正在减少，精准农业是解决方案的关键组成。
+:::
 
 **挑战**：人工数据采集成本极高（USDA 调研），阻止大多数农民使用数据驱动方法。FarmBeats 的目标是提供**端到端 IoT 系统**，实现低成本自动化数据采集。
 
@@ -45,7 +57,9 @@ TVWS 使用电视广播空闲频段（*Whitespace*，54–806 MHz），波长长
 
 **解决方案：空间插值（*Spatial Interpolation*）**
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 稀疏部署 + 插值</strong>　无人机（<em>Drone</em>）定期航测采集高密度数据，结合稀疏地面传感器数据，通过克里金插值（<em>Kriging</em>）等方法生成全场精准地图（土壤湿度、pH、温度）。实验证明 FarmBeats 可将有效覆盖范围扩大数量级。</div>
+::: theorem 推论 — 稀疏部署 + 插值
+无人机（*Drone*）定期航测采集高密度数据，结合稀疏地面传感器数据，通过克里金插值（*Kriging*）等方法生成全场精准地图（土壤湿度、pH、温度）。实验证明 FarmBeats 可将有效覆盖范围扩大数量级。
+:::
 
 **挑战三：功耗波动（*Variable Power Availability*）**
 
@@ -75,10 +89,13 @@ $$\text{停机率} : 30\% \xrightarrow{\text{天气感知占空比}} 0\%$$
 
 **问题**：全球每年约 50% 的水果蔬菜因不能准确判断成熟度而被浪费。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 成熟度指标</strong><br>
-• <strong>Brix</strong>：可溶性固形物含量（主要是糖分），表征甜度<br>
-• <strong>干物质（<em>Dry Matter</em>）</strong>：去除水分后的固体比例，表征成熟程度<br>
-两个指标随果实成熟而持续变化，传统测量需要破坏果皮（切开测量）。</div>
+::: definition 定义 — 成熟度指标
+• **Brix**：可溶性固形物含量（主要是糖分），表征甜度
+
+• **干物质（*Dry Matter*）**：去除水分后的固体比例，表征成熟程度
+
+两个指标随果实成熟而持续变化，传统测量需要破坏果皮（切开测量）。
+:::
 
 ### 4.1 技术原理：亚太赫兹频段（*Sub-THz*）
 
@@ -103,7 +120,9 @@ $$[\hat{\text{Brix}}, \hat{\text{DM}}] = f_\text{ML}\left(S(f_1), S(f_2), \ldots
 
 通过训练机器学习模型（偏最小二乘回归，*PLS-R*），建立频谱特征与成熟度指标的映射关系。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — AgriTera 评估结果</strong></div>
+::: example 例题 — AgriTera 评估结果
+
+:::
 
 测试品种：柿子（Brix）、牛油果（Dry Matter）、青苹果（Brix + Dry Matter）
 
@@ -115,11 +134,12 @@ Sol：AgriTera 在不破坏果实、无需接触的情况下，以 < 1% 的误�
 
 ## 5. 农业 IoT 设计原则
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 农业 IoT 的五大设计考量</strong><br>
-① 长覆盖距离（TVWS、LoRa），② 异构传感器（地面 + 无人机），③ 能量自适应（太阳能 + 天气感知占空比），④ 数据融合（稀疏传感 + 空间插值），⑤ 非侵入感知（亚太赫兹、多光谱成像）。</div>
+::: theorem 推论 — 农业 IoT 的五大设计考量
+① 长覆盖距离（TVWS、LoRa），② 异构传感器（地面 + 无人机），③ 能量自适应（太阳能 + 天气感知占空比），④ 数据融合（稀疏传感 + 空间插值），⑤ 非侵入感知（亚太赫兹、多光谱成像）。
+:::
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 FarmBeats 通过 TVWS 连接、无人机辅助稀疏传感、天气感知占空比三项技术组合，构建了面向农业的端到端 IoT 系统，将停机率从 30% 降至 0%；AgriTera 利用亚太赫兹频段的成分敏感性，实现了无损非接触式水果成熟度精准检测，两者共同展示了 IoT 技术在减少农业浪费、提高可持续性方面的巨大潜力。

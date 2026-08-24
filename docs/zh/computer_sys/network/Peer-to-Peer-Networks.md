@@ -1,4 +1,12 @@
-# Lec 18 — P2P 与 Chord 查找协议
+---
+title: P2P 与 Chord 查找协议
+course: 6.5820/6.S04 计算机网络
+course_id: '6.5820'
+kind: system
+tags: []
+status: complete
+---
+# Lec 18 P2P 与 Chord 查找协议
 
 > 论文：*Chord: A Scalable Peer-to-Peer Lookup Service for Internet Applications*, SIGCOMM 2001.
 > Ion Stoica, Robert Morris, David Karger, M. Frans Kaashoek, Hari Balakrishnan（MIT LCS）
@@ -18,8 +26,6 @@ $$
 $$
 即返回**负责**存储该键的节点的 IP 地址。具体存什么、怎么认证、怎么缓存、怎么复制，全部交给上层应用决定。
 
-
-
 Chord 与其它 P2P 查找协议相比，有三个突出特点：**简单性**、**可证明的正确性**、**可证明的性能**。
 
 | 指标                        | 复杂度        |
@@ -36,8 +42,6 @@ Chord 与其它 P2P 查找协议相比，有三个突出特点：**简单性**�
 > - Gnutella 用广播查询（不可扩展）；
 > - DNS 依赖特殊的根服务器且命名结构受行政边界约束。
 > - Chord  没有特殊节点、键空间是**扁平**的、且在路由信息部分过期时性能也只是**优雅降级**而非崩溃——这是它能在频繁加入/离开的动态环境中工作的关键。
-
-
 
 ## 2. 系统模型与设计目标
 
@@ -59,7 +63,9 @@ Chord  以**库**的形式与应用链接，向应用暴露两件事：(1) `look
 
 Chord  的底层是 (*consistent hashing* / 一致性哈希) 的一个变体。
 
-<div style="background-color:#e6f2ff; padding:12px 16px; border-left:5px solid #3399ff; border-radius:4px;"> Define：<strong>标识符与标识符环</strong></div>
+::: definition
+Define：**标识符与标识符环**
+:::
 
 用基础哈希函数（如 (*SHA-1*)）给每个节点和键分配一个 $m$ 比特的标识符：
 
@@ -68,21 +74,16 @@ Chord  的底层是 (*consistent hashing* / 一致性哈希) 的一个变体。
 
 所有标识符按模 $2^m$ 排列在一个**标识符环**（*identifier circle*）上。$m$ 要足够大，使两个节点或键碰撞的概率可忽略（实现中用 160 比特）。
 
-
-
-<div style="background-color:#e6f2ff; padding:12px 16px; border-left:5px solid #3399ff; border-radius:4px;">Define：<strong>successor</strong></div>
+::: definition
+Define：**successor**
+:::
 
 键 $k$ 被分配给标识符**等于或顺时针紧随** $k$ 的第一个节点，记为
 $$
 \text{successor}(k) = \text{从 } k \text{ 顺时针方向遇到的第一个节点}
 $$
 
-
-
-
-
-<div style="background-color:#e8f5e9; padding:12px 16px; border-left:5px solid #43a047; border-radius:4px;"> <strong>最小扰动性质</strong>
-
+::: theorem 最小扰动性质
 当节点 $n$ 加入时，原本属于 $n$ 后继的部分键转交给 $n$；当 $n$ 离开时，它的所有键转交给后继。除此之外不需要任何其它键的重分配。
 
 **推论（定理 1，一致性哈希的负载性质）**：对任意 $N$ 个节点和 $K$ 个键，以高概率（w.h.p.）：
@@ -91,8 +92,7 @@ $$
 2. 当第 $(N{+}1)$ 个节点加入或某节点离开时，只有 $O\!\left(\dfrac{K}{N}\right)$ 个键的归属发生变化（且仅在加入/离开的节点与其相邻节点间转移）。
 
 朴素实现下 $\varepsilon = O(\log N)$；让每个真实节点运行 $O(\log N)$ 个**虚拟节点**（virtual node）可把 $\varepsilon$ 降到任意小常数。
-
-</div>
+:::
 
 > **关于 "with high probability"**：论文用 (*SHA-1*) 作为确定性哈希，严格说 "高概率" 不再适用。但构造一组在 SHA-1 下碰撞的键相当于 "反演/解密" SHA-1，被认为是困难的。因此把结论表述为 **"基于标准困难性假设成立"**。
 >
@@ -110,9 +110,7 @@ $$
 
 ### 4.2 Finger Table
 
-<div style="background-color:#e6f2ff; padding:12px 16px; border-left:5px solid #3399ff; border-radius:4px;">
-
-
+::: definition
 **定义（finger table）**：节点 $n$ 维护一张至多 $m$ 项的路由表。第 $i$ 项（$1 \le i \le m$）指向环上**至少**领先 $n$ 距离 $2^{\,i-1}$ 的第一个节点：
 
 $$
@@ -129,32 +127,28 @@ $$
 $$
 
 每一项同时存储该节点的 Chord 标识符与 IP 地址（+端口）。第 1 个 finger 就是直接后继（successor）。
-
-</div>
+:::
 
 两个重要特征：
 
 1. 每个节点只存储少量其它节点的信息，且**对环上离自己近的节点了解更多**，对远的了解少（finger 间距呈指数 $2^{i-1}$ 增长）。
 2. 一个节点的 finger table **通常不足以**直接确定任意键的后继。
 
-<div style="background-color:#ffebee; padding:12px 16px; border-left:5px solid #e53935; border-radius:4px;">
-
-
+::: example
 **例子（$m = 3$ 的环，节点 {0, 1, 3}，键 {1, 2, 6}）**：
 
 - 键映射：$\text{successor}(1)=1$，$\text{successor}(2)=3$，$\text{successor}(6)=0$。
 
 - 节点 1 的 finger table：
 
-  | $i$  | start | interval | succ. |
-  | :--: | :---: | :------: | :---: |
-  |  1   |   2   | $[2,3)$  |   3   |
-  |  2   |   3   | $[3,5)$  |   3   |
-  |  3   |   5   | $[5,1)$  |   0   |
+| $i$ | start | interval | succ. |
+| :--: | :---: | :------: | :---: |
+| 1 | 2 | $[2,3)$ | 3 |
+| 2 | 3 | $[3,5)$ | 3 |
+| 3 | 5 | $[5,1)$ | 0 |
 
 - 注意节点 3 的 finger table 中**没有**节点 1，所以节点 3 不能直接知道键 1 的后继——这正说明了 finger table 信息不完整的特征。
-
-</div>
+:::
 
 ### 4.3 查找算法
 
@@ -183,25 +177,19 @@ n.closest_preceding_finger(id):
 
 > 记号约定：`n.foo()` 表示在远程节点 $n$ 上执行 `foo()`（RPC）；不带前缀的是本地调用。
 
-<div style="background-color:#ffebee; padding:12px 16px; border-left:5px solid #e53935; border-radius:4px;">
-
-
+::: example
 **例子（节点 3 查询 $\text{successor}(1)$）**：
 
 1. $1$ 落在 $3.\text{finger}[3].\text{interval}$，节点 3 查第 3 项 finger → 指向节点 0。
 2. 节点 0 先于 1，于是节点 3 请节点 0 去 `find_successor(1)`。
 3. 节点 0 从自己的 finger table 推断出 $1$ 的后继就是节点 1 本身，返回节点 1。
-
-</div>
+:::
 
 ### 4.4 性能分析
 
-<div style="background-color:#e8f5e9; padding:12px 16px; border-left:5px solid #43a047; border-radius:4px;">
-
-
+::: theorem
 **推论（定理 2，查找跳数）**：在 $N$ 节点网络中，一次查找需要联系的节点数为 $O(\log N)$（w.h.p. / 基于标准困难性假设）。
-
-</div>
+:::
 
 **直觉证明（距离减半论证）**：设节点 $p$ 是 $id$ 的直接前驱，目标 $p$ 落在当前节点 $n$ 的第 $i$ 个 finger 区间内。该区间非空，故 $n$ 会 finger 到区间内某节点 $f$：
 
@@ -218,17 +206,14 @@ n.closest_preceding_finger(id):
 
 动态网络中，加入/离开必须保持"能定位每个键"的能力。Chord  维护两条**不变式**：
 
-<div style="background-color:#e6f2ff; padding:12px 16px; border-left:5px solid #3399ff; border-radius:4px;">
-
-
+::: definition
 **定义（Chord 不变式）**：
 
 1. 每个节点的 **successor 被正确维护**；
 2. 对每个键 $k$，节点 $\text{successor}(k)$ **负责** $k$。
 
 （为了查找**快**，还希望 finger table 正确，但这不是正确性所必需。）
-
-</div>
+:::
 
 为支持加入/离开，每个节点额外维护一个 **predecessor**（前驱）指针，可逆时针绕环行走。
 
@@ -252,12 +237,9 @@ n.join(n'):
 
 **初始化 finger table 的优化**：朴素地对 $m$ 个 finger 各做一次 `find_successor` 需 $O(m\log N)$。利用"第 $i$ 个 finger 往往也是第 $i{+}1$ 个 finger"的性质，可把需要真正查找的 finger 数降到 $O(\log N)$，总时间 $O(\log^2 N)$。实践中还可直接向邻居要一份完整 finger table 作为提示。
 
-<div style="background-color:#e8f5e9; padding:12px 16px; border-left:5px solid #43a047; border-radius:4px;">
-
-
+::: theorem
 **推论（定理 3，加入/离开代价）**：以高概率，任意节点加入或离开 $N$ 节点网络，需要 $O(\log^2 N)$ 条消息来重建路由不变式与 finger table。
-
-</div>
+:::
 
 ---
 
@@ -293,17 +275,14 @@ n.fix_fingers():
     finger[i].node = find_successor(finger[i].start)
 ```
 
-<div style="background-color:#ffebee; padding:12px 16px; border-left:5px solid #e53935; border-radius:4px;">
-
-
+::: example
 **例子（节点 $n$ 插入 $n_p$ 与 $n_s$ 之间）**：
 
 1. $n$ 通过 `join` 获得后继 $n_s$；
 2. $n$ 调用 `notify`，$n_s$ 把前驱改为 $n$；
 3. $n_p$ 下次 `stabilize` 时向 $n_s$ 问前驱，得到 $n$，于是把后继改为 $n$；
 4. $n_p$ 再 `notify`，$n$ 把前驱设为 $n_p$。至此所有前驱/后继指针均正确。
-
-</div>
+:::
 
 **stabilization 期间的三种查找行为**：
 
@@ -311,9 +290,7 @@ n.fix_fingers():
 - (中间) successor 对但 finger 不准 → 正确但较慢；
 - (最坏) successor 错或键尚未迁移 → 查找失败，上层稍后重试即可（稳定化很快修复后继）。
 
-<div style="background-color:#e8f5e9; padding:12px 16px; border-left:5px solid #43a047; border-radius:4px;">
-
-
+::: theorem
 **推论（定理 4–6，并发加入的影响是暂时的）**：
 
 - **定理 4**：一旦某节点能成功解析某查询，将来永远能；
@@ -321,33 +298,26 @@ n.fix_fingers():
 - **定理 6**：稳定网络有 $N$ 个节点，再有至多 $N$ 个节点加入（finger 未建但 successor 正确），查找仍以高概率耗时 $O(\log N)$。
 
 更一般地：只要"调整 finger 的时间 < 网络规模翻倍的时间"，查找就持续保持 $O(\log N)$ 跳。
-
-</div>
+:::
 
 ### 6.2 失效与复制（Successor List）
 
 节点失效的核心威胁是后继指针断裂（最坏情况下 `find_predecessor` 只靠后继也能推进）。解决办法：
 
-<div style="background-color:#e6f2ff; padding:12px 16px; border-left:5px solid #3399ff; border-radius:4px;">
-
-
+::: definition
 **定义（successor-list）**：每个节点维护一张包含其环上 $r$ 个最近后继的列表。当节点发现后继失效时，用列表中第一个存活项替换它；随后 stabilize 会逐步修正 finger 与列表中指向失效节点的项。
-
-</div>
+:::
 
 successor-list 同时方便上层做**数据复制**：把某键的数据副本存在该键之后的 $k$ 个节点上；节点掌握 $r$ 个后继的来去，从而通知上层何时传播新副本。
 
-<div style="background-color:#e8f5e9; padding:12px 16px; border-left:5px solid #43a047; border-radius:4px;">
-
-
+::: theorem
 **推论（定理 7–8，successor-list 的鲁棒性）**：取 $r = O(\log N)$，在初始稳定的网络中让**每个节点以概率 $1/2$ 失效**，则：
 
 - **定理 7**：`find_successor` 以高概率返回查询键的**最近存活后继**；
 - **定理 8**：失效后的网络中 `find_successor` 期望耗时 $O(\log N)$。
 
 直觉：一个节点的 $r$ 个后继全部失效的概率为 $2^{-r} = 1/N$，故节点几乎总能向其最近存活后继转发消息。
-
-</div>
+:::
 
 ---
 

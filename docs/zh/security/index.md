@@ -1,9 +1,12 @@
 ---
-sidebarDepth: 2
 title: 计算机安全
+course: security
+kind: system
+tags: []
+status: stub
+sidebarDepth: '2'
 ---
-
-# CS课程7大部分
+# CS 课程 7 大部分
 
 - 编程与软件工程
 - 编程语言
@@ -15,7 +18,5 @@ title: 计算机安全
 
 ## 计算机安全
 
-
 - [计算机安全]()
 - [数据库系统]()
-

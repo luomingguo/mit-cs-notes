@@ -1,3 +1,12 @@
+---
+title: 连接算法
+course: 6.5830 数据库系统
+course_id: '6.5830'
+lecture: 8
+kind: system
+tags: []
+status: complete
+---
 # Lec 8 连接算法
 
 > 阅读资料
@@ -6,10 +15,9 @@
 >
 > [Join Processing in Database Systems with Large Main Memories, 1986](https://cs-people.bu.edu/mathan/reading-groups/papers-classics/join.pdf)
 
-良好的数据库设计是为了最小化信息冗余，这正是基于规范化理论构建表结构的原因。重点研究用于双表组合的内等值连接算法。等值连接算法通过匹配键值相等的记录来合并表数据，这些算法经过调整后也可支持其他类型的连接操作。特别关注Hash Join 和Sort-Merge join连接，以及这两种方法权衡。
+良好的数据库设计是为了最小化信息冗余，这正是基于规范化理论构建表结构的原因。重点研究用于双表组合的内等值连接算法。等值连接算法通过匹配键值相等的记录来合并表数据，这些算法经过调整后也可支持其他类型的连接操作。特别关注 Hash Join 和 Sort-Merge join 连接，以及这两种方法权衡。
 
-
-## Outline
+## 本讲导览
 
 1. 嵌套循环连接（Nested Loops, NL)
 2. 块嵌套循环连接（Bolcked Nested Loops)
@@ -17,24 +25,24 @@
 
 4. 当表能够装入内存时
 
-   - hash连接（只需一个表装入内存）
+   - hash 连接（只需一个表装入内存）
      - 使用哈希表来连接两个表，只需要其中一个表能装入内存即可，通常在没有合适的索引时使用
 
-   - 排序合并连接(Sort Merge Join， 两个表都需要装入内存)
+   - 排序合并连接（Sort Merge Join， 两个表都需要装入内存）
 
 5. 当表不能装入内存时
    - 块哈希连接
    - 外部排序合并连接
    - 简单哈希
-   - Grace哈希
+   - Grace 哈希
 
 **评估连接**
 
-假设R总是比较小的表
+假设 R 总是比较小的表
 
-- {S}-S表中的记录
-- |S| - S表的页树
-- 内存大小为M页
+- {S}-S 表中的记录
+- |S| - S 表的页树
+- 内存大小为 M 页
 
 ## 嵌套循环连接
 
@@ -55,7 +63,7 @@ for s in S:
 
 ## 块嵌套循环连接
 
-![截屏2024-08-16 15.40.26](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66bf02867c594.png)
+![截屏 2024-08-16 15.40.26](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66bf02867c594.png)
 
 ```text
 B = block size(< M)
@@ -68,7 +76,7 @@ while (not at end of R)
 ```
 
 - 选择内联或外联对性能有影响； {S} * {R}次比较
-- 但是遍历S的次数是**{R}/B**
+- 但是遍历 S 的次数是**{R}/B**
 
 {R}/B 次数遍历 S
 
@@ -79,9 +87,9 @@ while (not at end of R)
 
 ## 索引循环嵌套
 
-![截屏2024-08-16 15.49.03](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66bf0475a4b54.png)
+![截屏 2024-08-16 15.49.03](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66bf0475a4b54.png)
 
-假设在关系R中的连接属性上有一个索引``I``
+假设在关系 R 中的连接属性上有一个索引``I``
 
 ```python
 for s in S:
@@ -102,9 +110,7 @@ for s in S:
 
 ## 哈希连接（内存）
 
-
-
-![截屏2024-08-16 16.01.06](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66bf0747def48.png)
+![截屏 2024-08-16 16.01.06](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66bf0747def48.png)
 
 - 基本上与索引嵌套循环连接相同，但在运行时动态构建内存中的哈希“索引”
 - 在连接操作中，首先会根据 R 表的连接属性（即用于连接的字段）构建一个哈希表 T
@@ -133,9 +139,9 @@ for s in S:
 
 - 类似与块循环嵌套
 - 迭代的执行以下操作
-  - 构建一个在内存中可以容纳的R的部分哈希表
-  - 使用S中的所有记录进行探测（在哈希表中查找）
-  - 使用R的一下个部分重复上述过程
+  - 构建一个在内存中可以容纳的 R 的部分哈希表
+  - 使用 S 中的所有记录进行探测（在哈希表中查找）
+  - 使用 R 的一下个部分重复上述过程
 
 
 
@@ -149,7 +155,7 @@ for s in S:
 
 ## 排序归并连接
 
-特别适用于排序后的数据或可以按顺序遍历的数据。 将S和R进行排序（如果有合适的索引，可以直接利用索引进行排序后的遍历）
+特别适用于排序后的数据或可以按顺序遍历的数据。 将 S 和 R 进行排序（如果有合适的索引，可以直接利用索引进行排序后的遍历）
 
 ```python
 while (i < {R} and j < {S}):
@@ -165,15 +171,11 @@ while (i < {R} and j < {S}):
 >
 > 输出是有序的
 
-
-
 ### 处理重复值
 
-![截屏2024-08-17 07.41.35](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66bfe3c5d3c1c.png)
+![截屏 2024-08-17 07.41.35](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66bfe3c5d3c1c.png)
 
-- 思路： 当连接键值相同时，就进入处理重复值逻辑。 计算S和R的运行长度（比如m, n），生成``m x n``的连接结果
-
-
+- 思路： 当连接键值相同时，就进入处理重复值逻辑。 计算 S 和 R 的运行长度（比如 m, n），生成``m x n``的连接结果
 
 ```sql
 while (i < {R} and j < {S}):
@@ -215,13 +217,9 @@ def emitRun(R, S, r, s, rLen, sLen):
 | Blocked hash join | {R} + $\lceil {|R}|/M \rceil \times |S|$ | $\lceil {|R}|/M \rceil \times |S| + |R|$                     |                                                        |
 | Sort Merge join   | Rlog{R} + {S}log{S} + {S} +{R}           | \|R\| + \|S\|                                                | 假设两个表都能放进内存，如果已经有序                   |
 
+> 什么情况下你会请倾向于 sort-merge 而不是 hash join？
 
-
-> 什么情况下你会请倾向于sort-merge而不是hash join？
-
-
-
-> 什么情况下你会请倾向于索引嵌套循环而不是hash join？
+> 什么情况下你会请倾向于索引嵌套循环而不是 hash join？
 
 ## 外部排序归并连接
 
@@ -234,17 +232,16 @@ def emitRun(R, S, r, s, rLen, sLen):
 
 算法：
 
-1. 对S和R进行分区
+1. 对 S 和 R 进行分区
    - 将表 S 和表 R 分成大小为内存容量的有序分区（`sorted runs`），然后将这些分区写回磁盘
 2. 合并所有分区：
    - 同时对所有分区进行合并。这一步确保最终连接的结果是有序的，能够高效地进行等值连接。
 
 分析：
 
-- I/O消耗： 需要读取|R| 和 |S|两边， 写一遍
+- I/O 消耗： 需要读取|R| 和 |S|两边， 写一遍
   - $3(|R|+|S|)$  I/O
 
 例子：
 
-![截屏2024-08-17 07.56.45](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66bfe74fb489d.png)
-
+![截屏 2024-08-17 07.56.45](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66bfe74fb489d.png)

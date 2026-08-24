@@ -1,3 +1,12 @@
+---
+title: 布局
+course: 6.4500 Web设计：语言和用户接口
+course_id: '6.4500'
+lecture: 10
+kind: design
+tags: []
+status: complete
+---
 # Lec 10 布局
 
 - 定位
@@ -5,13 +14,7 @@
 - 一维布局
 - 网络系统
 
-
-
-
-
 ## 定位
-
-
 
 有几个属性对于这些盒子的尺寸计算非常关键：
 
@@ -26,8 +29,6 @@
 
 - 始终要使用足够的 `padding`，否则文字会让人阅读起来不舒服。正如你在图形设计课程中学到的那样，通常水平方向需要的内边距会比垂直方向更多。
 
-
-
 块级元素：
 
 - 从上到下排列
@@ -37,8 +38,6 @@
 - 文本会在盒子内部换行
 - 我们可以设置 [`width`](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [`height`](https://developer.mozilla.org/en-US/docs/Web/CSS/height), [`margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/margin)
 
-
-
 行内元素：
 
 - 按从左到右的方式排列
@@ -47,8 +46,6 @@
 - 盒子的高度通常只有一行高
 - 文本换行是通过盒子被拆分到多行中实现的
 - [`width`](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [`height`](https://developer.mozilla.org/en-US/docs/Web/CSS/height), [`margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/margin)  属性不起作用
-
-
 
 行内块级元素（inline-block）：
 
@@ -60,8 +57,6 @@
 - 盒子高度由其内容决定（内容会自动换行）
 - 文本会在盒子内部换行
 - 我们可以设置 [`width`](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [`height`](https://developer.mozilla.org/en-US/docs/Web/CSS/height), [`margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/margin)
-
-
 
 **替换元素（Replaced elements）**
 
@@ -77,10 +72,6 @@
 - `<canvas>`
 - `<input>`
 
-
-
-
-
 **定位元素**
 
 定位元素（positioned element）指的是任何 `position != static` 的元素。也就是说，只要元素的 `position` 不是默认的 `static`，它就是“定位元素”。
@@ -91,13 +82,7 @@
 
 绝对定位元素会让元素脱离正常文档流，并覆盖在其他内容之上。
 
-
-
 ## 锚定定位
-
-
-
-
 
 ## 网格系统
 
@@ -105,7 +90,7 @@
 
 网格无处不在。
 
-![img](https://media-s3-us-east-1.ceros.com/ceros-marketing/images/2016/10/24/ddad31747373bd0169a985ebbd60cad2/poster.jpg?imageOpt=1&fit=bounds&width=510) 
+![img](https://media-s3-us-east-1.ceros.com/ceros-marketing/images/2016/10/24/ddad31747373bd0169a985ebbd60cad2/poster.jpg?imageOpt=1&fit=bounds&width=510)
 
 ![image-20260513085011442](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260513085011442.png)
 
@@ -113,13 +98,9 @@
 
 ![image-20260513085112703](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260513085112703.png)
 
-
-
-**在Web，网格必须灵活**
+**在 Web，网格必须灵活**
 
 ![flexible-grid](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/flexible-grid.gif)
-
-
 
 ### 如何做？
 
@@ -145,8 +126,6 @@ body {
 }
 ```
 
-
-
 其他属于
 
 - 网格槽（Gutter）： 网格中行与列之间的空隙。
@@ -155,10 +134,6 @@ body {
 - 网格轨道（Grid track）：网格中两个网格线之间的空间，可以是水平的也可以是垂直的。
 - 网格区域（Grid area）： 一个网格区域可以包含任意数量的网格单元格。
 
-
-
 ![image-20260513091742408](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260513091742408.png)
-
-
 
 定义命名区域是指定网格布局的另一种方式。`grid-area` 可以让你把一个元素分配到某个命名区域中。之后，只需要修改网格模板，就可以重新排列网格中的元素！

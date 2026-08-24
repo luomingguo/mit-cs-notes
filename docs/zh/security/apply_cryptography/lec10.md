@@ -1,4 +1,13 @@
-# L10 · 全同态加密 II：Bootstrapping
+---
+title: 全同态加密 II：Bootstrapping
+course: 6.5610 应用密码学与安全（Spring 2026）
+course_id: '6.5610'
+lecture: 10
+kind: theory
+tags: []
+status: complete
+---
+# Lec 10 全同态加密 II：Bootstrapping
 
 > MIT 6.5610 · Lecture 10 · 关键词：bootstrapping、层级 FHE → 全 FHE、circular security、模数切换、噪声管理
 > *说明：以标准处理撰写（Gentry 2009），要点与本课"FHE 2"一致。*
@@ -15,16 +24,14 @@ L9 给出层级 FHE（有限深度）。本讲用 **bootstrapping** 把它升级
 
 设有一个噪声接近上限的密文 $c=\mathrm{Enc}_{pk}(\mu)$，私钥 $sk$。
 
-<div class="corollary">
-
+::: theorem
 **Bootstrapping 步骤**
 1. 先把私钥加密：公开 **bootstrapping key** $\widetilde{sk}=\mathrm{Enc}_{pk}(sk)$。
 2. 把"将 $c$ 解密"这一过程写成电路 $\mathrm{Dec}_{(\cdot)}(c)$（以密钥为输入、$c$ 为常量）。
 3. 在密文层面**同态求值**该解密电路，输入用 $\widetilde{sk}$：
-   $$\mathrm{Eval}\big(\mathrm{Dec}_{(\cdot)}(c),\ \widetilde{sk}\big) = \mathrm{Enc}_{pk}\big(\mathrm{Dec}_{sk}(c)\big) = \mathrm{Enc}_{pk}(\mu).$$
+$$\mathrm{Eval}\big(\mathrm{Dec}_{(\cdot)}(c),\ \widetilde{sk}\big) = \mathrm{Enc}_{pk}\big(\mathrm{Dec}_{sk}(c)\big) = \mathrm{Enc}_{pk}(\mu).$$
 4. 输出是 $\mu$ 的**全新密文**，其噪声 = "同态求值一个浅解密电路"所引入的噪声，而非原密文的高噪声 → 噪声被**重置**。
-
-</div>
+:::
 
 > 🔎 **关键洞察**：第 3 步同态运行解密，得到的不是明文 $\mu$（那需要真私钥），而是 $\mu$ 的**重新加密**。因为我们用的是**加密过的私钥** $\widetilde{sk}$，整个过程不泄露 $sk$。这就像"在密封箱里换了个噪声更低的新箱子装同一个秘密"。
 
@@ -32,13 +39,11 @@ L9 给出层级 FHE（有限深度）。本讲用 **bootstrapping** 把它升级
 
 ## 2. 成功条件
 
-<div class="example">
-
+::: example
 **两个必要条件**
 1. **解密电路足够浅**：方案的剩余噪声预算必须能容纳"同态求值解密电路"所需的深度。若解密电路太深、自身就耗尽预算，则 bootstrapping 后噪声反而更高，失败。→ 需要把解密做得尽量浅（模数切换、近似解密等技巧）。
 2. **循环安全（circular security）**：发布 $\mathrm{Enc}_{pk}(sk)$ 要求"用公钥加密自己的私钥仍安全"。这是一个额外假设（标准 LWE 不直接蕴含），但被广泛认为成立。
-
-</div>
+:::
 
 ---
 
@@ -60,7 +65,7 @@ L9 给出层级 FHE（有限深度）。本讲用 **bootstrapping** 把它升级
 
 ---
 
-## 5. 小结
+## 5. 本讲小结
 
 - Bootstrapping = 用加密的私钥同态运行解密电路 → 输出同明文、低噪声的新密文。
 - 成功要件：解密电路够浅 + circular security。

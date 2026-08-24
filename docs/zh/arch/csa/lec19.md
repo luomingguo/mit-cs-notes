@@ -1,4 +1,13 @@
-# L19：可靠性（*Reliability*）
+---
+title: 可靠性（Reliability）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 19
+kind: system
+tags: []
+status: complete
+---
+# Lec 19 可靠性（*Reliability*）
 
 > MIT 6.5900 Fall 2024 · Joel Emer（多数幻灯片来自 Joel Emer 关于 AVF 工作的公开报告）
 > 主题：硬/软错误、宇宙射线与软错误、冗余技术、可靠性度量（FIT/MTTF）、体系结构脆弱性因子（*AVF*）与 ACE 分析
@@ -188,7 +197,7 @@ $$
 
 ---
 
-## 小结
+## 本讲小结
 
 - 软错误主要由中子/α 粒子撞击引起，物理解法（屏蔽/工艺/电路）代价高，FinFET 有帮助；
 - 系统级靠**冗余**（TMR/DMR/锁步/冗余多线程）与**部件保护**（奇偶、ECC）；

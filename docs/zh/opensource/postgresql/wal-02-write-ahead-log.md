@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的 WAL — 2. 预写式日志（Write-Ahead Log）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的 WAL — 2. 预写式日志（Write-Ahead Log）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/494246/ （作者 Egor Rogov，PostgresPro）
@@ -116,6 +123,6 @@ pg_controldata -D /var/lib/postgresql/11/main | grep state
 
 有意思的一点是：PostgreSQL 的崩溃恢复只需要"前滚"（redo，把日志里记录但尚未落盘的改动重新应用一遍）这一个阶段，并不需要传统意义上的"回滚"（undo）阶段。原因在于 PostgreSQL 使用多版本并发控制（MVCC）：一个事务如果没有提交，它写下的那些行版本本身在可见性判断上就不会被认为有效（因为 XACT 里没有留下这个事务的提交标记），所以物理上根本不需要主动把这些行删除或者还原——它们天然就是"不可见"的垃圾，之后会被 VACUUM 之类的机制自然清理掉。
 
-## 小结
+## 本讲小结
 
 这一篇建立了 WAL 的核心心智模型：一切对缓冲区页面的修改，必须先以紧凑的日志记录形式安全落盘，之后脏页何时真正写回磁盘就成了一个可以灵活调度的性能问题。WAL 逻辑上是一条由资源管理器负责解释的变长记录流，物理上被切成默认 16MB 一个的文件，写入过程要先经过内存里的 WAL 缓冲区（`wal_buffers`）。LSN 作为字节偏移量贯穿整个体系：既标记每条日志记录的位置，也被记录在每个数据页头部，用来在恢复时判断这条记录是否已经生效。恢复时只需要从上一个检查点开始顺序前滚，靠比较页面 LSN 和记录 LSN 决定要不要重放，FPI 和事务状态变化是两个特殊处理的例外；而得益于 MVCC，PostgreSQL 完全不需要传统的回滚阶段。下一篇会深入"检查点"（checkpoint）——也就是恢复起点是怎么产生和推进的。

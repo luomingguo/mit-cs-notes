@@ -1,36 +1,37 @@
-
-
+---
+title: AWS Lambda：按需容器加载
+course: 6.5840 分布式系统（Spring 2026）
+course_id: '6.5840'
+lecture: 17
+kind: system
+tags: []
+status: complete
+---
 # Lec 17 AWS Lambda：按需容器加载
 
 **阅读材料**
 
-- 论文：[On-demand Container Loading in AWS Lambda (USENIX ATC 2023)](https://pdos.csail.mit.edu/6.5840/papers/atc23-brooker.pdf) 
+- 论文：[On-demand Container Loading in AWS Lambda (USENIX ATC 2023)](https://pdos.csail.mit.edu/6.5840/papers/atc23-brooker.pdf)
 - 课程材料：Marc Brooker 客座讲座 slides（`mbrooker_cs_slides_2026.pdf`）
 
 **一句话总览**：Lambda 在 2020 年要支持把最大 10GiB 的容器镜像当函数运行，同时保住**冷启动（*cold start*）低至 50ms**。难点纯粹是数据搬运：单客户每秒可起 15,000 个容器，若每个都搬运并解包 10GiB，需要 150 Pb/s 带宽——不可能。解法是利用容器镜像的**可缓存性、共性、稀疏性**三大特性，组合出一套：**块级按需加载 + 内容寻址去重（收敛加密）+ 分层缓存 + 纠删码**的存储系统。它已可靠服务了数千亿次调用、上百万客户。   ddd
-
-
-
-
 
 ## 1. 问题：让冷启动扛得住 10GiB 镜像
 
 **Serverless / FaaS（*Function-as-a-Service*）**：客户只上传代码，平台按事件触发、自动扩缩。**冷启动时间**（从需要新容量到能执行，常 <1s、低至 50ms）是 FaaS 最关键的体验指标。早期 Lambda 用 ≤250MiB 的 `.zip` 包，**整包下载并解包后**才能干活——镜像一大就崩。
 
-<div style="background-color:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>🔬 核心数字：为什么"整包搬运"行不通</strong>
+::: example 🔬 核心数字：为什么"整包搬运"行不通
 15,000 容器/秒 × 10GiB/容器 ≈ **150 Pb/s** 网络带宽需求。必须想办法**少搬数据**。
-</div>
+:::
 
 幸运的是，容器镜像有三个可利用的性质：
 
-<div style="background-color:#eef4ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>📘 定义：可缓存性 / 共性 / 稀疏性</strong>
-</div>
+::: definition 📘 定义：可缓存性 / 共性 / 稀疏性
+
+:::
 - **可缓存性（Cacheability）**：虽有几十万种工作负载，但大规模扩容尖峰往往由**少数镜像**驱动 → 高度可缓存。
 - **共性（Commonality）**：很多镜像基于共同基础层（AWS base、Alpine 等）→ 缓存并**去重**这些公共层，惠及所有衍生镜像。
 - **稀疏性（Sparsity）**：镜像里大量文件**启动时根本用不到**——Harter 等发现平均**只有 6.4%** 的容器数据在启动时被需要。
-
 
 设计哲学（贯穿全文）：**为大规模云的现实而优化——故障频繁、故障常是部分而复杂的、安全第一**。整套方案对客户**零额外复杂度**（照常 push 镜像即可）。
 
@@ -60,14 +61,13 @@ Slacker、Starlight 等在**文件系统层**做懒加载（对容器很自然�
 
 ### 3.2 确定性扁平化（Deterministic Flattening）
 
-<div style="background-color:#ecfdf3;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>✅ 关键结论：把分层镜像压成单个块设备</strong>
-</div>
+::: insight ✅ 关键结论：把分层镜像压成单个块设备
+
+:::
 
 OCI 镜像是一摞 tarball 层，运行时用 overlayfs 叠加。Lambda 改在**函数创建时**（低频控制面操作，客户分钟级才改一次；而调用是百万级/秒）就把各层按序合并成**单个 ext4 文件系统镜像**。
 
 扁平化用**串行、确定性**的文件系统实现（普通实现为性能引入并发 → 不确定；这里确定地选定修改时间等可变参数）。这保证：**含未改文件的块逐字节相同** ⇒ 共享基础层的不同镜像之间可做**块级去重**。
-
 
 扁平化后，文件系统被切成**固定 512KiB 的块（chunk）**，按**内容寻址**（块名是其内容的函数）上传到三层缓存的 **origin 层（S3）**——同内容必同名、只需缓存一份，**无需中央索引即可去重**。块大小权衡：小块去重更好（减少假共享）、利于随机访问；大块减少元数据与请求数、利于顺序预读。
 
@@ -81,12 +81,11 @@ guest 代码 IO ─(未命中 page cache)─► virtio-blk ─► Firecracker �
    写: 写入"块覆盖层"(加密存于 worker)，用页粒度 bitmap 标记"该读覆盖层还是底层镜像"
 ```
 
-<div style="background-color:#eef4ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>📘 定义：页级写时复制（Page-level Copy-on-Write）</strong>
-</div>
+::: definition 📘 定义：页级写时复制（Page-level Copy-on-Write）
+
+:::
 
 guest 可读可写，而本地缓存（及所有缓存层）里的数据**保持不可变、可被多个 guest 共享**。写经覆盖层 + bitmap 实现；不覆盖整页的写需"读-改-写"。
-
 
 ---
 
@@ -94,24 +93,22 @@ guest 可读可写，而本地缓存（及所有缓存层）里的数据**保持
 
 去重价值巨大：约 **80% 新上传函数产生零唯一块**（CI/CD 自动重传旧镜像）；其余 20% 里平均仅 **4.3%**、中位 **2.5%** 是唯一块。去重可减少存储**多达 23×**，并大幅提升缓存有效性。难点是**在加密下去重**且**最小化信任**——每个 Worker 只应能访问发给它的那些函数的数据。
 
-<div style="background-color:#ecfdf3;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>✅ 关键结论：收敛加密（Convergent Encryption）</strong>
-</div>
+::: insight ✅ 关键结论：收敛加密（Convergent Encryption）
+
+:::
 
 矛盾：去重要"相同内容相同"，加密要"一切看起来随机"。解法（源自 Farsite）：**用块内容自身派生密钥**——对块算 SHA256 当密钥，用 **AES-CTR + 全零 IV** 加密。于是**相同明文恒得相同密文**，既能去重又加密（SHA256 抗碰撞保证一个 key/IV 只用于一个明文块，零 IV 安全）。
-
 
 每块还登记进一个 **manifest**（含每块的偏移、密钥、SHA256）。manifest 用**每客户专属的 KMS 密钥**（AES-GCM）加密，但**只加密"密钥表"**部分、整体做认证——这样 GC 能读到块清单却读不到块密钥。manifest 极小（16GiB 镜像的 manifest <3MiB，开销 0.02%）。好处：去重**无需共享密钥**、**无需协调**（扁平化进程只需"若不存在则上传"）、并提供**端到端完整性**（Worker 用 manifest 里的 MAC 校验下载的块，篡改即拒）。
 
 > [!NOTE]
 > **不压缩**：① 网络带宽足够，解压延迟收益边际；② **压缩+加密会泄露明文**（压缩后大小是侧信道）。故除"剔除全零块"外不压缩。
 
-<div style="background-color:#eef4ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>📘 限制爆炸半径（Blast Radius）：加盐</strong>
-</div>
+::: definition 📘 限制爆炸半径（Blast Radius）：加盐
+
+:::
 
 热门块被广泛引用，一旦损坏/变慢就影响巨大，还会在分布式存储里造成热点。对策：在密钥派生里加入**会变化的盐（salt）**（随时间、块热度、可用区/机房而变）。盐不同 → 密钥不同 → 密文不同 → **不互相去重**。调节盐轮换频率，即可在**去重效率**与**爆炸半径**之间连续权衡。盐完全封装在"块创建层"内，其余组件无感。
-
 
 > [!TIP]
 > **垃圾回收（GC）—— 基于 roots 的代际回收**：无中央引用目录，无法精确引用计数（GC 错块会跨客户大范围伤害）。做法：周期性创建新 root `R2`（接收新数据）、把旧 root `R1` 置为 **retired（只读）**，把 `R1` 中仍被引用的 manifest 连同其块**迁移到 `R2`**，迁完才删 `R1`。删前先入 **expired** 态——此态仍可读，但任何访问都**触发告警并自动停止删除**，作为防数据丢失的额外一层。当前活跃 root 的 ID 也混入盐，确保新块不与旧 root 共享。
@@ -124,42 +121,39 @@ guest 可读可写，而本地缓存（及所有缓存层）里的数据**保持
 Worker 取块: 本地缓存(L1) ──未命中──► AZ 级分布式缓存(L2) ──未命中──► S3 origin(L3)
 ```
 
-<div style="background-color:#ecfdf3;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>✅ 关键结论：命中率与延迟（一周生产数据）</strong>
-</div>
+::: insight ✅ 关键结论：命中率与延迟（一周生产数据）
+
+:::
 
 - **L1（worker 本地）** 命中 **67%**；
 - **L2（AZ 级）** 命中 **99.9%**（中位）；
 - **L3（S3）** 仅 **0.06%**。
 - L2 命中中位 **550µs** vs 从 S3 origin 取 **36ms**（P99.9：3.7ms vs 175ms）。
 
-L2 是自研：HTTP2 取块、内存层(热) + flash 层(冷) 两级、**LRU-k** 淘汰、**一致性哈希**分布（带负载均衡优化）。
-
+L2 是自研：HTTP2 取块、内存层（热） + flash 层（冷） 两级、**LRU-k** 淘汰、**一致性哈希**分布（带负载均衡优化）。
 
 ### 5.1 尾延迟优化：纠删码 + 冗余请求
 
 单副本缓存有三患：**尾延迟**（单台慢拖累全局，且每次冷启动要取大量块——取 1000 块时有 63% 概率撞上 P99.9 尾延迟）、**命中率掉**（节点故障/部署即丢）、**吞吐受限**（单机带宽封顶）。复制能解但成本随副本数线性涨（缓存主要在内存，很贵）。于是选**纠删码（*erasure coding*）**：
 
-<div style="background-color:#eef4ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>📘 定义：4-of-5 纠删码 + 冗余请求</strong>
-</div>
+::: definition 📘 定义：4-of-5 纠删码 + 冗余请求
+
+:::
 
 Worker 未命中时从 origin 取块，再把块编码成**条带（stripe）** 存入缓存。取块时**多请求几条**（超过重建所需），**够数即重建**。生产用 **4-of-5 码**：25% 存储开销、25% 请求率上涨，换来尾延迟大降，且**节点故障/部署时命中率不掉**。
-
 
 > [!NOTE]
 > 这体现了 **"恒定工作量（constant work）"** 哲学：成功与失败路径做**相同量**的工作。常见的"靠重试掩盖故障"会在大系统中诱发**亚稳态故障（metastable failure）**——纠删码避开了这点。
 
 ### 5.2 稳定性与亚稳态（Metastability）
 
-<div style="background-color:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>🔬 隐患：高命中率缓存的暗面</strong>
-</div>
+::: example 🔬 隐患：高命中率缓存的暗面
+
+:::
 
 端到端命中率常 >99.8%。一旦缓存被清空（断电/运维）或命中率骤降（客户行为变），下游流量可能暴涨至**正常的 500×**。S3 扛得住，但延迟上升 → 据**利特尔法则（Little's Law）** 应用并发需求上升 → 需要更多 Lambda slot → 负载更高、工作集变化 → 系统**填不满缓存**，陷入亚稳态雪崩。
 
 类比：Denning 1968 的工作集模型早已描述过——程序缺页 → 换页流量 → 挤掉更多有用页 → 更多缺页……自我强化的危机。
-
 
 缓解：系统设计为**并发受限（concurrency-limited）**——容器启动变慢、并发任务超限时，**拒绝新启动**直到在途完成；并定期**在最大并发下从空缓存冷启动测试**，确保能从冷缓存恢复。
 
@@ -174,34 +168,32 @@ Worker 未命中时从 origin 取块，再把块编码成**条带（stripe）** 
 - **FUSE 开销**：用 FUSE 暴露文件再当块设备，一次读要经 guest 内核 → Firecracker → host FUSE → local agent 来回，**需调度 4 个线程**，稳态低效、压力下抖动大 → 正迁移到 **userfaultfd + mmap**（去掉两层）。但不后悔从 FUSE 起步：它提供了便捷接口、清晰的安全隔离，让非系统编程专长的团队也能做出可接受性能。
 - **多模态延迟（multi-modality）**：端到端读延迟呈多峰（<100µs 本地命中、~2.75ms L2 命中、罕见 origin）。多模态是存储系统常态，但给运维出难题：均值对各峰频率敏感、百分位/裁剪均值会**掩盖多峰**、且难决定该优化哪个峰。
 
-<div style="background-color:#ecfdf3;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>✅ 更广泛的教训（论文结论）</strong>
-   </div>
+::: theorem ✅ 更广泛的教训（论文结论）
+
+:::
 
 1. 客户多把容器当**"大规模静态链接"** 用——想把函数及全部依赖打成一个原子单元；但容器在此用途下很低效，逼出了去重与稀疏加载。业界需要更轻量的**依赖封装**机制。
 2. **缓存**是几乎一切有状态系统的关键，却带来**亚稳态故障**与**多模态延迟**等风险；对大系统中缓存动态行为的理解仍远远不够。
 3. **MicroVM** 提供近乎容器/进程的轻量隔离，又能插入本地/分布式 OS 逻辑，是 OS 研究者工具箱里的强力新工具。
 
-
 ---
 
 ## 7. 小结与工程视角
 
-<div style="background-color:#ecfdf3;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin:12px 0;">
-<strong>✅ 一图流记忆</strong>
-</div>
+::: insight ✅ 一图流记忆
+
+:::
 
 稀疏性 ⇒ 块级按需加载（确定性扁平化成 ext4 + 512KiB 内容寻址块 + COW）；<br>
 共性 ⇒ 收敛加密去重（SHA256 派生密钥 + 全零 IV，manifest 用 KMS 客户密钥，加盐控爆炸半径，root 代际 GC）；<br>
 可缓存性 ⇒ 三层缓存（L1 67% / L2 99.9% / S3）+ 纠删码 4-of-5 降尾延迟 + 并发限制防亚稳态。
 
-
 - **整体取舍**：表面"零件很多"，但全为云的现实服务——**频繁/部分/复杂的故障 + 安全至上**。同一套加载系统也支撑 Lambda **SnapStart**（用内存快照进一步降冷启动）。
 - **对你（分布式 SaaS）的可借鉴点**：① **内容寻址 + 去重**是分发镜像/资产/备份的通用利器，尤其当 CI/CD 高频重传时（你正用 GCP Cloud Build 推 Artifact Registry，思路一致）；② **收敛加密**让"多租户共享存储又互不信任"成为可能，对多客户 SaaS 很有参考；③ **分层缓存 + 纠删码降尾延迟**优于盲目复制或重试，且能规避**亚稳态雪崩**——任何高命中率缓存（含你的 API 网关/边缘缓存）都该想清楚"缓存被清空时下游能否扛住"，并用**并发限制**兜底；④ **确定性构建**（固定时间戳等）是实现可去重/可复现产物的前提。
 
-# 论文阅读
+## 论文阅读
 
-## 摘要
+## 本讲导览
 
 AWS Lambda 是一种无服务器、事件驱动的计算服务，属于云计算服务中的一个子类别，通常被称为函数即服务（Function-as-a-Service，简称 FaaS）。在最初发布时，AWS Lambda 函数的代码和依赖被限制在 250MB 以内，并以一个简单的压缩包形式打包。2020 年，我们推出了支持将最大 10GiB 的容器镜像部署为 Lambda 函数的功能，使客户能够将更大规模的代码库和依赖项引入 Lambda。在支持更大体积的程序包的同时，仍需满足 Lambda 的一系列目标：快速扩展（单一客户每秒最多新增 15,000 个容器，系统总量远超这个数字）、高请求速率（每秒数百万次请求）、大规模支持（数百万个独立工作负载）以及低启动时延（最短可达 50 毫秒）——这些都带来了巨大的挑战。
 

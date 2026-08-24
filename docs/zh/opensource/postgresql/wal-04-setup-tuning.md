@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的 WAL — 4. 配置与调优（Setup and Tuning）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的 WAL — 4. 配置与调优（Setup and Tuning）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/496150/ （作者 Egor Rogov，PostgresPro）
@@ -98,7 +105,7 @@ SELECT pg_reload_conf();
 
 除了整体切换同步/异步这种"全有全无"的选择外，PostgreSQL 还提供了一种折中手段：`commit_delay` 参数允许在真正把 WAL 刷盘之前，先主动等待若干微秒，如果这段时间内又有其他并发事务也排队要提交，就可以把它们的日志记录合并成一次磁盘同步操作一起刷出去，这就是所谓的"电梯算法"式攒批——用极小的单次延迟换取更少次数的（相对昂贵的）磁盘同步调用，从而提高整体吞吐。但这个延迟只有在同时活跃的事务数达到 `commit_siblings` 指定的门槛时才会真正生效，避免在低并发场景下平白无故拖慢单个事务的提交延迟。
 
-## 小结
+## 本讲小结
 
 这一篇把整个 WAL 体系的"旋钮"讲全了。`wal_level` 决定日志记录的详细程度，需要根据是否要做物理复制、逻辑复制来选择，级别越高开销越大；可靠性方面，全页镜像（`full_page_writes`）对抗断电导致的部分页写、数据校验和（`data_checksums`）对抗介质静默损坏、`wal_compression` 则在保留全页镜像保护的同时压低其体积代价，三者通常应该在生产环境同时启用；性能方面，`synchronous_commit` 是持久性和吞吐量之间最直接的权衡开关，可以按需在会话或事务级别灵活设置，配合 `commit_delay`/`commit_siblings` 的攒批机制以及 WAL writer 自身的写入节奏（`wal_writer_delay`），共同决定了整个数据库在"绝不丢一笔提交"和"尽可能快"之间落在哪个点上。
 

@@ -1,8 +1,17 @@
+---
+title: 可编程机器（ISA 与汇编）
+course: 6.1910 计算结构（Fall 25）
+course_id: '6.1910'
+lecture: 9
+kind: system
+tags: []
+status: complete
+---
 # Lec 9 可编程机器（ISA 与汇编）
 
 模块一（数字逻辑）让我们能造出固定功能的电路。但**通用处理器**的魅力在于：同一套硬件能运行 Python/Java/C 等任意高级语言写的程序。本讲建立“可编程机器”的抽象——**指令集架构（ISA）**，并学会用 RISC-V 汇编为它编程。这是 [Lec 10](lec10.md) 用硬件实现处理器之前必须先搞清楚的“要实现什么”。
 
-## Outline
+## 本讲导览
 
 - 通用处理器与机器语言
 - 微处理器的组成
@@ -36,7 +45,7 @@
 
 机器语言**直接反映**了微处理器的结构。三大组件 + 一个特殊寄存器：
 
-![截屏2024-06-13 15.03.45](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/682807caa2537.png)
+![截屏 2024-06-13 15.03.45](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/682807caa2537.png)
 
 1. **寄存器堆（Register File）**：少量（如 32 个）、定长（如 32 位）寄存器，ALU 直接对它们运算。
 2. **主存（Main Memory）**：很大（GB 级），存放**程序和数据**，以 32 位“字（word）”为单位、按地址访问。
@@ -108,7 +117,7 @@ slli x3, x1, 3
 
 $$(5+3)\bmod 8 = 8 \bmod 8 = 0,\quad 101_2 + 011_2 = 1000_2 \to 000_2$$
 
-![截屏2024-06-13 15.31.36](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/682807c9edfca.png)
+![截屏 2024-06-13 15.31.36](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/682807c9edfca.png)
 
 ### 十六进制表示法
 
@@ -153,7 +162,7 @@ end:
 - **`jal`**（jump and link）：`jal x3, label`，跳到 label（编码为相对当前指令的偏移），并把**返回地址（link）存入 x3**。指令里有 20 位可编码立即数。
 - **`jalr`**（jump via register and link）：`jalr x3, 4(x1)`，跳到 `x1 + 4`，link 存入 x3。可跳到**任意 32 位地址**（支持长跳转）。
 
-![截屏2024-06-13 17.57.59](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/682807cd1afcc.png)
+![截屏 2024-06-13 17.57.59](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/682807cd1afcc.png)
 
 ```asm
 j label        # 伪指令

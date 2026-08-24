@@ -1,4 +1,13 @@
-# L04：现代虚拟内存系统（*Modern Virtual Memory Systems*）
+---
+title: 现代虚拟内存系统（Modern Virtual Memory Systems）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 4
+kind: system
+tags: []
+status: complete
+---
+# Lec 04 现代虚拟内存系统（*Modern Virtual Memory Systems*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez 主题：地址翻译与保护、线性/层级页表、TLB、中断与异常、TLB 与 Cache 组织、现代用途
 
@@ -143,7 +152,7 @@ I/O 设备拉起某条优先级中断请求线；处理器决定处理时：在�
 
 ------
 
-## 小结
+## 本讲小结
 
 - 现代虚拟内存提供大/私有/统一存储的假象，靠**页表 + TLB** 在每次访存做地址翻译与保护；
 - **层级页表**利用地址空间稀疏性解决 64 位下页表过大的问题，**TLB** 缓存翻译并可经多级/多页大小扩展覆盖范围；

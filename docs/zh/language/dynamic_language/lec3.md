@@ -1,4 +1,13 @@
-# L3：语法分析 I — 基本概念（Parsing：Basic Concepts）
+---
+title: 语法分析 I — 基本概念（Parsing：Basic Concepts）
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+lecture: 3
+kind: theory
+tags: []
+status: complete
+---
+# Lec 3 语法分析 I — 基本概念（Parsing：Basic Concepts）
 
 > 从词法（token 序列）到语法（语法树）。本讲：CFG、推导、歧义、优先级、抽象 vs 具体语法
 
@@ -8,34 +17,35 @@
 
 词法分析产出 token 序列（如 `(2-1)+1` → `Open Int Op Int Close Op Int`），下一步要构造**语法树 (parse tree)**。但正则语言不够用。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（楔形括号语言）</strong>
-字母表 <span>$\{<, >\}$</span>：
-<ul>
-<li>所有串：<code>(&lt;|&gt;)*</code> ✓ 正则</li>
-<li>开楔形后接闭楔形：<code>&lt;*&gt;*</code> ✓ 正则</li>
-<li><strong>匹配的楔形</strong>（每个 < 配一个 >，可任意嵌套）：<strong>正则表达式无法表达！</strong></li>
-</ul>
-</div>
+::: example 例题（楔形括号语言）
+字母表 $\{<, >\}$：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（正则语言的局限）</strong>
-正则语言<strong>缺少建模嵌套所需的状态</strong>。典型反例：带括号的嵌套表达式语言没有对应的正则表达式（如 <code>(a+(b-c))*(d-(x-(y-z)))</code>、嵌套 if-else）。
-</div>
+- 所有串：`(&lt;|&gt;)*` ✓ 正则
+
+- 开楔形后接闭楔形：`&lt;*&gt;*` ✓ 正则
+
+- **匹配的楔形**（每个 < 配一个 >，可任意嵌套）：**正则表达式无法表达！**
+:::
+
+::: theorem 定理（正则语言的局限）
+正则语言**缺少建模嵌套所需的状态**。典型反例：带括号的嵌套表达式语言没有对应的正则表达式（如 `(a+(b-c))*(d-(x-(y-z)))`、嵌套 if-else）。
+:::
 
 ---
 
 ## 2. 上下文无关文法（Context-Free Grammar）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（CFG）</strong>
-<ul>
-<li><strong>终结符 (terminals)</strong>：如 <span>$\{Op, Int, Open, Close\}$</span>，每个由正则表达式定义；</li>
-<li><strong>非终结符 (nonterminals)</strong>：如 <span>$\{Start, Expr\}$</span>；</li>
-<li><strong>产生式 (productions)</strong>：左部是单个非终结符，右部是终结符与非终结符的序列。</li>
-</ul>
-</div>
+::: definition 定义（CFG）
+- **终结符 (terminals)**：如 $\{Op, Int, Open, Close\}$，每个由正则表达式定义；
+
+- **非终结符 (nonterminals)**：如 $\{Start, Expr\}$；
+
+- **产生式 (productions)**：左部是单个非终结符，右部是终结符与非终结符的序列。
+:::
 
 示例文法：
 
-```
+```text
 Op = +|-|*|/   Open = <        Start → Expr
 Int = [0-9]+   Close = >       Expr  → Expr Op Expr
                                Expr  → Int
@@ -46,41 +56,45 @@ Int = [0-9]+   Close = >       Expr  → Expr Op Expr
 
 **生成 (Generation)**：从 `Start` 出发，反复选非终结符、选其产生式、用右部替换，直到无非终结符。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（推导 <code>&lt;2-1&gt;+1</code>）</strong>
-<pre>
+::: example
+**例题（推导 `&lt;2-1&gt;+1`）**
+
+```text
 Start → Expr → Expr Op Expr → Open Expr Close Op Expr
 → Open Expr Op Expr Close Op Expr → Open Int Op Expr Close Op Expr
 → Open Int Op Int Close Op Int → &lt; 2 - 1 &gt; + 1
-</pre>
-</div>
+```
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（语法树 Parse Tree）</strong>
-内部节点是非终结符，叶子是终结符，边从产生式左部连向右部各符号。它<strong>捕获推导</strong>，给出语言原语的范畴与结构的首个规格。
-</div>
+::: definition 定义（语法树 Parse Tree）
+内部节点是非终结符，叶子是终结符，边从产生式左部连向右部各符号。它**捕获推导**，给出语言原语的范畴与结构的首个规格。
+:::
 
 **解析 (Recognition / Parsing)** 是逆过程：把 token 序列归约回 `Start`（`Open Int Op Int Close Op Int` → … → `Expr` → `Start`）。解析器可手写或由**解析器生成器**（输入文法、输出解析器）自动产生。
 
 ### 2.2 CFG 与正则语言的关系
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（嵌套括号文法及其非正则性）</strong>
-<pre>
+::: example 例题（嵌套括号文法及其非正则性）
+```text
 Start → S;  S → ( L ) ;  S → a ;  L → L , S ;  L → S
-</pre>
-该文法生成如 <code>a</code>、<code>(a)</code>、<code>(a,(a,a))</code> 等嵌套结构。其语言 <code>S → a(S) | a</code> <strong>不是正则语言</strong>（需配对任意深的括号，超出有限状态能力，可用泵引理证明）。
-而 <code>S → a,S | a</code> 的语言 <code>(a,)*a</code> 是正则的——说明 CFL 与 RL 相交，且<strong>CFL 是 RL 的真超集</strong>（每个正则语言都是 CFL，反之不然）。
-</div>
+```
+
+该文法生成如 `a`、`(a)`、`(a,(a,a))` 等嵌套结构。其语言 `S → a(S) | a` **不是正则语言**（需配对任意深的括号，超出有限状态能力，可用泵引理证明）。
+而 `S → a,S | a` 的语言 `(a,)*a` 是正则的——说明 CFL 与 RL 相交，且**CFL 是 RL 的真超集**（每个正则语言都是 CFL，反之不然）。
+:::
 
 ---
 
 ## 3. 歧义与消除（Ambiguity）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（歧义文法）</strong>
-若某串存在多个推导（多棵语法树），文法<strong>歧义</strong>。语法树通常反映语义，故文法歧义常意味着语义歧义（不可取）。
-</div>
+::: definition 定义（歧义文法）
+若某串存在多个推导（多棵语法树），文法**歧义**。语法树通常反映语义，故文法歧义常意味着语义歧义（不可取）。
+:::
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（<code>2-1+1</code> 的两棵树）</strong>
-用 <code>Expr → Expr Op Expr</code>，<code>2-1+1</code> 可解析为 <code>&lt;2-1&gt;+1</code> 或 <code>2-&lt;1+1&gt;</code>，结果不同。
-</div>
+::: example
+**例题（`2-1+1` 的两棵树）**
+用 `Expr → Expr Op Expr`，`2-1+1` 可解析为 `&lt;2-1&gt;+1` 或 `2-&lt;1+1&gt;`，结果不同。
+:::
 
 ### 3.1 消歧：改造文法
 
@@ -88,7 +102,7 @@ Start → S;  S → ( L ) ;  S → a ;  L → L , S ;  L → S
 
 **优先级**——上面仍把 `2-3*4` 当 `<2-3>*4`（违反 `*` 高于 `-`）。解决：**每个优先级一个非终结符**：
 
-```
+```text
 Start → Expr
 Expr → Expr AddOp Term     (加减层)        AddOp = +|-
 Expr → Term                                MulOp = *|/
@@ -98,9 +112,9 @@ Num  → Int
 Num  → Open Expr Close
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（优先级的通用处理）</strong>
-把运算符分优先级层，每层一个非终结符；<strong>优先级越强的层在文法/语法树中越靠下（越接近叶子）</strong>；层内可选左/右递归定结合性，可推广到任意层数。
-</div>
+::: theorem 定理（优先级的通用处理）
+把运算符分优先级层，每层一个非终结符；**优先级越强的层在文法/语法树中越靠下（越接近叶子）**；层内可选左/右递归定结合性，可推广到任意层数。
+:::
 
 ---
 
@@ -108,13 +122,13 @@ Num  → Open Expr Close
 
 改造（消歧）后的文法解析出的**具体语法树**复杂、不直观。工程上产出 **AST**：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（抽象语法 vs. 具体语法）</strong>
-<ul>
-<li><strong>抽象语法</strong>：对应直觉的程序结构，省略为消歧而引入的多余符号（如 Open/Close），本身可歧义。</li>
-<li><strong>具体语法</strong>：用于实际解析的完整（消歧）文法。</li>
-</ul>
+::: definition 定义（抽象语法 vs. 具体语法）
+- **抽象语法**：对应直觉的程序结构，省略为消歧而引入的多余符号（如 Open/Close），本身可歧义。
+
+- **具体语法**：用于实际解析的完整（消歧）文法。
+
 流程：直觉但歧义的文法 → 改造为消歧文法 → 解析得具体树 → 转换为更易操作的 AST。
-</div>
+:::
 
 ---
 

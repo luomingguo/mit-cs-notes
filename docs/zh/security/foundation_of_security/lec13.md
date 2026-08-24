@@ -1,4 +1,13 @@
-# Lec 13 — 隔离（Isolation）
+---
+title: 隔离（Isolation）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 13
+kind: theory
+tags: []
+status: complete
+---
+# Lec 13 隔离（Isolation）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 隔离的动机
@@ -35,13 +44,13 @@ $$\text{run}(A, V) \equiv \text{run}(A \text{ only}),\ \text{从 A 的视角}$$
 只要两个域**共享任何资源**（CPU 时间、内存容量、磁盘带宽），就存在侧信道（Side Channel）：
 
 **内存侧信道**：
-```
+```c
 受害者: malloc(secret)   # 分配与 secret 成比例的内存
 攻击者: 不断 malloc 直到失败 → 推断 secret
 ```
 
 **时序侧信道**：
-```
+```text
 受害者: 执行时间取决于 secret（如 RSA 幂运算）
 攻击者: 测量时间 → 推断 secret
 ```

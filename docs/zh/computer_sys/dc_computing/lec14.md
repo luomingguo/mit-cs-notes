@@ -1,14 +1,21 @@
+---
+title: 安全和隐私
+course: 6.S984 数据中心计算
+course_id: '6.S984'
+lecture: 14
+kind: system
+tags: []
+status: complete
+---
 # Lec 14 安全和隐私
 
 [CryptDB: Protecting Confidentiality with Encrypted Query Processing](https://people.csail.mit.edu/nickolai/papers/popa-cryptdb.pdf)
 
 [Hey, You, Get Off of My Cloud: Exploring Information Leakage in Third-Party Compute Clouds](https://cseweb.ucsd.edu/~hovav/dist/cloudsec.pdf)
 
+## 论文阅读：CryptDB：通过加密查询处理保护数据机密性
 
-
-# 论文阅读：CryptDB：通过加密查询处理保护数据机密性
-
-## 摘要
+## 本讲导览
 
 在线应用程序容易遭受敏感信息被窃取的风险，因为攻击者可能利用软件漏洞获取私密数据，而好奇或恶意的系统管理员也可能截获并泄露数据。**CryptDB** 是一个系统，旨在为使用 SQL 数据库的应用程序在面对此类攻击时，提供**实用且可证明的机密性保护**。
 
@@ -16,9 +23,9 @@ CryptDB 的工作原理是：通过一组高效且能识别 SQL 查询语义的�
 
 对一个真实的 MySQL 服务器的 1.26 亿条 SQL 查询的分析表明：在 128,840 个数据库字段中，CryptDB 能在加密数据上支持其中 99.5% 的操作。
 
-# 论文阅读： 探索第三方云计算的信息泄露
+## 论文阅读： 探索第三方云计算的信息泄露
 
-## 摘要
+## 本讲导览
 
 第三方云计算体现了将外包（outsourcing）理念应用于计算资源的承诺。像微软的 Azure 和亚马逊的 EC2 这样的服务，允许用户按需启动虚拟机，从而能够在需要时精确购买所需的计算能力。反过来，虚拟化的使用也使第三方云服务提供商能够通过在共享的物理基础设施上复用多个客户的虚拟机，最大化其前期资本投入的利用率。
 

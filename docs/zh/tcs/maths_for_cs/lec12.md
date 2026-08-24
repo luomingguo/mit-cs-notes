@@ -1,4 +1,13 @@
-# Lecture 12：匹配
+---
+title: 匹配
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 12
+kind: theory
+tags: []
+status: complete
+---
+# Lec 12 匹配
 
 ## 1. 匹配的基本定义
 

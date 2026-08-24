@@ -1,16 +1,17 @@
 ---
-sidebarDepth: 2
 title: 软件构造基础
-
-
-sidebar: true
+course: 6.1020 软件构造基础
+course_id: '6.1020'
+kind: design
+tags: []
+status: stub
+sidebarDepth: '2'
+sidebar: 'true'
 aside: right
-editLink: true
-lastUpdated: true
-outline: 2
+editLink: 'true'
+lastUpdated: 'true'
+outline: '2'
 ---
-
-
 # 6.1020 软件构造基础
 
 ## 先行条件
@@ -32,7 +33,7 @@ outline: 2
 - Erich Gamma, Richard Helm, Ralph Johnson, and John Vlissides. 《Design Patterns: Elements of Reusable Object-Oriented Software》
   - 点评： 设计模式的奠基之作，涉及解释器、访问者等设计模式，通常被称为“Gang of Four”书。以目录形式组织。
 - Martin Fowler. 《Refactoring: Improving the Design of Existing Code, Second Edition》
-  - 点评： 讲解如何通过重构技术改善代码设计，使其更加ETU和RFC，同时保持原意。示例使用JavaScript。
+  - 点评： 讲解如何通过重构技术改善代码设计，使其更加 ETU 和 RFC，同时保持原意。示例使用 JavaScript。
 - Steve McConnell. 《Code Complete: A Practical Handbook of Software Construction, Second Edition》
   - 点评： 一本厚重但出色的代码质量指南。
 - David Thomas and Andrew Hunt. 《The Pragmatic Programmer: Your Journey to Mastery, Second Edition》
@@ -107,8 +108,6 @@ After installing Node, open your terminal or command prompt, and run:
 | **Spring 2020** |                                                              | [sample quiz 2 questions](http://web.mit.edu/6.031/www/fa21/quizzes/archive/quiz2-sp20-ts.pdf) and [solutions](http://web.mit.edu/6.031/www/fa21/quizzes/archive/quiz2-sp20-ts-solutions.pdf) |
 | **Fall 2019**   |                                                              | [sample quiz 2 questions](http://web.mit.edu/6.031/www/fa21/quizzes/archive/quiz2-fa19-ts.pdf) and [solutions](http://web.mit.edu/6.031/www/fa21/quizzes/archive/quiz2-fa19-ts-solutions.pdf) |
 
-
-
 ## 课程总览
 
 - [01: Static Checking](https://web.mit.edu/6.102/www/sp24/classes/01-static-checking/)
@@ -131,9 +130,9 @@ After installing Node, open your terminal or command prompt, and run:
 - [18: Message-Passing & Networking](https://web.mit.edu/6.102/www/sp24/classes/18-message-passing-networking/)
 - [19: Little Languages](https://web.mit.edu/6.102/www/sp24/classes/19-little-languages/)
 
-# Lec 0 TypeScript基础
+# Lec 0 TypeScript 基础
 
-[lec0.md](./lec0.md) 
+[lec0.md](./lec0.md)
 
 # Lec 1 静态检查
 
@@ -144,19 +143,17 @@ After installing Node, open your terminal or command prompt, and run:
 
 以下是静态类型与好的软件的三大性质之间的关系：
 
-- 避免出BUG（Safe from bugs）：静态检查通过在运行前捕捉类型错误和其他 bug，有助于提高程序的安全性。
+- 避免出 BUG（Safe from bugs）：静态检查通过在运行前捕捉类型错误和其他 bug，有助于提高程序的安全性。
 - 易于理解（Easy to understand）：因为类型在代码中是显式声明的，静态检查有助于提升代码的可理解性。
 - 便于修改（Ready for change）：当你修改代码时，静态检查可以指出需要一同更改的其他部分，从而使代码更易于维护和演进。
 
 [lec1.md](./lec1.md)
 
-
-
 # Lec 2 测试
 
 测试是一个更广泛过程的一部分，称为验证。验证的目的是揭示程序中的问题，从而增加你对程序正确性的信心。验证包括：
 
-- **对程序的形式化推理(Formal reasoning)，通常称为验证（Verification）**。验证通过构建一个程序正确性的形式证明来实现。手工进行验证非常繁琐，而且自动化工具支持验证仍然是一个活跃的研究领域。然而，程序中的一些小而关键的部分可能会被正式验证，例如操作系统中的调度器、虚拟机中的字节码解释器或操作系统中的文件系统。
+- **对程序的形式化推理（Formal reasoning），通常称为验证（Verification）**。验证通过构建一个程序正确性的形式证明来实现。手工进行验证非常繁琐，而且自动化工具支持验证仍然是一个活跃的研究领域。然而，程序中的一些小而关键的部分可能会被正式验证，例如操作系统中的调度器、虚拟机中的字节码解释器或操作系统中的文件系统。
 - **代码审查**。让其他人仔细阅读你的代码，并对其进行非正式的推理，可以是一种发现错误的好方法。这就像让别人校对你写的文章一样。在另一篇阅读材料中，我们会讨论代码审查。
 - **测试**。在精心选择的输入上运行程序并检查结果。
 
@@ -170,8 +167,6 @@ After installing Node, open your terminal or command prompt, and run:
 
 [lec2.md](./lec2.md)
 
-
-
 # Lec 3 代码审查
 
 代码审查是一种对非原作者进行的、有条理且细致的源代码检查。类似对论文进行校对。代码审查的两个目的：1）改进代码——发现错误、预防潜在错误、检查代码清晰度、确保符合项目代码的编码风格；2）改进程序员——程序员相互学习的重要途径，在开源项目中，许多技术交流都发生在代码审查的过程中
@@ -182,8 +177,6 @@ After installing Node, open your terminal or command prompt, and run:
 
 - *Idiomatic JavaScript*（以可读性著称）
 - *Google TypeScript Style Guide*（针对 TypeScript 的规范）
-
-
 
 [lec3.md](./lec3.md)
 
@@ -198,8 +191,6 @@ After installing Node, open your terminal or command prompt, and run:
 - 理解函数规格中的先决条件与后置条件，并能够编写正确的规格
 - 能够根据规格写测试用例
 - 理解如何处理异常
-
-
 
 [lec4.md](./lec4.md)
 
@@ -220,8 +211,6 @@ After installing Node, open your terminal or command prompt, and run:
 - 理解规格中的前置条件、后置条件与规格强度的概念，并能比较不同规格的强弱；
 - 能够编写连贯、有用且强度合适的规格说明。
 
-
-
 [lec5.md](./lec5.md)
 
 # Lec 6 抽象数据类型
@@ -237,7 +226,7 @@ After installing Node, open your terminal or command prompt, and run:
 
 [lec6.md](./lec6.md)
 
-# Lec 7 抽象函数 & 表示不变式 
+# Lec 7 抽象函数 & 表示不变式
 
 今天的阅读介绍了几个概念：
 
@@ -255,20 +244,18 @@ After installing Node, open your terminal or command prompt, and run:
 
 [lec7.md](./lec7.md)
 
-# Lec 8 用接口、泛型、枚举和函数定义ADT
+# Lec 8 用接口、泛型、枚举和函数定义 ADT
 
 本节将介绍实现抽象数据类型的各种方法，包括：
 
-- 接口： 分离ADT的接口与其实现
-- 泛型：用泛型类型参数定义一系列的ADT
-- 枚举： 定义具有一小组有限值的ADT
+- 接口： 分离 ADT 的接口与其实现
+- 泛型：用泛型类型参数定义一系列的 ADT
+- 枚举： 定义具有一小组有限值的 ADT
 - 对不透明类型操作的全局函数，在 TypeScript 中很少见，但在非面向对象语言中很常见。
 
 我们还将讨论子类型（subtyping），即由其规范确定的两种类型之间的关系，并会区分继承（subclassing）
 
 学习完你应该能够： 使用类、接口、泛型和枚举定义 ADT 判断一个类型是否是另一个类型的子类型。
-
-
 
 [lec8.md](./lec8.md)
 
@@ -285,7 +272,7 @@ After installing Node, open your terminal or command prompt, and run:
 
 # Lec 10 相等性
 
-在之前的学习中，我们通过创建由操作而非表示来定义的类型，建立了数据抽象的严格概念。对于一个ADT，抽象函数说明了如何把一个具体的表示值解释为抽象类型中的值；我们也看到，抽象函数的选择决定了如何编写该 ADT 各个操作的实现代码。
+在之前的学习中，我们通过创建由操作而非表示来定义的类型，建立了数据抽象的严格概念。对于一个 ADT，抽象函数说明了如何把一个具体的表示值解释为抽象类型中的值；我们也看到，抽象函数的选择决定了如何编写该 ADT 各个操作的实现代码。
 
 在本节中，我们将讨论如何定义数据类型中“值的相等”这一概念：抽象函数将为我们提供一种清晰的方式来定义 ADT 的相等操作。
 
@@ -332,21 +319,17 @@ After installing Node, open your terminal or command prompt, and run:
 - 能够结合语法和解析器生成器，将字符序列解析成语法树
 - 能够将语法树转换为有用的数据类型
 
-
-
 [lec12.md](./lec12.md)
 
 # Lec 13 调试
 
-今天的话题是调试。首先讨论避免调试——要么完全避免调试，要么让调试变得容易。有些时候必须得调试——特别需要重复尝试或者说整个系统一起工作出现的bug，很难定位某个模块。针对这些情况，我们提出一个通用加快调试的系统策略。
+今天的话题是调试。首先讨论避免调试——要么完全避免调试，要么让调试变得容易。有些时候必须得调试——特别需要重复尝试或者说整个系统一起工作出现的 bug，很难定位某个模块。针对这些情况，我们提出一个通用加快调试的系统策略。
 
 有几个阅读资料：
 
 - 《Why Programs Fail》是关于这方面的。这节内容也是主要参考这本书。
 - 《How to Debug》by John Regehr，是关于嵌入式系统课程，更底层但是原理通用。
 - 《Bebugging: The Nine Indispensable Rules for Finding Even the Most Elusive Software and Hardware Problems》是一个很好的实践指引。
-
-
 
 [lec13.md](./lec13.md)
 
@@ -360,7 +343,7 @@ After installing Node, open your terminal or command prompt, and run:
 
 事实上，并发对于现代编程非常关键。
 
-- Web网站，同时处理多个users请求
+- Web 网站，同时处理多个 users 请求
 - 图形用户界面几乎总是需要不打扰用户的后台工作
 - 例如，Visual Studio Code 会在您编辑 TypeScript 代码时对其进行编译。
 
@@ -378,7 +361,7 @@ After installing Node, open your terminal or command prompt, and run:
 
 # Lec 15 Promise
 
-本节讨论使用`Promise`进行并发计算的方法。我们从最高层次的抽象开始，介绍Promise的概念，以及`await`操作符和`async`函数声明。这些特性使得TypeScript能够非常类似同步编程的方式实现。
+本节讨论使用`Promise`进行并发计算的方法。我们从最高层次的抽象开始，介绍 Promise 的概念，以及`await`操作符和`async`函数声明。这些特性使得 TypeScript 能够非常类似同步编程的方式实现。
 
 随后我们将更深入底层。进一步理解 `Promise`、`await` 和 `async` 的运行机制。
 
@@ -386,7 +369,7 @@ After installing Node, open your terminal or command prompt, and run:
 
 # Lec 16 互斥
 
-这篇阅读内容将并发和Promise的概念结合在一起， 探讨 异步ADT 的上下文——一种具有异步操作的ADT，这些操作可能并发运行，并访问相同的共享表示。
+这篇阅读内容将并发和 Promise 的概念结合在一起， 探讨 异步 ADT 的上下文——一种具有异步操作的 ADT，这些操作可能并发运行，并访问相同的共享表示。
 
 我们将看到，这种并发操作带来了并发错误的风险，例如 竞态条件（race conditions） 和 死锁（deadlocks），这些错误可能会破坏 ADT 试图保证的不变量和规范。
 
@@ -397,8 +380,6 @@ After installing Node, open your terminal or command prompt, and run:
 # Lec 17 回调函数
 
 回调函数是客户端提供给模块以供模块调用的函数。这与正常的控制流程相反，在正常情况下，客户端调用模块提供的函数。而使用回调时，客户端提供了一段代码让实现者调用。
-
-
 
 我们已经在函数式编程中看到了回调的一种形式：传递给`map`、`filter`或`reduce`的函数，这些函数会对序列中的每个元素进行重复调用。这是同步回调，因为它只在`map`/`filter`/`reduce`执行期间调用，并且之后不再使用。
 
@@ -412,18 +393,14 @@ After installing Node, open your terminal or command prompt, and run:
 
 [lec17.md](./lec17.md)
 
-
-
 # Lec 18 消息传递 & 网络
 
-网络通信本质上是并发的，因此在构建客户端和服务器时，我们需要能够推理他们的并发行为，并以线程安全的方式实现它们。同时我们必须设计C/S之间的通信协议，就像我们设计ADT时，为客户端定义与之交互的操作一样。
+网络通信本质上是并发的，因此在构建客户端和服务器时，我们需要能够推理他们的并发行为，并以线程安全的方式实现它们。同时我们必须设计 C/S 之间的通信协议，就像我们设计 ADT 时，为客户端定义与之交互的操作一样。
 
 本节的目标是：
 
-- 学会使用消息传递（message passing） 而不是共享内存的方式实现TypeScript Worker之间的通信
-- 理解C/S通信如何通过网络进行消息传递的
-
-
+- 学会使用消息传递（message passing） 而不是共享内存的方式实现 TypeScript Worker 之间的通信
+- 理解 C/S 通信如何通过网络进行消息传递的
 
 [lec18.md](./lec18.md)
 
@@ -438,10 +415,3 @@ After installing Node, open your terminal or command prompt, and run:
 (TODO)
 
 [lec19.md](./lec19.md)
-
-
-
-
-
-
-

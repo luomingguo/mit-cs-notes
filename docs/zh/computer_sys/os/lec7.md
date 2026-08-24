@@ -1,3 +1,12 @@
+---
+title: 系统调用拦截
+course: 6.1810 操作系统工程
+course_id: '6.1810'
+lecture: 7
+kind: system
+tags: []
+status: complete
+---
 # Lec 7 系统调用拦截
 
 在本节课中，我们将讨论“系统调用拦截（system call interposition）”，作为一种通用技术，用于限制有缺陷或恶意应用程序对系统其他部分造成的破坏。
@@ -14,7 +23,7 @@
 
 > 两篇论文风格对照：Janus 是“发现一个重要问题 + 提出一种解法”；《Traps and Pitfalls》则是“事后反思——这条路为什么这么难走、踩过哪些坑”。和 L4 那篇关注性能数据不同，本讲后半部分更关注那些**出人意料的工程问题**。
 
-## 总览
+## 本讲导览
 
 - 动机与威胁模型：不可信的“辅助应用”
 - 核心思路：在系统调用边界上拦截
@@ -39,7 +48,9 @@
   - PDF 阅读器执行内嵌 JavaScript 也有类似风险
 - 攻击者可以诱导用户去打开一个精心构造的恶意文件
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>安全目标</strong>在保持功能可用的前提下，<strong>最小化</strong>一个“可能是敌对的进程”所能造成的破坏（sandboxing，沙箱化）。</div>
+::: definition 安全目标
+在保持功能可用的前提下，**最小化**一个“可能是敌对的进程”所能造成的破坏（sandboxing，沙箱化）。
+:::
 
 ## 二、核心思路：系统调用拦截
 
@@ -49,7 +60,9 @@
 - 只允许它访问被**指定的资源**（特定文件）
 - 阻止它杀死或破坏其他进程
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么选“系统调用”作为安全边界？</strong>因为它是一个<strong>方便、现成的安全边界</strong>：进程要影响外部世界（其它进程、文件、网络通信）几乎都必须经过系统调用。在这里设卡，<strong>无需检查进程内部状态，也无需修改/重写应用程序</strong>。</div>
+::: definition 为什么选“系统调用”作为安全边界？
+因为它是一个**方便、现成的安全边界**：进程要影响外部世界（其它进程、文件、网络通信）几乎都必须经过系统调用。在这里设卡，**无需检查进程内部状态，也无需修改/重写应用程序**。
+:::
 
 ## 三、替代方案与取舍
 
@@ -79,7 +92,9 @@
 
 ## 五、Janus 的架构
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>常见设计模式</strong>「内核内的 stub」+「用户态的 helper/策略进程」：内核模块负责拦截系统调用，用户态策略引擎负责做 allow / deny 决策。</div>
+::: definition 常见设计模式
+「内核内的 stub」+「用户态的 helper/策略进程」：内核模块负责拦截系统调用，用户态策略引擎负责做 allow / deny 决策。
+:::
 
 **职责划分：**
 
@@ -96,7 +111,9 @@
 
 ## 六、根本性难题：系统调用本身信息不足
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>核心困境</strong>仅凭一次系统调用，<strong>往往不足以做出正确的安全决策</strong>——很多关键信息在系统调用参数里看不到。</div>
+::: example 核心困境
+仅凭一次系统调用，**往往不足以做出正确的安全决策**——很多关键信息在系统调用参数里看不到。
+:::
 
 - 内存指针缺乏上下文：`0x1234` 是否合法，取决于调用者的地址空间
 - 文件路径依赖**当前工作目录（cwd）**
@@ -126,7 +143,9 @@
 
 ### 3. TOCTTOU 竞态（Time-Of-Check-To-Time-Of-Use）
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>TOCTTOU</strong>在“策略做出决定”与“系统调用真正执行”之间，状态被改变了——检查时是安全的，使用时已经不是了。</div>
+::: example TOCTTOU
+在“策略做出决定”与“系统调用真正执行”之间，状态被改变了——检查时是安全的，使用时已经不是了。
+:::
 
 具体的脆弱点：
 
@@ -149,7 +168,9 @@
 
 ### 5. 阻断系统调用带来的“副作用”
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>阻断也会改变程序行为</strong>拒绝某个系统调用可能让一个“行为良好”的程序无法正常工作，甚至产生错误行为。</div>
+::: example 阻断也会改变程序行为
+拒绝某个系统调用可能让一个“行为良好”的程序无法正常工作，甚至产生错误行为。
+:::
 
 - 例如阻止了**降权（dropping privilege）**、阻止了**关闭文件描述符**
 - 策略执行本身可能导致程序行为不正确

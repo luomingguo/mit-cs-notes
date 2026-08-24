@@ -1,4 +1,13 @@
-# L24：加速器（二）（*Accelerators II*）
+---
+title: 加速器（二）（Accelerators II）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 24
+kind: system
+tags: []
+status: complete
+---
+# Lec 24 加速器（二）（*Accelerators II*）
 
 > MIT 6.5900 Fall 2024 · Joel Emer
 > 主题：稀疏张量（*Sparse Tensors*）、纤维树抽象（*Fibertree*）、张量表示与遍历、稀疏加速三特性（Format / Gating / Skipping）、稀疏卷积数据流、FuseMax
@@ -262,7 +271,7 @@ $$
 
 ---
 
-## 小结
+## 本讲小结
 
 - 稀疏性可同时省**空间、能量、时间**，但收益受任务误差容忍约束；
 - 三大硬件特性：**Format**（表示选择）、**Gating**（空闲省能）、**Skipping**（跳过省能省时）；

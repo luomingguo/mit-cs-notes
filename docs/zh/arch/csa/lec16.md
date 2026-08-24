@@ -1,4 +1,13 @@
-# L16：片上网络（二）：路由器微架构与路由（*On-Chip Networks II: Router Microarchitecture & Routing*）
+---
+title: '片上网络（二）：路由器微架构与路由（On-Chip Networks II: Router Microarchitecture & Routing）'
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 16
+kind: system
+tags: []
+status: complete
+---
+# Lec 16 片上网络（二）：路由器微架构与路由（*On-Chip Networks II: Router Microarchitecture & Routing*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez
 > 主题：路由器微架构与流水线、分配器（*allocator*）、流水线优化、路由算法、死锁与转向模型（*Turn Model*）
@@ -53,7 +62,7 @@
 - **虚通道每包分配一次**；
 - 体 flit 与尾 flit **继承头 flit** 的这些信息（故只需经 BW → SA → ST → LT）。
 
-```
+```text
 Head : BW RC VA SA ST LT
 Body : BW          SA ST LT
 Tail : BW          SA ST LT
@@ -73,7 +82,7 @@ Tail : BW          SA ST LT
 
 在当前路由器为**下一个路由器**做路由计算：头 flit 已携带下一跳的输出端口，RC 只需读出（快，可与 BW 重叠）。预计算路由使 flit 在 BW 后可立即竞争 VC；下一跳的路由计算（NRC）可与 VA 并行。或者直接简化 RC（如 X-Y 路由非常快）。
 
-```
+```text
 BW  RC
         VA  NRC  SA  ST  LT
 ```
@@ -82,7 +91,7 @@ BW  RC
 
 **假设 VA 阶段会成功**（低到中等负载下成立），则 VA 与 SA 并行完成；若 VA 失败（没返回 VC），下周期重做 VA/SA。优先非推测请求。
 
-```
+```text
 BW  RC  VA
         SA  ST  LT
 ```
@@ -130,7 +139,7 @@ BW  RC  VA
 
 ---
 
-## 小结
+## 本讲小结
 
 - 路由器是含逻辑（分配器/仲裁器）、存储（缓冲）、通信（crossbar）的小系统，流水线分 BW/RC/VA/SA/ST/LT；
 - 前瞻路由与推测交换分配可缩短流水线关键路径；

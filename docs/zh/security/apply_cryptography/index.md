@@ -1,16 +1,18 @@
+---
+title: 6.5610 应用密码学与安全（Spring 2026）
+course: 6.5610 应用密码学与安全（Spring 2026）
+course_id: '6.5610'
+kind: theory
+tags: []
+status: complete
+---
 # 6.5610 应用密码学与安全（Spring 2026）
 
 Applied Cryptography
 
 https://65610.csail.mit.edu/2026/
 
-
-
-
-
 本课定位为**研究生应用密码学**：先快速回顾基础原语，随后进入实践中正在使用、或有潜力被使用的高级密码原语。先修建议为入门密码学（如 6.1600）。
-
-
 
 ## 课程地图（全部 21 讲 · 5 个主题模块）
 
@@ -88,31 +90,21 @@ https://65610.csail.mit.edu/2026/
 
 # Lec 1 单向哈希函数
 
-
-
 [lec1.md](./lec1.md)
 
-
-
-# Lec 2 对称加密——从PRF构造
-
-
+# Lec 2 对称加密——从 PRF 构造
 
 [lec2.md](./lec2.md)
 
-
-
-# Lec 3 对称原语I-PRF计数器模式
+# Lec 3 对称原语 I-PRF 计数器模式
 
 [lec3.md](./lec3.md)
 
-
-
-# L04-对称原语II-PRP-Feistel-AES
+# L04-对称原语 II-PRP-Feistel-AES
 
 [lec4.md](./lec4.md)
 
-# L05-DiffieHellman与公钥加密
+# L05-DiffieHellman 与公钥加密
 
 [lec5.md](./lec5.md)
 
@@ -120,21 +112,19 @@ https://65610.csail.mit.edu/2026/
 
 [lec6.md](./lec6.md)
 
-
-
-# L07-LWE-Regev公钥加密
+# L07-LWE-Regev 公钥加密
 
 [lec7.md](./lec7.md)
 
-# L08-私有信息检索PIR
+# L08-私有信息检索 PIR
 
 [lec8.md](./lec8.md)
 
-# L09-全同态加密FHE-I
+# L09-全同态加密 FHE-I
 
 [lec9.md](./lec9.md)
 
-# L10-全同态加密FHE-II-Bootstrapping
+# L10-全同态加密 FHE-II-Bootstrapping
 
 [lec10.md](./lec10.md)
 
@@ -146,19 +136,19 @@ https://65610.csail.mit.edu/2026/
 
 [lec12.md](./lec12.md)
 
-# L13-安全多方计算MPC
+# L13-安全多方计算 MPC
 
 [lec13.md](./lec13.md)
 
-# L14-MPC应用
+# L14-MPC 应用
 
 [lec14.md](./lec14.md)
 
-# L15-Sumcheck协议
+# L15-Sumcheck 协议
 
 [lec15.md](./lec15.md)
 
-# L16-GKR协议
+# L16-GKR 协议
 
 [lec16.md](./lec16.md)
 

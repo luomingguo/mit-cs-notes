@@ -1,4 +1,13 @@
-# L20：向量计算机（*Vector Computers*）
+---
+title: 向量计算机（Vector Computers）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 20
+kind: system
+tags: []
+status: complete
+---
+# Lec 20 向量计算机（*Vector Computers*）
 
 > MIT 6.5900 Fall 2024 · Joel Emer 主题：超级计算机、向量处理器（*Vector Processor*）、多媒体 SIMD 扩展
 
@@ -73,13 +82,13 @@ for (i = 0; i < N; i++)
 
 **向量算术指令**，例如：
 
-```
+```text
 ADDV v3, v1, v2     # v3[i] = v1[i] + v2[i],  i = 0 .. VLR-1
 ```
 
 **向量访存指令**（带基址与步长）：
 
-```
+```text
 LV v1, r1, r2       # 基址 = r1, 步长(Stride) = r2
 ```
 
@@ -96,7 +105,7 @@ for (i = 0; i < N; i++)
 
 > 标量代码 vs 向量代码，处理 64 个元素：
 
-```
+```text
 # 标量代码                  # 向量代码
     LI   x14, 64                LI   vlr, 64
 loop:                           LV   v1, x11
@@ -175,7 +184,7 @@ loop:                           LV   v1, x11
 - 解决问题：RAW 寄存器依赖带来的长延迟；
 - **链接的优势**：依赖指令可在**第一个结果元素**出现时就开始执行，而不必等整个结果向量写完。
 
-```
+```text
 LV   v1
 MULV v3, v1, v2     # 与 LV 链接
 ADDV v5, v3, v4     # 与 MULV 链接
@@ -215,7 +224,7 @@ for (i = 0; i < N; i++)
 
 **解法**：增加**向量掩码寄存器**（*vector mask / flag register*），每元素 1 bit，是谓词寄存器的向量版本。掩码位为 0 的元素上，向量操作变成 NOP。
 
-```
+```text
 CVM                 # 打开所有元素的掩码
 LV    vA, xA        # 载入整个 A 向量
 SGTVS.D vA, f0      # A>0 处置掩码位
@@ -239,7 +248,7 @@ for (i = 0; i < N; i++)
 
 **索引 load（Gather，聚集）**：
 
-```
+```text
 LV  vD, xD          # 载入索引向量 D
 LVI vC, xC, vD      # 以 xC 为基址间接载入
 LV  vB, xB
@@ -298,7 +307,7 @@ for (i = 0; i < N; i++)
 
 ------
 
-## 小结
+## 本讲小结
 
 - 向量 ISA 通过"一条指令多个独立操作"同时获得**紧凑性**与**表达力**，从而简化取指、支持深流水与分体存储；
 - 链接、分段、掩码、分散/聚集是把更广泛循环映射到向量硬件的关键技术；

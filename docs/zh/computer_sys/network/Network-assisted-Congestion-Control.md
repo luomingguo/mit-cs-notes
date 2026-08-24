@@ -1,3 +1,11 @@
+---
+title: 网络辅助拥塞控制（Network-assisted Congestion Control）
+course: 6.5820/6.S04 计算机网络
+course_id: '6.5820'
+kind: system
+tags: []
+status: complete
+---
 # Lec 3 网络辅助拥塞控制（Network-assisted Congestion Control）
 
 阅读资料
@@ -7,7 +15,7 @@
 
 端到端方案的局限：仅靠丢包这一**单比特、隐式**信号，在**高带宽时延积** <em>(high Bandwidth-Delay Product, BDP)</em> 网络里反应迟钝。本讲让路由器主动参与。
 
-## 总览
+## 本讲导览
 
 - 端到端（[[End-to-End-Congestion-Control]]）的局限：高 BDP 下隐式信号太慢
 - XCP：路由器给**显式多比特**反馈，并**解耦效率与公平**
@@ -18,12 +26,11 @@
 
 Katabi, Handley & Rohrs, *Congestion Control for High Bandwidth-Delay Product Networks* (SIGCOMM 2002)。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 带宽时延积 <em>(BDP)</em></strong>
+::: definition
+**定义 · 带宽时延积 *(BDP)***
 $$\text{BDP} = \text{瓶颈带宽} \times \text{RTT}$$
 即"管道容量"。BDP 越大，TCP 用 AIMD 填满管道所需的 RTT 数越多，且单次丢包减半的代价越高。
-</div>
-
+:::
 
 XCP 的关键创新是**解耦** <em>(decoupling)</em> 效率控制与公平控制：
 
@@ -34,21 +41,19 @@ XCP 的关键创新是**解耦** <em>(decoupling)</em> 效率控制与公平控�
 
 机制上，每个分组携带**拥塞头** <em>(congestion header)</em>，写入发送方期望的 `cwnd` 增量与 RTT；路径上每个路由器只能把反馈调小。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论</strong><br>
+::: theorem 推论
 解耦让 EC 可以用激进的（接近 MIMD）方式快速逼近满载，而不必担心破坏公平——因为公平由独立的 FC 维持。这正是 XCP 在高 BDP 下远胜 TCP 的根源。代价是需要路由器改造，难以增量部署。
-</div>
-
+:::
 
 ### 4.2 PIE：面向时延的主动队列管理
 
 *PIE (Proportional Integral controller Enhanced)* RFC 针对**缓冲膨胀** <em>(bufferbloat)</em>——大缓冲区被持续填满导致排队时延飙升。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 主动队列管理 <em>(Active Queue Management, AQM)</em></strong><br>
-路由器在队列<strong>溢出之前</strong>就按概率丢弃/标记分组，提前向发送方示警。<em>RED</em> 以队列长度为控制量；<em>PIE</em> 直接以<strong>排队时延</strong>为控制量。
-</div>
+::: definition
+**定义 · 主动队列管理 *(Active Queue Management, AQM)***
 
+路由器在队列**溢出之前**就按概率丢弃/标记分组，提前向发送方示警。*RED* 以队列长度为控制量；*PIE* 直接以**排队时延**为控制量。
+:::
 
 PIE 用比例–积分 <em>(PI)</em> 控制器更新丢弃概率 $p$：
 

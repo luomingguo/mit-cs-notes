@@ -1,11 +1,23 @@
+---
+title: 非流水线处理器
+course: 6.1920 建构式计算机架构，CCA
+course_id: '6.1920'
+lecture: 5
+kind: system
+tags: []
+status: complete
+---
 # Lec 5 非流水线处理器
 > MIT 6.1920 · Constructive Computer Architecture
 > 讲师：Arvind · 日期：2024-02-20
 
 ## 1. RISC-V 指令集概述
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — RISC-V（<em>Reduced Instruction Set Computer V</em>）</strong><br>
-RISC-V 是一个开放的精简指令集（<em>ISA</em>），本课程使用 RV32I（32 位整数基础子集）。寄存器 x0 恒为 0；31 个通用寄存器（x1–x31）；PC（程序计数器）；所有指令定长 32 位。</div>
+::: definition
+**定义 — RISC-V（*Reduced Instruction Set Computer V*）**
+
+RISC-V 是一个开放的精简指令集（*ISA*），本课程使用 RV32I（32 位整数基础子集）。寄存器 x0 恒为 0；31 个通用寄存器（x1–x31）；PC（程序计数器）；所有指令定长 32 位。
+:::
 
 **主要指令格式**：
 - **R 型**：`add rd, rs1, rs2`——寄存器-寄存器运算
@@ -18,8 +30,11 @@ RISC-V 是一个开放的精简指令集（<em>ISA</em>），本课程使用 RV3
 
 ## 2. 指令执行的五个阶段
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 五阶段执行（<em>Five-Stage Execution</em>）</strong><br>
-每条指令按顺序经历：取指（<em>Fetch, IF</em>）→ 译码（<em>Decode, ID</em>）→ 执行（<em>Execute, EX</em>）→ 访存（<em>Memory, MEM</em>）→ 写回（<em>Writeback, WB</em>）。非流水线处理器中这五步串行完成，CPI（每指令周期数）约为 5。</div>
+::: definition
+**定义 — 五阶段执行（*Five-Stage Execution*）**
+
+每条指令按顺序经历：取指（*Fetch, IF*）→ 译码（*Decode, ID*）→ 执行（*Execute, EX*）→ 访存（*Memory, MEM*）→ 写回（*Writeback, WB*）。非流水线处理器中这五步串行完成，CPI（每指令周期数）约为 5。
+:::
 
 ---
 
@@ -62,7 +77,9 @@ rule doInst;
 endrule
 ```
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 单规则的局限性</strong>　单规则实现清晰但低效：每条指令独占整个处理器 1 个或多个时钟周期（取决于存储器延迟），硬件利用率低。流水线将各阶段并行化，使 CPI 趋近于 1。</div>
+::: theorem 推论 — 单规则的局限性
+单规则实现清晰但低效：每条指令独占整个处理器 1 个或多个时钟周期（取决于存储器延迟），硬件利用率低。流水线将各阶段并行化，使 CPI 趋近于 1。
+:::
 
 ---
 
@@ -87,7 +104,9 @@ endfunction
 
 ## 5. 性能分析
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — CPI 计算</strong></div>
+::: example 例题 — CPI 计算
+
+:::
 
 假设指令存储器（I-Mem）和数据存储器（D-Mem）各需 1 周期（理想化），则：
 - 所有指令：取指 1 周期 + 执行 1 周期 = **2 周期**（无访存）
@@ -111,6 +130,6 @@ end
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 RISC-V RV32I 提供简洁的 32 位指令集；非流水线处理器用单规则实现所有执行阶段，CPI 约 2–3，硬件利用率低；exec 函数统一处理 ALU、分支和存储器地址计算；性能瓶颈为各阶段串行执行，流水线是提升的核心方向。

@@ -1,11 +1,23 @@
+---
+title: 缓存一致性
+course: 6.1920 建构式计算机架构，CCA
+course_id: '6.1920'
+lecture: 13
+kind: system
+tags: []
+status: complete
+---
 # Lec 13 缓存一致性
 > MIT 6.1920 · Constructive Computer Architecture
 > 讲师：Arvind · 日期：2024-04-02
 
 ## 1. 缓存一致性问题
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 缓存一致性问题（<em>Cache Coherence Problem</em>）</strong><br>
-多处理器系统中，每个核心有私有 L1 缓存。当核心 A 修改了变量 x，核心 B 的缓存中仍可能持有 x 的旧值。若不加处理，两个核心对同一内存地址将看到不同的值，违反一致性。</div>
+::: definition
+**定义 — 缓存一致性问题（*Cache Coherence Problem*）**
+
+多处理器系统中，每个核心有私有 L1 缓存。当核心 A 修改了变量 x，核心 B 的缓存中仍可能持有 x 的旧值。若不加处理，两个核心对同一内存地址将看到不同的值，违反一致性。
+:::
 
 **一致性需求**：同一地址的任意两次写操作，所有处理器看到的顺序相同；读操作返回最近一次写操作的值。
 
@@ -13,13 +25,17 @@
 
 ## 2. MSI 协议
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — MSI 状态机（<em>Modified-Shared-Invalid</em>）</strong><br>
-每个缓存行有三种状态：<br>
-<ul style="margin:4px 0; padding-left:20px;">
-<li><strong>M（<em>Modified</em>）</strong>：本缓存独占该行，且数据已修改（与内存不同）。可读写，无需通知其他核。</li>
-<li><strong>S（<em>Shared</em>）</strong>：本缓存有该行的只读副本，可能有其他核也持有 S 副本。可读，写时必须升级。</li>
-<li><strong>I（<em>Invalid</em>）</strong>：本缓存没有该行的有效副本。任何访问都是缺失。</li>
-</ul></div>
+::: definition
+**定义 — MSI 状态机（*Modified-Shared-Invalid*）**
+
+每个缓存行有三种状态：
+
+- **M（*Modified*）**：本缓存独占该行，且数据已修改（与内存不同）。可读写，无需通知其他核。
+
+- **S（*Shared*）**：本缓存有该行的只读副本，可能有其他核也持有 S 副本。可读，写时必须升级。
+
+- **I（*Invalid*）**：本缓存没有该行的有效副本。任何访问都是缺失。
+:::
 
 **状态转换（核心视角）**：
 
@@ -34,8 +50,11 @@
 
 ## 3. 基于目录的缓存一致性（*Directory-Based Coherence*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 目录（<em>Directory</em>）</strong><br>
-目录是一个集中式数据结构，为每个内存行记录：哪些缓存持有该行的副本（<em>sharers</em>），以及当前的状态（M/S/I）。目录位于内存控制器附近，负责协调所有一致性消息，避免总线广播（可扩展到多核）。</div>
+::: definition
+**定义 — 目录（*Directory*）**
+
+目录是一个集中式数据结构，为每个内存行记录：哪些缓存持有该行的副本（*sharers*），以及当前的状态（M/S/I）。目录位于内存控制器附近，负责协调所有一致性消息，避免总线广播（可扩展到多核）。
+:::
 
 **目录消息类型**：
 - 核 → 目录：`GetS`（读请求）、`GetM`（写请求）、`PutS`（自愿降级）、`PutM`（写回 M 行）
@@ -100,7 +119,9 @@ endrule
 
 ## 5. 8 种一致性场景
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — GetS 命中 M 状态行</strong></div>
+::: example 例题 — GetS 命中 M 状态行
+
+:::
 
 场景：核 A 持有 M 状态（独占写），核 B 发送 GetS 读请求。
 
@@ -116,10 +137,12 @@ Sol：目录协议避免了广播，仅涉及 A、B、目录三方的点对点�
 
 ## 6. 协议不变量
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — MSI 不变量</strong>　任意时刻，对于同一地址：（1）至多一个缓存处于 M 状态；（2）若有缓存处于 M 状态，则所有其他缓存必须处于 I 状态；（3）处于 S 状态的缓存中的数据必须与内存（或 M 行）一致。BSV 实现中可以通过断言（<em>assertion</em>）在仿真中验证这些不变量。</div>
+::: theorem 推论 — MSI 不变量
+任意时刻，对于同一地址：（1）至多一个缓存处于 M 状态；（2）若有缓存处于 M 状态，则所有其他缓存必须处于 I 状态；（3）处于 S 状态的缓存中的数据必须与内存（或 M 行）一致。BSV 实现中可以通过断言（*assertion*）在仿真中验证这些不变量。
+:::
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 MSI 三状态协议通过 M→S→I 的状态转换维持缓存一致性；基于目录的实现用点对点消息替代总线广播，可扩展到众核；BSV 用独立规则实现目录的每个动作（startMiss、sendFillReq、parentResp、dwn 等），自然对应协议状态机；实际处理器（Intel/AMD）使用 MESI 或 MOESI 协议，添加了 Exclusive 和 Owned 状态以减少无效写缺失。

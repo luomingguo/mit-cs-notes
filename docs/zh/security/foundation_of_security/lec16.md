@@ -1,4 +1,13 @@
-# Lec 16 — 案例研究：iOS 安全（Case Study: iOS Security）
+---
+title: '案例研究：iOS 安全（Case Study: iOS Security）'
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 16
+kind: theory
+tags: []
+status: complete
+---
+# Lec 16 案例研究：iOS 安全（Case Study: iOS Security）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. iOS 的安全威胁模型
@@ -84,7 +93,7 @@ iPhone 内含一颗独立的 **Secure Enclave** 芯片，运行独立 OS，自�
 
 **关键流程**：
 
-```
+```text
 用户输入 PIN
     ↓
 iOS 将 PIN 发给 Secure Enclave

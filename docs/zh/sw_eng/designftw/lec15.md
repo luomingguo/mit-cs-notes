@@ -1,4 +1,13 @@
-# Lec 15 设计模式 & 函数式JS
+---
+title: '设计模式 & 函数式 JS'
+course: 6.4500 Web设计：语言和用户接口
+course_id: '6.4500'
+lecture: 15
+kind: design
+tags: []
+status: complete
+---
+# Lec 15 设计模式 & 函数式 JS
 
 什么是设计模式？
 
@@ -26,11 +35,7 @@
 - 一致的设计可以提升可学习性（learnability）
 - 用户更容易上手
 
-
-
-
-
-# 资源
+## 资源
 
 - A nice collection of patterns described and explained at [UI Patterns](https://ui-patterns.com/patterns)
 - A [catalog](https://www.uxlibrary.org/explore/ui-design/ui-patterns-and-inspiration) of numerous UI pattern web sites on uxlibrary.org

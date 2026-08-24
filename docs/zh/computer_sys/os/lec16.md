@@ -1,3 +1,12 @@
+---
+title: 高性能网络与调度
+course: 6.1810 操作系统工程
+course_id: '6.1810'
+lecture: 16
+kind: system
+tags: []
+status: complete
+---
 # Lec 16 高性能网络与调度
 
 [课件](https://pdos.csail.mit.edu/6.1810/2025/lec/l-shenango.txt)
@@ -6,7 +15,7 @@
 
 > 思考题（论文 Figure 2）：Shenango 的整体设计和 xv6 网络实验有何不同？例如，在 xv6 里应用能直接把包写进网卡（NIC）队列吗？xv6 net 实验里有几个 NIC 队列？（见下文「与 xv6 网络实验的关系」一节。）
 
-## 总览
+## 本讲导览
 
 - **问题背景**：数据中心延迟敏感负载、尾延迟（tail latency）、低延迟 vs 高利用率的矛盾
 - **传统 OS 网络为什么慢**：中断、系统调用、上下文切换、每包 CPU 预算
@@ -21,17 +30,21 @@
 
 **典型负载**：memcached 这类内存 KV 存储，单次 get/set 只要 ~1µs——**应用本身不是瓶颈，系统开销才是**。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>尾延迟（tail latency）为什么是关键？</strong>关注的不是平均延迟，而是 <strong>99 分位</strong>。Google 的经验：典型响应 10ms，但每 100 个请求就有 1 个慢到 1 秒。<strong>放大效应</strong>：一个用户请求可能扇出到 100+ 台机器，只要每台有 1% 概率慢 1 秒，大量终端用户就会感到卡顿。</div>
+::: definition 尾延迟（tail latency）为什么是关键？
+关注的不是平均延迟，而是 **99 分位**。Google 的经验：典型响应 10ms，但每 100 个请求就有 1 个慢到 1 秒。**放大效应**：一个用户请求可能扇出到 100+ 台机器，只要每台有 1% 概率慢 1 秒，大量终端用户就会感到卡顿。
+:::
 
 延迟的来源：多应用争抢机器、后台守护进程、突发时包排队、核间负载不均。
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>核心矛盾：低延迟 vs 高利用率</strong>为压低尾延迟，运营商只能让数据中心跑在 <strong>20–30% 的低利用率</strong>，预留的核大量闲置、浪费资源。目标：<strong>既要低尾延迟、又要高利用率</strong>——靠动态共享核来达成。</div>
+::: example 核心矛盾：低延迟 vs 高利用率
+为压低尾延迟，运营商只能让数据中心跑在 **20–30% 的低利用率**，预留的核大量闲置、浪费资源。目标：**既要低尾延迟、又要高利用率**——靠动态共享核来达成。
+:::
 
 ## 二、为什么传统 OS 网络慢
 
 Linux 收包路径很长：
 
-```
+```text
 NIC → DMA 进 rx ring → 中断 → TCP/UDP 处理 → 拷到 socket 队列
 → 唤醒应用 → 系统调用开销 → 应用 read → 发包 → tx ring → NIC 发出
 ```
@@ -43,7 +56,9 @@ NIC → DMA 进 rx ring → 中断 → TCP/UDP 处理 → 拷到 socket 队列
 - **上下文切换**：睡眠/唤醒线程带来延迟；
 - **数据搬运**：核间缓存一致性流量。
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>每包 CPU 预算算一笔账</strong>10 Gbps 以太网 ≈ 每秒 1000 万个 100 字节小包。一颗 2.4GHz 核每包只有 ~240 个周期，8 核也只有 ~1920 周期/包——而中断、系统调用、上下文切换轻易就吃光这点预算。所以「每包都进内核」根本来不及。</div>
+::: example 每包 CPU 预算算一笔账
+10 Gbps 以太网 ≈ 每秒 1000 万个 100 字节小包。一颗 2.4GHz 核每包只有 ~240 个周期，8 核也只有 ~1920 周期/包——而中断、系统调用、上下文切换轻易就吃光这点预算。所以「每包都进内核」根本来不及。
+:::
 
 ## 三、内核旁路（kernel bypass）
 
@@ -54,7 +69,9 @@ NIC → DMA 进 rx ring → 中断 → TCP/UDP 处理 → 拷到 socket 队列
 - **轮询代替中断**：专属核不停轮询 NIC ring，消除中断开销（前提是核被独占、不共享）。
 - **per-core 隔离的好处**：每个核管自己的空闲包链表和 TCP 结构 → **无锁争用、无核间通信、单线程事件循环**，同步极简。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>基线系统 ZygOS（纯内核旁路）</strong>低负载下中位延迟 ~35µs、尾延迟 300–400µs，全程压得住。<strong>缺点</strong>：所有核都被预留独占，低负载时核大量闲置、<strong>无法像 Linux 那样把核共享给批处理任务</strong>——利用率低。</div>
+::: definition 基线系统 ZygOS（纯内核旁路）
+低负载下中位延迟 ~35µs、尾延迟 300–400µs，全程压得住。**缺点**：所有核都被预留独占，低负载时核大量闲置、**无法像 Linux 那样把核共享给批处理任务**——利用率低。
+:::
 
 ## 四、Shenango 的设计
 
@@ -70,7 +87,9 @@ NIC → DMA 进 rx ring → 中断 → TCP/UDP 处理 → 拷到 socket 队列
 
 ### 拥塞检测（Algorithm 1，每 5µs 一次）
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>怎么判断「某应用核不够用了」？</strong>IOKernel 每 5µs 检查两类队列：① 某个包<strong>连续两次扫描都还在输入队列</strong>里 → 包在堆积；② 某个用户线程（uthread）<strong>一直留在 runtime 的 runqueue</strong> → 本地核处理不过来。任一成立就说明该应用核不够，需要加核。</div>
+::: theorem 怎么判断「某应用核不够用了」？
+IOKernel 每 5µs 检查两类队列：① 某个包**连续两次扫描都还在输入队列**里 → 包在堆积；② 某个用户线程（uthread）**一直留在 runtime 的 runqueue** → 本地核处理不过来。任一成立就说明该应用核不够，需要加核。
+:::
 
 ### 核分配（Algorithm 2）——优先级
 
@@ -85,7 +104,9 @@ NIC → DMA 进 rx ring → 中断 → TCP/UDP 处理 → 拷到 socket 队列
 
 ## 五、与 xv6 网络实验的关系（思考题解答）
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>Q：在 xv6 里应用能直接把包写进 NIC 队列吗？xv6 net 实验有几个 NIC 队列？</strong></div>
+::: example
+**Q：在 xv6 里应用能直接把包写进 NIC 队列吗？xv6 net 实验有几个 NIC 队列？**
+:::
 
 - **应用不能直接碰 NIC**。xv6 走的是**传统内核中介**模型：用户进程通过系统调用（socket/read/write）进内核，由内核里的 **E1000 驱动**（`e1000.c` 的 `e1000_transmit` / `e1000_recv`）去操作网卡的发送/接收环。应用碰不到 NIC 的 DMA 环——这正是 Figure 2 里「传统系统应用无法访问 NIC 硬件队列」的对照。
 - **xv6 net 实验只有一对队列**：**一个 TX 环 + 一个 RX 环**（各 16 个描述符），单核处理、靠中断收包。

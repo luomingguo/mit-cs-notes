@@ -1,15 +1,27 @@
+---
+title: 片上网络 II：拓扑与路由
+course: 6.1920 建构式计算机架构，CCA
+course_id: '6.1920'
+lecture: 16
+kind: system
+tags: []
+status: complete
+---
 # Lec 16 片上网络 II：拓扑与路由
 > MIT 6.1920 · Constructive Computer Architecture
 > 讲师：Tushar Krishna · 日期：2024-04-09
 
 ## 1. 拓扑设计指标
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 拓扑设计时指标（<em>Design-Time Metrics</em>）</strong><br>
-<ul style="margin:4px 0; padding-left:20px;">
-<li><strong>度（<em>Degree</em>）</strong>：路由器的端口数。代理面积/能耗成本。</li>
-<li><strong>二等分带宽（<em>Bisection Bandwidth</em>）</strong>：将网络均分为两半的最小割所跨越的链路数 × 单链路带宽。代理峰值带宽。</li>
-<li><strong>直径（<em>Diameter</em>）</strong>：任意两节点间最短路径的最大跳数。代理最坏情况延迟。</li>
-</ul></div>
+::: definition
+**定义 — 拓扑设计时指标（*Design-Time Metrics*）**
+
+- **度（*Degree*）**：路由器的端口数。代理面积/能耗成本。
+
+- **二等分带宽（*Bisection Bandwidth*）**：将网络均分为两半的最小割所跨越的链路数 × 单链路带宽。代理峰值带宽。
+
+- **直径（*Diameter*）**：任意两节点间最短路径的最大跳数。代理最坏情况延迟。
+:::
 
 ---
 
@@ -75,10 +87,15 @@ $$\text{度}=4（内部）, \quad \text{直径}=2(\sqrt{N}-1), \quad \text{二�
 
 ## 4. 运行时指标
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 最大吞吐量（<em>Maximum Throughput</em>）</strong><br>
-在均匀随机流量（<em>uniform random traffic</em>）下，找出最拥堵的链路（最大信道负载，<em>Maximum Channel Load</em>），该链路限制整体吞吐量。</div>
+::: definition
+**定义 — 最大吞吐量（*Maximum Throughput*）**
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 环形拓扑最大吞吐量</strong></div>
+在均匀随机流量（*uniform random traffic*）下，找出最拥堵的链路（最大信道负载，*Maximum Channel Load*），该链路限制整体吞吐量。
+:::
+
+::: example 例题 — 环形拓扑最大吞吐量
+
+:::
 
 8 节点环形，均匀流量，每节点产生 $p$ 条消息/周期：
 - 左侧 4 节点发往右侧 4 节点的消息全部经过中间 bisection 链路
@@ -91,11 +108,11 @@ Sol：环形拓扑在均匀流量下，最大吞吐量仅为节点注入率上�
 
 ## 5. 路由算法
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 路由算法分类</strong><br>
-<ul style="margin:4px 0; padding-left:20px;">
-<li><strong>最短路径（<em>Minimal</em>）vs. 非最短路径（<em>Non-Minimal</em>）</strong>：只选最短路径 vs. 允许绕道</li>
-<li><strong>确定性（<em>Deterministic/Oblivious</em>）vs. 自适应（<em>Adaptive</em>）</strong>：路径固定 vs. 根据网络拥堵动态选择</li>
-</ul></div>
+::: definition 定义 — 路由算法分类
+- **最短路径（*Minimal*）vs. 非最短路径（*Non-Minimal*）**：只选最短路径 vs. 允许绕道
+
+- **确定性（*Deterministic/Oblivious*）vs. 自适应（*Adaptive*）**：路径固定 vs. 根据网络拥堵动态选择
+:::
 
 ### 5.1 维度排序路由（*Dimension-Ordered Routing, XY*）
 
@@ -106,9 +123,12 @@ Sol：环形拓扑在均匀流量下，最大吞吐量仅为节点注入率上�
 
 ### 5.2 路由死锁（*Routing Deadlock*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 路由死锁（<em>Routing Deadlock</em>）</strong><br>
-死锁发生条件：存在一组数据包，每个数据包持有某个缓冲区并等待另一个被占用的缓冲区，形成循环等待（<em>resource dependence cycle</em>）。类比哲学家就餐问题（<em>Dining Philosophers</em>）。</br>
-<strong>避免方法</strong>：资源依赖图不能有环路。</div>
+::: definition
+**定义 — 路由死锁（*Routing Deadlock*）**
+
+死锁发生条件：存在一组数据包，每个数据包持有某个缓冲区并等待另一个被占用的缓冲区，形成循环等待（*resource dependence cycle*）。类比哲学家就餐问题（*Dining Philosophers*）。</br>
+**避免方法**：资源依赖图不能有环路。
+:::
 
 ### 5.3 转向模型（*Turn Model*, Glass & Ni 1994）
 
@@ -134,10 +154,12 @@ Sol：环形拓扑在均匀流量下，最大吞吐量仅为节点注入率上�
 
 ## 6. 协议死锁（*Protocol Deadlock*）
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 需要独立虚网络（<em>Virtual Networks</em>）</strong>　缓存一致性协议中，若请求和响应共用同一 VC，可能发生协议死锁（目录处理请求时需要发送响应，但响应队列被请求堵满）。解决方案：为请求和响应分配独立的虚网络（VN），完整一致性协议通常需要 3 个 VN。</div>
+::: theorem
+**推论 — 需要独立虚网络（*Virtual Networks*）**　缓存一致性协议中，若请求和响应共用同一 VC，可能发生协议死锁（目录处理请求时需要发送响应，但响应队列被请求堵满）。解决方案：为请求和响应分配独立的虚网络（VN），完整一致性协议通常需要 3 个 VN。
+:::
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 Mesh 是片上多核互连的主流拓扑；XY 路由简单无死锁但路径多样性差；转向模型通过禁止部分转向在无死锁和路径多样性间取得平衡；逃逸 VC 允许任意路由同时保证死锁自由；协议死锁需要通过独立 VN 解决；拓扑选择权衡成本（链路数、度）与性能（带宽、延迟）。

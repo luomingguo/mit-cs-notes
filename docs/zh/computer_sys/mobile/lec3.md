@@ -1,4 +1,13 @@
-# Lec 3 — GPS 与室内定位实战（*GPS & Practical Indoor Localization*）
+---
+title: 'GPS 与室内定位实战（GPS & Practical Indoor Localization）'
+course: 6.1820 移动和传感器计算
+course_id: '6.1820'
+lecture: 3
+kind: system
+tags: []
+status: complete
+---
+# Lec 3 GPS 与室内定位实战（*GPS & Practical Indoor Localization*）
 > MIT 6.1820/MAS.453 · Mobile and Sensor Computing
 > 阅读材料：RADAR [INFOCOM'00]，Cricket [MobiCom'00]
 
@@ -14,9 +23,11 @@ $$d = \Delta t \times c$$
 
 ### 1.2 如何测量传播延迟？
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 互相关（<em>Cross-Correlation</em>）</strong><br>
+::: definition
+**定义 — 互相关（*Cross-Correlation*）**
+
 将接收到的延迟版本信号与本地参考码作相关运算，相关峰值出现的位置即对应传播延迟 $\Delta t$。
-</div>
+:::
 
 $$R(\tau) = \int s(t) \cdot s(t - \tau)\, dt$$
 
@@ -28,7 +39,9 @@ $$R(\tau) = \int s(t) \cdot s(t - \tau)\, dt$$
 - 数据速率：**50 bits/s**，完整下载需约 **12.5 分钟**
 - **A-GPS（Assisted GPS）**：通过蜂窝/Wi-Fi 网络快速获取星历，大幅缩短首次定位时间（*TTFF*）
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论</strong>　GPS 需要 4 颗卫星求解 $(x, y, z, \Delta t_\text{clock})$ 四个未知量（前三维位置 + 接收机时钟误差），才能消除时钟偏差对距离的影响。</div>
+::: theorem 推论
+GPS 需要 4 颗卫星求解 $(x, y, z, \Delta t_\text{clock})$ 四个未知量（前三维位置 + 接收机时钟误差），才能消除时钟偏差对距离的影响。
+:::
 
 ---
 
@@ -52,7 +65,9 @@ $$d_\text{ss}(\mathbf{ss}', \mathbf{ss}_j) = \sqrt{\sum_{i=1}^{k}(ss_i' - ss_{i,
 
 ### 2.2 评估与局限
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 评估合理性分析</strong></div>
+::: example 例题 — 评估合理性分析
+
+:::
 
 实验以 70 个已知点中的 1 个为测试、其余 69 个为训练——这实际上是一种「留一法交叉验证」（*Leave-One-Out*），精度偏于乐观。实际部署中新位置的指纹差异往往更大。
 
@@ -74,8 +89,11 @@ $$d_\text{ss}(\mathbf{ss}', \mathbf{ss}_j) = \sqrt{\sum_{i=1}^{k}(ss_i' - ss_{i,
 
 ### 3.2 架构
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 被动监听器 + 主动信标（<em>Passive Listener + Active Beacon</em>）</strong><br>
-信标（<em>Beacon</em>）主动广播；监听器（<em>Listener</em>）被动接收并自行计算位置。该架构保护隐私（服务器不知道用户在哪），并支持大量设备同时定位（无需网络反馈）。</div>
+::: definition
+**定义 — 被动监听器 + 主动信标（*Passive Listener + Active Beacon*）**
+
+信标（*Beacon*）主动广播；监听器（*Listener*）被动接收并自行计算位置。该架构保护隐私（服务器不知道用户在哪），并支持大量设备同时定位（无需网络反馈）。
+:::
 
 ### 3.3 测距原理：RF + 超声波（*Ultrasound*）
 
@@ -89,10 +107,11 @@ $$d = \Delta t_\text{RF-US} \times v_\text{sound}$$
 
 其中 $v_\text{sound} \approx 345 \text{ m/s}$，远小于光速 → 时延可测。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 为何用超声而不用纯 RF 测距？</strong><br>
-声速约 $345$ m/s，10 cm 对应 $0.29$ ms 时延，普通微控制器即可测量。<br>
+::: theorem 推论 — 为何用超声而不用纯 RF 测距？
+声速约 $345$ m/s，10 cm 对应 $0.29$ ms 时延，普通微控制器即可测量。
+
 光速 $3 \times 10^8$ m/s，10 cm 对应 $0.3$ ns 时延，需 3 GSps 采样率，硬件代价极高。
-</div>
+:::
 
 ### 3.4 多信标干扰问题与解决方案
 
@@ -134,6 +153,6 @@ $$\text{比特率} < \frac{S}{\tau},\quad \tau = 2 \times d_{\max} / v_\text{sou
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 GPS 通过伪随机码互相关测量卫星距离，需 4 颗卫星解出三维位置；室内场景 GPS 失效，RADAR（指纹匹配）和 Cricket（RF+超声 ToF）是两种典型替代方案，精度与隐私保护各有侧重。

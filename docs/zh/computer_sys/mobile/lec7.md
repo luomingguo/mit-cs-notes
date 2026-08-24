@@ -1,4 +1,13 @@
-# Lec 7 — 无电池传感与智慧城市（*Batteryless Sensing & Smart Cities*）
+---
+title: '无电池传感与智慧城市（Batteryless Sensing & Smart Cities）'
+course: 6.1820 移动和传感器计算
+course_id: '6.1820'
+lecture: 7
+kind: system
+tags: []
+status: complete
+---
+# Lec 7 无电池传感与智慧城市（*Batteryless Sensing & Smart Cities*）
 > MIT 6.1820/MAS.453 · Mobile and Sensor Computing
 > 阅读材料：Hacking RFIDs，Caraoke [MobiSys'13]
 
@@ -6,9 +15,11 @@
 
 ### 1.1 RFID 分类
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — RFID 标签类型</strong><br>
-按频率：LF（125 kHz，门禁卡）、HF（13.56 MHz，NFC/地铁卡）、UHF（860–960 MHz，超市条码），UHF 读取距离最远（可达 10 m）。<br>
-按供电：<strong>主动标签（<em>Active Tag</em>）</strong>内置电池，可主动发射；<strong>被动标签（<em>Passive Tag</em>）</strong>无电池，从读取器（<em>Reader</em>）发射的射频中收集能量后回应。</div>
+::: definition 定义 — RFID 标签类型
+按频率：LF（125 kHz，门禁卡）、HF（13.56 MHz，NFC/地铁卡）、UHF（860–960 MHz，超市条码），UHF 读取距离最远（可达 10 m）。
+
+按供电：**主动标签（*Active Tag*）**内置电池，可主动发射；**被动标签（*Passive Tag*）**无电池，从读取器（*Reader*）发射的射频中收集能量后回应。
+:::
 
 ### 1.2 能量收集与反向散射（*Energy Harvesting & Backscatter*）
 
@@ -22,7 +33,9 @@ $$V_\text{harvested} = \eta \cdot \sqrt{\frac{P_{rx} \cdot Z_A}{2}}$$
 
 其中 $\eta$ 为整流效率，$Z_A$ 为天线阻抗，$P_{rx}$ 为接收功率。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 反向散射的能效优势</strong>　反向散射只需切换天线阻抗，消耗微瓦级功率，而主动发射需毫瓦级功率，差距约 1000 倍，这使被动 RFID 无需电池即可长期工作。</div>
+::: theorem 推论 — 反向散射的能效优势
+反向散射只需切换天线阻抗，消耗微瓦级功率，而主动发射需毫瓦级功率，差距约 1000 倍，这使被动 RFID 无需电池即可长期工作。
+:::
 
 ### 1.3 OOK 调制（*On-Off Keying*）
 
@@ -36,14 +49,19 @@ $$s(t) = \begin{cases} A \cdot \cos(2\pi f t) & \text{bit = 1（ON）} \\ 0 & \t
 
 当多个标签同时存在时，必须解决**读取碰撞**（*Tag Collision*）问题。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 分时隙 Aloha（<em>Slotted Aloha</em>）</strong><br>
-读取器宣布共有 $Q = 2^K$ 个时隙（<em>Slot</em>），每个标签随机选择一个时隙回应。若某时隙只有一个标签回应，则读取成功；若多个标签碰撞，本轮不成功，下轮重试。</div>
+::: definition
+**定义 — 分时隙 Aloha（*Slotted Aloha*）**
+
+读取器宣布共有 $Q = 2^K$ 个时隙（*Slot*），每个标签随机选择一个时隙回应。若某时隙只有一个标签回应，则读取成功；若多个标签碰撞，本轮不成功，下轮重试。
+:::
 
 ### 2.1 最优参数
 
 设共有 $N$ 个标签，时隙数 $Q$ 的最优取值：
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 最优时隙数与效率</strong></div>
+::: example 例题 — 最优时隙数与效率
+
+:::
 
 当 $Q = N$ 时，Slotted Aloha 的吞吐量（*Throughput*）最高：
 
@@ -93,7 +111,9 @@ EPC Gen2 通过 Q 参数动态调整时隙数：若碰撞率高则增大 Q，若
 
 ETC 读取器会记录车辆 ID 与时间戳，可重建行驶轨迹（*Location Trajectory*），引发严重隐私顾虑。研究者提出使用**假名（*Pseudonyms*）或定期更换 ID** 以降低可追踪性。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 机会性基础设施复用</strong>　Caraoke 的设计哲学是"不重造轮子"——已经铺设好的感知基础设施（ETC 路侧单元）是一种宝贵资源，适当复用可以极低成本提供大量城市感知服务。</div>
+::: theorem 推论 — 机会性基础设施复用
+Caraoke 的设计哲学是"不重造轮子"——已经铺设好的感知基础设施（ETC 路侧单元）是一种宝贵资源，适当复用可以极低成本提供大量城市感知服务。
+:::
 
 ---
 
@@ -109,6 +129,6 @@ ETC 读取器会记录车辆 ID 与时间戳，可重建行驶轨迹（*Location
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 被动 RFID 通过反向散射实现无电池通信，EPC Gen2 Slotted Aloha 协议提供多标签并发读取能力（效率上限 37%）；Caraoke 展示了复用已有 ETC 基础设施提供低成本智慧城市服务的思路，同时引出了位置隐私保护这一关键设计挑战。

@@ -1,4 +1,13 @@
-# L21：图形处理器（*GPUs*）
+---
+title: 图形处理器（GPUs）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 21
+kind: system
+tags: []
+status: complete
+---
+# Lec 21 图形处理器（*GPUs*）
 
 > MIT 6.5900 Fall 2024 · Joel Emer（部分幻灯片致谢 Srini Devadas） 主题：SIMT 执行模型、流式多处理器（*SM*）、GPU 存储层级、分支/访存发散、CUDA 编程模型
 
@@ -215,7 +224,7 @@ if (condition[i]) {
 
 ------
 
-## 小结
+## 本讲小结
 
 - GPU 用 **SIMT + 大规模多线程**隐藏延迟，以 warp 为发射粒度；
 - 存储层级（私有/共享/全局 + Cache）与**访存合并**是性能关键，发散是主要敌人；

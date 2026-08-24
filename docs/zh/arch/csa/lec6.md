@@ -1,4 +1,13 @@
-# L06：复杂流水线（*Complex Pipelining*）
+---
+title: 复杂流水线（Complex Pipelining）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 6
+kind: system
+tags: []
+status: complete
+---
+# Lec 06 复杂流水线（*Complex Pipelining*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez 主题：复杂流水线动机、CDC 6600、浮点单元与功能单元特性、复杂流水线控制问题、依赖分析、记分牌（*Scoreboard*）
 
@@ -156,7 +165,7 @@
 
 ------
 
-## 小结
+## 本讲小结
 
 - 多周期/变延迟/复制功能单元使流水线变复杂，带来执行级与写回级结构冒险、乱序写冒险与异常难题；
 - 按序复杂流水线靠延迟写回 + 旁路 + 长延迟停顿 + 提交点异常处理；超标量按序发射以低成本提吞吐；

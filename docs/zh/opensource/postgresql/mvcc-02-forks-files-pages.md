@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的 MVCC — 2. 分支、文件与页面
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的 MVCC — 2. 分支、文件与页面
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/469087/ （作者 Egor Rogov，PostgresPro，2019-10-10）
@@ -29,7 +36,7 @@ SELECT pg_relation_filepath('accounts');
 
 这是存放表和索引实际行数据的地方，除了不存数据的普通视图外，几乎所有关系都有主分支。它的文件名就是一串数字（即 filenode）：
 
-```
+```text
 -rw------- 1 postgres postgres 8192  base/41493/41496
 ```
 
@@ -55,7 +62,7 @@ SELECT pg_relation_filepath('accounts');
 -- base/41493/41507
 ```
 
-```
+```bash
 $ ls -l base/41493/41507_init
 -rw------- 1 postgres postgres 0  base/41493/41507_init
 ```
@@ -69,7 +76,7 @@ FSM 用来记录每个页面里还剩多少空闲空间，方便插入新行时�
 ```sql
 VACUUM accounts;
 ```
-```
+```bash
 $ ls -l base/41493/41507_fsm
 -rw------- 1 postgres postgres 24576  base/41493/41507_fsm
 ```
@@ -78,7 +85,7 @@ $ ls -l base/41493/41507_fsm
 
 VM 用一个 bit 标记每个页面是否"只含有对所有事务都可见的最新行版本"（即页面上没有需要额外做可见性判断的旧版本）。如果某页面被标记为"全可见"，扫描时就可以跳过逐行的可见性检查，这对索引扫描等场景是重要的性能优化（这一点会在后续 vacuum、autovacuum 相关文章里深入展开）。文件名后缀是 `_vm`：
 
-```
+```bash
 $ ls -l base/41493/41507_vm
 -rw------- 1 postgres postgres 8192  base/41493/41507_vm
 ```
@@ -89,7 +96,7 @@ $ ls -l base/41493/41507_vm
 
 一个页面的内部布局大致是这样（从低地址到高地址）：
 
-```
+```text
       0  +-----------------------------------+
          | 页头（header）                     |
      24  +-----------------------------------+
@@ -247,6 +254,6 @@ SELECT chunk_id, chunk_seq, length(chunk_data) FROM pg_toast.pg_toast_33953;
 
 TOAST 只作用于表，索引不支持 TOAST 机制——这意味着能够建索引的键值大小是有实际上限的（超长值无法直接作为索引键）。原文还建议：如果业务场景涉及海量的、不需要事务性保证的大数据（比如扫描文档的存档），更适合的做法是把这些内容存在文件系统里，数据库里只保存对应的文件名/路径。
 
-## 小结
+## 本讲小结
 
 本篇建立了理解后续 MVCC 机制所需的物理基础：一个关系可能拥有主分支、初始化分支、FSM、VM 四种不同用途的分支，各自对应独立的磁盘文件；文件被切成固定大小的页面，页面内部用"页头 + 指针数组 + 空闲空间 + 行数据 + 特殊空间"的布局组织，指针间接寻址使得页内行数据可以自由挪动而不破坏外部引用；数据在磁盘上与内存中格式完全一致，因此天然是平台相关的；超出页面大小的字段值通过 TOAST 机制被压缩和/或挪动到独立的 TOAST 表中，按策略（plain/extended/external/main）分级处理。这些机制在后面讲行版本、页内清理（HOT 更新）和 VACUUM 时会被反复引用。

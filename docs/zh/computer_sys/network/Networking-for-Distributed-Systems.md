@@ -1,8 +1,16 @@
+---
+title: 分布式系统网络（Networking for Distributed Systems）
+course: 6.5820/6.S04 计算机网络
+course_id: '6.5820'
+kind: system
+tags: []
+status: complete
+---
 # Lec 9 分布式系统网络（Networking for Distributed Systems）
 
 > 本讲无指定论文，围绕 Topics 展开：Distributed ML、Parameter Server、AllReduce、Horovod。核心问题：当把一个训练任务摊到成百上千台机器上时，**网络（梯度同步）往往成为瓶颈**，于是「怎么高效地把每台机器的梯度合起来」成了一个网络问题。
 
-## 总览
+## 本讲导览
 
 - 为什么分布式训练是一个网络问题
 - 数据并行 vs 模型并行
@@ -17,18 +25,17 @@
 
 深度学习训练是迭代的 SGD：每一步在一批数据上算出**梯度**，更新模型参数。把它分布到 N 台机器后，每一步结束都要把各机器的梯度**合并（求和/平均）**再分发回去——这一步是**全体通信**，且要在每个 mini-batch 后都做一次。
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>瓶颈所在</strong><br>
-现代模型参数量动辄上亿到千亿，每步要同步的梯度就有几百 MB 到几 GB；而计算（尤其在 GPU/TPU 上）越来越快，于是<strong>通信时间逐渐主导每步耗时</strong>。分布式训练能不能线性加速，取决于「梯度同步」能否与「计算」重叠、以及同步本身用满多少带宽。
-</div>
+::: example 瓶颈所在
+现代模型参数量动辄上亿到千亿，每步要同步的梯度就有几百 MB 到几 GB；而计算（尤其在 GPU/TPU 上）越来越快，于是**通信时间逐渐主导每步耗时**。分布式训练能不能线性加速，取决于「梯度同步」能否与「计算」重叠、以及同步本身用满多少带宽。
+:::
 
 ## 二、并行方式
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 数据并行 vs 模型并行</strong><br>
-<strong>数据并行 (data parallel)</strong>：每台机器持有<strong>完整模型副本</strong>、处理不同的数据批；每步同步<strong>梯度</strong>。最常用。<br>
-<strong>模型并行 (model parallel)</strong>：模型太大装不进单卡，把<strong>模型本身切开</strong>放到不同机器；机器间传的是<strong>激活/中间结果</strong>。
-</div>
+::: definition 定义 · 数据并行 vs 模型并行
+**数据并行 (data parallel)**：每台机器持有**完整模型副本**、处理不同的数据批；每步同步**梯度**。最常用。
+
+**模型并行 (model parallel)**：模型太大装不进单卡，把**模型本身切开**放到不同机器；机器间传的是**激活/中间结果**。
+:::
 
 下面聚焦数据并行下的「梯度同步」两大范式：参数服务器与 AllReduce。
 
@@ -39,16 +46,15 @@
 - **push**：worker 把本地梯度推给 server；
 - **pull**：worker 从 server 拉回更新后的参数。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 同步 vs 异步 SGD</strong><br>
-<strong>同步 (BSP)</strong>：所有 worker 完成本步、聚合后才进入下一步——等价于大 batch，收敛性好，但被<strong>最慢的 worker（掉队者 straggler）</strong>拖住。<br>
-<strong>异步 (ASP)</strong>：worker 各推各的、不互相等，server 来一个更新一个——无掉队者等待，但用的是<strong>过期梯度 (stale gradient)</strong>，可能损害收敛。
-</div>
+::: definition 定义 · 同步 vs 异步 SGD
+**同步 (BSP)**：所有 worker 完成本步、聚合后才进入下一步——等价于大 batch，收敛性好，但被**最慢的 worker（掉队者 straggler）**拖住。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 参数服务器的网络痛点</strong><br>
-所有 worker 在每步同时向少数 server <strong>push/pull</strong>，形成<strong>多打一的 incast</strong>，server 的入向带宽成为瓶颈，且易触发交换机缓冲溢出与排队。把参数<strong>分片 (shard)</strong> 到多台 server 可分摊带宽，但中心化结构的总带宽仍随规模受限——这正是 AllReduce 想绕开的。
-</div>
+**异步 (ASP)**：worker 各推各的、不互相等，server 来一个更新一个——无掉队者等待，但用的是**过期梯度 (stale gradient)**，可能损害收敛。
+:::
+
+::: theorem 推论 · 参数服务器的网络痛点
+所有 worker 在每步同时向少数 server **push/pull**，形成**多打一的 incast**，server 的入向带宽成为瓶颈，且易触发交换机缓冲溢出与排队。把参数**分片 (shard)** 到多台 server 可分摊带宽，但中心化结构的总带宽仍随规模受限——这正是 AllReduce 想绕开的。
+:::
 
 ## 四、AllReduce 与 Ring-AllReduce
 
@@ -56,17 +62,17 @@
 
 朴素做法（每个节点把数据发给所有人）通信量随 N 平方增长。**Ring-AllReduce** 是带宽最优实现：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · Ring-AllReduce</strong><br>
-N 个节点排成一个环，把梯度向量切成 N 块。分两阶段、各 N−1 步：<br>
-① <strong>scatter-reduce</strong>：每步每个节点把一块发给下家、收上家一块并累加，N−1 步后每个节点各自持有「某一块的全局和」；<br>
-② <strong>all-gather</strong>：再 N−1 步把这些已求和的块沿环传一圈，使每个节点都集齐所有块。
-</div>
+::: definition 定义 · Ring-AllReduce
+N 个节点排成一个环，把梯度向量切成 N 块。分两阶段、各 N−1 步：
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 为什么 Ring-AllReduce 是带宽最优</strong><br>
-每个节点总共收/发的数据量约为 $2\cdot\frac{N-1}{N}\cdot D$（D 为梯度大小），<strong>与节点数 N 几乎无关</strong>，且每条链路始终双向满载。相比参数服务器把全部上行流量压到少数 server，Ring 把通信均匀摊到所有节点的链路上——这就是大规模 GPU 训练几乎都用 AllReduce 的原因。代价是它是<strong>同步</strong>的（环上一环扣一环），对掉队者和故障敏感。
-</div>
+① **scatter-reduce**：每步每个节点把一块发给下家、收上家一块并累加，N−1 步后每个节点各自持有「某一块的全局和」；
+
+② **all-gather**：再 N−1 步把这些已求和的块沿环传一圈，使每个节点都集齐所有块。
+:::
+
+::: theorem 推论 · 为什么 Ring-AllReduce 是带宽最优
+每个节点总共收/发的数据量约为 $2\cdot\frac{N-1}{N}\cdot D$（D 为梯度大小），**与节点数 N 几乎无关**，且每条链路始终双向满载。相比参数服务器把全部上行流量压到少数 server，Ring 把通信均匀摊到所有节点的链路上——这就是大规模 GPU 训练几乎都用 AllReduce 的原因。代价是它是**同步**的（环上一环扣一环），对掉队者和故障敏感。
+:::
 
 ## 五、Horovod：把 Ring-AllReduce 工程化
 
@@ -76,10 +82,9 @@ Horovod（Uber，2017）把 Ring-AllReduce 接到 TensorFlow/PyTorch 等框架�
 - **tensor fusion（张量融合）**：把许多小梯度张量**攒成一个大缓冲再 AllReduce**，摊薄每次通信的固定开销、提高带宽利用；
 - 通信与反向传播**重叠**：某层梯度一算好就开始同步，不等整个反向结束。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 通信/计算重叠是关键</strong><br>
-反向传播是从输出层往输入层逐层算梯度，先算出的层可以<strong>立刻开始 AllReduce</strong>，与后续层的计算并行。只要同步能藏在计算背后，扩展就接近线性——否则就退化成「算一会儿、等一会儿网络」。
-</div>
+::: theorem 推论 · 通信/计算重叠是关键
+反向传播是从输出层往输入层逐层算梯度，先算出的层可以**立刻开始 AllReduce**，与后续层的计算并行。只要同步能藏在计算背后，扩展就接近线性——否则就退化成「算一会儿、等一会儿网络」。
+:::
 
 ## 六、网络层面的影响与前沿
 

@@ -1,3 +1,12 @@
+---
+title: 内核可扩展性（BPF）
+course: 6.1810 操作系统工程
+course_id: '6.1810'
+lecture: 22
+kind: system
+tags: []
+status: complete
+---
 # Lec 22 内核可扩展性（BPF）
 
 阅读论文
@@ -12,7 +21,7 @@ Berkeley Packet Filter 在 Linux kernel 中被广泛使用，而且用途远不�
 
 本节的核心问题是，如何在内核中“**安全地运行用户代码**”来扩展内核能力。该问题出现的缘由是为了监控原始网络包：某个用户空间进程需要检查所有 incoming 的网络包，而不是针对某个 TCP 连接或端口，但由于多个程序同时运行，每个程序关心的包不同，内核无法提前知道哪个包应该给哪个进程。
 
-## 总览
+## 本讲导览
 
 - 应用场景与动机：监控原始网络包
 - 性能挑战：为什么不能把所有包都拷贝到用户态
@@ -37,7 +46,7 @@ Berkeley Packet Filter 在 Linux kernel 中被广泛使用，而且用途远不�
 
 这些应用各自关心**不同类型**的包，而内核开发者无法提前知道每个应用想要哪些包。
 
-```
+```bash
 # tcpdump -n -i wlan0 udp
 # tcpdump -n -i wlan0 udp and port 123
 ```
@@ -63,7 +72,7 @@ Berkeley Packet Filter 在 Linux kernel 中被广泛使用，而且用途远不�
 - 内核可以**高效执行**这段 filter 程序
 - 这段过滤器甚至可以**在收包的中断处理程序中运行**
 
-```
+```bash
 # tcpdump -n -i wlan0 -d udp      # -d 反汇编出 tcpdump 生成的 BPF 程序
 ```
 
@@ -91,7 +100,7 @@ Berkeley Packet Filter 在 Linux kernel 中被广泛使用，而且用途远不�
 
 `seccomp-bpf` 用 BPF 过滤系统调用：进程每次发起 syscall 前先经过 filter，由 filter 决定 allow / deny / kill 等。
 
-```
+```bash
 $ make seccomp.bpf
 $ seccomp-tools disasm seccomp.bpf
 $ bwrap --bind / / --seccomp 5 5<seccomp.bpf -- sh
@@ -268,7 +277,7 @@ map 是通用的 key-value 存储，用于“内核↔用户态”“程序↔�
 
 ### Linux 中的实际演示
 
-```
+```c
 # bpftrace -l                     # 列出可用探针
 # bpftrace -e 'tracepoint:syscalls:sys_enter_mkdir { printf("PID %d calling mkdir(%s)\n", pid, str(args.pathname)); }'
 # bpftrace -e 'tracepoint:irq:irq_handler_entry { printf("intr %d: %s\n", args.irq, str(args.name)); }'

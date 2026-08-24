@@ -1,10 +1,17 @@
+---
+title: ToR
+course: 6.1800 计算机系统工程
+course_id: '6.1800'
+lecture: 24
+kind: system
+tags: []
+status: complete
+---
 # Lec 24 ToR
-
-
 
 像你理解对称密钥加密、哈希函数和消息认证码（MAC）一样，理解公钥加密作为构建（更）安全系统的基础组件。请注意，使用公钥加密进行加密与使用它进行签名在实现上略有不同。描述 A 如何构造用于洋葱路由（onion routing）的数据包（即 A 加密了哪些数据，以及使用了什么密钥）。在给定不同代理配置和各种加密尝试的情况下，判断哪些类型的对手（如果有的话）能够推断出 A 正在与 S 通信。说明如何使用一个单独的代理在本地网络中创建一个安全连接，即使无法在 A 到 S 的整个路径上实现端到端安全。
 
-之前我们讨论了如何提供机密性（Confidentaility）、完整性（Integrity）和真实性（Authenticity）。 这次的主题是匿名性（Anonymity），重点关注Tor 和 Bitcoin：
+之前我们讨论了如何提供机密性（Confidentaility）、完整性（Integrity）和真实性（Authenticity）。 这次的主题是匿名性（Anonymity），重点关注 Tor 和 Bitcoin：
 
 - **Tor**：一个让用户保持匿名的网络。
 - **Bitcoin**：一种数字货币系统，可能提供匿名性。

@@ -1,4 +1,13 @@
-# Lecture 15：关系与计数
+---
+title: 关系与计数
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 15
+kind: theory
+tags: []
+status: complete
+---
+# Lec 15 关系与计数
 
 ## 1. 关系（Relations）
 

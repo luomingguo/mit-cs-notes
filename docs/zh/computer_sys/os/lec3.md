@@ -1,18 +1,23 @@
+---
+title: 操作系统设计（隔离、进程与内核组织）
+course: 6.1810 操作系统工程
+course_id: '6.1810'
+lecture: 3
+kind: system
+tags: []
+status: complete
+---
 # Lec 3 操作系统设计（隔离、进程与内核组织）
 
-
-
-## 总览
+## 本讲导览
 
 本讲定位：从"为什么需要 OS？"出发，确立**多路复用 / 隔离 / 交互**三大需求；理解硬件特权级如何支撑强隔离；对比宏内核与微内核两种组织哲学；最后落到 xv6 的进程抽象、安全模型与启动流程。
 
 思考题：进程调用 `exec()` / `fork()` 会发生什么？对一个已死 PID 先 `kill` 再 `fork` 会怎样？
 
-
-
 ## 0. 本讲脉络
 
-```
+```text
 三大需求(多路复用/隔离/交互) ──► 为什么要 OS(对比"库"方案)
         │
         ▼
@@ -29,23 +34,23 @@
 
 ## 1. 操作系统的三大需求
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（OS 的三大需求）</strong>多路复用 (*multiplexing*)、隔离 (*isolation*)、交互 (*interaction*)。</div>
+::: definition 定义（OS 的三大需求）
+多路复用 (*multiplexing*)、隔离 (*isolation*)、交互 (*interaction*)。
+:::
 
 1. **多路复用**：多个程序并发运行（如同时跑编译器与编辑器，各为独立进程）。
 2. **隔离**：某进程有 bug 或异常，不应影响无关进程。
 3. **交互**：又不能完全隔离——进程有时需有意交互（如管道）。
 
-
-
 ## 2. 为什么需要操作系统？
 
 一种替代方案是把系统调用（如 `read`）实现成**库**，应用直接链接、甚至定制，从而直接操作硬件、按需最优使用资源。这在嵌入式/实时系统确实存在。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论（库方案的致命缺陷）</strong>多应用并发时全靠应用"自觉"让出资源，即<strong>协作式时间共享 (<i>cooperative time-sharing</i>)</strong>——一个流氓应用就能拖垮全局。</div>
+::: theorem 推论（库方案的致命缺陷）
+多应用并发时全靠应用"自觉"让出资源，即**协作式时间共享 (*cooperative time-sharing*)**——一个流氓应用就能拖垮全局。
+:::
 
 这正是需要一个有强制力的 OS 来居中管理的理由。
-
-
 
 ## 3. 抽象物理资源 + 硬件特权级
 
@@ -53,7 +58,9 @@
 
 要做到强隔离，必须保证：应用不能修改甚至读取内核的数据结构与指令；不能访问其他进程内存。CPU 用硬件特权级支撑这一点。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（RISC-V 三种特权级）</strong>机器态 (*machine mode*) > 管理态 (*supervisor mode*) > 用户态 (*user mode*)。</div>
+::: definition 定义（RISC-V 三种特权级）
+机器态 (*machine mode*) > 管理态 (*supervisor mode*) > 用户态 (*user mode*)。
+:::
 
 - **机器态**：权限最高，CPU 启动时所处模式，用于上电初始化；xv6 仅短暂运行后即切到管理态。
 - **管理态**：可执行特权指令（开关中断、读写页表寄存器等）。
@@ -61,31 +68,35 @@
 
 应用通过 `ecall` 发起系统调用：该指令把 CPU 从用户态切到管理态并跳到内核入口。切换后内核可**校验参数**（如传入地址是否属于该进程内存）、**判断权限**（如是否允许写该文件），再决定执行或拒绝。
 
-
-
 ## 4. 内核组织：宏内核 vs 微内核
 
 核心设计问题：OS 的**哪些部分**应运行在管理态？
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（宏内核 *monolithic kernel*）</strong>整个 OS 是运行在管理态的单一大程序，所有系统调用实现都在内核态。</div>
+::: definition 定义（宏内核 *monolithic kernel*）
+整个 OS 是运行在管理态的单一大程序，所有系统调用实现都在内核态。
+:::
 
 **优点**：实现方便（无需划分"需特权/不需特权"代码）；模块协作容易（如文件系统与虚拟内存可共享磁盘块缓存）。**缺点**：庞大复杂，没人能完全理解模块间交互 → 易引入 bug，而内核 bug 尤其严重。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（微内核 *microkernel*）</strong>内核只保留最少功能（IPC、任务/线程、基本内存/设备访问），文件系统等大部分功能下放到用户态"服务器进程"。</div>
+::: definition 定义（微内核 *microkernel*）
+内核只保留最少功能（IPC、任务/线程、基本内存/设备访问），文件系统等大部分功能下放到用户态"服务器进程"。
+:::
 
 ![image-20260404133936927](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260404133936927.png)
 
 应用要读写文件就向文件服务器发消息（IPC）并等响应。内核接口只含少量底层功能（启动应用、发消息、访问设备硬件），从而简单、易理解、易验证。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>工程联想</strong>宏内核 ↔ 单体应用：模块紧耦合、调用快但难维护；微内核 ↔ 微服务：模块隔离、可独立崩溃/替换，但要付 IPC（≈ 网络调用）开销。同一组权衡在系统软件与分布式后端反复出现。</div>
+::: insight 工程联想
+宏内核 ↔ 单体应用：模块紧耦合、调用快但难维护；微内核 ↔ 微服务：模块隔离、可独立崩溃/替换，但要付 IPC（≈ 网络调用）开销。同一组权衡在系统软件与分布式后端反复出现。
+:::
 
 现实中两者都广泛使用：Linux 是宏内核（部分功能如窗口系统在用户态），靠子系统紧密集成获得高性能；Minix、L4、QNX 是微内核，多见于嵌入式——其中 **seL4**（L4 后代）小到可被**形式化验证**，证明了内存安全等属性的正确性。（微内核的细节与性能论文见 Lec 4。）
 
-
-
 ## 5. 进程：隔离的基本单位
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>进程：</strong>隔离的基本单位，为程序营造"独占一台机器"的假象——私有地址空间 + 专属 CPU。</div>
+::: definition 进程：
+隔离的基本单位，为程序营造"独占一台机器"的假象——私有地址空间 + 专属 CPU。
+:::
 
 xv6 用页表（硬件实现）为每个进程提供独立地址空间，把虚拟地址映射为物理地址。每个进程的地址空间从虚拟地址 0 开始，布局为：
 
@@ -102,8 +113,6 @@ xv6 用页表（硬件实现）为每个进程提供独立地址空间，把虚�
 - **跳板页 (*trampoline*)**（进出内核的代码）与
 - **陷阱帧页 (*trapframe*)**（保存用户寄存器，详见 Lec 6）。
 
-
-
 ![image-20260404213511550](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260404213511550.png)
 
 内核为每个进程维护一个 `struct proc`（在 `kernel/proc.h`），最重要的字段：`p->pagetable`（页表）、`p->kstack`（内核栈）、`p->state`（运行状态：allocated/ready/running/sleeping/exiting）。
@@ -112,29 +121,33 @@ xv6 用页表（硬件实现）为每个进程提供独立地址空间，把虚�
 
 每个进程有**用户栈**与**内核栈 (`p->kstack`)**。用户态运行时用用户栈、内核栈空闲；进入内核（系统调用/中断）时切到内核栈执行内核代码，用户栈数据保留但不用。
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题1</strong>（为什么内核不直接复用用户栈，而要单独一个内核栈？）</div>
+::: example 例题 1
+（为什么内核不直接复用用户栈，而要单独一个内核栈？）
+:::
 
 因为这样**即使用户程序破坏了自己的用户栈，内核仍能安全执行**。内核绝不能信任用户内存（用户栈可能被写坏、指向非法地址、甚至根本不存在），所以内核必须有一块自己掌控、用户碰不到的栈。
-
-
 
 ## 6. 安全模型
 
 OS 必须假设：**用户态代码会尽最大努力破坏内核或其他进程**。例如尝试解引用越界指针、执行用户态禁止的指令、读写控制寄存器、访问设备硬件、向系统调用传精心构造的参数诱导内核崩溃。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>内核对用户进程的硬性约束：</strong>每个用户进程只能：访问自己的用户内存、使用 32 个通用寄存器、仅以系统调用允许的方式影响内核与其他进程。</div>
+::: definition 内核对用户进程的硬性约束：
+每个用户进程只能：访问自己的用户内存、使用 32 个通用寄存器、仅以系统调用允许的方式影响内核与其他进程。
+:::
 
 其余一切行为内核必须禁止——这是 OS 设计的"绝对要求"。对内核自身代码的假设则不同：通常认为内核由善意谨慎的程序员编写、无 bug、无恶意。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论（理想与现实的差距）</strong>很难阻止恶意程序通过合法系统调用<strong>耗尽资源</strong>（占满磁盘、吃光 CPU、用尽进程表槽位）使系统不可用；也几乎不可能写出 100% 无 bug 的内核与硬件——即便 Linux 也不断爆出新漏洞。</div>
-
-
+::: theorem 推论（理想与现实的差距）
+很难阻止恶意程序通过合法系统调用**耗尽资源**（占满磁盘、吃光 CPU、用尽进程表槽位）使系统不可用；也几乎不可能写出 100% 无 bug 的内核与硬件——即便 Linux 也不断爆出新漏洞。
+:::
 
 ## 7. xv6 与启动流程
 
 xv6 跑在 RISC-V（参照 "SiFive HiFive Unleashed" 板：4 核、每核 32 寄存器/ALU/MMU/控制寄存器/定时器、共享 128MB RAM 与设备、UART 控制台、磁盘、以太网），用 **QEMU**（`-machine virt`）模拟，磁盘用 virtio。内核代码结构简单（如文件系统在 `kernel/fs.c`，模块接口在 `kernel/defs.h`），`make` 构建出内核二进制与磁盘镜像 `fs.img`。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（xv6 启动顺序）</strong>加载到 0x80000000 → <code>entry.S:_entry</code> → <code>start()</code> → <code>main()</code> → 第一个用户程序 <code>init</code>。</div>
+::: definition 定义（xv6 启动顺序）
+加载到 0x80000000 → `entry.S:_entry` → `start()` → `main()` → 第一个用户程序 `init`。
+:::
 
 1. 内核加载到 **`0x80000000`**（RAM 起始），此时处于**机器态**。
 2. 第一条指令跳到 `entry.S` 的 `_entry`：设栈，跳到 `start.c` 的 `start()`。
@@ -147,7 +160,9 @@ xv6 跑在 RISC-V（参照 "SiFive HiFive Unleashed" 板：4 核、每核 32 寄
 
 ## 8. 思考题与自测
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题2</strong>（对一个已退出/不存在的 PID 先 <code>kill(pid)</code>，之后 <code>fork()</code> 可能复用该 PID，会发生什么？）</div>
+::: example 例题 2
+（对一个已退出/不存在的 PID 先 `kill(pid)`，之后 `fork()` 可能复用该 PID，会发生什么？）
+:::
 
 `kill` 作用于"当时"的那个 PID 所指进程；若该进程已不存在，`kill` 不影响任何活进程（通常返回错误）。之后 `fork()` 新建的进程**可能恰好复用同一个 PID 号**，但它是一个**全新的进程**，与先前被 kill 的进程毫无关系——这说明 PID 只是一个可回收的标识符，不是进程身份的本质。由此引申出真实系统的一类竞态：若程序"记住"了旧 PID 并延迟向它发信号，可能误伤复用了该号的新进程（PID-reuse race）。
 
@@ -180,4 +195,3 @@ xv6 跑在 RISC-V（参照 "SiFive HiFive Unleashed" 板：4 核、每核 32 寄
     user/init.c
 
 ![image-20260404205223504](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260404205223504.png)
-

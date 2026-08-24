@@ -11,7 +11,8 @@ const SYSTEM = `你是「MIT Notes by Ron」这个笔记站的问答助手。这
 4. 如果片段之间有互补关系（比如同一个概念在操作系统课和数据库课都出现过），主动指出这种跨课程的联系，这正是通读全站笔记才能给出的价值。
 5. 用中文回答。直接给结论，再展开细节。不要复述问题，不要写「根据笔记片段」这类开场白。
 6. 涉及代码、公式、术语时保留原文写法（含 LaTeX），不要改写。
-7. 篇幅克制：简单问题两三句话讲清；复杂问题可以分点，但每点都要有实质内容，不要凑数。`
+7. 篇幅克制：简单问题两三句话讲清；复杂问题可以分点，但每点都要有实质内容，不要凑数。
+8. 片段的面包屑里标了「我的理解」的，是作者本人的判断而非课程内容。引用这类片段时要说清楚这是作者的看法（比如「作者认为…」），不要和讲义内容混为一谈 —— 这个区分正是读者来这里而不是去看原始讲义的原因。`
 
 export type AnswerEvent = LlmEvent
 
@@ -19,7 +20,8 @@ function buildUserMessage(question: string, passages: Passage[]): string {
   const blocks = passages
     .map((p, i) => {
       const crumb = [p.course, p.docTitle, p.heading].filter(Boolean).join(' · ')
-      return `[${i + 1}] ${crumb}\n链接: ${passageLink(p)}\n\n${p.content}`
+      const mark = p.blockKind === 'insight' ? ' · 【作者本人的理解】' : ''
+      return `[${i + 1}] ${crumb}${mark}\n链接: ${passageLink(p)}\n\n${p.content}`
     })
     .join('\n\n---\n\n')
 

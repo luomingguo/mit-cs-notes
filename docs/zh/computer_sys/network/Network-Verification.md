@@ -1,3 +1,11 @@
+---
+title: 网络验证（Network Verification）
+course: 6.5820/6.S04 计算机网络
+course_id: '6.5820'
+kind: system
+tags: []
+status: complete
+---
 # Lec 12 网络验证（Network Verification）
 
 阅读资料
@@ -7,7 +15,7 @@
 
 > Topics：Reachability、Verification、Network Correctness。核心问题：网络的行为由各路由器上**手写的配置**决定，配置 bug 是大规模断网的常见原因；能否在**部署前**用形式化方法证明「网络一定满足某些性质」（如 A 能到 B、没有环路、即使坏一条链路也不黑洞）？
 
-## 总览
+## 本讲导览
 
 - 为什么要做网络验证（配置 bug → 断网）
 - 数据面验证 vs 控制面验证
@@ -22,37 +30,36 @@
 
 路由器的转发行为不是直接写的，而是从一堆**配置**（BGP/OSPF/静态路由、ACL、路由再分发、route-map…）经控制协议**收敛**后**算出来**的。配置之间相互作用极其微妙，人很难手推。
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>现实痛点</strong><br>
-大型网络宕机事故里，相当一部分源于<strong>配置错误</strong>：一条 route-map 写错、再分发造成环路、某条链路一坏就黑洞。这些在「正常状态」下看不出来，往往在故障叠加时爆发。验证的目标：在<strong>所有可能的状态（含故障）</strong>下证明性质成立，而不是测几条 ping。
-</div>
+::: example 现实痛点
+大型网络宕机事故里，相当一部分源于**配置错误**：一条 route-map 写错、再分发造成环路、某条链路一坏就黑洞。这些在「正常状态」下看不出来，往往在故障叠加时爆发。验证的目标：在**所有可能的状态（含故障）**下证明性质成立，而不是测几条 ping。
+:::
 
 ## 二、两类验证
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 数据面验证 vs 控制面验证</strong><br>
-<strong>数据面验证</strong>（如 Veriflow、HSA）：拿到<strong>当前已经算好的转发表</strong>，检查这一份快照下的可达性/环路。优点快；缺点只看「此刻」，看不到「配置在别的故障/收敛下会变成什么」。<br>
-<strong>控制面验证</strong>（Minesweeper 属此类）：直接分析<strong>配置本身</strong>，推理「在所有可能的环境（故障、外部路由通告）下，协议会收敛出怎样的转发表，性质是否始终成立」。
-</div>
+::: definition 定义 · 数据面验证 vs 控制面验证
+**数据面验证**（如 Veriflow、HSA）：拿到**当前已经算好的转发表**，检查这一份快照下的可达性/环路。优点快；缺点只看「此刻」，看不到「配置在别的故障/收敛下会变成什么」。
+
+**控制面验证**（Minesweeper 属此类）：直接分析**配置本身**，推理「在所有可能的环境（故障、外部路由通告）下，协议会收敛出怎样的转发表，性质是否始终成立」。
+:::
 
 ## 三、Minesweeper 的核心思想
 
 把「网络在所有可能输入下会稳定到什么转发状态」整个编码成**一个逻辑公式**，交给 **SMT 求解器**找反例。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 把稳定状态编码为约束（graph-based SMT encoding）</strong><br>
-为每条路由通告、每个路由器的选路结果、每条链路状态等引入<strong>符号变量</strong>；把各协议的<strong>选路与收敛规则</strong>（如 BGP 选 local-pref/AS-path 最优、OSPF 选最短路、再分发、ACL 过滤）写成对这些变量的<strong>约束</strong>。这组约束的<strong>每一个解，恰好对应网络的一个合法稳定转发状态（stable state）</strong>。
-</div>
+::: definition
+**定义 · 把稳定状态编码为约束（graph-based SMT encoding）**
+
+为每条路由通告、每个路由器的选路结果、每条链路状态等引入**符号变量**；把各协议的**选路与收敛规则**（如 BGP 选 local-pref/AS-path 最优、OSPF 选最短路、再分发、ACL 过滤）写成对这些变量的**约束**。这组约束的**每一个解，恰好对应网络的一个合法稳定转发状态（stable state）**。
+:::
 
 验证一条性质（如「A 一定能到 B」）的方法：把**性质的否定**加进约束，问 SMT「**存在**一个稳定状态使性质被违反吗？」
 
 - **UNSAT（无解）** → 不存在反例 → 性质在所有状态下都成立 ✓
 - **SAT（有解）** → 求解器给出的解就是一个**具体反例**（哪条链路坏了、哪条通告导致 A 到不了 B），可直接拿去调试。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 为什么这套「一个大公式」很通用</strong><br>
-不同协议（BGP/OSPF/静态/再分发）只是不同的约束片段，都能塞进同一个公式；不同性质（可达、无环、无黑洞、无路由泄露、两路由器策略等价、负载均衡一致性）只是不同的「否定查询」。所以一套框架覆盖<strong>多协议 × 多性质</strong>，这正是标题「A General Approach」的含义——对比之前一个工具只查一种协议/一种性质。
-</div>
+::: theorem 推论 · 为什么这套「一个大公式」很通用
+不同协议（BGP/OSPF/静态/再分发）只是不同的约束片段，都能塞进同一个公式；不同性质（可达、无环、无黑洞、无路由泄露、两路由器策略等价、负载均衡一致性）只是不同的「否定查询」。所以一套框架覆盖**多协议 × 多性质**，这正是标题「A General Approach」的含义——对比之前一个工具只查一种协议/一种性质。
+:::
 
 ## 四、能验证哪些性质 & 故障建模
 
@@ -63,10 +70,9 @@
 - **路由策略等价**：两台路由器（或改配置前后）行为一致；
 - **多路径一致 / 无路由泄露 / waypointing**（流量必经某中间盒）。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 用符号故障变量覆盖「所有故障」</strong><br>
-给每条链路/节点配一个布尔<strong>失效变量</strong>，并加约束「失效数 ≤ k」。于是 SMT 会在<strong>所有「最多坏 k 个组件」的组合</strong>里搜反例——无需逐一枚举故障，一次求解覆盖指数级的故障场景。这是控制面验证相对数据面验证的最大威力。
-</div>
+::: definition 定义 · 用符号故障变量覆盖「所有故障」
+给每条链路/节点配一个布尔**失效变量**，并加约束「失效数 ≤ k」。于是 SMT 会在**所有「最多坏 k 个组件」的组合**里搜反例——无需逐一枚举故障，一次求解覆盖指数级的故障场景。这是控制面验证相对数据面验证的最大威力。
+:::
 
 ## 五、取舍与意义
 

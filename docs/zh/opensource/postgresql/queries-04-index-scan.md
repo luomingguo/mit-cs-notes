@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 查询系列 — 4. 索引扫描
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 查询系列 — 4. 索引扫描
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/578196/ （作者 Egor Rogov，PostgresPro）
@@ -58,6 +65,6 @@
 
 这样一条查询就能同时利用多个单列索引组合出接近多列索引的效果，而不需要事先专门建一个复合索引，代价是要为构建和合并位图额外付出一些 CPU 开销。
 
-## 小结
+## 本讲小结
 
 索引扫描不是单一算法而是一组访问方式：普通 Index Scan 逐行回表、代价里包含随机 I/O；Index-Only Scan 在可见性图配合下能省去回表，但效果取决于表的"全可见"页面比例；Bitmap Heap/Index Scan 通过"先收集页面再按页码顺序访问"把随机 I/O 重新组织成较为有序的访问模式，适合命中行数较多但仍希望利用索引的场景。三者之间以及它们和顺序扫描之间的取舍，最终都归结到代价公式里的几个关键输入：选择率（决定要处理多少行/页）、相关性（决定回表是接近顺序还是接近随机）、`effective_cache_size`（决定随机访问的"实际代价"打几折）。PostgreSQL 11 起的 `INCLUDE` 索引和 `BitmapAnd`/`BitmapOr` 则分别从"扩展索引覆盖范围"和"组合多个单列索引"两个角度，进一步丰富了索引扫描能够覆盖的查询形态。下一篇文章将从单表访问转向多表连接，从最直观的嵌套循环连接开始。

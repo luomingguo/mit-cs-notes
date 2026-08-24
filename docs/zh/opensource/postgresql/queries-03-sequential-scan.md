@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 查询系列 — 3. 顺序扫描
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 查询系列 — 3. 顺序扫描
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/576980/ （作者 Egor Rogov，PostgresPro）
@@ -36,7 +43,7 @@ PostgreSQL 12 引入了表访问方法（table access method）的可插拔接�
 ```sql
 EXPLAIN SELECT * FROM flights;
 ```
-```
+```text
 Seq Scan on flights  (cost=0.00..4772.67 rows=214867 width=63)
 ```
 
@@ -47,7 +54,7 @@ Seq Scan on flights  (cost=0.00..4772.67 rows=214867 width=63)
 ```sql
 EXPLAIN SELECT * FROM flights WHERE status = 'Scheduled';
 ```
-```
+```text
 Seq Scan on flights
   Filter: ((status)::text = 'Scheduled'::text)
   Rows Removed by Filter: 199484
@@ -98,6 +105,6 @@ Seq Scan on flights
 
 参数 `force_parallel_mode` 可以用来强制测试"这条查询理论上是否具备被并行化的资格"，而不管代价估算是否认为并行更划算——主要用于开发调试，而非生产环境调优手段。
 
-## 小结
+## 本讲小结
 
 顺序扫描是最朴素、也是理解整套代价体系的起点：代价 = 页数 × `seq_page_cost` + 行数 × `cpu_tuple_cost`（叠加过滤条件的 `cpu_operator_cost`、聚合的额外开销等），所有的原始数字都来自 `pg_class.relpages`/`reltuples` 以及上一篇讲到的列级统计，不存在"黑魔法"。在低选择率、缺乏合适索引，或者需要处理绝大部分行的场景下，顺序扫描往往是最优或接近最优的选择；PostgreSQL 9.6 起的并行顺序扫描进一步把这种"简单但吞吐大"的访问方式扩展到多核并行的场景，用 `Gather`/`Partial Aggregate`/`Finalize Aggregate` 等节点把多个 worker 的局部结果拼接为最终结果，但要留意一系列关于游标、临时表、函数并行安全标记等方面的限制。下一篇文章将转向索引扫描，讨论 `correlation` 等统计量如何决定索引扫描相对于顺序扫描是否划算。

@@ -1,4 +1,13 @@
-# Lec 4 — 消息认证码（*MAC*）
+---
+title: 消息认证码（MAC）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 4
+kind: theory
+tags: []
+status: complete
+---
+# Lec 4 消息认证码（*MAC*）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 问题背景

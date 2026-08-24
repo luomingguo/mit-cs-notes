@@ -15,6 +15,12 @@ export interface SourceDoc {
   /** 课程可读名，取自课程 index.md 的首个 H1，如 6.1810 操作系统工程 */
   course: string
   title: string
+  /** NOTESTYLE.md 的四类骨架：theory | system | source | design */
+  kind: string
+  /** frontmatter 里的概念词，人工填 */
+  tags: string[]
+  /** complete | draft | stub。stub 不进检索库 */
+  status: string
   /** 二级标题拼接，给学习路径生成器看文章结构 */
   outline: string
   body: string
@@ -51,12 +57,43 @@ export function slugifyHeading(str: string): string {
  * 用等长空行替换，保证行号不偏移。
  */
 export function stripCodeFences(body: string): string {
-  return body.replace(/^([ \t]*)(`{3,}|~{3,})[^\n]*\n[\s\S]*?^\1?\2[^\n]*$/gm, (block) =>
-    block
-      .split('\n')
-      .map(() => '')
-      .join('\n'),
-  )
+  const lines = body.split('\n')
+  for (const [a, b] of fenceRanges(body)) {
+    // 用等长空格而不是空串，保证字符偏移不变 —— extractHeadings 返回的
+    // index 要拿回原文去切 section
+    for (let i = a; i <= b; i++) lines[i] = ' '.repeat(lines[i]!.length)
+  }
+  return lines.join('\n')
+}
+
+/**
+ * 围栏行。允许前面带列表标记和缩进：笔记里有 `- ```sql` 这种写法，
+ * 只认行首的正则会漏掉它的开围栏、却认得缩进的闭围栏，一旦奇偶性错位，
+ * 整个代码块就不会被剥掉，块里的 `# 注释` 会被当成标题切出垃圾 chunk。
+ */
+const FENCE_RE = /^([ \t]*(?:[-*+]|\d+[.)])?[ \t]*)(`{3,}|~{3,})(.*)$/
+
+/** 代码块的行号区间 [起, 止]（含两端，0-based） */
+function fenceRanges(body: string): Array<[number, number]> {
+  const lines = body.split('\n')
+  const out: Array<[number, number]> = []
+  let open = -1
+  let marker = ''
+  let len = 0
+  for (let i = 0; i < lines.length; i++) {
+    const m = FENCE_RE.exec(lines[i]!)
+    if (!m) continue
+    if (open === -1) {
+      open = i
+      marker = m[2]![0]!
+      len = m[2]!.length
+    } else if (m[2]![0] === marker && m[2]!.length >= len) {
+      out.push([open, i])
+      open = -1
+    }
+  }
+  if (open !== -1) out.push([open, lines.length - 1]) // 未闭合，算到文件尾
+  return out
 }
 
 export interface Heading {
@@ -153,6 +190,20 @@ function frontmatterField(fm: string, key: string): string | undefined {
   return m?.[1]?.trim().replace(/^["']|["']$/g, '')
 }
 
+/**
+ * 行内数组字段，如 `tags: [页表, 三级页表, TLB]`。
+ * 朴素的 frontmatterField 会把整个 "[页表, 三级页表, TLB]" 当成一个裸字符串。
+ */
+function frontmatterList(fm: string, key: string): string[] {
+  const raw = frontmatterField(fm, key)
+  if (!raw) return []
+  const inner = raw.startsWith('[') && raw.endsWith(']') ? raw.slice(1, -1) : raw
+  return inner
+    .split(',')
+    .map((s) => s.trim().replace(/^["']|["']$/g, ''))
+    .filter(Boolean)
+}
+
 /** 取第一个 H1 当标题 —— 笔记里会出现多个 H1（如中途的「# 参考资料」），不能取最后一个。 */
 function firstH1(body: string): string | undefined {
   const m = body.match(/^#\s+(.+)$/m)
@@ -204,7 +255,13 @@ export async function collectDocuments(docsDir: string): Promise<SourceDoc[]> {
 
       // 首页是 layout: home 的营销页，没有检索价值。
       if (frontmatterField(frontmatter, 'layout') === 'home') continue
-      if (body.trim().length < 200) continue
+
+      // 占位页不进检索库。以前是按 body 长度粗判（< 200 字符），会两头误伤：
+      // 短而写完的笔记被丢掉，300 字的占位页反而进库。现在按 NOTESTYLE.md
+      // 的 status 字段显式判断，没有 frontmatter 的才退回长度启发式。
+      const status = frontmatterField(frontmatter, 'status') ?? ''
+      if (status === 'stub') continue
+      if (!status && body.trim().length < 200) continue
 
       const segments = relPath.replace(/\.md$/, '').split('/')
       const lang = segments[0] ?? 'zh'
@@ -239,6 +296,9 @@ export async function collectDocuments(docsDir: string): Promise<SourceDoc[]> {
         courseSlug,
         course,
         title,
+        kind: frontmatterField(frontmatter, 'kind') ?? '',
+        tags: frontmatterList(frontmatter, 'tags'),
+        status: status || 'complete',
         outline,
         body,
         chars: body.length,

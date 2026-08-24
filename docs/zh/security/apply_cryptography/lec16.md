@@ -1,4 +1,13 @@
-# L18 · GKR 协议
+---
+title: GKR 协议
+course: 6.5610 应用密码学与安全（Spring 2026）
+course_id: '6.5610'
+lecture: 16
+kind: theory
+tags: []
+status: complete
+---
+# Lec 18 GKR 协议
 
 > MIT 6.5610 · Lecture 18 · 关键词：GKR、可验证计算、电路求值、逐层 sumcheck、多线性扩展、对数空间验证者
 > *说明：以标准处理撰写（Goldwasser–Kalai–Rothblum 2008），要点与本课"GKR Protocol"一致。*
@@ -21,15 +30,13 @@
 
 ## 2. 核心：逐层归约 + Sumcheck
 
-<div class="corollary">
-
+::: theorem
 **GKR 主循环**
 对每一层 $i$，相邻层之间满足一条 **"布线恒等式"**：
 $$\widetilde{W}_i(z) = \sum_{u,v\in\{0,1\}^{k_{i+1}}} \Big(\widetilde{\mathrm{add}}_i(z,u,v)\big(\widetilde{W}_{i+1}(u)+\widetilde{W}_{i+1}(v)\big) + \widetilde{\mathrm{mult}}_i(z,u,v)\,\widetilde{W}_{i+1}(u)\widetilde{W}_{i+1}(v)\Big),$$
 其中 $\widetilde{\mathrm{add}}_i,\widetilde{\mathrm{mult}}_i$ 是描述布线（哪个门连哪两个门）的"布线谓词"多项式。
 - 对该求和跑一次 **sumcheck**：把"验证第 $i$ 层在随机点 $z$ 的值"**归约为**"验证第 $i+1$ 层在两个随机点 $u,v$ 的值"。
-
-</div>
+:::
 
 > 🔎 **逐层下推**：验证者从**输出层**（它能直接看到声称的输出）开始，用 sumcheck 把对第 $i$ 层的信任，转化为对更靠近输入的第 $i+1$ 层在某随机点取值的信任；一层层推到**输入层**，验证者对输入有完整访问，可**自行单点求值** $\widetilde{W}_d$ 完成最终核对。每层一次 sumcheck，可靠性由 Schwartz–Zippel 累积控制。
 
@@ -44,12 +51,10 @@ $$\widetilde{W}_i(z) = \sum_{u,v\in\{0,1\}^{k_{i+1}}} \Big(\widetilde{\mathrm{ad
 - **轮数**：$O(d\cdot\log|C|)$。
 - **信息论安全**：无需任何密码假设（可用 Fiat–Shamir 去交互后再变成密码假设下的非交互论证）。
 
-<div class="definition">
-
+::: definition
 **完备性**：诚实证明者必通过。
 **可靠性**：错误结果通过概率 $\le O(d\cdot\deg/|\mathbb{F}|)$，大域下可忽略。
-
-</div>
+:::
 
 ---
 
@@ -61,7 +66,7 @@ $$\widetilde{W}_i(z) = \sum_{u,v\in\{0,1\}^{k_{i+1}}} \Big(\widetilde{\mathrm{ad
 
 ---
 
-## 5. 小结
+## 5. 本讲小结
 
 - GKR 验证分层算术电路求值，验证者代价 ~ 深度而非规模。
 - 每层一条 add/mult 布线恒等式 → 一次 sumcheck，把"信任本层"下推为"信任下一层随机点"。

@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 索引 — 4（B-tree 索引）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 索引 — 4（B-tree 索引）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/443284/ （作者 Egor Rogov，PostgresPro）
@@ -199,6 +206,6 @@ from bt_page_items('ticket_flights_pkey',164) limit 5;
 
 原文提到 B-tree 在并发场景下的修改（插入、分裂、删除）依赖 Lehman-Yao 算法来实现，其核心思路是允许在不长时间持有大范围锁的前提下安全地对树结构做局部修改,从而在保证正确性的同时支持高并发访问,不过具体算法细节原文并未展开。
 
-## 小结
+## 本讲小结
 
 B-tree 凭借平衡、多路分支、有序这三个特性,成为 PostgreSQL 里综合能力最强的索引类型：支持等值/不等值/范围三种查找模式,支持排序和双向扫描,支持多列组合,是唯一能实现唯一约束的内置索引,还能通过 INCLUDE 列支持仅索引扫描。它的能力边界主要来自"必须能够全序比较"这一前提——这也是为什么 NULL 需要被特殊安置到序列两端,以及为什么要接入一个新类型必须提供完整的五种比较操作符。后续文章会转向不依赖全序比较、而是依赖"某种相似度/包含关系"的 GiST 索引。

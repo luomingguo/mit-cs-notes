@@ -1,3 +1,12 @@
+---
+title: 文件系统
+course: 6.1810 操作系统工程
+course_id: '6.1810'
+lecture: 17
+kind: system
+tags: []
+status: complete
+---
 # Lec 17 文件系统
 
 **LEC 17 (rtm):** [课件](https://pdos.csail.mit.edu/6.1810/2025/lec/l-fs.txt)
@@ -8,7 +17,7 @@
 
 本节学习文件系统：先理解为什么需要文件系统，再学习它在物理上、逻辑上是如何组织的，最后顺着 xv6 的七层结构和源码把「一次 open/write/rm 到底落了哪些盘」串起来。
 
-## 总览
+## 本讲导览
 
 - **为什么要文件系统**：持久化、命名/组织、共享、设备无关
 - **POSIX API 的含义**：文件是字节数组、硬链接、fd 独立于文件名
@@ -24,13 +33,15 @@
 
 ## 一、为什么需要文件系统
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>文件系统提供什么？</strong>
-<ul>
-<li><strong>持久化（durability）</strong>：断电后数据仍在；</li>
-<li><strong>命名与组织</strong>：人类可读的层级路径；</li>
-<li><strong>共享</strong>：在程序与用户之间共享数据；</li>
-<li><strong>设备无关</strong>：在硬盘、闪存、网络存储之上提供统一抽象。</li>
-</ul></div>
+::: definition 文件系统提供什么？
+- **持久化（durability）**：断电后数据仍在；
+
+- **命名与组织**：人类可读的层级路径；
+
+- **共享**：在程序与用户之间共享数据；
+
+- **设备无关**：在硬盘、闪存、网络存储之上提供统一抽象。
+:::
 
 它之所以有趣，是因为要同时解决**崩溃恢复**、**性能**、**安全**，而且这套 API 还被推广到管道、设备、`/proc`、网络文件系统、Plan 9 等。
 
@@ -48,7 +59,9 @@ close(fd);
 // 文件内容仍是 abcdef
 ```
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>这个例子说明：fd 指向的是「持久对象」本身，与文件名的增删无关。</strong>所以文件的元数据必须独立于目录项存在 → 这就是 <strong>inode</strong>（磁盘上保存文件信息，用 i-number 标识）。inode 要记 <strong>nlink（硬链接数）</strong>和<strong>打开的 fd 数</strong>：只有当两者都归零，才能真正回收。</div>
+::: theorem 这个例子说明：fd 指向的是「持久对象」本身，与文件名的增删无关。
+所以文件的元数据必须独立于目录项存在 → 这就是 **inode**（磁盘上保存文件信息，用 i-number 标识）。inode 要记 **nlink（硬链接数）**和**打开的 fd 数**：只有当两者都归零，才能真正回收。
+:::
 
 ## 三、磁盘硬件模型
 
@@ -62,7 +75,7 @@ close(fd);
 
 ## 四、磁盘上的布局
 
-```
+```text
 [ boot block | super block | log | inode blocks | free bitmap | data blocks ]
    block 0       block 1     2..    ...            ...           ...
 ```
@@ -90,7 +103,9 @@ struct dinode {
 };
 ```
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>直接块 + 一级间接块 → 最大文件多大？</strong>前 <strong>12 个 addrs 是直接块</strong>（直接指向文件前 12 个块）；第 13 个是<strong>间接块</strong>，指向一个装着 256 个块号的块（1024B / 4B = 256）。所以最大文件 = <code>(12 + 256) × 1024B = 268 KB</code>。给定 i-number，inode 在盘上的位置由 <code>IBLOCK(i, sb)</code> 直接算出，定位很快。</div>
+::: theorem 直接块 + 一级间接块 → 最大文件多大？
+前 **12 个 addrs 是直接块**（直接指向文件前 12 个块）；第 13 个是**间接块**，指向一个装着 256 个块号的块（1024B / 4B = 256）。所以最大文件 = `(12 + 256) × 1024B = 268 KB`。给定 i-number，inode 在盘上的位置由 `IBLOCK(i, sb)` 直接算出，定位很快。
+:::
 
 ### 目录就是「内容为 dirent 数组」的文件
 
@@ -119,13 +134,15 @@ struct dirent {
 
 ---
 
-# 源码精读
+## 源码精读
 
 > 代码取自 xv6-riscv（rev5）。下面挑文件系统最核心的几条链路：块缓存 → 逻辑/物理块翻译 → 读写 → 路径查找 → 分配器并发。
 
 ## 1. `bio.c`：buffer cache（块缓存）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>块缓存的双重目的</strong>① <strong>同步</strong>：保证同一个磁盘块在内核里只有一份内存副本，多个进程对它的访问被串行化；② <strong>缓存</strong>：把常用块留在内存，摊销磁盘延迟。</div>
+::: definition 块缓存的双重目的
+① **同步**：保证同一个磁盘块在内核里只有一份内存副本，多个进程对它的访问被串行化；② **缓存**：把常用块留在内存，摊销磁盘延迟。
+:::
 
 ```c
 struct buf {
@@ -184,7 +201,9 @@ void brelse(struct buf *b) {
 }
 ```
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>两把锁，各司其职</strong><code>bcache.lock</code>（spinlock）保护「缓存元数据」——哪些块在缓存里、各自的 refcnt 与链表；<code>b->lock</code>（sleeplock）保护「单个块的内容」，允许持有它时进行磁盘 I/O（会睡眠）。<code>bget</code> 返回<strong>已上锁</strong>的 buf，防止使用期间被回收；调用者用完必须 <code>brelse</code>。LRU：<code>bget</code> 从表尾回收，<code>brelse</code> 把块挪回表头。</div>
+::: theorem 两把锁，各司其职
+`bcache.lock`（spinlock）保护「缓存元数据」——哪些块在缓存里、各自的 refcnt 与链表；`b->lock`（sleeplock）保护「单个块的内容」，允许持有它时进行磁盘 I/O（会睡眠）。`bget` 返回**已上锁**的 buf，防止使用期间被回收；调用者用完必须 `brelse`。LRU：`bget` 从表尾回收，`brelse` 把块挪回表头。
+:::
 
 ## 2. `fs.c:bmap()`：逻辑块号 → 物理块号
 
@@ -261,7 +280,9 @@ static struct inode* namex(char *path, int nameiparent, char *name) {
 }
 ```
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么查完一段就立刻 <code>iunlockput</code> 解锁？</strong>为了<strong>并发</strong>：一个进程在某次查找中等磁盘，不该卡住其他进程的查找。代价是「解锁旧目录」和「锁住下一个 inode」之间，别的进程可能 <code>unlink</code> 掉下一个 inode——但没关系：只要还有引用（refcnt&gt;0），inode 就不会被真正删除（这正是引用计数的价值）。<code>ilock</code>（锁）与 <code>iget/idup</code>（拿引用）被刻意分开，正是为此。</div>
+::: theorem
+**为什么查完一段就立刻 `iunlockput` 解锁？**为了**并发**：一个进程在某次查找中等磁盘，不该卡住其他进程的查找。代价是「解锁旧目录」和「锁住下一个 inode」之间，别的进程可能 `unlink` 掉下一个 inode——但没关系：只要还有引用（refcnt&gt;0），inode 就不会被真正删除（这正是引用计数的价值）。`ilock`（锁）与 `iget/idup`（拿引用）被刻意分开，正是为此。
+:::
 
 ## 5. 分配器的并发：`balloc` / `ialloc`
 
@@ -275,17 +296,19 @@ log_write(bp);                    // 改动经 log
 brelse(bp);                       // 解锁
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>两个 <code>ialloc</code> 并发会不会分到同一个 inode？</strong>不会。它们都要先 <code>bread</code> 同一个 inode 块（或 bitmap 块），而 <code>bread→bget</code> 返回的 buf 是<strong>上了 sleeplock 的</strong>，所以同一时刻只有一个能扫描/修改，另一个睡眠等待。<code>balloc</code> 分配数据块后还会 <code>bzero</code> 清零——防止把上一个文件的残留数据泄露给新文件。</div>
+::: definition
+**两个 `ialloc` 并发会不会分到同一个 inode？**不会。它们都要先 `bread` 同一个 inode 块（或 bitmap 块），而 `bread→bget` 返回的 buf 是**上了 sleeplock 的**，所以同一时刻只有一个能扫描/修改，另一个睡眠等待。`balloc` 分配数据块后还会 `bzero` 清零——防止把上一个文件的残留数据泄露给新文件。
+:::
 
 ---
 
-# 落盘追踪：一条命令到底写了哪些块
+## 落盘追踪：一条命令到底写了哪些块
 
 > 课件用 gdb 在 `bwrite` 上打断点，展示每个操作的写盘序列。块号含义：33=目录 inode 所在块、34=新文件 inode 所在块、46=bitmap、47=目录内容、914=文件数据块。
 
 **`echo > x`（创建空文件 x）**：
 
-```
+```text
 sys_open → create:
   bwrite 34   ialloc()    // 分配新 inode
   bwrite 34   iupdate()   // 写新 inode 的 nlink 等
@@ -296,7 +319,7 @@ sys_open → create:
 
 **`echo a > x`（写入 "a\n"）**：
 
-```
+```text
 sys_open  → itrunc → iupdate           // 因 > 先截断
 sys_write → filewrite → writei:
   bwrite 46   balloc()    // 从 bitmap 分一个数据块(914)
@@ -309,7 +332,7 @@ sys_write → filewrite → writei:
 
 **`rm x`（删除）**：
 
-```
+```text
 sys_unlink:
   bwrite 47   writei()    // 把目录里 "x" 那条 dirent 清掉(inum=0)
   bwrite 33   iupdate()   // 更新目录 inode
@@ -326,7 +349,9 @@ sys_unlink:
 
 ## 崩溃恢复（下一讲）
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>遗留问题：如果在上面某次操作「中途」断电怎么办？</strong>比如 <code>create</code> 已经写了 dirent 但还没更新 inode——文件系统就会处于不一致状态。解决办法是<strong>日志（logging）+ 事务</strong>，把「一组写」打包成原子单元，崩溃后能重放或丢弃。这正是 Lec 18 的主题。</div>
+::: example 遗留问题：如果在上面某次操作「中途」断电怎么办？
+比如 `create` 已经写了 dirent 但还没更新 inode——文件系统就会处于不一致状态。解决办法是**日志（logging）+ 事务**，把「一组写」打包成原子单元，崩溃后能重放或丢弃。这正是 Lec 18 的主题。
+:::
 
 ## 现代系统与性能
 

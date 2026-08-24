@@ -1,15 +1,16 @@
 ---
-sidebarDepth: 2
 title: 算法导论
-
-
-sidebar: true
+course: 算法导论
+kind: theory
+tags: []
+status: complete
+sidebarDepth: '2'
+sidebar: 'true'
 aside: right
-editLink: true
-lastUpdated: true
-outline: 2
+editLink: 'true'
+lastUpdated: 'true'
+outline: '2'
 ---
-
 # 算法导论
 
 ## 先行条件
@@ -50,8 +51,6 @@ outline: 2
 | 平衡二叉树 (L06-L07)     | 堆排序 (L08)   | Johnson算法 (L14)        |
 | 二叉堆 (L08)             |                | Floyd-Warshall算法 (L18) |
 
-
-
 ## 参考书
 
 CLRS
@@ -87,8 +86,6 @@ Lec 15-19 动态规划 ---- Q3
 | [Problem Session 8 questions (PDF)](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_prob8/) | [Problem Session 8 solutions (PDF)](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_prob8sol/) |
 | [Problem Session 9 questions (PDF)](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_prob9/) | [Problem Session 9 solutions (PDF)](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_prob9sol/) |
 
-
-
 # Lec 1 介绍
 
 - 算法定义
@@ -99,8 +96,6 @@ Lec 15-19 动态规划 ---- Q3
 
 [lec1.md](./lec1.md)
 
-
-
 # Lec 2 数据结构
 
 - 序列接口
@@ -110,7 +105,7 @@ Lec 15-19 动态规划 ---- Q3
 
 **数据结构** 是用于存储数据的方式，并提供对数据的操作的算法。
 
-接口（interface），也称ADT（抽象数据类型，API是一组操作的集合。接口定义了哪些操作是支持的（或者说适合什么问题），而数据结构则是如何支持这些操作的表示方式（即解决方案）
+接口（interface），也称 ADT（抽象数据类型，API 是一组操作的集合。接口定义了哪些操作是支持的（或者说适合什么问题），而数据结构则是如何支持这些操作的表示方式（即解决方案）
 
 这节课主要关注两个接口：序列（Sequence）和集合（Set)
 
@@ -118,14 +113,12 @@ Lec 15-19 动态规划 ---- Q3
 
 # Lec 3 排序
 
-在Lec2 的练习题上，我们提前用序列接口实现了集合接口，发现时间复杂度比较高
+在 Lec2 的练习题上，我们提前用序列接口实现了集合接口，发现时间复杂度比较高
 
 - 排序
 - 递归
 
 [lec3.md](./lec3.md)
-
-
 
 # Lec 4 哈希
 
@@ -139,13 +132,11 @@ Lec 15-19 动态规划 ---- Q3
 
 两个目标
 
-> 1. 证明你不能实现比O(log n) 还快的find(k)
+> 1. 证明你不能实现比 O(log n) 还快的 find(k)
 >
-> 2. 展示如何find(k)比O(log n)还要快
+> 2. 展示如何 find(k)比 O(log n)还要快
 
 [lec4.md](./lec4.md)
-
-
 
 # Lec 5 线性排序
 
@@ -157,8 +148,6 @@ Lec 15-19 动态规划 ---- Q3
 
 [lec5.md](./lec5.md)
 
-
-
 # Lec 6 二叉树
 
 一种几乎优于所有目前我们所了解的数据结构——二叉树
@@ -169,9 +158,9 @@ Lec 15-19 动态规划 ---- Q3
 
 [lec6.md](./lec6.md)
 
-# Lec 7 AVL树
+# Lec 7 AVL 树
 
-我们这节课的终极目标是实现树的**平衡**：n个节点的树如果它的高度是$O(\log{n})$，那么它是平衡的。
+我们这节课的终极目标是实现树的**平衡**：n 个节点的树如果它的高度是$O(\log{n})$，那么它是平衡的。
 
 - 高度平衡
 - 树的旋转
@@ -184,7 +173,7 @@ Lec 15-19 动态规划 ---- Q3
 
 [lec7.md](./lec7.md)
 
-# Lec 8 优先队列 & 二叉堆 
+# Lec 8 优先队列 & 二叉堆
 
 介绍另外一种类似树的数据结构称为二叉堆，他给了我们排序的另外一种思路
 
@@ -204,12 +193,10 @@ Lec 15-19 动态规划 ---- Q3
 
 [lec9.md](./lec9.md)
 
-
-
 # Lec 10 深度优先搜索
 
 - DFS
-- 全量BFS/DFS
+- 全量 BFS/DFS
 - 图的连通性
 - 拓扑排序
 - 循环检测
@@ -223,24 +210,20 @@ Lec 15-19 动态规划 ---- Q3
 - 加权最短路径算法
 - 松弛算法
 - 最短路径树
-- DAG松弛
+- DAG 松弛
 - 练习题
 
 [lec11.md](./lec11.md)
 
-
-
 # Lec 12 Bellman-Ford
 
-这节课介绍一个基于图复制和DAG松弛Bellman-Ford版本算法，这个算法能够以$O(|V||E|)$的时间复杂度和空间复杂度下解决SSSP问题的，并且能够返回从 s 到 v 的路径上可达的负权环，对于任何满足$\delta(s, v) = -\infty$都适用
+这节课介绍一个基于图复制和 DAG 松弛 Bellman-Ford 版本算法，这个算法能够以$O(|V||E|)$的时间复杂度和空间复杂度下解决 SSSP 问题的，并且能够返回从 s 到 v 的路径上可达的负权环，对于任何满足$\delta(s, v) = -\infty$都适用
 
 - 简单最短路径
 - 负权重环见证者
-- Bellman-Ford算法
+- Bellman-Ford 算法
 
 [lec12.md](./lec12.md)
-
-
 
 # Lec 13 Dijkstra's 算法
 
@@ -249,8 +232,6 @@ Lec 15-19 动态规划 ---- Q3
 
 [lec13.md](./lec13.md)
 
-
-
 # Lec 14 Johnson's 算法
 
 - 全源最短路径
@@ -258,11 +239,9 @@ Lec 15-19 动态规划 ---- Q3
 
 [lec14.md](./lec14.md)
 
-
-
 # 模块复习课： 图结构及其算法
 
-主要是针对Lec9~Lec14的复习
+主要是针对 Lec9~Lec14 的复习
 
 # Lec 15-18 动态规划专题
 
@@ -274,7 +253,7 @@ Lec 15-19 动态规划 ---- Q3
 
 - 决策问题
 
-- P， NP,  EXP,  R问题
+- P， NP,  EXP,  R 问题
 - 非确定性多项式时间
 - 规约
 
@@ -287,7 +266,7 @@ Lec 15-19 动态规划 ---- Q3
 ## 三大目标
 
 - 解决计算问题
-- 与人交流，battle正确性问题
+- 与人交流，battle 正确性问题
   - 递归和归纳证明
 - 与人交流，battle 性能效率
   - 模型+分析
@@ -297,10 +276,10 @@ Lec 15-19 动态规划 ---- Q3
 - 大多数问题无法有效解决，但我们想到的许多问题是可以的！
 - 多项式时间指的是相对于输入大小的多项式时间。
 - 伪多项式时间指的是相对于输入大小和输入中数字大小的多项式时间。
-- 但是很多问题都可以在多项式时间内进行检查（NP问题），或者通过暴力方法解决（EXP问题）。 （当你沿着这条轨道前进时，可以在后续的进阶课程里面将其解决）
+- 但是很多问题都可以在多项式时间内进行检查（NP 问题），或者通过暴力方法解决（EXP 问题）。 （当你沿着这条轨道前进时，可以在后续的进阶课程里面将其解决）
   -  NP（非确定性多项式时间）：多项式时间内可验证的证书。
-  -  NP-hard（NP困难）：一组可以用来在多项式时间内解决 NP 中任何问题的问题
-  -  NP-complete（NP完全）：NP-hard 和 NP 的交集问题
+  -  NP-hard（NP 困难）：一组可以用来在多项式时间内解决 NP 中任何问题的问题
+  -  NP-complete（NP 完全）：NP-hard 和 NP 的交集问题
 
 ## 课程结构
 
@@ -308,19 +287,17 @@ Lec 15-19 动态规划 ---- Q3
   - 序列（外在的顺序）
   - 集合（内在的查询顺序）
 - Q2：图问题
-  - 通过BFS或者DFS在O(|E|）时间实现可达性验证
-  - 通过Full-BFS或者Full-DFS实现连通性验证
-  - 通过DFS实现拓扑排序、循环检测
-  - 通过Bellman-Ford实现负权重环检测
+  - 通过 BFS 或者 DFS 在 O(|E|）时间实现可达性验证
+  - 通过 Full-BFS 或者 Full-DFS 实现连通性验证
+  - 通过 DFS 实现拓扑排序、循环检测
+  - 通过 Bellman-Ford 实现负权重环检测
   - SSSP
   - ASSP
 - Q3：动态规划——递归框架（SRTBOT)
 
-
-
 ## 6.046
 
-看作是6.006的扩展
+看作是 6.006 的扩展
 
 - 数据结构：Union-Find，摊销分析
 - 图：MST，网络流问题
@@ -348,7 +325,7 @@ Lec 15-19 动态规划 ---- Q3
   - 许多优化问题是 NP 难的
   - 我们能在多项式时间内多接近最优解？
 
-改变计算模型 
+改变计算模型
 
 - 缓存模型（内存层次结构成本模型）
 
@@ -382,14 +359,10 @@ Lec 15-19 动态规划 ---- Q3
 - 6.819 视觉
 - 6.849 折纸
 
-
-
 6.851 高级数据结构
 
-我们唯一接触的模型是Word RAM，还有其他不同的模型
+我们唯一接触的模型是 Word RAM，还有其他不同的模型
 
 - O(lg n)  via AVL
 - O(lg w) via van Emde Boas
 - O(lg n / lg w) via fusion tree
-
-

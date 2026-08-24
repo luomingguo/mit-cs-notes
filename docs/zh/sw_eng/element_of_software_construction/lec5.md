@@ -1,6 +1,13 @@
+---
+title: 设计规范
+course: 6.1020 软件构造基础
+course_id: '6.1020'
+lecture: 5
+kind: design
+tags: []
+status: complete
+---
 # Lec 5 设计规范
-
-
 
 本节的目标：
 
@@ -61,27 +68,25 @@ function findExactlyOne(arr: Array<number>, val: number): number
 
 对于给定的规格，可以有多种声明性表达方式：
 
-```
+```text
 function startsWith(str: string, prefix: string): boolean
  effects:
  返回 true 当且仅当存在一个字符串后缀 suffix，使得 prefix + suffix = str
 ```
 
-```
+```text
 function startsWith(str: string, prefix: string): boolean
  effects:
  返回 true 当且仅当存在整数 i，使得 str.substring(0, i) = prefix
 ```
 
-```
+```text
 function startsWith(str: string, prefix: string): boolean
  effects:
  返回 true 当且仅当 str 的前 prefix.length 个字符与字符串 prefix 匹配
 ```
 
 我们可以选择最清晰的规格，以便客户端和代码维护者理解。注意，这些 `startsWith` 规格没有前置条件（除了函数签名中描述的参数数量和类型），因此可以省略 requires: 条目，以简洁起见。
-
-
 
 ## 可变性
 
@@ -245,9 +250,7 @@ function startOfSpring(): Temporal.PlainDate
 
 `Temporal.PlainDate` 是一个提议中的不可变日期类型。使用它可以从根本上避免互相干扰的问题， 而且还允许实现者安全地使用缓存，提高性能。
 
-
-
-### TypeScript的只读集合
+### TypeScript 的只读集合
 
 TypeScript 为 Array、Set、Map 提供了只读版本：ReadonlyArray、ReadonlySet、ReadonlyMap。 这些接口移除了修改方法，例如 push、add、set 等。
 
@@ -312,7 +315,7 @@ function countLongWords(text: string): void
 
 再看一个：
 
-```
+```text
 function combine(a: Array<number|string>): number|string
 前置条件:
 a contains only numbers or only strings, but not a mix of numbers and strings
@@ -336,7 +339,7 @@ returns the sum of the numbers in a or the concatenation of the strings in a
 
 例如：
 
-```
+```text
 function addAll(arr1: Array<T>, arr2: Array<T>): void
 影响:
 按顺序将 arr2 中的元素追加到 arr1 的末尾。
@@ -349,7 +352,7 @@ function addAll(arr1: Array<T>, arr2: Array<T>): void
 
 可以改写成更强的版本：
 
-```
+```text
 function addAll(arr1: Array<T>, arr2: Array<T>): void
 影响:
 按顺序将 arr2 中的元素追加到 arr1 的末尾。如果 arr2 中包含 null 元素，则抛出 TypeError 异常，并且不会向 arr1 追加任何元素
@@ -361,7 +364,7 @@ function addAll(arr1: Array<T>, arr2: Array<T>): void
 
 再看一个例子：
 
-```
+```text
 function open(filename: string): File
 影响:
 opens a file named filename
@@ -382,8 +385,6 @@ opens a file named filename
 当然，有时如果检查条件会让函数运行过慢，那么就不适合进行检测，此时使用前置条件就是必要的。例如，如果我们想用二分查找来实现 `find` 函数，就必须要求数组是有序的作为前置条件。若让函数自己去检查数组是否有序，那就违背了二分查找的初衷——因为这样会使时间复杂度从对数级退化为线性级。
 
 是否使用前置条件，是一个工程判断问题。关键取决于两点：检查条件的成本（包括编写和执行检查代码的成本），以及函数的使用范围。如果函数仅在模块内部被调用，那么前置条件可以通过仔细验证所有调用点来确保。但如果函数是导出的或公共的，也就是说它可以在程序的任何地方被调用，甚至被其他开发者使用，那么使用前置条件就不太明智。此时，像 JavaScript 库那样，在后置条件中通过抛出异常来处理会更合适。
-
-
 
 ## 我们在什么地方使用规格说明
 

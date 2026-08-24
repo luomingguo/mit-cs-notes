@@ -1,13 +1,15 @@
 ---
 title: 数据中心计算
+course: 6.S984 数据中心计算
+course_id: '6.S984'
+kind: system
+tags: []
+status: complete
 titleTemplate: 公开课
 description: Ron的计算机课堂
-
 layout: doc
-sidebar: true
-aside: true
-# editLink: true
-# lastUpdated: true
+sidebar: 'true'
+aside: 'true'
 ---
 # 6.S984 数据中心计算
 ## 先行条件
@@ -15,7 +17,7 @@ aside: true
 ## 课程内容
 仓库规模的数据中心承载了广泛的在线服务，包括云计算、社交网络、网页搜索、视频流和软件即服务。在本课程中，我们将研究现代数据中心的硬件、系统软件和分布式系统技术。我们还将探讨一些跨领域的问题，如总拥有成本、服务水平目标、可用性和可靠性。课程将结合讲座和论文阅读。学生每个主题将阅读最多两篇论文并提交简要摘要
 
-阅读论文时，思考以下问题: 
+阅读论文时，思考以下问题:
 - 这篇论文试图解决什么问题？这个问题有多现实？
 - 关键思想: 解决方案中的主要思想是什么？新颖性: 与之前的工作有何不同？是一个新问题，一个新解决方案，还是一个现有问题的新环境？
 - 批评: 你会对解决方案做出什么改变？你对作者呈现或评估解决方案的方式有何看法？
@@ -41,10 +43,10 @@ aside: true
 - 尾时延
 - 安全和隐私
 - 监控
-- 性能Debugging
+- 性能 Debugging
 - 低时延服务管理
 - 数据中心管理
-- 在系统方面的机器学习(skip)
+- 在系统方面的机器学习（skip）
 - 集群管理
 
 # Lec 1 介绍
@@ -80,15 +82,13 @@ aside: true
 
 [Heracles: improving resource efficiency at scale](http://dl.acm.org/citation.cfm?id=2749475)
 
-[Towards Energy Proportionality for Large-Scale Latency-Critical Workloads](https://web.stanford.edu/~kozyraki/publications/2014.pegasus.isca.pdf) 
+[Towards Energy Proportionality for Large-Scale Latency-Critical Workloads](https://web.stanford.edu/~kozyraki/publications/2014.pegasus.isca.pdf)
 
 # Lec 6 数据中心存储
 
 [Pocket: Elastic Ephemeral Storage for Serverless Analytics](https://www.usenix.org/system/files/osdi18-klimovic.pdf)
 
 [The Google File System](http://dl.acm.org/citation.cfm?id=945450)
-
-
 
 [lec6.md](./lec6.md)
 
@@ -114,17 +114,15 @@ aside: true
 
 [Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing]([nsdi12-final138.pdf (usenix.org)](https://www.usenix.org/system/files/conference/nsdi12/nsdi12-final138.pdf))
 
-俗称RDD，奠定了Spark的理论基础。
+俗称 RDD，奠定了 Spark 的理论基础。
 
-集群计算框架：比如MapReduce，这种抽象让用户在不用考虑任务调度和容错的前提下，使用一系列高级的操作进行并行计算，但是缺少对分布式内存的抽象。在不同计算阶段之间重用数据（如，在两个MapReduce的job之间）的唯一方式是将其写入外部稳定存储系统中，如，分布式文件系统。它们没有提供更加通用的数据重用的抽象。
+集群计算框架：比如 MapReduce，这种抽象让用户在不用考虑任务调度和容错的前提下，使用一系列高级的操作进行并行计算，但是缺少对分布式内存的抽象。在不同计算阶段之间重用数据（如，在两个 MapReduce 的 job 之间）的唯一方式是将其写入外部稳定存储系统中，如，分布式文件系统。它们没有提供更加通用的数据重用的抽象。
 
 [X-Stream: edge-centric graph processing using streaming partitions, SOSP'13](https://dl.acm.org/doi/10.1145/2517349.2522740)
 
-X-Stream是在共享存储机器上既能处理存放于外存，又能处理存放于内存的图数据
+X-Stream 是在共享存储机器上既能处理存放于外存，又能处理存放于内存的图数据
 
 [lec9.md](./lec9.md)
-
-
 
 # Lec 10 无服务器计算
 
@@ -142,11 +140,7 @@ X-Stream是在共享存储机器上既能处理存放于外存，又能处理存
 >
 > - [An Open-Source Benchmark Suite for Microservices and Their Hardware-Software Implications for Cloud and Edge Systems, ASPLOS‘19](http://www.csl.cornell.edu/~delimitrou/papers/2019.asplos.microservices.pdf)
 
-
-
 [lec11.md](./lec11.md)
-
-
 
 # Lec 12  性能分析
 
@@ -154,7 +148,7 @@ X-Stream是在共享存储机器上既能处理存放于外存，又能处理存
 
 - [Profiling a Warehouse-Scale Computer](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/44271.pdf)
 
-- [CPI2: CPU performance isolation for shared compute clusters](https://john.e-wilkes.com/papers/2013-EuroSys-CPI2.pdf) 
+- [CPI2: CPU performance isolation for shared compute clusters](https://john.e-wilkes.com/papers/2013-EuroSys-CPI2.pdf)
 
 [lec12.md](./lec12.md)
 
@@ -167,8 +161,6 @@ X-Stream是在共享存储机器上既能处理存放于外存，又能处理存
 - [IX: a protected dataplane operating system for high throughput and low latency](http://dl.acm.org/citation.cfm?id=2685053)
 
 [lec13.md](./lec13.md)
-
-
 
 # Lec 14 安全和隐私
 
@@ -186,13 +178,11 @@ X-Stream是在共享存储机器上既能处理存放于外存，又能处理存
 
 [lec15.md](./lec15.md)
 
-# Lec 16 性能debugging
+# Lec 16 性能 debugging
 
 [X-Trace: A Pervasive Network Tracing Framework ](https://www.usenix.org/conference/nsdi-07/x-trace-pervasive-network-tracing-framework)
 
 [Sage: Practical & Scalable ML-Driven Performance Debugging in Microservices](https://www.csl.cornell.edu/~delimitrou/papers/2021.asplos.sage.pdf)
-
-
 
 [lec16.md](./lec16.md)
 
@@ -202,7 +192,7 @@ X-Stream是在共享存储机器上既能处理存放于外存，又能处理存
 
 [Caladan: Mitigating Interference at Microsecond Timescales, osdi20](https://www.usenix.org/system/files/osdi20-fried.pdf)
 
-- [上交大IPADS团队有见解](https://zhuanlan.zhihu.com/p/528042114)
+- [上交大 IPADS 团队有见解](https://zhuanlan.zhihu.com/p/528042114)
 
 # Lec 18 数据中心管理
 
@@ -222,7 +212,7 @@ X-Stream是在共享存储机器上既能处理存放于外存，又能处理存
 
 [Quasar: Resource-Efficient and QoS-Aware Cluster Management](http://dl.acm.org/citation.cfm?id=2541941)
 
-[Resource Central: Understanding and Predicting Workloads for Improved Resource Management inLarge Cloud Platforms](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/10/Resource-Central-SOSP17.pdf) 
+[Resource Central: Understanding and Predicting Workloads for Improved Resource Management inLarge Cloud Platforms](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/10/Resource-Central-SOSP17.pdf)
 
 # Lec 21 集群管理
 
@@ -234,4 +224,3 @@ Cluster Management
 > - [Large-scale cluster management at Google with Borg,EuroSys'15](https://dl.acm.org/doi/pdf/10.1145/2741948.2741964)
 
 [lec21.md](./lec21.md)
-

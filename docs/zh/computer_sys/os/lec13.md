@@ -1,3 +1,12 @@
+---
+title: 线程切换与调度
+course: 6.1810 操作系统工程
+course_id: '6.1810'
+lecture: 13
+kind: system
+tags: []
+status: complete
+---
 # Lec 13 线程切换与调度
 
 本讲定位：前面我们学习了系统调用，中断，页表和锁，本节我们再往底层探索，学习线程/进程的切换。
@@ -8,55 +17,55 @@
 
 当进程数远多于 CPU 数，需把多个进程多路复用到 CPU 上、给每个进程"独占 CPU"的假象。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong> 为什么要支持并发任务？ </strong></div>
+::: definition 为什么要支持并发任务？
+
+:::
 
 Sol：因为它们能支持
 
 1. 分时共享（多个程序同时运行）：支持多用户可以执行多个任务，让用户感觉同时在运行多个任务。
-2. 更清晰的程序结构。 即使只有一个 CPU，很多问题天然适合拆成多个任务，比如shell， `grep error log.txt | sort | uniq`，三个进程同时工作。如果全写成一个顺序程序会分复杂。
+2. 更清晰的程序结构。 即使只有一个 CPU，很多问题天然适合拆成多个任务，比如 shell， `grep error log.txt | sort | uniq`，三个进程同时工作。如果全写成一个顺序程序会分复杂。
 3. 并行编程的需要真正的多核并行，利用多核 CPU 获得真正的并行执行能力。
 
-
-
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>什么是（线程 <i>thread</i>）？</strong>一个串行执行流，即程序一条指令接一条指令的顺序执行。 因为我们想要保存下来，之后再恢复它，所以每个线程都有自己的状态：程序计数器（当前执行的指令）、寄存器（保存程序的变量）、栈（用于存储函数调用记录和局部变量，反映该线程执行中的当前点）。</div>
+::: definition
+**什么是（线程 *thread*）？**一个串行执行流，即程序一条指令接一条指令的顺序执行。 因为我们想要保存下来，之后再恢复它，所以每个线程都有自己的状态：程序计数器（当前执行的指令）、寄存器（保存程序的变量）、栈（用于存储函数调用记录和局部变量，反映该线程执行中的当前点）。
+:::
 
 一个 CPU 上千个线程时，策略是**分时切换**：跑一会儿一个线程，保存其状态，切到下一个。
 
 线程系统的关键区别是否共享内存。 一种可能是，你可以有一个单独的地址空间，许多线程在该地址空间中执行，它们可以看到彼此的变动，如果共享内存的一个线程修改了变量，那么其它共享该内存的线程会看到修改。所以，在线程共享内存的情况下，我们需要锁。
 
+::: definition xv6 如何使用线程？
 
-
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong> xv6如何使用线程？ </strong></div>
+:::
 
 每个进程有一个内核线程（负责执行其系统调用，所有内核线程共享内核地址空间）和一个用户线程（执行用户指令，各进程地址空间独立）。
 
-用户线程和内核线程不是并发的，一个xv6进程同一时刻，只能在一个地方执行，要么用户空间要么内核空间。
+用户线程和内核线程不是并发的，一个 xv6 进程同一时刻，只能在一个地方执行，要么用户空间要么内核空间。
 
-- 如果在内核执行，用户线程会等待trap返回
+- 如果在内核执行，用户线程会等待 trap 返回
 - 如果在用户态执行，执行流中讲没有内核线程。
 
 用户线程和内核线程其实是同一个执行流，只是在用户态和内核态之间切换。
 
+::: definition 为什么这里本节 lec 中进程和线程可以混用？
 
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong> 为什么这里本节lec中进程和线程可以混用？ </strong></div>
-
-因为，xv6 每进程仅一个线程，一一对应，不支持用户级多线程，例如xv6的`scheduler()`调度的是`struct proc`。
+因为，xv6 每进程仅一个线程，一一对应，不支持用户级多线程，例如 xv6 的`scheduler()`调度的是`struct proc`。
 
 对比 Linux：支持一个进程内多线程共享内存（可并行加速），实现更复杂。
 
 线程之外还有事件驱动/状态机等多任务方式，但线程通常最方便。
 
+::: definition 为什么需要线程 以及 线程切换？
 
-
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong> 为什么需要线程 以及 线程切换？ </strong></div>
+:::
 
 - 人们希望计算机能够支持多任务处理；简
 - 化程序结构，通过使用线程，可以优雅地分解复杂的程序，降低编程的复杂性
-  - 比如实验0的素数筛选的例子
-- 多核并行加速，可以充分利用多核CPU
-
-
+  - 比如实验 0 的素数筛选的例子
+- 多核并行加速，可以充分利用多核 CPU
 
 ## 二、抢占式调度
 
@@ -66,21 +75,29 @@ Sol：因为它们能支持
 2. 保存/恢复线程状态（存哪、何时存、如何准确恢复）；
 3. 处理计算密集线程（不会主动让出 CPU）。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>Definition 抢占式调度 （<i>preemptive scheduling</i>）</strong>定时器中断周期性夺取 CPU（即使运行代码不愿让出），把控制交给内核，内核再自愿 yield 给调度器。反义是自愿式调度。</div>
+::: definition
+**Definition 抢占式调度 （*preemptive scheduling*）**定时器中断周期性夺取 CPU（即使运行代码不愿让出），把控制交给内核，内核再自愿 yield 给调度器。反义是自愿式调度。
+:::
 
 机制：每核硬件定时器周期性（如每 10ms）中断 → 控制转入内核中断处理 → 内核 `yield` 自愿让出给调度器。线程状态：RUNNING、RUNNABLE、SLEEPING 等。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong> RUNNING vs RUNNABLE 的状态在哪？ </strong>RUNNING 线程的 PC/寄存器在 CPU 硬件寄存器里；RUNNABLE 线程没有关联 CPU，故其全部 CPU 状态必须已<strong>保存到内存</strong>。把 RUNNING 转为 RUNNABLE，就是把寄存器从 CPU 复制到内存；反之再复制回 CPU。</div>
+::: theorem RUNNING vs RUNNABLE 的状态在哪？
+RUNNING 线程的 PC/寄存器在 CPU 硬件寄存器里；RUNNABLE 线程没有关联 CPU，故其全部 CPU 状态必须已**保存到内存**。把 RUNNING 转为 RUNNABLE，就是把寄存器从 CPU 复制到内存；反之再复制回 CPU。
+:::
 
 ---
 
 ## 三、xv6 的间接切换：用户↔内核↔调度器
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（xv6 不做用户→用户直接切换）</strong>每次进程切换都经过一次<strong>内核线程切换</strong>：从进程 A 的内核线程切到进程 B 的内核线程，B 再返回其用户空间。</div>
+::: definition 定义（xv6 不做用户→用户直接切换）
+每次进程切换都经过一次**内核线程切换**：从进程 A 的内核线程切到进程 B 的内核线程，B 再返回其用户空间。
+:::
 
 完整流程：用户进程 P1 运行 → 定时器中断 → trampoline 保存用户寄存器到 trapframe、usertrap 处理 → P1 在内核里（如等 I/O）决定让出 → 调 `swtch` 保存 P1 内核线程寄存器到 `p->context`、切到本核**调度器线程** → 调度器遍历进程表找到 RUNNABLE 的 P2 → `swtch` 切到 P2 的 context → P2 内核线程恢复、最终返回用户空间。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（两个上下文存储位置）</strong><code>trapframe</code> 存<strong>用户</strong>寄存器；<code>p->context</code> 存<strong>内核线程</strong>寄存器（swtch 时用）；每核调度器的 context 存在 <code>struct cpu</code>。</div>
+::: definition 定义（两个上下文存储位置）
+`trapframe` 存**用户**寄存器；`p->context` 存**内核线程**寄存器（swtch 时用）；每核调度器的 context 存在 `struct cpu`。
+:::
 
 `scheduler` 与 `sched` 互为**协程 (*coroutine*)**：内核线程只在 `sched` 里让出 CPU、且总切到调度器同一位置，调度器又几乎总切回某个之前调过 `sched` 的线程。新进程例外：`allocproc` 把新进程 `ra` 设为 `forkret`，故其首次 swtch "返回"到 forkret（释放 `p->lock` 后走 usertrapret 回用户态）。
 
@@ -88,11 +105,15 @@ Sol：因为它们能支持
 
 ## 四、`p->lock` 的特殊用法
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题1</strong>（为什么 swtch 时必须持有 <code>p->lock</code>，且在一个线程里 acquire、在另一个线程里 release？）</div>
+::: example 例题 1
+（为什么 swtch 时必须持有 `p->lock`，且在一个线程里 acquire、在另一个线程里 release？）
+:::
 
 因为 ``p->lock`` 保护进程的 state 与 context 等不变量，而 swtch 执行期间这些不变量**并不成立**。例如：若 yield 已把 P1 状态设为 RUNNABLE 但 swtch 还没停止使用其内核栈时锁就被释放，另一个核可能看到 RUNNABLE 就开始运行 P1 → **两核同时跑在同一个栈上**，灾难。所以锁必须从 yield 修改状态起一直持有，直到调度器（在自己的栈上）清掉 `c->proc`、不变量恢复后才释放——这就打破了"谁 acquire 谁 release"的惯例（yield 里 acquire、scheduler 里 release）。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（mycpu / myproc）</strong>多核下用每核的 <code>tp</code> 寄存器存 hartid 来索引 <code>struct cpu</code> 数组，从而找到当前核/当前进程。</div>
+::: definition 定义（mycpu / myproc）
+多核下用每核的 `tp` 寄存器存 hartid 来索引 `struct cpu` 数组，从而找到当前核/当前进程。
+:::
 
 `mycpu` 的返回值脆弱：若定时器中断使线程换核，旧值失效——故调用者需**禁用中断**后使用。`myproc` 则禁中断调 mycpu 取 `c->proc`，其返回值即使开中断也安全（换核后 struct proc 指针不变）。
 
@@ -102,9 +123,13 @@ Sol：因为它们能支持
 
 `swtch(old, new)` 是上下文切换的核心，它只做一件事：**把当前寄存器存进 `old`（即 `p->context`，对应汇编里的 `a0`），再从 `new`（即调度器的 `c->context`，对应 `a1`）加载寄存器**。它不区分“线程”，只是在两组寄存器之间倒腾。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么 swtch 只保存 14 个寄存器（ra、sp、s0–s11）？RISC-V 有 32 个寄存器，另外 18 个呢？</strong>因为 swtch 是一次<strong>普通的函数调用</strong>，编译器遵守调用约定：调用方已经把 caller-saved 寄存器（<code>t0–t6</code>、<code>a0–a7</code>）该存的存到栈上了，swtch 无需理会；<code>zero</code> 恒为 0、<code>gp</code>（全局指针）、<code>tp</code>（hartid）不需要随线程切换。剩下需要 swtch 亲自保存/恢复的，就是 <strong>callee-saved</strong> 寄存器：返回地址 <code>ra</code>、栈指针 <code>sp</code>、以及 <code>s0–s11</code>，共 14 个。</div>
+::: theorem
+**为什么 swtch 只保存 14 个寄存器（ra、sp、s0–s11）？RISC-V 有 32 个寄存器，另外 18 个呢？**因为 swtch 是一次**普通的函数调用**，编译器遵守调用约定：调用方已经把 caller-saved 寄存器（`t0–t6`、`a0–a7`）该存的存到栈上了，swtch 无需理会；`zero` 恒为 0、`gp`（全局指针）、`tp`（hartid）不需要随线程切换。剩下需要 swtch 亲自保存/恢复的，就是 **callee-saved** 寄存器：返回地址 `ra`、栈指针 `sp`、以及 `s0–s11`，共 14 个。
+:::
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么 swtch 不需要保存/恢复 PC（程序计数器）？</strong>因为切换是通过保存/恢复 <code>ra</code> 实现的。swtch 加载新线程的 <code>ra</code> 后执行 <code>ret</code>，<code>ret</code> 会跳到 <code>ra</code> 指向的地址——也就是“新线程上一次调用 swtch 的下一条指令”。所以新 PC 是被 <code>ret</code> 隐式恢复的，无需单独保存。</div>
+::: theorem 为什么 swtch 不需要保存/恢复 PC（程序计数器）？
+因为切换是通过保存/恢复 `ra` 实现的。swtch 加载新线程的 `ra` 后执行 `ret`，`ret` 会跳到 `ra` 指向的地址——也就是“新线程上一次调用 swtch 的下一条指令”。所以新 PC 是被 `ret` 隐式恢复的，无需单独保存。
+:::
 
 **控制流的“乒乓”**：`ret` 返回到哪由 `ra` 决定，而新 `ra` 来自 `c->context.ra`，它正好是**调度器上次调用 swtch 的返回地址**。于是从某进程 `sched` 里调 swtch，会“神奇地”出现在 `scheduler` 里——仿佛是 scheduler 之前那次 swtch 返回了。加载新 `sp` 则等价于**换栈**，因为每个线程有自己的内核栈（保存各自的调用者参数、局部变量、返回地址）。
 
@@ -116,19 +141,22 @@ Sol：因为它们能支持
 
 定时器中断不仅能打断用户代码，**也能打断正在执行系统调用的内核代码**——`kerneltrap()` 同样会调用 `yield()`。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>当内核代码在系统调用中途被抢占时，一个进程会有三套被保存的寄存器：</strong>
-<ol>
-<li><strong>用户寄存器</strong> → 保存在 <code>trapframe</code>，由 <code>trampoline</code> 在进入内核时保存；</li>
-<li><strong>被打断的内核代码的寄存器</strong> → 保存在<strong>内核栈</strong>上，由 <code>kernelvec</code> 保存；</li>
-<li><strong>中断处理线程的寄存器</strong> → 保存在 <code>p->context</code>，由 <code>swtch</code> 保存。</li>
-</ol></div>
+::: theorem 当内核代码在系统调用中途被抢占时，一个进程会有三套被保存的寄存器：
+- **用户寄存器** → 保存在 `trapframe`，由 `trampoline` 在进入内核时保存；
+
+- **被打断的内核代码的寄存器** → 保存在**内核栈**上，由 `kernelvec` 保存；
+
+- **中断处理线程的寄存器** → 保存在 `p->context`，由 `swtch` 保存。
+:::
 
 > 内核抢占是**必要的吗？** 不是——内核里没有无限的 CPU 密集循环。但如果某些系统调用计算量很大，或需要严格的线程优先级，内核抢占就很有价值。这也是 `usertrap` 早期代码在开中断前要小心保存 `sepc` 等状态的原因：它随时可能被定时器中断、被换到另一个核上。
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题2：为什么除 <code>p->lock</code> 外，不允许在持有自旋锁时进行上下文切换？</strong></div>
+::: example
+**例题 2：为什么除 `p->lock` 外，不允许在持有自旋锁时进行上下文切换？**
+:::
 
 考虑：
-```
+```text
 P1:                 P2:
   acquire(L1)         acquire(L2)
   yield()             acquire(L1)
@@ -139,11 +167,17 @@ P2 持有 L2，所以它在 `acquire(L1)` 自旋时**中断是关闭的** → �
 
 ## 七、几个设计问题（来自课件 Q&A）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么需要一个独立的“每核调度器线程”？能否去掉，让 sched 直接 swtch 到下一个线程？</strong>直接切会更快（少一次 swtch），但有麻烦：调度循环会跑在<strong>某个线程的内核栈</strong>上——如果那个线程正在 exiting（栈要被回收）怎么办？如果线程数比 CPU 还少（栈不够用）怎么办？独立调度器线程保证“永远有一个栈可以跑调度循环”，简化了这些边界情况。</div>
+::: definition
+**为什么需要一个独立的“每核调度器线程”？能否去掉，让 sched 直接 swtch 到下一个线程？**直接切会更快（少一次 swtch），但有麻烦：调度循环会跑在**某个线程的内核栈**上——如果那个线程正在 exiting（栈要被回收）怎么办？如果线程数比 CPU 还少（栈不够用）怎么办？独立调度器线程保证“永远有一个栈可以跑调度循环”，简化了这些边界情况。
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>为什么 <code>scheduler()</code> 要用 <code>intr_on()</code> 开中断？</strong>可能此刻<strong>没有任何 RUNNABLE 线程</strong>（都在等磁盘/控制台等 I/O）。如果不开中断，设备就没机会发完成中断来唤醒线程，系统会<strong>冻死</strong>。开中断让设备能够发信号、唤醒某个等待的线程。</div>
+::: definition
+**为什么 `scheduler()` 要用 `intr_on()` 开中断？**可能此刻**没有任何 RUNNABLE 线程**（都在等磁盘/控制台等 I/O）。如果不开中断，设备就没机会发完成中断来唤醒线程，系统会**冻死**。开中断让设备能够发信号、唤醒某个等待的线程。
+:::
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>线程高效吗？</strong>开销有两块：<strong>内存</strong>——每个线程一个栈；<strong>CPU 时间</strong>——每次 swtch。通常够高效，也确实方便；但线程很多（耗内存）或切换很频繁（耗 CPU）时会成问题。交替执行任务还有别的办法：<strong>事件驱动编程 / 状态机</strong>。线程不是最高效的，但最方便。</div>
+::: definition 线程高效吗？
+开销有两块：**内存**——每个线程一个栈；**CPU 时间**——每次 swtch。通常够高效，也确实方便；但线程很多（耗内存）或切换很频繁（耗 CPU）时会成问题。交替执行任务还有别的办法：**事件驱动编程 / 状态机**。线程不是最高效的，但最方便。
+:::
 
 > 另外两个值得想的问题：`scheduler()` 的 for 循环从 `proc[0]` 开始，是否对 `proc[0]` 不公平？xv6 的“调度策略”到底是什么、好不好？（见下一节。）
 
@@ -164,11 +198,7 @@ xv6 用最简单的**轮转 (*round robin*)** 策略。真实 OS 有优先级等
 - [ ] 为什么 swtch 期间必须持 `p->lock`，且跨线程 acquire/release？
 - [ ] 为什么 mycpu 的结果脆弱、要禁中断使用？优先级反转是什么？
 
-
-
-
-
-​	
+​
 
 #### 处理计算密集型线程
 
@@ -176,11 +206,11 @@ xv6 用最简单的**轮转 (*round robin*)** 策略。真实 OS 有优先级等
 
 基本的方案是：在中断处理器中，所以我们有处理这些程序的内核中断。我们会看到，内核处理程序让出，这个名称是 yields ，内核处理程序自愿让出 CPU 给调度器，告诉调度器，你现在可以运行其他线程。而这个让出是一种线程切换的形式，它保存了当前线程的状态，这样以后就可以恢复。我们会在这里看到整个流程，实际上，你已经在这里看到了整个流程，因为它涉及到中断，你已经知道整个流程有些复杂，但是基本的想法是定时器中断将控制权交给内核，而内核自愿让出 CPU ，这个术语称为抢占调度。它的意思是，抢占的意思是，即使正在运行的代码不愿意，没有明确地让出 CPU ，定时器中断会夺走控制权，我们会让出给它，抢占式调度的反义词称为自愿式调度。有趣的事情是，抢占式调度在 xv6 等操作系统中的实现是定时器中断强制夺取 CPU ，然后内核自愿让出，切换到那个进程的线程。
 
-> 这里出现一个问题， 怎么确定要让哪个线程上呢？ 
+> 这里出现一个问题， 怎么确定要让哪个线程上呢？
 
-线程状态，xv6中有RUNNING、RUNNABLE，SLEEPING（表示线程等待某个 IO 事件，只有在 IO 事件发生之后运行）等。
+线程状态，xv6 中有 RUNNING、RUNNABLE，SLEEPING（表示线程等待某个 IO 事件，只有在 IO 事件发生之后运行）等。
 
-这个定时器中断和 yield 所做的是，将一个运行时线程，即被定时器中断的线程，转换为一个可运行线程。RUNNING的线程的PC寄存器在执行它的 CPU 的硬件寄存器中，RUNNABLE没有，因为它现在没有关联CPU，因此，对于RUNNABLE状态，我们需要事先保存好所有 CPU 状态，而对于RUNNING状态的线程，我们需要复制CPU的内容，不是RAM，而是寄存器（也就是程序计数器和 CPU 寄存器），从CPU到内存的某个地方保存他们。作为再次运行该线程的步骤一部分，我们会看到程序计数器，保存的程序计数器寄存器被复制回 CPU ，到调度器决定运行线程的 CPU 的寄存器上。
+这个定时器中断和 yield 所做的是，将一个运行时线程，即被定时器中断的线程，转换为一个可运行线程。RUNNING 的线程的 PC 寄存器在执行它的 CPU 的硬件寄存器中，RUNNABLE 没有，因为它现在没有关联 CPU，因此，对于 RUNNABLE 状态，我们需要事先保存好所有 CPU 状态，而对于 RUNNING 状态的线程，我们需要复制 CPU 的内容，不是 RAM，而是寄存器（也就是程序计数器和 CPU 寄存器），从 CPU 到内存的某个地方保存他们。作为再次运行该线程的步骤一部分，我们会看到程序计数器，保存的程序计数器寄存器被复制回 CPU ，到调度器决定运行线程的 CPU 的寄存器上。
 
 ### 用户线程与内核线程的切换机制
 
@@ -208,9 +238,9 @@ xv6 用最简单的**轮转 (*round robin*)** 策略。真实 OS 有优先级等
 
 - 假设 `C 编译器` 需要从磁盘读取数据，它会发起系统调用并进入休眠状态，等待磁盘操作完成。
 
-- 此时，调度器可以选择切换到另一个进程，比如 
+- 此时，调度器可以选择切换到另一个进程，比如
 
-  ```
+  ```text
   ls
   ```
 
@@ -222,8 +252,6 @@ xv6 用最简单的**轮转 (*round robin*)** 策略。真实 OS 有优先级等
 - xv6: 不会进行用户到用户的直接切换
   - 每次进程切换都涉及一个 **内核线程的切换**。
   - 切换是从一个进程的内核线程切换到另一个进程的内核线程，然后该进程返回用户空间，恢复用户寄存器并继续执行。一直是这种间接的策略
-
-
 
 ## 调度器
 
@@ -280,10 +308,6 @@ xv6 用最简单的**轮转 (*round robin*)** 策略。真实 OS 有优先级等
 - **状态变量**：表示进程是否正在运行、可运行、休眠或未分配。
 - **锁机制**：保护进程状态的修改，防止多个调度器线程同时操作同一进程。
 
-
-
-
-
 ## Code:  调度
 
 现在讨论如何通过调度器在不同进程的内核线程之间进行切换。每个 CPU 上，调度器以一个特殊线程的形式存在，这些线程运行``scheduler``函数。调度函数负责选择下一个要运行的进程。想要放弃 CPU 的进程必须获取自己的进程锁 ``p->lock``，释放它持有的其他锁，更新自己的状态（`p->state`），然后调用 `sched`。你可以在 `yield`（见 `kernel/proc.c:496`）、`sleep` 和 `exit` 中看到这个过程。`sched` 会再次检查这些要求（见 `kernel/proc.c:480-485`），然后检查一个推论：由于持有锁，中断应当被禁用。最后，`sched` 调用 `swtch`，将当前上下文保存在 `p->context` 中，并切换到调度器的上下文 `cpu->scheduler`。`swtch` 返回时是在调度器的堆栈上，就像调度器的 `swtch` 已经返回一样。调度器继续其循环，找到一个进程并切换到它，然后循环重复。
@@ -300,9 +324,9 @@ xv6 用最简单的**轮转 (*round robin*)** 策略。真实 OS 有优先级等
 
 保持上述不变性的原因是，xv6 经常在一个线程中获取 ``p->lock``，而在另一个线程中释放它，例如在 `yield` 中获取并在 `scheduler` 中释放。一旦 `yield` 开始修改正在运行进程的状态以使其变为 `RUNNABLE`，该锁必须保持持有状态，直到不变性恢复：最早的正确释放时机是在调度器（运行在自己的堆栈上）清除 `c->proc` 之后。同样，一旦调度器开始将一个 `RUNNABLE` 的进程转换为 `RUNNING`，该锁不能被释放，直到内核线程完全运行（例如在 `yield` 中的 `swtch` 之后）。
 
-## Code： mycpu和myproc
+## Code： mycpu 和 myproc
 
-xv6经常需要指向当前进程的 `proc` 结构体的指针。在单处理器系统中，可以使用一个全局变量指向当前的 `proc`。但在多核机器上，这种方法不可行，因为每个核心执行不同的进程。解决这个问题的办法是利用每个核心都有自己的一组寄存器，我们可以使用其中一个寄存器来帮助查找每核的相关信息。
+xv6 经常需要指向当前进程的 `proc` 结构体的指针。在单处理器系统中，可以使用一个全局变量指向当前的 `proc`。但在多核机器上，这种方法不可行，因为每个核心执行不同的进程。解决这个问题的办法是利用每个核心都有自己的一组寄存器，我们可以使用其中一个寄存器来帮助查找每核的相关信息。
 
 xv6 为每个 CPU 维护一个 `struct cpu`（见 `kernel/proc.h:22`），该结构记录了当前在该 CPU 上运行的进程，CPU 调度线程的保存的寄存器，嵌套自旋锁计数（用于管理中断禁用）。函数 `mycpu`（见 `kernel/proc.c:72`）返回指向当前 CPU 的 `struct cpu` 的指针。RISC-V 给每个 CPU 分配一个`` hartid``。xv6 确保每个 CPU 的`` hartid`` 存储在该 CPU 的 tp 寄存器中，这样 `mycpu` 可以使用 tp 来索引 `cpu` 结构体数组，找到正确的结构体。
 
@@ -324,18 +348,12 @@ Xv6 使用定时器中断来维护当前时间的概念，并在计算密集型�
 
 对于定时器中断，`devintr` 返回 2，以便指示 `kerneltrap` 或 `usertrap` 调用 `yield`，从而使 CPU 能够在可运行进程之间进行多路复用。内核代码可以被定时器中断打断，并通过 `yield` 强制进行上下文切换，这也是 `usertrap` 早期代码在启用中断前小心保存 `sepc` 等状态的原因之一。这些上下文切换意味着内核代码必须编写得足够谨慎，以应对可能在没有预警的情况下从一个 CPU 切换到另一个 CPU 的情况。
 
-
-
-## 总结
+## 本讲小结
 
 某些计算机应用要求系统必须在限定时间内做出响应。例如，在安全关键系统中，错过时限可能会导致灾难。Xv6 不适用于硬实时环境。**硬实时操作系统通常是与应用程序链接的库，允许分析确定最坏情况下的响应时间**。Xv6 也不适用于软实时应用（偶尔错过时限是可以接受的），因为 Xv6 的调度程序过于简单，并且它的内核代码路径中有时会长时间禁用中断。
 
-xv6调度器实现了一种简单的调度策略，即依次运行每个进程。这种策略称为轮转调度（*round-robin*）。实际的操作系统实现了更复杂的策略，例如允许进程具有优先级。其理念是调度器在可运行的进程中，优先选择高优先级的进程，而不是低优先级的进程。这些策略可能会迅速变得复杂，因为通常存在相互冲突的目标：例如，操作系统可能还想保证公平性和高吞吐量。此外，复杂的策略可能会导致意外的交互问题，如优先级倒置和队列阻塞。优先级倒置可能发生在低优先级和高优先级的进程都使用某个特定锁时，低优先级进程获得锁后，可能会阻止高优先级进程继续执行。当多个高优先级进程都在等待一个低优先级进程释放共享锁时，就可能形成一个长时间的队列阻塞，一旦队列形成，它可能会持续很长时间。为了避免这些问题，复杂的调度器需要额外的机制。
-
-
+xv6 调度器实现了一种简单的调度策略，即依次运行每个进程。这种策略称为轮转调度（*round-robin*）。实际的操作系统实现了更复杂的策略，例如允许进程具有优先级。其理念是调度器在可运行的进程中，优先选择高优先级的进程，而不是低优先级的进程。这些策略可能会迅速变得复杂，因为通常存在相互冲突的目标：例如，操作系统可能还想保证公平性和高吞吐量。此外，复杂的策略可能会导致意外的交互问题，如优先级倒置和队列阻塞。优先级倒置可能发生在低优先级和高优先级的进程都使用某个特定锁时，低优先级进程获得锁后，可能会阻止高优先级进程继续执行。当多个高优先级进程都在等待一个低优先级进程释放共享锁时，就可能形成一个长时间的队列阻塞，一旦队列形成，它可能会持续很长时间。为了避免这些问题，复杂的调度器需要额外的机制。
 
 ## 参考资料
 
 - https://pdos.csail.mit.edu/6.1810/2025/lec/l-threads.txt
-
-  

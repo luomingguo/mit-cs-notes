@@ -1,4 +1,13 @@
-# L3 · 对称原语 I：PRF、计数器模式与 ChaCha20
+---
+title: 对称原语 I：PRF、计数器模式与 ChaCha20
+course: 6.5610 应用密码学与安全（Spring 2026）
+course_id: '6.5610'
+lecture: 3
+kind: theory
+tags: []
+status: complete
+---
+# Lec 3 对称原语 I：PRF、计数器模式与 ChaCha20
 
 > MIT 6.5610 · Lecture 3 · 关键词：PRF 安全游戏（具体界）、CPA 具体安全、计数器模式、ChaCha20、ARX、侧信道
 > *来源：2025 版讲义（Henry Corrigan-Gibbs），2026 同主题"Symmetric-key primitives I"，内容一致。*
@@ -13,8 +22,7 @@
 
 ## 1. PRF 安全游戏（具体安全视角）
 
-<div class="definition">
-
+::: definition
 **定义 1–2（PRF 安全游戏与 PRF）**
 游戏由 PRF $F:K\times X\to Y$、敌手 $\mathcal{A}$、比特 $b$ 参数化：
 - 挑战者抽 $k\xleftarrow{R}K$；若 $b=0$ 置 $f(\cdot):=F(k,\cdot)$，若 $b=1$ 置 $f\xleftarrow{R}\mathrm{Funs}[X,Y]$（全体函数）。
@@ -23,19 +31,16 @@
 记 $W_b$ 为敌手在比特 $b$ 下输出"1"的概率，定义优势
 $$\mathrm{PRFAdv}[\mathcal{A},F] := \big|\Pr[W_0]-\Pr[W_1]\big|.$$
 $F$ 为 PRF 当且仅当对所有高效 $\mathcal{A}$ 该优势"可忽略"。
-
-</div>
+:::
 
 > 🔎 **两种视角**：
 > - *理论*：一切按安全参数 $\lambda$（可理解为密钥长度）参数化，算法与敌手多项式时间，可忽略 = 关于 $\lambda$ 可忽略。
 > - *实践*：固定密钥 128/256 位，要求 PRF "够快"，防御 $2^{80}$ 级攻击者，"可忽略"取某小常数如 $2^{-64}$。
 
-<div class="corollary">
-
+::: theorem
 **若 $P=NP$ 则 PRF 不存在。**
 攻击者查询 $x_1,\dots$ 得 $y_1,\dots$，用电路-SAT 求解器找满足 $C(k)=\bigwedge_i (y_i = F(k,x_i))$ 的密钥 $k$：若存在这样的 $k$，几乎肯定身处 PRF 世界。故安全 PRF 的存在**蕴含 $P\ne NP$**。
-
-</div>
+:::
 
 ---
 
@@ -51,14 +56,12 @@ $F$ 为 PRF 当且仅当对所有高效 $\mathcal{A}$ 该优势"可忽略"。
 
 设 PRF $F:K\times\{0,1\}^n\to\{0,1\}^n$，参数 $\ell$ 决定可加密的消息长度。
 
-<div class="corollary">
-
+::: theorem
 **CTR 加密**
 $$\mathrm{Enc}(k,(m_1,\dots,m_\ell)): r\xleftarrow{R}\{0,1\}^n\ (\text{nonce}),$$
 $$\text{输出}\ (r,\ F(k,r)\oplus m_1,\ F(k,r{+}1)\oplus m_2,\ \dots,\ F(k,r{+}\ell{-}1)\oplus m_\ell).$$
 解密对应逐块异或回去。
-
-</div>
+:::
 
 **具体安全界**：对任意做至多 $T$ 次长度-$\ell$ 加密查询的敌手 $\mathcal{A}$，存在运行时间相近的 PRF 敌手 $\mathcal{B}$，使
 $$\mathrm{CPAAdv}[\mathcal{A},E] \le 2\cdot\mathrm{PRFAdv}[\mathcal{B},F] + \frac{2T^2\ell^2}{2^n}.$$
@@ -78,18 +81,16 @@ TLS 中用于保护 HTTPS 的流密码，本质是"构造一个 PRF 再用计数
 
 $$F_{\text{chacha}}:\{0,1\}^{256}\times\{0,1\}^{128}\to\{0,1\}^{512}.$$
 
-<div class="example">
-
+::: example
 **ChaCha20 PRF 构造**
 基于一个 $\{0,1\}^{512}$ 上的**公开置换** $\Pi$（"信仰之跃"：把它当作理想随机对象就能在理想模型下证明 PRF 安全，但它其实有极短实现）。
 $$F_{\text{chacha}}(k,x) := \mathrm{pad}(k,x)\ \oplus\ \Pi(\mathrm{pad}(k,x)),$$
 其中 $\mathrm{pad}$ 把密钥、输入和 128 位常量映射成 $4\times4$ 的 32 位矩阵（常量拼出 `expand 32-byte k`，是"nothing-up-my-sleeve"数）。
-
-</div>
+:::
 
 **置换 $\Pi$ 的核心**——`quarterRound`（Salsa 版，比 ChaCha 略简）：
 
-```
+```text
 quarterRound(a,b,c,d):
   b ^= (a + d) <<< 7;
   c ^= (b + a) <<< 9;
@@ -103,7 +104,7 @@ quarterRound(a,b,c,d):
 
 ---
 
-## 5. 小结
+## 5. 本讲小结
 
 - PRF 安全用**优势游戏**刻画；安全 PRF 存在 ⟹ $P\ne NP$。
 - CTR 模式把定长 PRF 扩成长消息加密，安全界含 PRF 优势 + nonce 生日项，**nonce 绝不可重用**。

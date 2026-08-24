@@ -15,7 +15,48 @@ export interface Chunk {
   ordinal: number
   content: string
   contentHash: string
+  /**
+   * 这一块里出现的最高优先级语义容器，见 NOTESTYLE.md 第四节。
+   * insight（作者本人的判断）优先级最高 —— 「这个人怎么看」类的提问要能命中它。
+   */
+  blockKind: BlockKind
 }
+
+export type BlockKind = 'normal' | 'insight' | 'pitfall' | 'definition' | 'theorem' | 'example'
+
+/**
+ * 容器名 → 送进嵌入向量的中文前缀。
+ *
+ * 必须和 docs/.vitepress/config.mts 的 SEMANTIC_CONTAINERS 保持同名。
+ * 以前 cleanForEmbedding 把承载这些语义的 <div> 剥成空格，「这是定义」还是
+ * 「这是作者的判断」在向量里完全看不出来；现在把它变成正文的一部分。
+ */
+const CONTAINER_LABEL: Record<string, string> = {
+  definition: '定义',
+  theorem: '定理',
+  example: '例',
+  insight: '我的理解',
+  pitfall: '常见误区',
+}
+
+/** 越靠前优先级越高：一块里同时有定义和「我的理解」时，按「我的理解」归类。 */
+const BLOCK_KIND_RANK: BlockKind[] = ['insight', 'pitfall', 'theorem', 'definition', 'example']
+
+function detectBlockKind(text: string): BlockKind {
+  for (const k of BLOCK_KIND_RANK) {
+    // 容器带标题时 cleanForEmbedding 产出的是「我的理解（关键结论：…）：」，
+    // 不能只找裸的「我的理解：」—— 库里 13 个 insight 块全都带标题，
+    // 用 includes 一个都认不出来。
+    if (new RegExp(`${CONTAINER_LABEL[k]}(?:（[^\\n]*?）)?：`).test(text)) return k
+  }
+  return 'normal'
+}
+
+/**
+ * 无信息量的小节标题。命中时面包屑要补上文档标题，
+ * 否则 52 个文件的 `## 小结` 会生成一模一样的上下文头，向量空间里根本分不开。
+ */
+const VAGUE_HEADING = /^(?:\d+[.、]\s*|[一二三四五六七八九十]+[、.]\s*)?(?:本讲小结|本讲导览|小结|总结|总览|摘要|大纲|引言|介绍|概述|背景|前言|Outline|Summary|Overview|Introduction|FQA|FAQ)\s*$/i
 
 /** 目标块长（中文字符）。太大伤检索精度，太小丢上下文。 */
 const TARGET = 700
@@ -36,6 +77,16 @@ function cleanForEmbedding(md: string): string {
     md
       // HTML 注释
       .replace(/<!--[\s\S]*?-->/g, '')
+      // 语义容器：`::: insight` → 「我的理解：」，`::: definition 完美安全` →
+      // 「定义（完美安全）：」。容器名本身是高价值的检索信号，不能像普通标记
+      // 一样剥掉 —— 读者问「作者怎么看」时，靠的就是这个前缀能被召回。
+      .replace(/^:::[ \t]*([a-z]+)[ \t]*(.*)$/gim, (line, name: string, title: string) => {
+        const label = CONTAINER_LABEL[name.toLowerCase()]
+        if (!label) return '' // VitePress 内置的 tip/warning/raw 等，直接去壳
+        return title.trim() ? `${label}（${title.trim()}）：` : `${label}：`
+      })
+      // 容器闭合行
+      .replace(/^:::[ \t]*$/gm, '')
       // 图片：整行丢掉（alt 多是 image-2026xxxx 这种自动名，没有语义）
       .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
       .replace(/<img\b[^>]*>/gi, '')
@@ -48,9 +99,14 @@ function cleanForEmbedding(md: string): string {
       .replace(/\[([^\]]*)\]\[[^\]]*\]/g, '$1')
       // 表格分隔行没有信息量
       .replace(/^\s*\|[\s|:-]+\|\s*$/gm, '')
-      // 强调符号
-      .replace(/\*\*([^*]*)\*\*/g, '$1')
-      .replace(/(?<!\*)\*(?!\*)([^*\n]+)\*(?!\*)/g, '$1')
+      // 强调符号。直接删标记，不做配对匹配 —— 笔记里大量
+      // `**RAW（*Read After Write*，真依赖）**` 这种嵌套，配对正则的
+      // [^*]* 跨不过内层斜体，结果外层的 ** 原样漏进嵌入文本。
+      // 这里是给模型看的纯文本，星号有没有配对无所谓，删干净就行。
+      // 行首的 `* ` 是无序列表，要留着。
+      .replace(/\*\*/g, '')
+      .replace(/(?<!^[ \t]*)\*(?!\s)/gm, '')
+      .replace(/(?<=\S)\*/g, '')
       // 收敛空白。先把「只剩空格的行」清空 —— 删图片/标签后会留下这种行，
       // 不清掉的话下面的 \n{3,} 匹配不到，块里会残留大段空白。
       .replace(/[ \t]+/g, ' ')
@@ -172,8 +228,13 @@ export function chunkDocument(doc: SourceDoc): Chunk[] {
       // H1 就是文档标题，面包屑里不重复它
       const crumb = stack.filter(Boolean).slice(1).join(' > ')
 
+      // 「小结」「总览」这类标题没有区分度，面包屑要带上文档标题兜底，
+      // 否则 embedText 拼出来的上下文头会在几十个文件之间完全一样。
+      const bare = crumb || h.text
+      const heading = VAGUE_HEADING.test(h.text) ? `${doc.title} > ${bare}` : bare
+
       sections.push({
-        heading: crumb || h.text,
+        heading,
         anchor: h.slug,
         // 去掉标题行本身，标题已经进了 heading 字段和上下文头
         text: text.replace(/^#{1,6}\s+.+$/m, '').trim(),
@@ -203,6 +264,7 @@ export function chunkDocument(doc: SourceDoc): Chunk[] {
         ordinal,
         content: piece,
         contentHash: crypto.createHash('sha1').update(piece).digest('hex'),
+        blockKind: detectBlockKind(piece),
       })
       ordinal++
     }

@@ -1,3 +1,11 @@
+---
+title: 可编程数据面（Programmable Data Plane）
+course: 6.5820/6.S04 计算机网络
+course_id: '6.5820'
+kind: system
+tags: []
+status: complete
+---
 # Lec 11 可编程数据面（Programmable Data Plane）
 
 阅读资料
@@ -8,7 +16,7 @@
 
 > 承接 SDN（[[Software-Defined-Networking]]）：OpenFlow 让控制面可编程，但**数据面仍是固定功能的 ASIC**——只认协议设计者预先固化的字段。本讲问：能否让**交换芯片的数据面本身也可编程**，且不牺牲线速（Tbps）？RMT 给出硬件架构，P4 给出编程语言。
 
-## 总览
+## 本讲导览
 
 - 固定功能 ASIC 的局限
 - Match-Action 抽象（OpenFlow 的核心）
@@ -23,17 +31,15 @@
 
 传统交换芯片把「解析哪些协议头、查哪些表、做哪些动作」**焊死在硅片里**。想支持一个新协议（如 VXLAN、新的隧道封装、自定义遥测头）就得**重新流片**，周期以年计、成本以亿计。
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>矛盾</strong><br>
+::: example 矛盾
 SDN 想要「软件定义网络」，但若数据面只认固定的一组协议字段，控制面的灵活性就被卡在芯片能力上。人们一度认为「可编程 = 慢」（只能用 CPU/NPU/FPGA，做不到 ASIC 的 Tbps 线速）。RMT 要推翻这个成见。
-</div>
+:::
 
 ## 二、Match-Action 抽象
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · Match-Action 表</strong><br>
-把转发抽象成一张张表：每条规则「<strong>匹配 (match)</strong> 包头某些字段 → 执行 <strong>动作 (action)</strong>（转发到某端口、改写字段、丢弃、打标记…）」。OpenFlow 把网络行为表达成这种 match-action 规则。
-</div>
+::: definition 定义 · Match-Action 表
+把转发抽象成一张张表：每条规则「**匹配 (match)** 包头某些字段 → 执行 **动作 (action)**（转发到某端口、改写字段、丢弃、打标记…）」。OpenFlow 把网络行为表达成这种 match-action 规则。
+:::
 
 匹配类型：精确匹配（哈希/SRAM）、最长前缀匹配（LPM，路由）、通配/范围匹配（ACL，用 **TCAM**）。
 
@@ -41,27 +47,26 @@ SDN 想要「软件定义网络」，但若数据面只认固定的一组协议�
 
 RMT（Reconfigurable Match Tables）证明了「协议无关 + 可重构」的交换芯片能在 ASIC 上跑到线速。其数据面是一条**流水线**：
 
-```
+```text
 入端口 → [可编程 Parser] → [Match-Action 阶段 1] → ... → [阶段 N] → [Deparser] → 出端口
               │                     │
           按程序识别              每级:TCAM/SRAM 查表
           任意包头                 + 动作 ALU 改写包头/元数据
 ```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · RMT 的可重构点</strong>
-<ul>
-<li><strong>可编程 Parser（解析器）</strong>：用一张状态机表描述「如何从字节流里抽取包头字段」，因此能解析<strong>任意/新协议</strong>，而非写死以太/IP/TCP。</li>
-<li><strong>多级 Match-Action 阶段</strong>：每级有自己的内存（TCAM 做通配、SRAM 做精确），表的<strong>宽度/深度/匹配字段可由软件配置</strong>；字段不够用可跨级拼。</li>
-<li><strong>动作 ALU</strong>：每级一组 ALU，对包头字段和<strong>包间元数据 (metadata)</strong> 做加减/改写/转发决策。</li>
-<li><strong>recirculation / packet header vector</strong>：包头被抽成一个「头向量」在流水线里流动；必要时可回流再过一遍。</li>
-</ul>
-</div>
+::: definition 定义 · RMT 的可重构点
+- **可编程 Parser（解析器）**：用一张状态机表描述「如何从字节流里抽取包头字段」，因此能解析**任意/新协议**，而非写死以太/IP/TCP。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 为什么能既可编程又线速</strong><br>
-关键是<strong>流水线 + 固定级数</strong>：每个包恰好经过 N 个阶段、每阶段做<strong>有界</strong>的查表与动作，吞吐由流水线深度决定而非数据相关——所以仍是「每周期一个包」的 ASIC 线速。可编程性来自<strong>表的形态和解析/动作可配置</strong>，而不是引入数据相关的循环。代价：芯片要预留通用的 TCAM/SRAM 和 ALU 资源，比专用固定功能芯片面积/功耗略大（论文报告额外成本约 15%），但换来巨大灵活性。
-</div>
+- **多级 Match-Action 阶段**：每级有自己的内存（TCAM 做通配、SRAM 做精确），表的**宽度/深度/匹配字段可由软件配置**；字段不够用可跨级拼。
+
+- **动作 ALU**：每级一组 ALU，对包头字段和**包间元数据 (metadata)** 做加减/改写/转发决策。
+
+- **recirculation / packet header vector**：包头被抽成一个「头向量」在流水线里流动；必要时可回流再过一遍。
+:::
+
+::: theorem 推论 · 为什么能既可编程又线速
+关键是**流水线 + 固定级数**：每个包恰好经过 N 个阶段、每阶段做**有界**的查表与动作，吞吐由流水线深度决定而非数据相关——所以仍是「每周期一个包」的 ASIC 线速。可编程性来自**表的形态和解析/动作可配置**，而不是引入数据相关的循环。代价：芯片要预留通用的 TCAM/SRAM 和 ALU 资源，比专用固定功能芯片面积/功耗略大（论文报告额外成本约 15%），但换来巨大灵活性。
+:::
 
 ## 四、P4：协议无关的数据面编程语言
 
@@ -73,15 +78,13 @@ RMT 是硬件，P4 是给这类芯片写程序的**语言**。P4 程序描述：
 - **control flow**：包依次经过哪些表的控制逻辑；
 - **deparser**：把（可能被改过的）头向量重新组装成线上字节流。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 0.6em 1em; margin: 1em 0;">
-<strong>定义 · 协议无关（protocol-independent）与 PISA</strong><br>
-P4 不内置任何具体协议——以太/IP 只是你用 P4 写出来的若干 header 定义而已。它面向一个抽象机器 <strong>PISA（Protocol-Independent Switch Architecture）</strong>：可编程 parser → 多级 match-action → deparser。一份 P4 程序由<strong>编译器</strong>映射到具体目标（RMT/Tofino ASIC、FPGA、软件 bmv2、智能网卡）。
-</div>
+::: definition 定义 · 协议无关（protocol-independent）与 PISA
+P4 不内置任何具体协议——以太/IP 只是你用 P4 写出来的若干 header 定义而已。它面向一个抽象机器 **PISA（Protocol-Independent Switch Architecture）**：可编程 parser → 多级 match-action → deparser。一份 P4 程序由**编译器**映射到具体目标（RMT/Tofino ASIC、FPGA、软件 bmv2、智能网卡）。
+:::
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 0.6em 1em; margin: 1em 0;">
-<strong>推论 · 三件事被解耦</strong><br>
-P4 把「<strong>解析什么协议</strong>、<strong>查什么表</strong>、<strong>做什么动作</strong>」从硅片里解放出来交给软件，于是新协议、网内遥测（INT）、自定义负载均衡、甚至网内聚合（见 [[Networking-for-Distributed-Systems]] 的 SwitchML）都能在<strong>不换芯片</strong>的前提下部署。OpenFlow 是「控制面可编程 + 固定数据面字段」，P4/RMT 是「连数据面字段与处理都可编程」——可视为 SDN 的下一步。
-</div>
+::: theorem 推论 · 三件事被解耦
+P4 把「**解析什么协议**、**查什么表**、**做什么动作**」从硅片里解放出来交给软件，于是新协议、网内遥测（INT）、自定义负载均衡、甚至网内聚合（见 [[Networking-for-Distributed-Systems]] 的 SwitchML）都能在**不换芯片**的前提下部署。OpenFlow 是「控制面可编程 + 固定数据面字段」，P4/RMT 是「连数据面字段与处理都可编程」——可视为 SDN 的下一步。
+:::
 
 > **Domino（可选）**：再进一步，让**有状态**的数据面算法（如自定义 AQM、调度）也能在硬件线速实现。它提出 **packet transactions（包事务）** 编程模型——把每包要做的状态更新写成一段串行代码，编译器检查它能否映射到一种叫 **atom** 的硬件原子操作上；能映射则保证线速原子执行。要点：数据面的有状态操作受「每包一个时钟周期内能原子完成多少」严格约束。
 

@@ -1,4 +1,13 @@
-# Lec 6 — 数字签名: RSA
+---
+title: '数字签名: RSA'
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 6
+kind: theory
+tags: []
+status: complete
+---
+# Lec 6 数字签名: RSA
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. RSA 数学基础

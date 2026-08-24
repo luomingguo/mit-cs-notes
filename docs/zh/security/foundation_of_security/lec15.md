@@ -1,4 +1,13 @@
-# Lec 15 — CPU 时序攻击（CPU Timing Attacks）
+---
+title: CPU 时序攻击（CPU Timing Attacks）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 15
+kind: theory
+tags: []
+status: complete
+---
+# Lec 15 CPU 时序攻击（CPU Timing Attacks）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 侧信道攻击总览

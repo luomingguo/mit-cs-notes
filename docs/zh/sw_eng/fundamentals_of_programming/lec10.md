@@ -1,12 +1,19 @@
+---
+title: 函数式编程
+course: 6.1010 程序设计基础（Python版）
+course_id: '6.1010'
+lecture: 10
+kind: system
+tags: []
+status: complete
+---
 # Lec 10 函数式编程
 
 [toc]
 
+在编程的早期，有一种叫做 LISP 的编程语言，是最早能在不同种类计算机上运行的编程语言之一，可以说它在 1958 年就把函数式编程作为一种实用的编程风格引入了，也是 MIT 的教职提出的，并且在 2007 年之前作为必修课程。
 
-
-在编程的早期，有一种叫做LISP的编程语言，是最早能在不同种类计算机上运行的编程语言之一，可以说它在1958年就把函数式编程作为一种实用的编程风格引入了，也是MIT的教职提出的，并且在2007年之前作为必修课程。
-
-本周的实验课将引导你实现你自己的LISP子集。
+本周的实验课将引导你实现你自己的 LISP 子集。
 
 ## 从迭代到递归
 
@@ -53,11 +60,9 @@ def repeat_n_times(n, func):
     
 ```
 
-
-
 ## Class 到函数
 
-本质上，在Pyhon里面任何类都可以用函数来实现
+本质上，在 Pyhon 里面任何类都可以用函数来实现
 
 ```python
 class Bank:
@@ -99,11 +104,7 @@ def bank():
 
 重要的是，`bank()` 返回的两个函数 `balance_of` 和 `deposit` 共享一个新创建的封闭帧，其中包含一个新的 `accounts` 字典。这个帧相当于面向对象版本中的对象。如果细节不清楚，尝试绘制一个环境图。
 
-
-
 ### nonlocal  用法
-
-
 
 ```python
 def counter():
@@ -114,13 +115,11 @@ def counter():
   return increment
 ```
 
+这段代码展示了 Python 中的一个常见陷阱。**即变量 `tally` 被视为局部变量**，而不是从封闭帧继承的变量。为什么会这样呢？
 
+**因为当一个函数修改一个变量时，Python 强制要求该变量直接存在于该函数的帧中**……但在这里，`tally` 并没有在本地初始化，所以 Python 会报错 `tally` 不存在。
 
-这段代码展示了Python中的一个常见陷阱。**即变量 `tally` 被视为局部变量**，而不是从封闭帧继承的变量。为什么会这样呢？
-
-**因为当一个函数修改一个变量时，Python强制要求该变量直接存在于该函数的帧中**……但在这里，`tally` 并没有在本地初始化，所以Python会报错 `tally` 不存在。
-
-但是，Python提供了一种方法来控制这种情况。特别是，如果我们想在 `increment` 中使用来自封闭帧的变量 `tally`，我们可以使用 `nonlocal` 关键字来实现这一点
+但是，Python 提供了一种方法来控制这种情况。特别是，如果我们想在 `increment` 中使用来自封闭帧的变量 `tally`，我们可以使用 `nonlocal` 关键字来实现这一点
 
 ```python
 def counter():
@@ -134,11 +133,9 @@ def counter():
 
 关键字的作用是：它明确指定了 `tally` 这个变量是在外部封闭函数的帧中定义的，而不是当前 `increment` 函数的局部变量。
 
-> 比较一下，bank()为什么就不需要用nonlocal?
+> 比较一下，bank()为什么就不需要用 nonlocal?
 
 Solution: **当一个函数内部要对一个变量进行修改时，默认情况下，Python 会将这个变量视为局部变量。**`bank` 不需要使用 `nonlocal accounts` 是因为 `balance_of` 和 `deposit` 函数并没有重新赋值给 `accounts` 变量，而是修改字典 `accounts` 的内容，这种操作**不涉及改变变量** `accounts` **本身**的引用，因此不需要 `nonlocal`。
-
-
 
 ## 备忘录
 
@@ -152,9 +149,7 @@ def fib(n):
 
 ```
 
-
-
-![截屏2024-06-05 09.17.56](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/665fbccf8a663.png)
+![截屏 2024-06-05 09.17.56](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/665fbccf8a663.png)
 
 理解上来说，这是在利用**备忘录（memoization）**技术来优化递归算法。斐波那契数列的计算存在大量重复计算的情况，例如 `fib(96)` 的计算需要 `fib(95)` 和 `fib(94)`，而 `fib(95)` 的计算又需要 `fib(94)` 和 `fib(93)`，如此类推，很多中间结果会被反复计算。通过记住已经计算过的结果，我们可以大大减少计算的重复工作，从而提高效率。
 
@@ -252,4 +247,3 @@ def fib(n):
     return n
   return fib(n-1) + fib(n-1)
 ```
-

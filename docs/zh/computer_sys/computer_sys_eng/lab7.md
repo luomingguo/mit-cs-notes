@@ -1,10 +1,16 @@
+---
+title: Lab 7 Valgrind
+course: 6.1800 计算机系统工程
+course_id: '6.1800'
+kind: system
+tags: []
+status: complete
+---
 # Lab 7 Valgrind
 
+## 本讲导览
 
-
-## 概述
-
-Valgrind 是一套运行在Linux上基于模拟的调试和分析工具。系统包含一个核（core），Valgrind的核心（这个“合成CPU”）会读取您程序原本的机器指令（x86, amd64等），将原始指令翻译成等价但加入额外检测代码的指令。 架构是模块化的，因此新的 可以轻松创建工具，而不会干扰现有的结构。 提供了一个一个工具，每个工具负责一种调试， 总得来说有：
+Valgrind 是一套运行在 Linux 上基于模拟的调试和分析工具。系统包含一个核（core），Valgrind 的核心（这个“合成 CPU”）会读取您程序原本的机器指令（x86, amd64 等），将原始指令翻译成等价但加入额外检测代码的指令。 架构是模块化的，因此新的 可以轻松创建工具，而不会干扰现有的结构。 提供了一个一个工具，每个工具负责一种调试， 总得来说有：
 
 1. Memcheck :检测内存管理问题 在您的程序中。检查内存的所有读写，并且 对 malloc/new/free/delete 的调用被拦截。结果， Memcheck 可以检测以下问题
    - 使用未初始化的内存
@@ -16,9 +22,7 @@ Valgrind 是一套运行在Linux上基于模拟的调试和分析工具。系统
    - `memcpy()` 及相关函数中源指针和目标指针重叠的问题
 2. Cachegrind： 是一个缓存剖析器。它详细模拟您 CPU 中的 I1、D1 和 L2 缓存，因此能够精确定位代码中缓存未命中的根源。如果您需要，它可以显示每行源代码引起的缓存未命中次数、内存引用次数和指令计数，并提供按函数、按模块和整个程序的摘要。
 3. Helgrind：数据竞争检测器。 用于查找多线程程序中的数据竞争。Helgrind 会查找被多个（POSIX p-）线程访问、但找不到一致使用的（`pthread_mutex_`）锁的内存位置。这类位置表明线程间缺少同步，可能导致难以发现的、与时序相关的问题。
-4. Callgrind： 重量级的Profiler。
-
-
+4. Callgrind： 重量级的 Profiler。
 
 ## helgrind
 
@@ -76,10 +80,6 @@ $ valgrind --tool=helgrind ./ph 2
 ==8945== 
 
 ```
-
-
-
-
 
 ```c
 // ph.c
@@ -257,8 +257,6 @@ main(int argc, char *argv[])
 }
 ```
 
-
-
 ### 实现加速且无竞态
 
 不再使用一个全局锁保护整个哈希表，而是为**每个桶配备一个独立的锁**（即一个锁数组 `pthread_mutex_t locks[NBUCKET];`），在 `put` 和 `get` 中，计算完桶索引 `i` 后，只需获取和释放对应的桶锁 `locks[i]`。
@@ -283,4 +281,3 @@ put(int key, int value)
 
 // Similarly for get()
 ```
-

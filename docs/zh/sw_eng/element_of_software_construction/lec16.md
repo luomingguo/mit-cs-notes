@@ -1,6 +1,15 @@
+---
+title: 互斥
+course: 6.1020 软件构造基础
+course_id: '6.1020'
+lecture: 16
+kind: design
+tags: []
+status: stub
+---
 # Lec 16 互斥
 
-这篇阅读内容将并发和Promise的概念结合在一起， 探讨 异步ADT 的上下文——一种具有异步操作的ADT，这些操作可能并发运行，并访问相同的共享表示。
+这篇阅读内容将并发和 Promise 的概念结合在一起， 探讨 异步 ADT 的上下文——一种具有异步操作的 ADT，这些操作可能并发运行，并访问相同的共享表示。
 
 我们将看到，这种并发操作带来了并发错误的风险，例如 竞态条件（race conditions） 和 死锁（deadlocks），这些错误可能会破坏 ADT 试图保证的不变量和规范。
 
@@ -134,7 +143,7 @@ library.checkout([fellowship], bilbo);
 library.checkout([fellowship], frodo);
 ```
 
-首先 Bilbo 借走了《指环王：护戒同盟》（fellowship），然后Frodo也想借这本书。按照当前的规范，这第二次调用实际上是非法的，因为它违反了所有请求的书籍必须在图书馆中的前提条件。但Frodo怎么知道呢？即使我们给Frodo提供一个观察操作，用来检查他想借的书是否在图书馆并避免违反前提条件，他仍然得等一段时间，直到所有书籍都归还。`checkout` 对客户端来说是一个难以使用的操作。
+首先 Bilbo 借走了《指环王：护戒同盟》（fellowship），然后 Frodo 也想借这本书。按照当前的规范，这第二次调用实际上是非法的，因为它违反了所有请求的书籍必须在图书馆中的前提条件。但 Frodo 怎么知道呢？即使我们给 Frodo 提供一个观察操作，用来检查他想借的书是否在图书馆并避免违反前提条件，他仍然得等一段时间，直到所有书籍都归还。`checkout` 对客户端来说是一个难以使用的操作。
 
 让我们通过将 `checkout` 异步化来解决这个问题。现在，`checkout` 不再要求所有书籍在调用时就必须在图书馆中，而是会等待书籍被归还，然后再借出。等待将通过返回一个 Promise 来完成：
 
@@ -147,7 +156,7 @@ library.checkout([fellowship], frodo);
 checkout(books: Array<Book>, user: User): Promise<void>;
 ```
 
-现在，我们可以考虑Bilbo和Frodo在各自的异步函数中运行，分别与图书馆交互，并等待 Promise：
+现在，我们可以考虑 Bilbo 和 Frodo 在各自的异步函数中运行，分别与图书馆交互，并等待 Promise：
 
 ```ts
 await library.checkout([fellowship], bilbo);
@@ -184,15 +193,15 @@ public async checkout(books: Array<Book>, user: User): Promise<void> {
 
 但是，如果某本书当前被借出，那么我们就到了 TODO 处。我们必须想办法等待，直到书籍被归还。
 
-## 创建并保持一个Promise
+## 创建并保持一个 Promise
 
 当书籍缺失时，我们需要等待它被归还到图书馆。我们可以创建一个代表该事件的 Promise。然后，`checkout` 可以等待这个 Promise，达到等待的效果。那么，谁会去解决这个 Promise，告诉 `checkout` 可以继续执行呢？这将发生在 `checkin` 操作的主体中，在书籍被归还的时刻。
 
-在我们深入讨论之前，我们需要再次审视一下 Promise 的ADT。一个 ADT 由它的操作定义，那么 Promise 的操作是什么呢？到目前为止，我们只见过 `await`，它作为一个观察者。
+在我们深入讨论之前，我们需要再次审视一下 Promise 的 ADT。一个 ADT 由它的操作定义，那么 Promise 的操作是什么呢？到目前为止，我们只见过 `await`，它作为一个观察者。
 
 但是，创建者呢？到目前为止，我们使用的所有 Promise（例如定时器、文件 I/O 和网页加载）都是由低级库为我们创建的。现在我们遇到的情况是，我们自己的代码需要创建一个 Promise，这个 Promise 将由我们自己代码中的某个事件来解决。没有像时钟或 I/O 系统这样的外部设备参与。所以，我们也需要能够创建 Promise。
 
-而且，Promise 是可变的 —— 它的状态如何从Pending变为fulfilled 或 rejected呢？
+而且，Promise 是可变的 —— 它的状态如何从 Pending 变为 fulfilled 或 rejected 呢？
 
 这个问题的答案在于，Promise 有两个不同的客户端：一个是 Promise 的消费者，通过 `await` 获取其值；另一个是承诺者（promiser），即计算 Promise 值的代码。Promise 设计为只有承诺者才能访问改变 Promise 状态的 `resolve()` 和 `reject()` 操作。
 

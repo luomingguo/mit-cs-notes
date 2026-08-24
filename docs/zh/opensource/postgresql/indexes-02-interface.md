@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 索引 — 2（访问方法接口）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 索引 — 2（访问方法接口）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/442546/ （作者 Egor Rogov，PostgresPro）
@@ -250,6 +257,6 @@ and amop.amoplefttype = opc.opcintype;
 
 原文强调，这些系统表都是可以直接查询的，用户不需要死记文档，遇到不确定的地方随时可以用类似上面的 SQL 去系统表里验证。
 
-## 小结
+## 本讲小结
 
 这一篇把索引这件事从"用户可见的行为"下沉到了"系统内部的元数据结构"：三层属性接口（访问方法级/索引级/列级）描述了一个索引能做什么，操作符类和操作符族则描述了一个索引方法如何对接具体的数据类型和比较逻辑，而 `pg_am`、`pg_opclass`、`pg_opfamily`、`pg_amop`、`pg_amproc` 这几张系统表则是这套体系的物理落地。掌握了这套框架，后续每篇讲一种具体索引类型时，都可以用同样的三层属性查询和系统表查询去验证和探索该类型的能力边界。

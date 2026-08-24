@@ -1,14 +1,21 @@
+---
+title: 洪水填充和迷宫路径查找
+course: 6.1010 程序设计基础（Python版）
+course_id: '6.1010'
+lecture: 3
+kind: system
+tags: []
+status: complete
+---
 # Lec 3 洪水填充和迷宫路径查找
 
 [toc]
-
-
 
 ## 1 一些有用的特性
 
 ### 1.1 内置函数``zip``
 
-``zip``是一个非常方便的Python内置函数，它使我们能够轻松地在多个可迭代对象中找到对应的元素。（“可迭代”意味着我们可以使用for循环来遍历它们的所有元素。）例如，考虑以下代码，它用于执行两个列表的元素级减法操作
+``zip``是一个非常方便的 Python 内置函数，它使我们能够轻松地在多个可迭代对象中找到对应的元素。（“可迭代”意味着我们可以使用 for 循环来遍历它们的所有元素。）例如，考虑以下代码，它用于执行两个列表的元素级减法操作
 
 ```python
 def substract_lists(l1, l2):
@@ -19,7 +26,7 @@ def substract_lists(l1, l2):
   return out
 ```
 
-我们可以使用Python内置函数zip以稍微不同的方式来解决这个问题。zip函数接受多个可迭代对象作为输入，并返回一个可以迭代的结构。在使用zip重写上面的subtract_lists之前，让我们先看一个小例子，以便熟悉zip函数
+我们可以使用 Python 内置函数 zip 以稍微不同的方式来解决这个问题。zip 函数接受多个可迭代对象作为输入，并返回一个可以迭代的结构。在使用 zip 重写上面的 subtract_lists 之前，让我们先看一个小例子，以便熟悉 zip 函数
 
 ```python
 x = [100, 200, 300, 400]
@@ -28,7 +35,7 @@ print(zip(x, y)) # prints <zip object at SOME_MEMORY_LOCATION>
 
 ```
 
-这看起来本身并不是很有用，但zip对象的存在是为了被迭代。
+这看起来本身并不是很有用，但 zip 对象的存在是为了被迭代。
 
 ```python
 for element in zip(x, y)
@@ -98,7 +105,7 @@ get_pixel(image, localtion[0], location[1])
 
 ### 1.4) 列表推导
 
-我们想要根据其他列表的内容构建数据。比如 L=[9, 8, 7]，我们想要建立一个新的列表，以L的奇数位数字加倍形成。
+我们想要根据其他列表的内容构建数据。比如 L=[9, 8, 7]，我们想要建立一个新的列表，以 L 的奇数位数字加倍形成。
 
 ```python
 out = []
@@ -113,7 +120,7 @@ for num in L:
 out = [number * 2 for number in L if number % 2 == 1]
 ```
 
-而且支持将多个for循环放到列表推导式里面
+而且支持将多个 for 循环放到列表推导式里面
 
 ```python
 out = []
@@ -142,8 +149,6 @@ for x in <sequence of x>:
 [  <some expression> if <some_condition> else <other expression>
   for x in <sequence of x> ]
 ```
-
-
 
 ## 2 洪水填充
 

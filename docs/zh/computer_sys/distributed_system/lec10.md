@@ -1,10 +1,19 @@
+---
+title: Lab 实验答疑（Raft Lab 3A + 3B）
+course: 6.5840 分布式系统（Spring 2026）
+course_id: '6.5840'
+lecture: 10
+kind: system
+tags: []
+status: complete
+---
 # Lec 10 Lab 实验答疑（Raft Lab 3A + 3B）
 
 > 课件：[Q&A Lab 3A+B (l-raft-QA.txt)](https://pdos.csail.mit.edu/6.5840/notes/l-raft-QA.txt)
 
 本讲是 Raft 实验（3A 选举、3B 日志复制）的实现答疑，把 [[lec7]] 的 Raft 协议落到代码工程上。核心是两件事：**怎么组织并发结构**、**怎么调试**。
 
-## 总览
+## 本讲导览
 
 - 正确性框架：Safety vs Liveness
 - 两种实现结构：多线程加锁 vs 单线程状态机
@@ -17,38 +26,41 @@
 
 ## 一、正确性框架：Safety vs Liveness
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>两类正确性、两类 bug</strong>
-<ul>
-<li><strong>Safety（安全性）</strong>：<strong>永不返回错误结果</strong>。违反 = 选出两个 leader、提交了不该提交的项、不同节点同一 index 提交了不同命令。</li>
-<li><strong>Liveness（活性）</strong>：<strong>最终能返回结果</strong>。违反 = 一直选不出 leader、请求永远不提交、反复选举。</li>
-</ul>
-做实验时要能在自己代码里分别举出这两类 bug 的例子。</div>
+::: definition 两类正确性、两类 bug
+- **Safety（安全性）**：**永不返回错误结果**。违反 = 选出两个 leader、提交了不该提交的项、不同节点同一 index 提交了不同命令。
+
+- **Liveness（活性）**：**最终能返回结果**。违反 = 一直选不出 leader、请求永远不提交、反复选举。
+
+做实验时要能在自己代码里分别举出这两类 bug 的例子。
+:::
 
 ## 二、两种实现结构
 
 Raft 实现有两条可行路线，**并无绝对优劣**（实际并行度差不多，主要并行收益来自"并发发 RPC"）：
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>① 多线程 + 锁</strong>
-<ul>
-<li>系统为每个 RPC 起一个 handler goroutine；另起一个专门的 <strong>applier 线程</strong>读 <code>applyCh</code>；<code>Start()</code> 由客户端线程调用。</li>
-<li>共享的 Raft 状态用<strong>单把锁</strong>保护；用<strong>条件变量</strong>唤醒 applier。</li>
-<li>锁把所有操作串行化（原子但并行度有限）。</li>
-</ul></div>
+::: definition ① 多线程 + 锁
+- 系统为每个 RPC 起一个 handler goroutine；另起一个专门的 **applier 线程**读 `applyCh`；`Start()` 由客户端线程调用。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>② 单线程状态机（事件循环）</strong>
-<ul>
-<li>一个线程处理所有事件（tick、RPC 请求/回复）：更新状态时<strong>无需加锁</strong>，把要做的输出收集起来。</li>
-<li>执行输出时：<strong>先持久化、再发 RPC</strong>。</li>
-<li>另有独立的 applier 线程，用锁保护与它共享的状态（如 log）。</li>
-</ul></div>
+- 共享的 Raft 状态用**单把锁**保护；用**条件变量**唤醒 applier。
+
+- 锁把所有操作串行化（原子但并行度有限）。
+:::
+
+::: definition ② 单线程状态机（事件循环）
+- 一个线程处理所有事件（tick、RPC 请求/回复）：更新状态时**无需加锁**，把要做的输出收集起来。
+
+- 执行输出时：**先持久化、再发 RPC**。
+
+- 另有独立的 applier 线程，用锁保护与它共享的状态（如 log）。
+:::
 
 ## 三、加锁原则与死锁
 
-<div style="border-left: 4px solid #d9534f; background: #fbeaea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>两条铁律</strong>
-<ol>
-<li><strong>绝不要在持有锁时发 RPC</strong>（<code>peer.Call()</code>）——RPC 可能阻塞很久，持锁阻塞会死锁。常见模式：持锁读出要发的参数 → 放锁 → 发 RPC → 重新持锁处理回复（并<strong>重新检查 term/state 是否已变</strong>）。</li>
-<li>用<strong>单把大锁</strong>保护全部 Raft 状态，简单不易错；优化留到能跑通之后。</li>
-</ol></div>
+::: example 两条铁律
+- **绝不要在持有锁时发 RPC**（`peer.Call()`）——RPC 可能阻塞很久，持锁阻塞会死锁。常见模式：持锁读出要发的参数 → 放锁 → 发 RPC → 重新持锁处理回复（并**重新检查 term/state 是否已变**）。
+
+- 用**单把大锁**保护全部 Raft 状态，简单不易错；优化留到能跑通之后。
+:::
 
 > 并发要点：发 AppendEntries/RequestVote 要**并发**发给各 peer、**不要串行等**；回复回来时计票/更新 nextIndex，达多数才提交。leader 收到回复后必须先确认"我还是这个 term 的 leader"（可能已被新 term 打回 follower），否则会用过期上下文乱改状态。
 
@@ -62,13 +74,15 @@ Raft 实现有两条可行路线，**并无绝对优劣**（实际并行度差�
 
 ## 五、调试方法论
 
-<div style="border-left: 4px solid #5cb85c; background: #eafbea; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>系统化调试</strong>
-<ul>
-<li>测试时<strong>开 race detector</strong>（<code>-race</code>）。</li>
-<li><strong>把所有动作/消息按统一格式打日志、便于搜索</strong>：源、目的、opcode、Raft 状态（term/role/log 长度等）。</li>
-<li>对失败用例<strong>反复重跑</strong>，循环：读懂测试期望 → 猜可能的问题 → 对照日志和论文 Figure 2 分析 → 改代码再试。</li>
-</ul>
-分布式 bug 常是<strong>偶发</strong>的，必须靠"统一格式日志 + 多次重跑"复现，而不能指望一次跑出来。</div>
+::: theorem 系统化调试
+- 测试时**开 race detector**（`-race`）。
+
+- **把所有动作/消息按统一格式打日志、便于搜索**：源、目的、opcode、Raft 状态（term/role/log 长度等）。
+
+- 对失败用例**反复重跑**，循环：读懂测试期望 → 猜可能的问题 → 对照日志和论文 Figure 2 分析 → 改代码再试。
+
+分布式 bug 常是**偶发**的，必须靠"统一格式日志 + 多次重跑"复现，而不能指望一次跑出来。
+:::
 
 ## 六、3A / 3B 各要什么
 

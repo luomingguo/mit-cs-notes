@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的 MVCC — 1. 事务隔离
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的 MVCC — 1. 事务隔离
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/467437/ （作者 Egor Rogov，PostgresPro，2019-09-16，基于 PostgreSQL 11）
@@ -139,7 +146,7 @@ SELECT * FROM accounts ORDER BY id;  -- 仍然是原来那 3 行，内容不变
 
 代价是：如果这个事务本身要修改数据，且它的修改与并发事务的修改产生了冲突，PostgreSQL 不会像 Read Committed 那样"重新读取最新值再判断"，而是直接报错终止事务：
 
-```
+```text
 ERROR: could not serialize access due to concurrent update
 ```
 
@@ -209,7 +216,7 @@ ALTER SYSTEM SET default_transaction_isolation = 'serializable';
 
 **Serializable**：开发者完全不需要考虑并发执行带来的各种异常，一致性保证最强。缺点是会有假阳性导致无辜事务被中止、性能开销明显、standby 副本不适用、不能与其它隔离级别混用、同样需要实现重试逻辑。适合对一致性要求最高、并发量相对可控、宁可牺牲一些吞吐量也要保证正确性的场景。
 
-## 小结
+## 本讲小结
 
 PostgreSQL 没有采用 SQL 标准所依赖的锁协议模型，而是用多版本快照隔离实现了隔离性，这使得它在 Read Committed/Read Uncommitted 之间没有区别，同时让 Repeatable Read 比标准规定的更严格（杜绝幻读）。但即便是最高的 Repeatable Read 和 Serializable 级别，也各自有自己的代价——前者会放过写偏斜和只读事务异常并要求应用重试，后者虽然理论完备却有性能开销和假阳性问题。理解这套隔离机制的边界，是后续几篇文章讨论行版本、快照、清理（vacuum）等底层实现细节的基础。
 

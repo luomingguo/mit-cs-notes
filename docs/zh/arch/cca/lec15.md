@@ -1,11 +1,23 @@
+---
+title: 片上网络 I：基础
+course: 6.1920 建构式计算机架构，CCA
+course_id: '6.1920'
+lecture: 15
+kind: system
+tags: []
+status: complete
+---
 # Lec 15 片上网络 I：基础
 > MIT 6.1920 · Constructive Computer Architecture
 > 讲师：Tushar Krishna · 日期：2024-04-07
 
 ## 1. NoC 的动机
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 片上网络（<em>Network-on-Chip, NoC</em>）</strong><br>
-多核芯片中，各核心、缓存和内存控制器之间需要互连通信（尤其是缓存一致性消息）。NoC 是将网络交换机（<em>router</em>）和链路集成在芯片上的片上互连结构，解决传统总线（<em>bus</em>）带宽瓶颈和可扩展性问题。</div>
+::: definition
+**定义 — 片上网络（*Network-on-Chip, NoC*）**
+
+多核芯片中，各核心、缓存和内存控制器之间需要互连通信（尤其是缓存一致性消息）。NoC 是将网络交换机（*router*）和链路集成在芯片上的片上互连结构，解决传统总线（*bus*）带宽瓶颈和可扩展性问题。
+:::
 
 **NoC 的四个设计维度**：
 
@@ -20,13 +32,17 @@
 
 ## 2. 数据包结构
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 数据包与微片（<em>Packet & Flit</em>）</strong><br>
-数据包（<em>packet</em>）包含完整的头部（源、目的地址）和有效载荷。为了高效流水线传输，数据包被分割为固定大小的<em>微片（flit, flow control unit）</em>：<br>
-<ul style="margin:4px 0; padding-left:20px;">
-<li><strong>头微片（head flit）</strong>：含路由信息（目的地址）</li>
-<li><strong>体微片（body flit）</strong>：数据有效载荷</li>
-<li><strong>尾微片（tail flit）</strong>：标记数据包结束</li>
-</ul></div>
+::: definition
+**定义 — 数据包与微片（*Packet & Flit*）**
+
+数据包（*packet*）包含完整的头部（源、目的地址）和有效载荷。为了高效流水线传输，数据包被分割为固定大小的*微片（flit, flow control unit）*：
+
+- **头微片（head flit）**：含路由信息（目的地址）
+
+- **体微片（body flit）**：数据有效载荷
+
+- **尾微片（tail flit）**：标记数据包结束
+:::
 
 ---
 
@@ -51,30 +67,41 @@
 
 ## 4. 虫孔流控（*Wormhole Flow Control*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 虫孔流控（<em>Wormhole Flow Control</em>）</strong><br>
-数据包头微片一旦找到空闲链路就立即传输，后续体/尾微片紧随（像蠕虫钻入管道）。不需要在中间路由器存储整个数据包（降低缓冲区需求），但一个数据包可能同时占用多个路由器的链路，导致<strong>队头阻塞（<em>Head-of-Line Blocking, HOL Blocking</em>）</strong>：一个大包堵住链路，小包无法通过。</div>
+::: definition
+**定义 — 虫孔流控（*Wormhole Flow Control*）**
+
+数据包头微片一旦找到空闲链路就立即传输，后续体/尾微片紧随（像蠕虫钻入管道）。不需要在中间路由器存储整个数据包（降低缓冲区需求），但一个数据包可能同时占用多个路由器的链路，导致**队头阻塞（*Head-of-Line Blocking, HOL Blocking*）**：一个大包堵住链路，小包无法通过。
+:::
 
 ---
 
 ## 5. 虚通道（*Virtual Channels, VC*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 虚通道（<em>Virtual Channel</em>）</strong><br>
-在同一物理链路上划分多个独立的 flit 缓冲队列（虚通道），多个数据包可以共享同一物理链路但使用不同的 VC 缓冲区。VC 的关键用途：<br>
-（1）缓解 HOL Blocking：不同 VC 的队头互不阻塞<br>
-（2）死锁避免：通过限制 VC 转换方向打破依赖环路</div>
+::: definition
+**定义 — 虚通道（*Virtual Channel*）**
+
+在同一物理链路上划分多个独立的 flit 缓冲队列（虚通道），多个数据包可以共享同一物理链路但使用不同的 VC 缓冲区。VC 的关键用途：
+
+（1）缓解 HOL Blocking：不同 VC 的队头互不阻塞
+
+（2）死锁避免：通过限制 VC 转换方向打破依赖环路
+:::
 
 ---
 
 ## 6. 路由器微架构流水线
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 5 级路由器流水线</strong><br>
-<ol style="margin:4px 0; padding-left:20px;">
-<li><strong>BW（Buffer Write）</strong>：flit 写入输入缓冲区</li>
-<li><strong>RC（Route Computation）</strong>：根据目的地计算输出端口</li>
-<li><strong>VA（VC Allocation）</strong>：为 flit 分配下游虚通道</li>
-<li><strong>SA（Switch Allocation）</strong>：竞争使用交叉开关（<em>crossbar</em>）的输出端口</li>
-<li><strong>ST（Switch Traversal）+ LT（Link Traversal）</strong>：flit 通过交叉开关并传输到下游链路</li>
-</ol></div>
+::: definition 定义 — 5 级路由器流水线
+- **BW（Buffer Write）**：flit 写入输入缓冲区
+
+- **RC（Route Computation）**：根据目的地计算输出端口
+
+- **VA（VC Allocation）**：为 flit 分配下游虚通道
+
+- **SA（Switch Allocation）**：竞争使用交叉开关（*crossbar*）的输出端口
+
+- **ST（Switch Traversal）+ LT（Link Traversal）**：flit 通过交叉开关并传输到下游链路
+:::
 
 **交叉开关类型**：
 - **基于多路选择器（*Mux-Based*）**：面积小，但并行度有限
@@ -93,7 +120,9 @@ $$T_N = H \times (t_r + t_l) + T_s + T_c$$
 - $T_s$：序列化延迟 = 数据包长度 / 链路带宽（静态）
 - $T_c$：竞争延迟（动态，取决于流量）
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 环形 NoC 的零负载延迟</strong></div>
+::: example 例题 — 环形 NoC 的零负载延迟
+
+:::
 
 8 节点环形拓扑，路由器延迟 1 周期，链路延迟 1 周期，数据包 4 flit，带宽 1 flit/周期：
 
@@ -105,6 +134,6 @@ Sol：增加带宽（更宽链路）可减少 $T_s$；使用 2D Mesh 减少平�
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 NoC 以路由器+链路替代总线，解决多核芯片的互连扩展性问题；数据包拆分为 flit 流水传输；基于信用的背压机制保证不丢包；虫孔流控降低缓冲需求但引入 HOL Blocking；虚通道缓解 HOL 并用于死锁避免；5 级路由器流水线平衡了延迟和吞吐量。

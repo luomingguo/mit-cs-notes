@@ -1,3 +1,12 @@
+---
+title: 函数式编程
+course: 6.1020 软件构造基础
+course_id: '6.1020'
+lecture: 9
+kind: design
+tags: []
+status: complete
+---
 # Lec 9 函数式编程
 
 我们将探讨多种用于操作元素序列的设计模式，并展示如何将函数本身视为一等公民（即可在程序中自由传递和操作的值），这一理念的强大之处。我们将学习一下概念。
@@ -18,13 +27,13 @@ mySquareRoot(16.0); // return 4.0
 
 此处 `mySquareRoot` 的类型是函数类型表达式。注意参数名（如 x） 不可省略。若写成 `(number) => number`，实际表示“参数名为 `number`、类型隐式为 `any` 的函数”。
 
-你还能将函数的引用作为参数传递给其他函数，或者作为返回值，再或者存储在变量和数据结构中。换句话说，函数在TypeScript就是一等公民，意味着他们能够被认为是编程语言中任何值。
+你还能将函数的引用作为参数传递给其他函数，或者作为返回值，再或者存储在变量和数据结构中。换句话说，函数在 TypeScript 就是一等公民，意味着他们能够被认为是编程语言中任何值。
 
-编程语言中有大量的非一等公民的东西。例如，访问控制就不是一等公民——你不能将public 或 private作为参数传递给函数，也不能将其存储在数据结构中，TypeScript 无法在运行时引用或操作它们。
+编程语言中有大量的非一等公民的东西。例如，访问控制就不是一等公民——你不能将 public 或 private 作为参数传递给函数，也不能将其存储在数据结构中，TypeScript 无法在运行时引用或操作它们。
 
 在旧的编程语言中，只有数据是一等公民：内置类型（如数字）和用户定义类型。但在现代编程语言中，如 Python 和 JavaScript，数据和函数都是一等公民。**函数作为一等公民**是一种非常强大的编程思想。第一个使用它们的实用编程语言是 Lisp，由 MIT 的 John McCarthy 发明。但将函数作为一等公民值进行编程的想法实际上早于计算机，可以追溯到 Alonzo Church 的 lambda 演算。lambda 演算使用希腊字母 λ 来定义新函数；这个术语流传甚广，你会发现它不仅在 Lisp 及其后代语言中是一个关键词，在 Python 中也是如此。
 
-### TypeScript中的函数表达式
+### TypeScript 中的函数表达式
 
 我们早已在测试框架（如 Mocha）中使用函数表达式：
 
@@ -116,8 +125,6 @@ function onlyFilesWithSuffix(filenames: Array<string>, suffix: string): Array<st
     return result;
 }
 ```
-
-
 
 ## 迭代器
 
@@ -211,8 +218,6 @@ class MyIterator {
 }
 ```
 
-
-
 ### 可变性会使简单的契约变复杂
 
 这是可变类型的一个根本性问题。对同一个可变对象的多个引用（别名）可能意味着程序中多个地方——甚至是相距很远的地方——都依赖于该对象保持一致性。
@@ -288,11 +293,9 @@ function* addConstant(sequence: Iterable<number>, k: number): Generator<number> 
 
 使用生成器函数时，需要注意：**调用生成器函数**的结果本质上是一个 Iterator，这意味着它是可变的，使用后会被消耗，不能重新开始，除非再次调用函数。因此不要把生成器函数的结果当作可以随意保存的序列。如果想保留序列并重复使用，必须把元素复制到一个数据结构中（如 Array）。
 
-
-
 ## Map/filter/reduce 的抽象
 
-本章提到Map/Filter/Reduce和Iterator有类似之处，但是他们处于更高的抽象层次，把整个元素序列作为一个整体来处理。在这种范式下，控制语句消失了：具体来说，我们最初例子中的 for 语句、if 语句和 return 语句都会消失。我们也可以去掉大部分临时变量（比如 `filenames`、`f` 和 `result`）。同时，我们可以停止对序列进行修改——不再需要调用数组的 `push` 或 `splice`
+本章提到 Map/Filter/Reduce 和 Iterator 有类似之处，但是他们处于更高的抽象层次，把整个元素序列作为一个整体来处理。在这种范式下，控制语句消失了：具体来说，我们最初例子中的 for 语句、if 语句和 return 语句都会消失。我们也可以去掉大部分临时变量（比如 `filenames`、`f` 和 `result`）。同时，我们可以停止对序列进行修改——不再需要调用数组的 `push` 或 `splice`
 
 我们将针对可迭代类型提供三种操作：map、filter 和 reduce。下面逐一介绍，并讨论它们如何组合使用。我们重点使用 Array 作为可迭代类型，因为 TypeScript 原生提供了 map、filter 和 reduce 方法。
 
@@ -300,7 +303,7 @@ function* addConstant(sequence: Iterable<number>, k: number): Generator<number> 
 
 map 对序列中的每个元素应用一个一元函数，并返回一个包含结果的新序列，顺序与原序列相同：
 
-```
+```text
 map : Array<E> × (E → F) → Array<F>
 ```
 
@@ -344,7 +347,7 @@ lambda 也是必需的，否则 `mySet.delete` 本身无法绑定 `mySet` 到 `t
 
 filter 测试数组中每个元素是否满足一元函数（返回 boolean）。满足条件的元素保留，不满足的移除，返回新序列，原序列不变
 
-```
+```text
 filter : Array<E> × (E → boolean) → Array<E>
 ```
 
@@ -366,7 +369,7 @@ const isNonempty = (s: string) => s.length > 0;
 
 reduce 使用二元函数将序列元素组合在一起。除了函数和数组，它还需要一个初始值，如果数组为空，初始值就是返回值：
 
-```
+```text
 reduce : Array<E> × (E × E → E) × E → E
 ```
 
@@ -408,7 +411,7 @@ reduce 的第二个设计选择是返回类型。返回类型不必与序列元�
 
 更通用的 reduce 类型为：
 
-```
+```text
 reduce : Array<E> × (F × E → F) × F → F
 ```
 
@@ -423,7 +426,7 @@ reduce : Array<E> × (F × E → F) × F → F
 
 第三个设计选择是累积元素的顺序。TypeScript 的 `reduce` 从左到右：
 
-```
+```text
 result0 = init
 result1 = f(result0, arr[0])
 result2 = f(result1, arr[1])
@@ -433,7 +436,7 @@ resultn = f(resultn-1, arr[n-1])
 
 另一个操作 `reduceRight` 从右到左：
 
-```
+```text
 result0 = init
 result1 = f(result0, arr[n-1])
 result2 = f(result1, arr[n-2])
@@ -469,7 +472,7 @@ filenames.filter(endsWith(".ts"))
 
 在这里，`endsWith` 是一个函数生成器。它的类型签名是：
 
-```
+```text
 string → (string → boolean)
 ```
 
@@ -492,7 +495,7 @@ function allFilesIn(folder: string): Array<string> {
 
 第一行获取文件夹的所有子项，例如：
 
-```
+```text
 ["src/client", "src/server", "src/Main.ts", ...]
 ```
 
@@ -562,7 +565,7 @@ Python 通过列表推导式方便地提供了 filter 和 map：
 doubleOdds = [x*2 for x in arr if x % 2 == 1]
 ```
 
-相当于TypeScript中的
+相当于 TypeScript 中的
 
 ```ts
 const doubleOdds = arr.filter(x=>x%2==1).map(x=> x*2)
@@ -622,4 +625,4 @@ select max(pixels) from cameras where brand = "Nikon"
 - pixels 是 map（提取每行的 pixels 字段）
 - max 是 reduce
 
-## 总结
+## 本讲小结

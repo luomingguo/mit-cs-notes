@@ -1,4 +1,13 @@
-# Lec 19 — 运行时防御（Runtime Defenses）
+---
+title: 运行时防御（Runtime Defenses）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 19
+kind: theory
+tags: []
+status: complete
+---
+# Lec 19 运行时防御（Runtime Defenses）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 背景
@@ -17,7 +26,7 @@
 
 ### 2.1 缓冲区溢出回顾
 
-```
+```text
 | 返回地址 |
 |---------|
 | buf[127]|
@@ -50,7 +59,7 @@ $$\sigma = [g_1 \to g_2 \to g_3 \to \ldots] \quad g_i \text{ 为合法代码中�
 
 **思想**：在返回地址前插入一个随机值，函数返回前检查其是否被修改。
 
-```
+```text
 | 返回地址 |
 |---------|
 | canary  |  ← 随机秘密值
@@ -97,7 +106,7 @@ $$\text{ptr} = (\text{addr},\ \text{base},\ \text{limit})$$
 
 $$\text{解引用前检查：base} \leq \text{addr} < \text{limit}$$
 
-```
+```text
        limit →|---------|
               | buf[127]|
               | ...     |

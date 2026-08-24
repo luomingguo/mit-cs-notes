@@ -1,3 +1,12 @@
+---
+title: 虚拟内存
+course: 6.1910 计算结构（Fall 25）
+course_id: '6.1910'
+lecture: 20
+kind: system
+tags: []
+status: complete
+---
 # Lec 20 虚拟内存
 
 > **说明**：本课程的虚拟内存内容已完整整理在 **[Lec 18 虚拟内存](lec18.md)**（涵盖虚拟内存总览、虚拟/物理地址、分段与分页、页表与页表项 PTE、按需分页 demand paging、页面置换、缺页异常、MMU 与 TLB、上下文切换、虚拟地址空间组织等）。本页仅作占位与索引，避免重复，请前往 [Lec 18](lec18.md) 阅读。

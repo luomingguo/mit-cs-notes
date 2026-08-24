@@ -1,3 +1,12 @@
+---
+title: 从 BSV 到芯片：硅综合与 FPGA
+course: 6.1920 建构式计算机架构，CCA
+course_id: '6.1920'
+lecture: 18
+kind: system
+tags: []
+status: complete
+---
 # Lec 18 从 BSV 到芯片：硅综合与 FPGA
 > MIT 6.1920 · Constructive Computer Architecture
 > 讲师：Sanjay Seshan · 日期：2024-05-14
@@ -18,12 +27,15 @@
 
 ### 2.1 从 BSV 到门级网表
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 硬件描述语言综合（<em>HDL Synthesis</em>）</strong><br>
-综合（<em>synthesis</em>）是将高层 HDL 描述自动转换为门级电路（<em>gate-level netlist</em>）的过程。BSV 首先编译为 Verilog/SystemVerilog（RTL），再由综合工具（如 Yosys、Vivado）转化为逻辑单元（与/或/非门、触发器）的连接网表。</div>
+::: definition
+**定义 — 硬件描述语言综合（*HDL Synthesis*）**
+
+综合（*synthesis*）是将高层 HDL 描述自动转换为门级电路（*gate-level netlist*）的过程。BSV 首先编译为 Verilog/SystemVerilog（RTL），再由综合工具（如 Yosys、Vivado）转化为逻辑单元（与/或/非门、触发器）的连接网表。
+:::
 
 **完整工具链**：
 
-```
+```text
 BSV 源代码
     ↓ Bluespec 编译器
 Verilog RTL
@@ -43,8 +55,11 @@ ASIC 芯片
 
 ## 3. ASIC 设计（*Application-Specific Integrated Circuit*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — ASIC（<em>Application-Specific Integrated Circuit</em>）</strong><br>
-ASIC 是针对特定应用定制的芯片，固化后功能不可更改。相比 FPGA，ASIC 具有更高性能、更低功耗和更低量产成本，但流片费用高昂（数十万至数百万美元），开发周期长，且无法修改。</div>
+::: definition
+**定义 — ASIC（*Application-Specific Integrated Circuit*）**
+
+ASIC 是针对特定应用定制的芯片，固化后功能不可更改。相比 FPGA，ASIC 具有更高性能、更低功耗和更低量产成本，但流片费用高昂（数十万至数百万美元），开发周期长，且无法修改。
+:::
 
 **ASIC 设计步骤**：
 1. RTL 设计（BSV → Verilog）
@@ -59,8 +74,11 @@ ASIC 是针对特定应用定制的芯片，固化后功能不可更改。相比
 
 ## 4. 制造工艺（*Fabrication Process Technology*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — CMOS 工艺节点（<em>Process Node</em>）</strong><br>
-当前主流工艺节点为 5 nm FinFET，采用 CMOS（<em>Complementary Metal-Oxide-Semiconductor</em>）技术。FinFET 是改良的 MOSFET，通过三维鳍状结构减少漏电流，提高电流驱动能力。摩尔定律（<em>Moore's Law</em>）正在放缓——晶体管数量的翻倍周期从 2 年延长至 3–4 年。</div>
+::: definition
+**定义 — CMOS 工艺节点（*Process Node*）**
+
+当前主流工艺节点为 5 nm FinFET，采用 CMOS（*Complementary Metal-Oxide-Semiconductor*）技术。FinFET 是改良的 MOSFET，通过三维鳍状结构减少漏电流，提高电流驱动能力。摩尔定律（*Moore's Law*）正在放缓——晶体管数量的翻倍周期从 2 年延长至 3–4 年。
+:::
 
 **工艺流程概览**：
 1. 硅晶圆（*wafer*）准备
@@ -75,13 +93,16 @@ ASIC 是针对特定应用定制的芯片，固化后功能不可更改。相比
 
 ## 5. FPGA（*Field-Programmable Gate Array*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — FPGA（<em>Field-Programmable Gate Array</em>）</strong><br>
-FPGA 是可重编程硬件：内部由大量可配置逻辑块（<em>CLB, Configurable Logic Block</em>）、查找表（<em>LUT, Look-Up Table</em>）、触发器（<em>FF</em>）、BRAM 和 DSP 块组成，通过编程位流（<em>bitstream</em>）配置互连，实现任意逻辑功能。</br>
-主要供应商：Xilinx（现 AMD）、Altera（现 Intel）。</div>
+::: definition
+**定义 — FPGA（*Field-Programmable Gate Array*）**
+
+FPGA 是可重编程硬件：内部由大量可配置逻辑块（*CLB, Configurable Logic Block*）、查找表（*LUT, Look-Up Table*）、触发器（*FF*）、BRAM 和 DSP 块组成，通过编程位流（*bitstream*）配置互连，实现任意逻辑功能。</br>
+主要供应商：Xilinx（现 AMD）、Altera（现 Intel）。
+:::
 
 ### 5.1 FPGA 编程流程
 
-```
+```text
 BSV 源代码
     ↓ Bluespec 编译器
 Verilog RTL
@@ -95,14 +116,17 @@ Verilog RTL
 
 ### 5.2 FPGA 的特殊注意事项
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 仿真与 FPGA 的差异</strong>　FPGA 使用固定时钟（由晶振产生），而 BSV 仿真是理想化的。FPGA 上可能出现<strong>时序违反（<em>timing violation</em>）</strong>：某条组合路径的延迟超过了时钟周期，导致寄存器采样到错误值。症状是仿真正确而 FPGA 上行为异常。解决方法：降低时钟频率，或重构关键路径（拆分寄存器阶段）。</div>
+::: theorem 推论 — 仿真与 FPGA 的差异
+FPGA 使用固定时钟（由晶振产生），而 BSV 仿真是理想化的。FPGA 上可能出现**时序违反（*timing violation*）**：某条组合路径的延迟超过了时钟周期，导致寄存器采样到错误值。症状是仿真正确而 FPGA 上行为异常。解决方法：降低时钟频率，或重构关键路径（拆分寄存器阶段）。
+:::
 
 ---
 
 ## 6. FPGA 作为加速器
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — FPGA 加速器互连</strong><br>
-将 FPGA 连接到主机 CPU 的主要总线协议是 PCIe（<em>PCI Express</em>）。课程使用的 VCU108 开发板通过 <em>Connectal</em> 框架实现 PCIe 通信；6.111 课程使用 USB UART 和 <em>Manta</em> 框架进行调试。</div>
+::: definition 定义 — FPGA 加速器互连
+将 FPGA 连接到主机 CPU 的主要总线协议是 PCIe（*PCI Express*）。课程使用的 VCU108 开发板通过 *Connectal* 框架实现 PCIe 通信；6.111 课程使用 USB UART 和 *Manta* 框架进行调试。
+:::
 
 **FPGA 规格范围**：
 
@@ -125,13 +149,17 @@ MIT 相关后续课程（面向深入学习体系结构/硬件的方向）：
 - **6.888**：高级计算机体系结构专题
 - **6.374**：VLSI 设计（模拟/数字混合芯片）
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 本课程的核心价值</strong>　6.1920 以 BSV 为工具，展示了「硬件即软件」的设计理念：规则系统（<em>rule-based design</em>）让正确性推理更系统化，类型系统防止连线错误，调度语义保证一致性。这些思想超越了具体语言，适用于任何硬件设计方法论。</div>
+::: theorem 推论 — 本课程的核心价值
+6.1920 以 BSV 为工具，展示了「硬件即软件」的设计理念：规则系统（*rule-based design*）让正确性推理更系统化，类型系统防止连线错误，调度语义保证一致性。这些思想超越了具体语言，适用于任何硬件设计方法论。
+:::
 
 ---
 
 ## 8. 全课总结
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 综合设计选择</strong></div>
+::: example 例题 — 综合设计选择
+
+:::
 
 需要设计一个高性能 AI 推理芯片，选择 FPGA 还是 ASIC？
 
@@ -143,6 +171,6 @@ Sol：先 FPGA 验证再 ASIC 流片是工业界标准流程，BSV 的正确性�
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 BSV 设计经由 Bluespec 编译器→ Verilog RTL → 综合工具 → 晶体管版图的完整流水线，最终变成真实硅片；ASIC 不可更改但性能最优，FPGA 可重编程适合原型验证；现代工艺节点（5 nm FinFET）使单芯片可集成数百亿晶体管；时序违反是 FPGA 实现的主要陷阱；完整的体系结构知识（本课所学）是设计高效加速器和处理器的基础。

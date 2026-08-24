@@ -1,4 +1,13 @@
-# L14：垃圾回收 III（GC III）——分代与增量回收
+---
+title: 垃圾回收 III（GC III）——分代与增量回收
+course: 6.112 动态计算机语言工程
+course_id: '6.112'
+lecture: 14
+kind: theory
+tags: []
+status: complete
+---
+# Lec 14 垃圾回收 III（GC III）——分代与增量回收
 
 > 接 L13。用**分代回收**降低回收成本、用**增量回收**降低停顿，并比较各方案、看实践
 
@@ -6,15 +15,17 @@
 
 ## 1. GC 的五个权衡维度（汇总）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（评价 GC 的五维）</strong>
-<ul>
-<li><strong>可达性 (Reachability)</strong>：精确还是近似（处理环否）；</li>
-<li><strong>运行期开销 (Runtime overhead)</strong>：GC 给正常执行增加的成本；</li>
-<li><strong>空间效率 (Space efficiency)</strong>：需要多少额外空间；</li>
-<li><strong>回收效率 (Reclamation efficiency)</strong>：回收每个对象多贵 / 多快；</li>
-<li><strong>GC 延迟 (Latency)</strong>：能否避免长停顿。</li>
-</ul>
-</div>
+::: definition 定义（评价 GC 的五维）
+- **可达性 (Reachability)**：精确还是近似（处理环否）；
+
+- **运行期开销 (Runtime overhead)**：GC 给正常执行增加的成本；
+
+- **空间效率 (Space efficiency)**：需要多少额外空间；
+
+- **回收效率 (Reclamation efficiency)**：回收每个对象多贵 / 多快；
+
+- **GC 延迟 (Latency)**：能否避免长停顿。
+:::
 
 三种基础方案对照：
 
@@ -28,91 +39,100 @@
 
 ## 2. 分代回收（Generational Collectors）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（弱分代假设与分代堆）</strong>
-洞察（<strong>弱分代假设</strong>）：多数应用有<strong>大量极短命对象</strong>与<strong>少量极长寿对象</strong>。据此把堆按"代 (generation)"分区：
-<ul>
-<li><strong>新生代 (young heap)</strong>：存短命对象，<strong>频繁</strong>回收，保持较小；</li>
-<li><strong>老年代 (old heap)</strong>：在新生代中<strong>历经多轮 GC 仍存活</strong>的对象被<strong>晋升</strong>至此，<strong>很少</strong>回收。</li>
-</ul>
+::: definition 定义（弱分代假设与分代堆）
+洞察（**弱分代假设**）：多数应用有**大量极短命对象**与**少量极长寿对象**。据此把堆按"代 (generation)"分区：
+
+- **新生代 (young heap)**：存短命对象，**频繁**回收，保持较小；
+
+- **老年代 (old heap)**：在新生代中**历经多轮 GC 仍存活**的对象被**晋升**至此，**很少**回收。
+
 （可有多于两代。）
-</div>
+:::
 
 > 为何高效：新生代小，回收快；绝大多数短命对象（如小函数的栈帧、算术中间值）很快死亡、根本不必复制；老年代虽大但极少被遍历/复制。
 
 ### 2.1 关键问题：跨代指针（Cross-Generation Pointers）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（老→新指针必须纳入根集）</strong>
-回收新生代时，我们<strong>不想遍历整个老年代</strong>（否则失去"小范围快回收"的意义）。但老年代对象可能指向新生代对象——这些<strong>从老年代指向新生代的指针，必须被当作根集的一部分</strong>，否则会漏标仍可达的新生代对象。
-</div>
+::: theorem 定理（老→新指针必须纳入根集）
+回收新生代时，我们**不想遍历整个老年代**（否则失去"小范围快回收"的意义）。但老年代对象可能指向新生代对象——这些**从老年代指向新生代的指针，必须被当作根集的一部分**，否则会漏标仍可达的新生代对象。
+:::
 
 实现上用**写屏障 (write barrier)** 记录这类跨代指针（见下节，亦称 remembered set）。**完整回收 (full collection)** 时则像一次（带额外步骤的）标记-清扫，遍历整堆。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（分代回收的权衡）</strong>
-<ul>
-<li><strong>可达性</strong>：完整回收精确；仅新生代回收不精确（依赖跨代指针记录）。</li>
-<li><strong>运行期开销</strong>：需检查是否创建了"指入新生代"的指针；比引用计数略好（只需查指针、不必读旧被指对象）。</li>
-<li><strong>空间效率</strong>：可用整个堆，开销主要是根集/记录集；若不触发完整回收，可能残留少量垃圾。</li>
-<li><strong>回收效率</strong>：新生代回收比纯复制式更高效（复制更少）；完整回收类似标记-清扫，但理想情况下不必常做。</li>
-<li><strong>延迟</strong>：新生代回收远好于整堆复制；完整扫描仍是 mark-and-sweep 级别。</li>
-</ul>
-</div>
+::: theorem 定理（分代回收的权衡）
+- **可达性**：完整回收精确；仅新生代回收不精确（依赖跨代指针记录）。
+
+- **运行期开销**：需检查是否创建了"指入新生代"的指针；比引用计数略好（只需查指针、不必读旧被指对象）。
+
+- **空间效率**：可用整个堆，开销主要是根集/记录集；若不触发完整回收，可能残留少量垃圾。
+
+- **回收效率**：新生代回收比纯复制式更高效（复制更少）；完整回收类似标记-清扫，但理想情况下不必常做。
+
+- **延迟**：新生代回收远好于整堆复制；完整扫描仍是 mark-and-sweep 级别。
+:::
 
 ---
 
 ## 3. 增量回收（Incremental Collection）——降低延迟
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（增量回收）</strong>
-为避免 GC 的长停顿，把 GC 的执行与<strong>变更器 (mutator，即用户程序)</strong> 的执行<strong>交错 (interleave)</strong> 进行。
-</div>
+::: definition 定义（增量回收）
+为避免 GC 的长停顿，把 GC 的执行与**变更器 (mutator，即用户程序)** 的执行**交错 (interleave)** 进行。
+:::
 
 ### 3.1 三色（对象阶段）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（对象的三个标记阶段，即三色标记）</strong>
-<ul>
-<li><strong>unreached（白）</strong>：尚未被标记到达；</li>
-<li><strong>unscanned（灰）</strong>：已到达，但其引用尚未全部跟随完；</li>
-<li><strong>scanned（黑）</strong>：已处理完毕。</li>
-</ul>
+::: definition 定义（对象的三个标记阶段，即三色标记）
+- **unreached（白）**：尚未被标记到达；
+
+- **unscanned（灰）**：已到达，但其引用尚未全部跟随完；
+
+- **scanned（黑）**：已处理完毕。
+
 若 mutator 要与回收交错运行，它必须感知所修改对象的当前阶段。
-</div>
+:::
 
 ### 3.2 危险情形与写屏障
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题（增量回收的漏标 bug）</strong>
+::: example 例题（增量回收的漏标 bug）
 GC 标记进行到一半时，mutator 插一脚：
-<pre>
+
+```text
 1) 把一个指针从【scanned(黑)】对象 → 【unreached(白)】对象（新建）；
 2) 同时删除【unscanned(灰)】对象到该白对象的原有指针。
-</pre>
-结果：GC 以为黑对象已扫完（不会再看它的新指针），而通往白对象的唯一灰路径又被删了 → <strong>GC 认为全部扫描完毕，但其实有个可达对象被漏标</strong> → 被错误回收（悬垂指针！）。
-</div>
+```
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定理（写屏障 Write Barrier）</strong>
-解法：给 mutator 装一个<strong>写屏障</strong>——在<strong>每次写指针时</strong>运行的检查。当检测到"从 scanned 对象指向 unscanned/unreached 对象"的新引用时，把被指对象加入<strong>待扫描列表</strong>。代价：增加运行期开销，换取更低的 GC 延迟。
-</div>
+结果：GC 以为黑对象已扫完（不会再看它的新指针），而通往白对象的唯一灰路径又被删了 → **GC 认为全部扫描完毕，但其实有个可达对象被漏标** → 被错误回收（悬垂指针！）。
+:::
+
+::: theorem 定理（写屏障 Write Barrier）
+解法：给 mutator 装一个**写屏障**——在**每次写指针时**运行的检查。当检测到"从 scanned 对象指向 unscanned/unreached 对象"的新引用时，把被指对象加入**待扫描列表**。代价：增加运行期开销，换取更低的 GC 延迟。
+:::
 
 ---
 
 ## 4. 完整的权衡视角与实践
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（各技术对应的改进维度）</strong>
-<ul>
-<li><strong>完整性（环）</strong>：引用计数 vs. 标记（标记处理环）；</li>
-<li><strong>空间效率</strong>：减少/消除"已分配对象链表"（侵入式头部、复制式）；</li>
-<li><strong>回收效率</strong>：分代回收把搜索大多限制在小空间；</li>
-<li><strong>延迟</strong>：分代（多数时间只扫小空间）+ 增量（把开销分散到整个运行期）。</li>
-</ul>
-</div>
+::: definition 定义（各技术对应的改进维度）
+- **完整性（环）**：引用计数 vs. 标记（标记处理环）；
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义（GC 在实践中）</strong>
-<ul>
-<li><strong>C++</strong>：通过 <code>shared_ptr</code> 库（引用计数）。</li>
-<li><strong>Objective-C / Swift</strong>：引用计数（ARC）。</li>
-<li><strong>Python</strong>：引用计数 + 可选的分代回收器（处理环）。</li>
-<li><strong>Java 11</strong>：多种分代回收器——Serial（单线程）、Parallel/吞吐量（多线程加速）、CMS 与 G1（大多并发，与应用并行做昂贵工作）。</li>
-</ul>
+- **空间效率**：减少/消除"已分配对象链表"（侵入式头部、复制式）；
+
+- **回收效率**：分代回收把搜索大多限制在小空间；
+
+- **延迟**：分代（多数时间只扫小空间）+ 增量（把开销分散到整个运行期）。
+:::
+
+::: definition 定义（GC 在实践中）
+- **C++**：通过 `shared_ptr` 库（引用计数）。
+
+- **Objective-C / Swift**：引用计数（ARC）。
+
+- **Python**：引用计数 + 可选的分代回收器（处理环）。
+
+- **Java 11**：多种分代回收器——Serial（单线程）、Parallel/吞吐量（多线程加速）、CMS 与 G1（大多并发，与应用并行做昂贵工作）。
+
 延伸阅读：Jones & Lins《Garbage Collection》；Jones, Hosking, Moss《The Garbage Collection Handbook》。
-</div>
+:::
 
 ---
 

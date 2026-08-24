@@ -1,4 +1,13 @@
-# Lec 6 — 网状网络与多跳路由（*Mesh Networking & Multi-Hop Routing*）
+---
+title: '网状网络与多跳路由（Mesh Networking & Multi-Hop Routing）'
+course: 6.1820 移动和传感器计算
+course_id: '6.1820'
+lecture: 6
+kind: system
+tags: []
+status: complete
+---
+# Lec 6 网状网络与多跳路由（*Mesh Networking & Multi-Hop Routing*）
 > MIT 6.1820/MAS.453 · Mobile and Sensor Computing
 > 阅读材料：ETX 论文 [MobiCom'03]
 
@@ -6,8 +15,11 @@
 
 单跳无线网络的覆盖范围有限，且高传输功率会增加干扰、消耗能量。**多跳网状网络**（*Multi-Hop Mesh Network*）通过中继节点扩展覆盖，每一跳功率可以大幅降低。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — 网状网络（<em>Mesh Network</em>）</strong><br>
-每个节点既是通信终端，也是路由器，数据包可以经过多个中间节点（<em>Relay</em>）抵达目的地，形成网状拓扑（<em>Mesh Topology</em>）。</div>
+::: definition
+**定义 — 网状网络（*Mesh Network*）**
+
+每个节点既是通信终端，也是路由器，数据包可以经过多个中间节点（*Relay*）抵达目的地，形成网状拓扑（*Mesh Topology*）。
+:::
 
 **挑战**：
 - 无线链路质量随时间波动（*Fading, Interference*）
@@ -18,8 +30,11 @@
 
 ## 2. ETX：期望传输次数（*Expected Transmission Count*）
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — ETX（<em>Expected Transmission Count</em>）</strong><br>
-在无线链路上成功传输一个数据包所需的期望传输次数，包含重传。ETX 越小，链路质量越好。</div>
+::: definition
+**定义 — ETX（*Expected Transmission Count*）**
+
+在无线链路上成功传输一个数据包所需的期望传输次数，包含重传。ETX 越小，链路质量越好。
+:::
 
 ### 2.1 推导
 
@@ -31,7 +46,9 @@ $$p_\text{success} = r_{fwd} \times r_{rev}$$
 
 $$\text{ETX} = \frac{1}{r_{fwd} \times r_{rev}}$$
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — ETX 的物理意义</strong>　若 $r_{fwd} = 0.9, r_{rev} = 0.9$，则 $\text{ETX} = 1/0.81 \approx 1.23$，即平均约 1.23 次传输可成功。若链路差到 $r_{fwd} = 0.3, r_{rev} = 0.3$，则 $\text{ETX} \approx 11.1$，实际上约等于带宽损失 9 倍。</div>
+::: theorem 推论 — ETX 的物理意义
+若 $r_{fwd} = 0.9, r_{rev} = 0.9$，则 $\text{ETX} = 1/0.81 \approx 1.23$，即平均约 1.23 次传输可成功。若链路差到 $r_{fwd} = 0.3, r_{rev} = 0.3$，则 $\text{ETX} \approx 11.1$，实际上约等于带宽损失 9 倍。
+:::
 
 ### 2.2 如何测量 $r_{fwd}$ 和 $r_{rev}$？
 
@@ -52,7 +69,9 @@ $$\text{ETX} = \frac{1}{r_{fwd} \times r_{rev}}$$
 
 $$\text{ETX}_\text{path} = \sum_{i} \text{ETX}_i$$
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — ETX vs. Hop-Count 路由选择</strong></div>
+::: example 例题 — ETX vs. Hop-Count 路由选择
+
+:::
 
 三条路径：
 - 路径 A：2 跳，每跳 ETX = 1.1 → 路径 ETX = 2.2
@@ -113,6 +132,6 @@ ETX 之后的改进工作：
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 ETX 通过测量双向探测包成功率，定义了 $\text{ETX} = 1/(r_{fwd} \times r_{rev})$ 作为链路质量度量，路径 ETX 为各跳之和，在 MIT Roofnet 等实验网中被证明显著优于 hop-count 路由，成为 Mesh 网络路由的基础度量之一。

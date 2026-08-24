@@ -1,4 +1,13 @@
-# Lec 5　调用约定、栈与内存布局
+---
+title: 调用约定、栈与内存布局
+course: 6.1904 C语言的底层汇编
+course_id: '6.1904'
+lecture: 5
+kind: system
+tags: []
+status: complete
+---
+# Lec 5 调用约定、栈与内存布局
 
 **本节内容**
 
@@ -14,7 +23,9 @@
 
 函数调用中，如何传递参数和返回值？谁负责保存哪些寄存器？这需要一套**调用约定**（*calling convention*）。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong>调用约定</strong>　在不同过程（procedure，即函数/子程序）之间，关于如何使用寄存器、如何传参与返回的一套规则。它不是硬件强制的，而是软件（编译器、汇编程序员）之间的约定——大家都遵守，独立编译的代码才能正确互相调用。 </div>
+::: definition 调用约定
+在不同过程（procedure，即函数/子程序）之间，关于如何使用寄存器、如何传参与返回的一套规则。它不是硬件强制的，而是软件（编译器、汇编程序员）之间的约定——大家都遵守，独立编译的代码才能正确互相调用。
+:::
 
 **过程**（*procedure*）是根据参数执行特定任务的存储子程序。执行一个过程要走六个步骤：
 
@@ -155,7 +166,9 @@ RISC-V 编译器保留 `x3`（`gp`，全局指针）指向静态数据区（*sta
 
 下面的例题都按这三步展开。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 1</strong>　leaf_example——翻译并理解栈操作 </div>
+::: example 例题 1
+leaf_example——翻译并理解栈操作
+:::
 
 ```c
 long long int leaf_example (long long int g, long long int h,
@@ -200,7 +213,9 @@ jalr x0, 0(x1)    ; 跳回调用者
 
 > **优化**：上面保存了 x5、x6、x20 三个寄存器，但 x5、x6 是临时寄存器（caller-saved），callee 不必保存。实际上只有 x20（saved 寄存器）才必须由 callee 保存。优化后只需保存/恢复 x20，省掉 x5、x6 的两次 `sd` 和两次 `ld`，共减少四条指令。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 2</strong>　swap——叶子过程的最简形式 </div>
+::: example 例题 2
+swap——叶子过程的最简形式
+:::
 
 ```c
 void swap(long long int v[], long long int k)
@@ -235,7 +250,9 @@ swap:
 
 **嵌套过程**（*nested procedures*）中，callee 自己又会调用别的过程从而覆盖 `ra`，所以必须先把 `ra` 压栈，返回前再恢复，才能正确跳回。**递归**（*recursion*）是嵌套过程的特例，每层调用都有自己的活动记录。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题</strong>　阶乘 fact——递归 </div>
+::: example 例题
+阶乘 fact——递归
+:::
 
 ```c
 long long int fact (long long int n)
@@ -296,7 +313,9 @@ sum_exit:
 
 没有 `addi sp`、没有 `sd`/`ld`，整个过程不碰栈——把 $O(n)$ 的栈空间降为 $O(1)$。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 3</strong>　sort——非叶子过程 + 嵌套循环 + 过程调用的完整翻译 </div>
+::: example 例题 3
+sort——非叶子过程 + 嵌套循环 + 过程调用的完整翻译
+:::
 
 ```c
 void sort(long long int v[], long long int n)
@@ -364,7 +383,9 @@ exit1:
 
 > **过程内联（procedure inlining）** 是一种编译器优化：不通过 `jal` 调用，而直接把被调用过程的代码复制到调用点。在 sort 里内联 swap 可省掉参数传递和跳转（约 4 条指令）。缺点是若该过程在多处被调用，代码体积膨胀，可能抬高缓存未命中率（*cache miss rate*）反而变慢。
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>栈追踪（2023 春季 Q4 第 5 题）</strong>　下面这段代码计算以 a1 为底 a0 的对数，涉及 ilog2（求以 2 为底的整数对数）和 idiv（整数除法）两个递归过程。题目在若干时间点记录内存和寄存器的值，要求据此填表。保留题面供对照分析。</div>
+::: example 栈追踪（2023 春季 Q4 第 5 题）
+下面这段代码计算以 a1 为底 a0 的对数，涉及 ilog2（求以 2 为底的整数对数）和 idiv（整数除法）两个递归过程。题目在若干时间点记录内存和寄存器的值，要求据此填表。保留题面供对照分析。
+:::
 
 ```asm
 jal ra, log_a_x        # TIME POINT 0(本行执行后)
@@ -427,7 +448,7 @@ log_a_x:               # 计算以 a1 为底 a0 的对数
 
 ## 五、内存布局
 
-```
+```text
 低地址
 │
 ├── Reserved 区域（操作系统保留）

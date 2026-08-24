@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 查询系列 — 1. 查询执行的各个阶段
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 查询系列 — 1. 查询执行的各个阶段
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/574702/ （作者 Egor Rogov，PostgresPro）
@@ -78,6 +85,6 @@ PostgreSQL 采用的是**基于代价的优化（cost-based optimization）**：
 
 这个过程是逐层向上传递的，如果底层的行数估计一旦出现偏差，误差会沿着整棵计划树向上累积、放大。业内共识（也是本系列后续文章反复强调的一点）是：**基数估算不准，是绝大多数"烂计划"背后真正的元凶**，比调整某个 cost 参数本身更值得关注。这也是为什么下一篇文章要专门讲统计信息（`pg_statistic`/`pg_stats`、直方图、MCV 列表、扩展统计等）。
 
-## 小结
+## 本讲小结
 
 本篇文章搭建了整个系列的骨架：一条 SQL 语句要依次经过解析（词法/语法分析 + 语义分析）、改写（视图展开、行级安全、递归查询处理，底层依赖规则系统）、规划（基于代价的搜索，用 `join_collapse_limit`/`from_collapse_limit`/`geqo_threshold` 等参数控制搜索空间，产出带 startup/total 两种代价的计划树）、执行（拉模型的逐行流水线，`work_mem` 决定排序/哈希类节点是否需要落盘）四个阶段。此外，通过预备语句触发的扩展查询协议还引入了"通用计划 vs 定制计划"的自适应选择机制。最重要的一点是：整套优化器的判断力都建立在统计信息的准确性之上，这正是第二篇文章要展开的主题。也需要提醒一句：不同查询之间的 cost 数值并不具备可比性，cost 只在"同一条查询、比较不同执行策略"这个语境下才有意义。

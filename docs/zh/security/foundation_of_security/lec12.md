@@ -1,4 +1,13 @@
-# Lec 12 — 安全系统架构（Architecting a Secure System）
+---
+title: 安全系统架构（Architecting a Secure System）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 12
+kind: theory
+tags: []
+status: complete
+---
+# Lec 12 安全系统架构（Architecting a Secure System）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 两类核心威胁
@@ -98,7 +107,7 @@ $$\text{用户} \to \text{角色} \to \text{权限}$$
 
 审计日志需与应用程序**隔离存储**：
 
-```
+```text
 应用程序 ---[只追加日志]--> 日志服务器 ----> 日志存储
                                      ↑ 不允许删除
 ```
@@ -109,7 +118,7 @@ $$\text{用户} \to \text{角色} \to \text{权限}$$
 
 ### 7.1 链式请求问题
 
-```
+```text
 用户 Alice ---[请求]--> Gmail 服务 ---[转发]--> 数据库
 ```
 
@@ -142,7 +151,7 @@ $$\sigma = \text{Sign}(sk_A,\ \text{"Alice delegates to Gmail"},\ t_\text{start}
 
 ### 8.1 Web 应用标准架构
 
-```
+```text
 Client --TLS--> [前端服务器]
                     |---> [Login 服务] <--> [密码 DB]
                     |---> [Profile 服务] <--> [用户 DB]
@@ -154,14 +163,14 @@ Client --TLS--> [前端服务器]
 
 ### 8.2 日志系统架构
 
-```
+```text
 应用 ---[只追加]---> 日志服务器
         （无删除 API）
 ```
 
 ### 8.3 密钥管理架构
 
-```
+```text
 应用 ---[sign(msg)]---> 密钥管理器（含 sk）
         （无法提取 sk）
 ```

@@ -1,13 +1,20 @@
+---
+title: TypeScript 基础
+course: 6.1020 软件构造基础
+course_id: '6.1020'
+lecture: 0
+kind: design
+tags: []
+status: complete
+---
 # Lec 0 TypeScript 基础
 
 [toc]
 
-本节Lec目标是
+本节 Lec 目标是
 
-- 学习基本的JS和TS的语法和语义
-- 从写Python转换到写TS
-
-
+- 学习基本的 JS 和 TS 的语法和语义
+- 从写 Python 转换到写 TS
 
 ## 1.  运行时快照图
 
@@ -19,7 +26,7 @@
 - 阐述诸如 不变量（immutable values） 与 不可重新赋值的引用（unreassignable references）、指针别名、堆与栈、抽象和具体表示等等
 - 为后续课程更丰富的设计符号奠定基础。
 
-即便课程的图是来自TS，但是在符号可以应用在任何现代编程语言，e.g. Python、Java、C++、Ruby。
+即便课程的图是来自 TS，但是在符号可以应用在任何现代编程语言，e.g. Python、Java、C++、Ruby。
 
 最简单的例子就是两个指向常数的变量：
 
@@ -71,7 +78,7 @@ let arr: Array<string> = ["a"];
 arr.push("b");
 ```
 
-可变性和不可变性的区别能让我们代码从安全变成bugs。
+可变性和不可变性的区别能让我们代码从安全变成 bugs。
 
 ![image-20250819061929049](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819061929049.png)
 
@@ -90,7 +97,4 @@ const arr: Array<string> = ["a"]
 arr.push("B")
 ```
 
-
-
 ![image-20250819062411431](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819062411431.png)
-

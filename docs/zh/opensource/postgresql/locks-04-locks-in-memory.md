@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的锁 — 4. 内存中的锁（Locks in memory）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的锁 — 4. 内存中的锁（Locks in memory）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/507036/ （作者 Egor Rogov，PostgresPro）
@@ -103,7 +110,7 @@ SELECT * FROM pg_wait_sampling_profile;
 
 原文构造了一个场景：用 `pgbench` 施加写负载，同时人为把磁盘 I/O 延迟调慢到十分之一秒这个量级，然后观察采样结果，大致得到类似这样的等待计数分布：
 
-```
+```text
 WALWrite（IO 类等待）：1445 次
 WALWriteLock（LWLock 类等待）：803 次
 DataFileExtend（IO 类等待）：20 次
@@ -121,7 +128,7 @@ DataFileExtend（IO 类等待）：20 次
 
 这个实验说明了为什么某些"冻结/清理类"的维护操作有时会看起来卡住不动——根源可能就是有其他会话（比如一个长期未关闭的游标）一直固定着相关的缓冲区页面。
 
-## 小结
+## 本讲小结
 
 这篇文章把视角从"用户可见的数据库对象锁"转向了 PostgreSQL 内核自身用来保护共享内存结构的三层机制：
 

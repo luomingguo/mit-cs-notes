@@ -1,9 +1,15 @@
+---
+title: 加密哈希函数与单向性
+course: 6.5610 应用密码学与安全（Spring 2026）
+course_id: '6.5610'
+lecture: 1
+kind: theory
+tags: []
+status: complete
+---
 # Lec 1 加密哈希函数与单向性
 
-
 关键词：随机预言机模型、单向性、抗碰撞性、生日攻击、性质间的蕴含关系
-
-
 
 ## 0. 一句话动机
 
@@ -12,10 +18,6 @@
 $$h : \{0,1\}^{*} \to \{0,1\}^{d}.$$
 
 要求三点：**确定性（deterministic）**、**公开（public，无密钥）**、**随机外观（random-looking）**。
-
-
-
-
 
 ## 1. 随机预言机直觉
 
@@ -28,34 +30,28 @@ $$h : \{0,1\}^{*} \to \{0,1\}^{d}.$$
 
 > 🔎 **直觉**：RO 模型是一种"理想气体"假设——把哈希当成对每个新输入独立均匀采样的黑盒，便于证明上层协议安全；落地时再用具体函数替换，这一步替换在理论上有缺口（RO 不可实例化的反例存在），但工程上被广泛接受。
 
-
-
-
-
 ## 2. 期望性质
 
 记号：$\{0,1\}$ 表示比特集合；$\mathrm{negl}(\cdot)$ 表示可忽略函数；$y \in_R \{0,1\}^d$​ 表示均匀随机取值。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>性质1：单向性 / 抗原像 （<i>One-Wayness / Preimage Resistance</i>） </strong></div>
+::: definition
+**性质 1：单向性 / 抗原像 （*One-Wayness / Preimage Resistance*）**
+:::
 
 给定随机 $y \in_R \{0,1\}^d$，找到任意 $x$ 使 $h(x) = y$ 在计算上不可行。
 
-
-
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>性质2： 抗碰撞 （<i>Collision Resistance, CR</i>） </strong></div>
+::: definition
+**性质 2： 抗碰撞 （*Collision Resistance, CR*）**
+:::
 
 找到两个不同输入 $x \ne x'$ 使 $h(x) = h(x')$​ 在计算上不可行。
 
-
-
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>属性3：目标抗碰撞 / 抗第二原像（<i>Target Collision Resistance, TCR / 2nd-preimage</i>） </strong></div>
+::: definition
+**属性 3：目标抗碰撞 / 抗第二原像（*Target Collision Resistance, TCR / 2nd-preimage*）**
+:::
 给定一个目标输入 $x$，找到 $x' \ne x$ 使 $h(x) = h(x')$ 在计算上不可行。
 
-
-
 > ⚠️ 注意 CR 与 TCR 的差别：CR 中攻击者可**自由选两个**输入；TCR 中**第一个输入 $x$ 是给定的**，攻击者只能找第二个去撞它。前者显然更强。
-
-
 
 ## 3. 通用攻击
 
@@ -66,44 +62,39 @@ $$h : \{0,1\}^{*} \to \{0,1\}^{d}.$$
 
 > 🔎 **工程含义**：这正是"抗碰撞所需输出长度要比抗原像翻倍"的原因。要抵御 $2^{128}$ 级别的碰撞攻击，输出至少要 $n = 256$​ 比特（故 SHA-256 的碰撞安全约 128 位）。
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>生日悖论（Birthday Paradox）： </strong>直觉上：一年有 365 天，你可能觉得需要接近 365 人，才有两个人生日相同。实际上：23 个人中，两人生日相同的概率已经超过 50%，70 个人中，这个概率超过 99%。 <br>原因在于：我们不是寻找“某个人与我同生日”，而是寻找“任意两个人生日相同”<br> 生日攻击是一种利用概率论中“生日悖论”的密码学攻击方法 </div>
-
-
-
-
+::: definition 生日悖论（Birthday Paradox）：
+直觉上：一年有 365 天，你可能觉得需要接近 365 人，才有两个人生日相同。实际上：23 个人中，两人生日相同的概率已经超过 50%，70 个人中，这个概率超过 99%。
+原因在于：我们不是寻找“某个人与我同生日”，而是寻找“任意两个人生日相同”
+生日攻击是一种利用概率论中“生日悖论”的密码学攻击方法
+:::
 
 ## 4. 性质间的蕴含关系（Relations）
 
-<div class="corollary">
+::: theorem
 **关系总览**
 
 1. 抗碰撞 $\Rightarrow$ 目标抗碰撞（CR ⟹ TCR），反之不成立。
 2. 单向性 $\not\Rightarrow$ 抗碰撞。
 3. 抗碰撞 $\not\Rightarrow$ 单向性。
-
-</div>
+:::
 
 直觉上 (1) 显然：能抵御"自由选两个输入撞车"，自然也能抵御"给定一个再去撞"。下面给出 (2)(3) 的**反例构造**，这类"用反例分离两个安全概念"的技巧在本课会反复出现。
 
-<div class="example">
-
+::: example
 **反例 A：抗碰撞 $\not\Rightarrow$ 单向（CR 不蕴含 OW）**
 设 $f:\{0,1\}^n \to \{0,1\}^n$ 抗碰撞。定义
 $$H(x) = f(x) \,\|\, x \quad(\| \text{ 为拼接}).$$
 - 它**仍抗碰撞**：若 $H(x) = H(x')$，则尾部 $x = x'$，根本不存在碰撞。
 - 但它**完全不单向**：输出里直接附带了 $x$，看一眼就能读出原像。
+:::
 
-</div>
-
-<div class="example">
-
+::: example
 **反例 B：单向 $\not\Rightarrow$ 抗碰撞（OW 不蕴含 CR）**
 设 $f:\{0,1\}^n \to \{0,1\}^n$ 单向。定义
 $$H(x_1, x_2) = f(x_1).$$
 - 它**仍单向**：要反推需恢复 $x_1$，难度等同求逆 $f$。
 - 但**碰撞平凡**：固定任意 $x_1$，随便改 $x_2$ 即得碰撞（输出只依赖 $x_1$）。
-
-</div>
+:::
 
 > 🔎 **要点**：单向性与抗碰撞是**正交**的两件事——前者关心"能否反推输入"，后者关心"能否制造重复输出"。选择上层协议所需的性质时必须对号入座（见下节）。
 
@@ -129,36 +120,30 @@ $$H(x_1, x_2) = f(x_1).$$
 
 ## 6. 形式化定义（Formal Definitions）
 
-<div class="definition">
-
+::: definition
 **定义 4（可忽略函数 · *Negligible function*）**
 $\mu(\lambda)$ 可忽略，当且仅当：对任意多项式 $p$，存在 $\lambda_0$，使得对所有 $\lambda > \lambda_0$ 有
 $$\mu(\lambda) < \frac{1}{p(\lambda)}.$$
-
-</div>
+:::
 
 直觉：可忽略 = 比**任何**多项式倒数都更快趋于 0，即"实际上永不发生"。
 
-<div class="definition">
-
+::: definition
 **定义 5（单向函数 · *One-Way Function, OWF*）**
 $H:\{0,1\}^{*} \to \{0,1\}^{n}$ 是单向函数，若对任意概率多项式时间（*PPT*）敌手 $\mathcal{A}$，存在可忽略函数 $\mu$，使得对每个安全参数 $\lambda \in \mathbb{N}$：
 $$\Pr\big[\, H(x') = H(x) \,\big] \le \mu(\lambda),$$
 其中 $x \xleftarrow{R} \{0,1\}^{\lambda}$，$x' \leftarrow \mathcal{A}(H(x))$，概率取自 $x$ 与敌手的随机性。
-
-</div>
+:::
 
 > 🔎 关于这条定义的三处要点：
 > 1. 概率对 $x$ 的随机选取取期望——**防止敌手挑"易解"的输入**（不能让敌手自己选 $x$）。
 > 2. 敌手**不需恢复原始 $x$**；只要输出**任意一个**原像 $x'$（满足 $H(x') = H(x)$）即算成功。
 > 3. 可忽略的成功概率是**可达的**：敌手随便猜一个 $x' \xleftarrow{R}\{0,1\}^\lambda$ 就有微小成功率；即便猜 $\mathrm{poly}(\lambda)$ 次再验证，成功概率仍可忽略。故"可忽略"而非"绝对为零"是恰当门槛。
 
-<div class="definition">
-
+::: definition
 **定义 6（抗碰撞函数族 · *Collision-Resistant family*）**
 函数族 $\{H_\lambda\}$ 抗碰撞，若对每个 $\lambda$、每个 PPT 敌手 $\mathcal{A}$，$\mathcal{A}(1^\lambda)$ 输出满足 $H_\lambda(x) = H_\lambda(x')$ 的不同 $x, x'$ 的概率可忽略。概率空间取敌手内部随机性，以及 $H$ 中可能的随机性（$H$ 本身可为确定性）。
-
-</div>
+:::
 
 > ⚠️ **为何要"函数族"而非单个函数**：对任意固定确定性 $h$，碰撞 $(x,x')$ **客观存在**（鸽笼原理），于是"存在一个直接输出该碰撞的敌手"——只是我们不知道它长什么样。用密钥/索引参数化的**函数族**配合**非一致敌手**模型，才能让抗碰撞的形式化定义自洽。
 
@@ -166,21 +151,17 @@ $$\Pr\big[\, H(x') = H(x) \,\big] \le \mu(\lambda),$$
 
 ## 7. 习题（Exercises）
 
-<div class="example">
-
+::: example
 **习题 1（OWF）**
 设 $f$ 单向，定义 $g(x_1, x_2) = f(x_1) \oplus x_2$。分析 $g$ 的单向性。
 *提示*：$x_2$ 像一次性掩码，输出对 $x_2$ 是满射且均匀——给定 $y$ 能否轻易找到某个 $(x_1', x_2')$ 使 $g$ 命中？这与"恢复 $x_1$"是不是一回事？
+:::
 
-</div>
-
-<div class="example">
-
+::: example
 **习题 2（CR）**
 给定抗碰撞的 $h_1, h_2$，判断 $h(x,y) = h_1(x,\, h_2(y))$ 是否抗碰撞。
 *提示*：分情况——碰撞要么发生在内层 $h_2$（撞出相同中间值），要么发生在外层 $h_1$。逐层归约到 $h_1$ 或 $h_2$ 的抗碰撞性。
-
-</div>
+:::
 
 ---
 

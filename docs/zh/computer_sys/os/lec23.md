@@ -1,3 +1,12 @@
+---
+title: 熔断（Meltdown）
+course: 6.1810 操作系统工程
+course_id: '6.1810'
+lecture: 23
+kind: system
+tags: []
+status: complete
+---
 # Lec 23 熔断（Meltdown）
 
 阅读论文：[Meltdown: Reading Kernel Memory from User Space](https://meltdownattack.com/meltdown.pdf)，Lipp 等，2018。
@@ -6,7 +15,7 @@
 
 > 提醒：安全是操作系统的顶层目标之一。恶意用户代码是攻击的一大来源，内核的主要策略是**隔离**（用户/特权模式、页表、谨慎设计的系统调用、容器等）。如果这些都正确设置了，还能出什么问题？—— Meltdown 给出了一个令人不安的答案。
 
-## 总览
+## 本讲导览
 
 - 为什么读这篇论文：页保护被绕过的微架构攻击
 - 攻击核心代码（用户态）
@@ -35,7 +44,7 @@
 
 ## 二、攻击核心代码（用户代码）
 
-```
+```text
 1.  char buf[8192]
 2.  r1 = <一个内核虚拟地址>
 3.  r2 = *r1
@@ -51,7 +60,7 @@
 
 本文假设内核被映射进每个用户进程的页表中（PTE_U 清零）：
 
-```
+```text
    2^64  +-----------------+
          |     kernel      |   高地址：内核（PTE_U=0，禁止用户访问）
          |       ...       |
@@ -69,7 +78,7 @@
 
 先抛开安全，看一段普通代码：
 
-```
+```text
 r0 = <某个地址>
 r1 = load x          // r1 是寄存器，x 是 RAM 中的变量
 if (r1 == 1) {
@@ -108,7 +117,7 @@ if (r1 == 1) {
 
 ### 2. CPU 数据缓存 / TLB 缓存
 
-```
+```text
 core
 L1: va,pa | data   /  TLB: va | pa
 L2: pa    | data
@@ -150,7 +159,7 @@ RAM
 
 ## 六、完整的 Meltdown 攻击流程
 
-```
+```text
     // 用户内存
     char buf[8192]
 

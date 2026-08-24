@@ -1,4 +1,13 @@
-# Lec 11 — 声学感知攻击（*Acoustic Sensing Attacks*）
+---
+title: 声学感知攻击（Acoustic Sensing Attacks）
+course: 6.1820 移动和传感器计算
+course_id: '6.1820'
+lecture: 11
+kind: system
+tags: []
+status: complete
+---
+# Lec 11 声学感知攻击（*Acoustic Sensing Attacks*）
 > MIT 6.1820/MAS.453 · Mobile and Sensor Computing
 > 阅读材料：BackDoor [MobiSys'17]
 
@@ -19,9 +28,11 @@
 
 ## 2. 麦克风工作原理
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>定义 — MEMS 麦克风信号链</strong><br>
-声波 → 振膜（<em>Diaphragm</em>）→ 前置放大器（<em>Amplifier</em>）→ 低通滤波器（<em>LPF</em>）→ ADC → 数字音频<br>
-低通滤波器截止频率约 20 kHz（人耳听觉上限），超声波信号在此被滤除。</div>
+::: definition 定义 — MEMS 麦克风信号链
+声波 → 振膜（*Diaphragm*）→ 前置放大器（*Amplifier*）→ 低通滤波器（*LPF*）→ ADC → 数字音频
+
+低通滤波器截止频率约 20 kHz（人耳听觉上限），超声波信号在此被滤除。
+:::
 
 **关键漏洞**：放大器在进入滤波器**之前**工作，若对放大器施加超声波激励，其非线性特性会将信号"混叠"到音频频段。
 
@@ -45,7 +56,9 @@ $$V_{out}^{(2)} = a_2 V_{in}^2 = a_2 (\sin F_1 + \sin F_2)^2$$
 
 $$\cos(2\pi(F_1 - F_2)t)$$
 
-<div style="border-left: 4px solid #e05c5c; background: #fdeeee; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>例题 — 差频计算</strong></div>
+::: example 例题 — 差频计算
+
+:::
 
 设 $F_1 = 50\text{ kHz}$，$F_2 = 40\text{ kHz}$（两者均为超声，不可听）：
 
@@ -53,7 +66,9 @@ $$F_1 - F_2 = 10\text{ kHz}$$
 
 Sol：差频 $10\text{ kHz}$ 落在人类可听频段（$20\text{ Hz} - 20\text{ kHz}$）内，且**能通过麦克风的低通滤波器**，最终被 ADC 采样为数字音频！攻击者可以将语音命令（例如"OK Google 打电话给 X"）编码在两个超声波之间的差频信号上。
 
-<div style="border-left: 4px solid #5cb85c; background: #eafaf0; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"><strong>推论 — 哪个非线性是主要来源？</strong>　麦克风的放大器和扬声器均有非线性，实验表明麦克风侧（放大器）的非线性是主要信号来源，扬声器侧是次要来源，这决定了攻击的信号链设计。</div>
+::: theorem 推论 — 哪个非线性是主要来源？
+麦克风的放大器和扬声器均有非线性，实验表明麦克风侧（放大器）的非线性是主要信号来源，扬声器侧是次要来源，这决定了攻击的信号链设计。
+:::
 
 ---
 
@@ -125,6 +140,6 @@ BackDoor 还可作为**声学干扰器**（*Acoustic Jammer*）：
 
 ---
 
-## 本讲总结
+## 本讲小结
 
 BackDoor 利用 MEMS 麦克风放大器的平方非线性，将两个超声波（人耳不可听）的差频信号注入麦克风的数字音频输出，实现不可听的隐蔽声音通信和干扰攻击；双扬声器架构消除了扬声器自身非线性的干扰，FM 调制提升了信号质量，展示了 IoT 模拟传感器面临的深层安全威胁。

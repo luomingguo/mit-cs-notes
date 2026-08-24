@@ -1,6 +1,12 @@
+---
+title: 6.5820/6.S04 计算机网络
+course: 6.5820/6.S04 计算机网络
+course_id: '6.5820'
+kind: system
+tags: []
+status: complete
+---
 # 6.5820/6.S04 计算机网络
-
-
 
 [官方 currentsemester](https://web.mit.edu/6.829/www/currentsemester/) 不公开
 
@@ -14,31 +20,23 @@ https://github.com/rcya1/lilypad/tree/9d886a3596521e7950a1c1351c17c9cd5f097c74/s
 
  6.033 计算机系统工程
 
+## 课程描述 www
 
-
-## 课程描述www
-
-主题包括网络协议和架构工程与分析，包括设计异构网络的架构原则；传输协议；互联网路由；路由器设计；拥塞控制和网络资源管理；无线网络；网络安全；命名；覆盖网络和P2P网络。阅读资料来自于原始的研究论文。
+主题包括网络协议和架构工程与分析，包括设计异构网络的架构原则；传输协议；互联网路由；路由器设计；拥塞控制和网络资源管理；无线网络；网络安全；命名；覆盖网络和 P2P 网络。阅读资料来自于原始的研究论文。
 
 *H. Balakrishnan*
 
-
-
-
-
-
-
 ### 参考书
 
-- 拉里·彼得森 (Larry Peterson) 和布鲁斯·戴维 (Bruce Davie) 撰写的《计算机网络：系统方法》第6版
+- 拉里·彼得森 (Larry Peterson) 和布鲁斯·戴维 (Bruce Davie) 撰写的《计算机网络：系统方法》第 6 版
 
-- 《计算机网络：自顶向下方法》目前已经第8版，是计算机网络领域的“圣经”
+- 《计算机网络：自顶向下方法》目前已经第 8 版，是计算机网络领域的“圣经”
 
 - 《计算机网络》Andrew S. Tanenbaum
 
 如果想将计算机网络作为职业方向
 
-- TCP/IP详解：协议
+- TCP/IP 详解：协议
 - Unix Network Programming: Networking APIs: Sockets and XTI (Volume 1) by W. Richard Stevens.
 - Advanced Programming in the Unix Environment by W. Richard Stevens, Addison-Wesley, 1993.
 
@@ -57,8 +55,6 @@ https://github.com/rcya1/lilypad/tree/9d886a3596521e7950a1c1351c17c9cd5f097c74/s
 - [COS461, fa21](https://www.cs.princeton.edu/courses/archive/fall21/cos461/)
 
 - [COS 561, SP23](https://cos561.princeton.systems/schedule.html)
-
-
 
 ## 实验
 
@@ -96,8 +92,6 @@ https://github.com/aravic/6.829-pset-3
 
 这一部分偏向于 互联网原理 。
 
-
-
 ## 模块二：Underlay Networks
 
 回答：
@@ -105,8 +99,6 @@ https://github.com/aravic/6.829-pset-3
 - 互联网下面真正运行着什么？
 
 这一部分研究 云的基础设施。
-
-
 
 ## 模块三：Overlay Networks
 
@@ -121,32 +113,18 @@ Lec 16 ~ Lec 17
 阅读资料
 
 - 互联网简史 [A brief history of the internet, 2009](https://web.stanford.edu/class/cs244/papers/L2-brief-history.pdf)，这篇论文被发布了两次，因为其有历史的重要性
-- DARPA互联网协议的设计哲学 [The Design Philosophy of the DARPA Internet Protocols, 1988](https://web.stanford.edu/class/cs244/papers/DesignPhilosophyDARPA.pdf)
+- DARPA 互联网协议的设计哲学 [The Design Philosophy of the DARPA Internet Protocols, 1988](https://web.stanford.edu/class/cs244/papers/DesignPhilosophyDARPA.pdf)
 - 端到端原则 [End-to-End Arguments in System Design](https://web.stanford.edu/class/cs244/papers/End2EndSystemDesign.pdf)
-
-
 
 回顾了我们为什么互联网是当下这个样子。
 
-## 总览
+## 本讲导览
 
 - 互联网简史
-- DARPA互联网协议的设计哲学
+- DARPA 互联网协议的设计哲学
 - 端到端原则
 
-
-
 [lec1.md](./Internet-Design-Philosophy.md)
-
-
-
-
-
-
-
-
-
-
 
 # Lec 2 端到端拥塞控制
 
@@ -154,26 +132,14 @@ Lec 16 ~ Lec 17
 
 [lec3.md](./End-to-End-Congestion-Control.md)
 
-
-
 # Lec 3 网络辅助拥塞控制
-
-
 
 - D. Katabi, M. Handley, and C. Rohrs, [Congestion control for high bandwidth-delay product networks](https://web.mit.edu/6.829/www/2020/papers/xcp.pdf), SIGCOMM 2002. (Read Sections 1-3)
 - [PIE Internet RFC](https://tools.ietf.org/html/draft-ietf-aqm-pie-06) (Read Sections 1-4; skim the rest).
 
-
-
 [lec4.md](./Network-assisted-Congestion-Control.md)
 
-
-
-- 
-
-
-
-
+-
 
 # Lec 4 现代拥塞控制
 
@@ -184,10 +150,6 @@ Lec 16 ~ Lec 17
 
 [lec4.md](./Modern-Congestion-Control.md)
 
-
-
-
-
 # Lec 5 Internet 路由协议 & 架构
 
 阅读资料
@@ -196,7 +158,7 @@ Lec 16 ~ Lec 17
 - [Autonomous systems and BGP notes](https://web.mit.edu/6.829/www/2020/papers/AS-bgp-notes.pdf)
 - Sharon Goldberg, [Why Is It Taking So Long to Secure Internet Routing?](https://queue.acm.org/detail.cfm?id=2668966)
 
-## 总览
+## 本讲导览
 
 - 动态路由协议分类
 - AS 自治系统
@@ -204,15 +166,13 @@ Lec 16 ~ Lec 17
 
 - 域间路由
   - BGP 协议
-  - IP任播
+  - IP 任播
 
 - 域内路由
   - RIP
   - OSPF
 
 [lec52.md](./Internet-Routing.md)
-
-
 
 # Lec 6 网络测量
 
@@ -226,10 +186,6 @@ Topics
 
 Y. Geng et al., [Exploiting a Natural Network Effect for Scalable, Fine-grained Clock Synchronization](https://www.usenix.org/system/files/conference/nsdi18/nsdi18-geng.pdf), NSDI, 2018.
 
-
-
-
-
 # Part II Underlay Networks
 
 # Lec 7 数据中心网络
@@ -242,8 +198,6 @@ https://web.stanford.edu/class/cs244/papers/al-fares-sigcomm08.pdf
 - A. Greenberg et al., [VL2: A Scalable and Flexible Data Center Network](https://web.mit.edu/6.829/www/2020/papers/vl2.pdf), SIGCOMM 2009.
 - **(Optional)** A. Singh et al., [Jupiter Rising: A Decade of Clos Topologies and Centralized Control in Google’s Datacenter Network](https://web.mit.edu/6.829/www/2020/papers/jupiter.pdf), SIGCOMM 2015.
 
-
-
 Topics
 
 - Clos
@@ -252,10 +206,6 @@ Topics
 - ECMP
 
 [lec7.md](./Datacenter-Networks.md)
-
-
-
-
 
 # Lec 8 广域网
 
@@ -270,8 +220,6 @@ Topics
 
 [lec6.md](./Wide-Area-Networks.md)
 
-
-
 # Lec 9 分布式系统网络
 
 opics
@@ -281,7 +229,7 @@ opics
 - AllReduce
 - Horovod
 
- [Networking-for-Distributed-Systems.md](Networking-for-Distributed-Systems.md) 
+ [Networking-for-Distributed-Systems.md](Networking-for-Distributed-Systems.md)
 
 # Lec 10 SDN
 
@@ -289,10 +237,6 @@ opics
 - M. Casado, M-J Freedman, J. Pettit, J. Luo, N. Mckeown, and S. Shenker [Ethane: Taking Control of the Enterprise](https://web.mit.edu/6.829/www/2020/papers/ethane.pdf), SIGCOMM, 2007.
 
 [lec11.md](./Software-Defined-Networking.md)
-
-
-
-
 
 # Lec 11 可编程数据面
 
@@ -302,16 +246,12 @@ Topics
 - Switch ASIC
 - P4
 
-
-
 - P. Bosshart et al., [Forwarding Metamorphosis: Fast Programmable Match-Action Processing in Hardware for SDN](https://web.mit.edu/6.829/www/2020/papers/rmt.pdf), SIGCOMM 2013. *(Read the first 4 sections and skim the rest.)*
 - P. Bosshart et al., [P4: Programming Protocol-Independent Packet Processors](https://web.mit.edu/6.829/www/2020/papers/p4.pdf), SIGCOMM CCR 2014.
 
 - **(Optional)** A. Sivaraman et al., [Packet Transactions: A Programming Model for Data-Plane Algorithms at Hardware Speed](https://web.mit.edu/6.829/www/2020/papers/domino.pdf), SIGCOMM 2016.
 
 Programmable-Data-Plane
-
-
 
 # Lec 12 网络验证
 
@@ -324,9 +264,7 @@ Topics
 - R. Beckett et al., [A General Approach to Network Configuration Verification](https://ratul.org/papers/sigcomm2017-minesweeper.pdf), SIGCOMM 2017
 - **(Optional)** [Blog posts](https://netverify.fun/)
 
- [Network-Verification.md](Network-Verification.md) 
-
-
+ [Network-Verification.md](Network-Verification.md)
 
 # Lec 13 无线 & 移动网络
 
@@ -344,9 +282,7 @@ Topics
 - 5G
 - Mobility
 
- [Wireless-and-Mobile-Networks.md](Wireless-and-Mobile-Networks.md) 
-
-
+ [Wireless-and-Mobile-Networks.md](Wireless-and-Mobile-Networks.md)
 
 # Lec 14 优化 & 云网络
 
@@ -359,13 +295,7 @@ Topics
 
 这里以后可以继续扩充。
 
- [Optical-and-Cloud-Networks.md](Optical-and-Cloud-Networks.md) 
-
-
-
-
-
-
+ [Optical-and-Cloud-Networks.md](Optical-and-Cloud-Networks.md)
 
 # Part III Overlay Networks
 
@@ -375,11 +305,7 @@ Topics
 - **(Optional)** H. Yeo et al., [Neural Adaptive Content-aware Internet Video Delivery](https://www.usenix.org/system/files/osdi18-yeo.pdf)
 - [Algorithmic Nuggets in Content Delivery](https://web.mit.edu/6.829/www/currentsemester/papers/cdnalg.pdf)
 
-
-
 [lec15.md](./Content-Distribution.md)
-
-
 
 # Lec 16 GFW
 
@@ -391,9 +317,7 @@ Topics
 
 - [Surveillance and Circumvention](https://web.mit.edu/6.829/www/currentsemester/materials/lecture11.pdf)
 
- [lec16.md](./GFW.md) 
-
-
+ [lec16.md](./GFW.md)
 
 # Lec 17 流媒体网络
 
@@ -402,16 +326,10 @@ Topics
 
 [lec17.md](./Video-Streaming.md)
 
-
-
-# Lec 18 P2P网络
-
-
+# Lec 18 P2P 网络
 
 - [Chord: A Scalable Peer-to-Peer Lookup Service for Internet Applications](https://web.mit.edu/6.829/www/2020/papers/chord.pdf), SIGCOMM 2001.
 - https://web.mit.edu/6.829/www/currentsemester/materials/chord.pdf
-
-
 
 [lec18.md](Peer-to-Peer-Networks.md)
 
@@ -421,16 +339,11 @@ Topics
 - **(Sections 3 and 4)** L. Yang, V. Bagaria, G. Wang, M. Alizadeh, D. Tse, G. Fanti P. Viswanath Prism: Scaling Bitcoin by 10,000x https://arxiv.org/pdf/1909.11261.pdf.
 - **(Optional)** Vibhaalakshmi Sivaraman, Shaileshh Bojja Venkatakrishnan, Mohammad Alizadeh, Giulia Fanti, Pramod Viswanath, [Routing Cryptocurrency with the Spider Network](https://web.mit.edu/6.829/www/2020/papers/spider.pdf), HotNets 2018.
 
- [lec19.md](./Blockchain-Networks.md) 
-
-
-
-
+ [lec19.md](./Blockchain-Networks.md)
 
 待分类
 
 Encore: Lightweight Measurement of Web Censorship with Cross-Origin Requests – Burnett and Feamster, SIGCOMM 2015
-
 
 Why We Don't Know How To Simulate The Internet – Floyd and Paxson, Winter Simulation Conference 1997
 
@@ -439,8 +352,6 @@ ZMap: Fast Internet-wide Scanning and Its Security Applications – Durumeric et
 Ten Years of ZMap – Durumeric et al., IMC 2024
 
 On the self-similar nature of Ethernet traffic – Leland et al., SIGCOMM 1993
-
-
 
 - BBQ: a fast and scalable integer priority queue for hardware packet scheduling – Atre et al., NSDI 2024
 - Achieving 100% throughput in an input-queued switch

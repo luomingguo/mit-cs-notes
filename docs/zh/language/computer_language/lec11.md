@@ -1,4 +1,13 @@
-# Lecture 11：并行化（Parallelization）
+---
+title: 并行化（Parallelization）
+course: 6.1100 计算机语言工程
+course_id: '6.1100'
+lecture: 11
+kind: theory
+tags: []
+status: complete
+---
+# Lec 11 并行化（Parallelization）
 
 > 内容：为何并行、并行执行、并行化编译器、依赖分析、提升并行机会
 
@@ -58,7 +67,7 @@ $N$ 层循环 ⟹ $N$ 维离散**迭代空间 (iteration space)**（归一化：
 
 **例题（一维与二维距离向量）**
 
-```
+```text
 A[I]=A[0]+1   → dv=[0]      A[I+1]=A[I]+1 → dv=[1]
 A[I]=A[I+2]+1 → dv=[2]      A[I]=A[I]+1   → dv=[0]
 二维:

@@ -1,4 +1,13 @@
-# Lec 14 — 软件信任（Software Trust）
+---
+title: 软件信任（Software Trust）
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 14
+kind: theory
+tags: []
+status: complete
+---
+# Lec 14 软件信任（Software Trust）
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 核心问题
@@ -13,7 +22,7 @@
 
 从软件开发到运行，经历多个环节，每个都可能引入问题：
 
-```
+```text
 1. 开发者编写代码（使用第三方库）
 2. 编译器构建打包
 3. 软件商分发二进制包

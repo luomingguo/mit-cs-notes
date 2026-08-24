@@ -1,4 +1,13 @@
-# Lecture 10: Cryptography
+---
+title: Cryptography
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 10
+kind: theory
+tags: []
+status: complete
+---
+# Lec 10 Cryptography
 
 > MIT 6.1200J Mathematics for Computer Science, Spring 2024
 

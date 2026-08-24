@@ -1,3 +1,10 @@
+---
+title: PostgreSQL 中的 MVCC — 7. Autovacuum（自动清理）
+course: PostgreSQL 内核原理系列（中文讲解笔记）
+kind: source
+tags: []
+status: complete
+---
 # PostgreSQL 中的 MVCC — 7. Autovacuum（自动清理）
 
 > 原文：https://habr.com/en/companies/postgrespro/articles/486104/ （作者 Egor Rogov，PostgresPro）
@@ -23,7 +30,7 @@ launcher 的工作方式是：每隔 `autovacuum_naptime` 秒（这是一个"打
 
 判断一张表是否"该清理"，用的是这样一个条件：
 
-```
+```text
 pg_stat_all_tables.n_dead_tup >= autovacuum_vacuum_threshold + autovacuum_vacuum_scale_factor * pg_class.reltuples
 ```
 
@@ -89,7 +96,7 @@ CREATE VIEW need_vacuum AS
 
 判断逻辑类似,但依据的是"自上次分析以来被修改过的行数":
 
-```
+```text
 pg_stat_all_tables.n_mod_since_analyze >= autovacuum_analyze_threshold + autovacuum_analyze_scale_factor * pg_class.reltuples
 ```
 
@@ -151,7 +158,7 @@ INSERT INTO autovac SELECT g.id,'A' FROM generate_series(1,1000) g(id);
 
 基本思路是：进程处理累计到一定"成本额度"（约等于 `vacuum_cost_limit`）之后，就主动休眠 `vacuum_cost_delay` 毫秒，然后再继续。默认设置是 `vacuum_cost_limit = 200`，`vacuum_cost_delay = 0`（也就是默认完全不限速）——原文解释这个默认值的理由是：手动执行的 VACUUM 通常是运维人员主动发起的，希望它尽快跑完，所以默认不设延迟。
 
-具体的成本核算规则是：命中缓冲区缓存里已有的页面，成本记 `vacuum_cost_page_hit = 1`；需要从磁盘实际读取（缓存未命中）的页面，成本记 `vacuum_cost_page_miss = 10`；如果还伴随着把一个脏页驱逐出缓存（需要写回磁盘），成本记 `vacuum_cost_page_dirty = 20`。按默认的 200 额度换算，大致相当于一轮处理能够连续处理 200 个纯缓存命中的页面,或者 20 个需要磁盘读取的页面,或者 10 个需要驱逐脏页的页面(几种情形可以混合累计)。
+具体的成本核算规则是：命中缓冲区缓存里已有的页面，成本记 `vacuum_cost_page_hit = 1`；需要从磁盘实际读取（缓存未命中）的页面，成本记 `vacuum_cost_page_miss = 10`；如果还伴随着把一个脏页驱逐出缓存（需要写回磁盘），成本记 `vacuum_cost_page_dirty = 20`。按默认的 200 额度换算，大致相当于一轮处理能够连续处理 200 个纯缓存命中的页面,或者 20 个需要磁盘读取的页面,或者 10 个需要驱逐脏页的页面（几种情形可以混合累计）。
 
 ### Autovacuum 专属的限速参数
 
@@ -173,7 +180,7 @@ Autovacuum 在扫描时同样用 `maintenance_work_mem` 来存放待清理的 TI
 
 一条典型的日志输出大致如下:
 
-```
+```text
 2019-05-21 11:59:55.675 MSK [9737] LOG:  automatic vacuum of table "test.public.autovac": index scans: 0
 	pages: 0 removed, 18 remain, 0 skipped due to pins, 0 skipped frozen
 	tuples: 31 removed, 1000 remain, 0 are dead but not yet removable, oldest xmin: 4040
@@ -187,6 +194,6 @@ Autovacuum 在扫描时同样用 `maintenance_work_mem` 来存放待清理的 TI
 
 **监控建议**:如果发现清理速度跟不上表的膨胀速度,更推荐的做法是**调低触发阈值,让每次清理处理的数据量更小、更频繁**,而不是简单地调大内存;同时可以借助前面提到的 `need_vacuum`、`need_analyze` 视图,持续观察有哪些表正在逼近触发条件——如果这份"待处理列表"持续变长,通常说明现有的 autovacuum worker 数量或处理速度已经跟不上当前的写入负载,需要相应调整并发度或限速参数。
 
-## 小结
+## 本讲小结
 
 Autovacuum 由 launcher 和多个 worker 进程协作完成，launcher 周期性巡检各数据库的统计信息，为需要处理的数据库派发 worker；worker 依据"死元组数/修改行数是否超过阈值"这两条独立的判断规则，分别决定是否需要 VACUUM 和 ANALYZE，这些阈值都可以全局或按表精细调整。为了避免和业务负载抢资源，autovacuum 还有一套独立的基于成本的限速机制，且这个限速额度是在并发 worker 之间共享的。理解这些默认参数（尤其是偏保守的 20%/10% scale factor）为什么往往不适合大表和高频写入场景，是调优生产环境自动清理策略的关键，也是本系列最后一篇讨论"冻结"（freezing）与事务 ID 回卷问题的重要前置知识。

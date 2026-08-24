@@ -1,12 +1,17 @@
-# Lec 16 函数、类和this
-
-
-
-
+---
+title: 函数、类和 this
+course: 6.4500 Web设计：语言和用户接口
+course_id: '6.4500'
+lecture: 16
+kind: design
+tags: []
+status: complete
+---
+# Lec 16 函数、类和 this
 
 ## 函数与参数
 
-js函数的声明
+js 函数的声明
 
 ```js
 function hypot(x, y) {
@@ -36,8 +41,6 @@ let hypot = (x, y) => {
 
 上述函数的调用都是相同的，`hypot(3, 4); //5`
 
-
-
 **函数调用 vs 函数引用**
 
 JavaScript 里一个非常常见的错误，把函数调用和引用搞混。
@@ -47,13 +50,11 @@ let handler = evt => console.log("Thank you");
 button.addEventListener("click", handler)
 ```
 
-这个箭头函数没有返回值，因此默认返回 undefined 作为事件监听器， 
+这个箭头函数没有返回值，因此默认返回 undefined 作为事件监听器，
 
 ```js
 button.addEventListener("click", undefined);
 ```
-
-
 
 **参数缺失**
 
@@ -62,9 +63,7 @@ let hypot = (x, y) => Math.sqrt(x ** 2 + y ** 2);
 console.log(hypot(5)); // What does this log?
 ```
 
-答案是 `NaN`， 
-
-
+答案是 `NaN`，
 
 **可变参数函数**
 
@@ -92,8 +91,6 @@ let avg = function(...numbers) { // 剩余参数
 }
 ```
 
-
-
 **缺省参数**
 
 ```js
@@ -102,8 +99,6 @@ console.log(hypot(5)); // What does this log?
 ```
 
 答案是 `7.071067812`
-
-
 
 位置参数 vs 字典参数
 
@@ -125,17 +120,11 @@ let event = new KeyboardEvent("keypress", {
 });
 ```
 
-
-
-
-
 ## 函数是一等公民
 
 如果一门编程语言把函数当作头等公民，那么它就被认为支持头等函数。这意味着它支持把函数作为参数传递给其他函数，从其他函数返回函数作为返回值，并且可以将函数赋值给变量或存储在数据结构中。
 
 二等函数：函数是可执行代码，程序员编写函数，函数用于创建和操作数据，参数和返回值都是数据，函数可以减少管理数据时的重复代码。（古早的汇编语言）
-
-
 
 例子：一个函数， 多个引用
 
@@ -150,10 +139,8 @@ g(1);
 
 1. f 一开始是一个指向 `x=>x+1`的引用，它是一个函数
 2. 现在 g 也是指向同一个函数
-3. 现在 f 被重新赋值指向42， g则没有改变
+3. 现在 f 被重新赋值指向 42， g 则没有改变
 4. g 调用函数 `x => x + 1`， 并将 x 绑定为 1， 因此返回 2
-
-
 
 例子：函数作为对象属性
 
@@ -171,8 +158,6 @@ for (let instructor of instructors) {
 }
 ```
 
-
-
 **方法**
 
 当函数作为对象的属性存在时，它们被称为方法（Methods）。对象的这些属性没有任何特殊限制，它们可以被覆盖、重新赋值，也可以被添加到我们不拥有的对象中等。当一个函数作为方法被调用时，它的特殊 `this` 参数会指向该对象本身，这被称为函数上下文，我们很快会更详细地讨论它。注意，console.log() 是 console 对象的一个方法。
@@ -184,8 +169,6 @@ for (let instructor of instructors) {
 ```js
 " Hello!   ".trim() // "Hello!"
 ```
-
-
 
 **函数作为返回值**
 
@@ -200,8 +183,6 @@ let range = interpolate(1, 10);
 console.log(range(.1), range(.5), range(.9));
 ```
 
-
-
 > 为什么要将函数作为一等公民？
 
 Sol：
@@ -211,8 +192,6 @@ Sol：
 - 抽象：可以用来对其他代码进行参数化的代码
 
 我们将 满足 将函数作为参数传入，和/或 返回一个函数的函数称为高阶函数
-
-
 
 ## Map、Reduce、Filter
 
@@ -236,11 +215,7 @@ let numbers = [1, 2, 3, 4];
 let squares = numbers.map(n=>n**2);
 ```
 
-
-
 ![925761115022513](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/925761115022513.gif)
-
-
 
 例子， Filter
 
@@ -259,8 +234,6 @@ for (let n of numbers) {
 let numbers = [1, 2, 3, 4, 5];
 let odd = numbers.filter(n => n % 2);
 ```
-
-
 
 例子， Reduce
 
@@ -281,8 +254,6 @@ let sum = numbers.reduce(
 );
 ```
 
-
-
 **链式调用**
 
 计算 1 到 5 中所有奇数的平方和：
@@ -299,13 +270,9 @@ let result = numbers
 
 需要注意其性能影响：这段代码实际上遍历了 3 次数组，而一个精心设计的循环版本只需要遍历一次， 不过，从算法复杂度来看，这两种方式都是 O(N)。
 
-
-
-### 小结
+### 本讲小结
 
 从软件工程上讲， `map`、`filter`、`reduce` 这些函数用来描述“你想做什么”，而不是“你如何去做”。 这种方式让开发者的意图更加清晰，从而让其他开发者更容易理解和修改代码。同时，它也允许系统在不改变代码的情况下，替换底层实现以提升效率。
-
-
 
 还有其他迭代函数：
 
@@ -321,8 +288,6 @@ let result = numbers
 - [`forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach/)
 - [`reduceRight`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight/)
 - [`Map.groupBy`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/groupBy/)
-
-
 
 ## 闭包
 
@@ -371,17 +336,13 @@ logI();
 }
 ```
 
-答案是 5和5
-
-
+答案是 5 和 5
 
 这里原因归结于，词法作用域。函数使用词法作用域：它在函数被定义的时候就会捕获变量，而不是在函数“执行”的时候。这种通过闭包实现。
 
-闭包会保持外部变量不变，这就解释了第3个引例为什么是5 和 5.
+闭包会保持外部变量不变，这就解释了第 3 个引例为什么是 5 和 5.
 
-
-
-**let作用域**
+**let 作用域**
 
 下面看一个常犯错的例子
 
@@ -408,8 +369,6 @@ for (i = 1; i <= 3; i++) {
 
 答案是 1,2,3。  原因是`let`声明的是块级作用域，它的作用域是 `for` 循环内部的代码块，并且每一次循环迭代得到一个不同的变量。
 
-
-
 **通过闭包实现计数**
 
 ```js
@@ -427,15 +386,11 @@ const counter = (s = 0) => () => ++s;
 
 这里为什么要用`const`?
 
-
-
-**优先使用const**
+**优先使用 const**
 
 优先使用 const， 在闭包中，使用`let`意味着被捕获（闭包引用）的变量绑定可能在之后发生变化。 这样一来，如果你想知道一个函数最终返回什么，就必须继续阅读周围的代码，去检查这个变量绑定是否发生了改变。
 
 因此，除非你确实需要可变性，否则应优先使用 `const`
-
-
 
 ## 类
 
@@ -444,7 +399,7 @@ const counter = (s = 0) => () => ++s;
 - 它们有相同的属性和方法
 - 但是属性的具体值不同
 
-类（class）可以检查这个过程（遵循DRY原则：Don't Repeat Yourself）
+类（class）可以检查这个过程（遵循 DRY 原则：Don't Repeat Yourself）
 
 做法是：
 
@@ -475,8 +430,6 @@ console.log(lea.getAge(),
 	david.getAge());
 ```
 
-
-
 ### 继承
 
 子类继承用`extends`
@@ -499,15 +452,11 @@ let arr2 = PowerArray.from([1, 2, 3]);
 console.log(arr2.isEmpty()); // false
 ```
 
-
-
 通常我们会想要在已有的类（class）基础上添加新的属性和方法，做法是创建一个新类，并让它继承（extends）原来的类（包括属性和方法，方法也包括构造方法）。
 
 - `super` 关键字绑定到你所继承的父类，用于访问父类的属性或方法。
 
 - 需要注意的是，即使是静态方法也会被继承。
-
-
 
 JavaScript 只支持两种属性可见性：public 和 private， 意味着子类实际上无法读取父类的私有属性。 私有属性和方法以井号（`#`）开头表示，与可以随时创建的普通（public）属性不同，私有属性必须提前声明。访问私有属性会抛出 `TypeError`，而不是返回 `undefined`，但不能通过这种方式把构造函数设为私有。也可以定义私有方法、私有静态字段等。
 
@@ -524,9 +473,7 @@ class Clicker {
 }
 ```
 
-
-
-下面给出一个自定义HTML元素的例子
+下面给出一个自定义 HTML 元素的例子
 
 ```js
 class ClickCounter extends HTMLElement {
@@ -559,8 +506,6 @@ customElements.define('click-counter', ClickCounter);
 <click-counter> </click-counter>
 ```
 
-
-
 ## 方法和 `this`
 
 JavaScript 非常灵活。 他的设计它的设计受 Self programming language 的影响，这种特性不仅适用于类， 我们经常可以直接创建 JavaScript 对象，而完全不需要任何类定义。
@@ -591,8 +536,6 @@ for (let instructor of instructors) {
 >
 > this 在所有的作用域中都是一个特殊的变量声明
 
-
-
 举个例子，在模块（module）中，顶层作用域里的 `this` 虽然存在，但它的值是 `undefined`。如果你在 `<script>` 标签上忘记写 `type="module"`，那么行为就会不同，因为此时全局对象会是 `window` 对象。
 
 ```html
@@ -610,10 +553,6 @@ for (let instructor of instructors) {
 </script>
 ```
 
-
-
-
-
 **全局对象**
 
 - 原生的全局函数或全局变量其实也是 `globalThis` 对象的属性
@@ -629,11 +568,7 @@ for (let instructor of instructors) {
 </script>
 ```
 
-
-
-
-
-Context是上下文绑定
+Context 是上下文绑定
 
 我们可以在不同对象上调用同一个函数，并得到不同的 `this` 值。这和普通参数一样，也是一种动态绑定！
 
@@ -650,9 +585,7 @@ Context是上下文绑定
 </script>
 ```
 
-
-
-将`this`绑定到event.currentTarget上，这个会打印什么？
+将`this`绑定到 event.currentTarget 上，这个会打印什么？
 
 ```js
 button.addEventListener("click", function(event) {
@@ -660,9 +593,7 @@ button.addEventListener("click", function(event) {
 });
 ```
 
-答案是 一个HTMLButtonElement
-
-
+答案是 一个 HTMLButtonElement
 
 再看这个例子，点击后会怎么样？
 
@@ -678,9 +609,7 @@ document.querySelector(".btn").addEventListener("click", function () {
 });
 ```
 
-答案： ✅ 什么事情也没发生 ； ❌100ms后按钮文字变成 New。 原因：内部 `function()` 会拥有它自己的 `this`，因此它不再指向这个按钮。具体说，如果按钮在module中，这个this最终变成`undefined`，所以更新不会发生。
-
-
+答案： ✅ 什么事情也没发生 ； ❌100ms 后按钮文字变成 New。 原因：内部 `function()` 会拥有它自己的 `this`，因此它不再指向这个按钮。具体说，如果按钮在 module 中，这个 this 最终变成`undefined`，所以更新不会发生。
 
 由于 `this` 本质上只是一个特殊变量，因此在箭头函数中解析 `this`，与解析其他普通变量完全一样；遵循普通的词法作用域规则。
 
@@ -691,8 +620,6 @@ let person = {
 };
 person.hello(); // undefined
 ```
-
-
 
 下面再看这个例子
 
@@ -708,9 +635,7 @@ document.querySelector(".btn").addEventListener("click", function () {
 });
 ```
 
-答案：100ms后按钮文字变成 New。 原因是因为箭头函数，复用外层事件监听函数中的 `this`，而在外层事件监听函数里，`this` 指向的是这个按钮
-
-
+答案：100ms 后按钮文字变成 New。 原因是因为箭头函数，复用外层事件监听函数中的 `this`，而在外层事件监听函数里，`this` 指向的是这个按钮
 
 ### 函数的方法
 
@@ -730,17 +655,11 @@ logContext.call(document); // logs document
 
 ![image-20260511214323933](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260511214323933.png)
 
-
-
-### bind函数
+### bind 函数
 
 永久绑定 `this`：`func.bind(context, ...args)`，返回一个新的函数，这个函数的上下文始终绑定为第一个参数。
 
 ![image-20260511214801871](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260511214801871.png)
-
-
-
-
 
 ```js
 function logContext() {
@@ -752,26 +671,20 @@ logContext2(); // logs {foo: 1}
 logContext2.call(document); // logs {foo: 1}
 ```
 
-
-
 当你想要“传递一个函数”（例如把它作为事件监听器，或者作为参数传给其他函数）时，并且你希望它的上下文（context，也就是 `this`）始终是你预期的那个对象；或者你只是希望在不使用 `.call()` 或 `.apply()` 的情况下，也能让函数的上下文保持可用；那么，这种情况下就可以使用 `.bind()`。
 
 `.bind()` 返回的是什么类型的函数？
 
-
-
-### 小结
+### 本讲小结
 
 - this 是灵活的、始终存在的，并且是在运行时动态解析的，但这种灵活性也可能成为“坑”（容易出错的点）。
 
 - this 在类和简单对象中使用效果最好。
 - 如果你在某个上下文中对 this 的绑定感到困惑，那么最好考虑移除它。
 
-
-
 ## 访问器
 
-到目前为止我们已经看到1）**属性**用来保存数据 `arr[0] = "hi";`；2）方法用来执行代码的 `arr.slice(0,1)`，那么像`arr.length`又是什么呢？ 
+到目前为止我们已经看到 1）**属性**用来保存数据 `arr[0] = "hi";`；2）方法用来执行代码的 `arr.slice(0,1)`，那么像`arr.length`又是什么呢？
 
 JavaScript 以及它的各种 API 中，有很多“看起来像属性”的东西，但在你读取或设置它们时，实际上会执行代码。我们在 DOM 中也见过很多类似的例子，例如 element.textContent、element.innerHTML 等等
 
@@ -786,9 +699,7 @@ console.log(document.body.innerHTML);
 document.body.innerHTML = "<em>Hi</em>";
 ```
 
-
-
-**定义getter**
+**定义 getter**
 
 ```js
 let lea = {
@@ -807,9 +718,7 @@ lea.birthday = new Date("1992-04-01T13:00")
 console.log(lea.age); // 34.01948786888001
 ```
 
-
-
-**定义setter**
+**定义 setter**
 
 ```js
 let lea = {
@@ -824,8 +733,6 @@ lea.age = 3;
 console.log(lea.birthday); // ... 2023 ...
 ```
 
-
-
 **API 设计提示** —— 什么时候使用访问器？
 
 - 当某个东西在语义上“应该是一个属性”，但实际需要计算才能得到时
@@ -837,10 +744,6 @@ console.log(lea.birthday); // ... 2023 ...
   比较： `obj.foo++`; vs. `obj.setFoo(obj.getFoo() + 1)`;
 
 - 需要注意“被误以为是高性能”的问题
-
-
-
-
 
 ## 用 module 进行模块化
 
@@ -867,16 +770,12 @@ console.log(lea.birthday); // ... 2023 ...
 - 具有作用域的局部变量（scoped local variables）
 - 对象（objects）
 
-
-
-JS的模块化
+JS 的模块化
 
 - 一段代码（通常在一个文件中），拥有自己的命名空间
 - 在其中定义的名字，只在该模块内部可见
 - 使用 export 可以让这些名字在其他地方可见
 - 使用 import 可以把其他模块中的名字引入当前模块中
-
-
 
 语法
 
@@ -894,7 +793,7 @@ import { obj as square } from './modules/square.js';
 作用：
 
 - `import file as module`： 把一个文件作为模块导入
-- 让 `obj` 可以被外部 `import` 使用（通过export）
+- 让 `obj` 可以被外部 `import` 使用（通过 export）
 - 导出在文件中定义的变量 / 函数 / 对象等名字
 - 把这些名字引入到当前模块的命名空间中
 - 导入 `obj`，但在当前作用域中把它改名为 `square`

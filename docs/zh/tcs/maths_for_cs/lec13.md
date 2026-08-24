@@ -1,4 +1,13 @@
-# Lecture 13：连通性与树
+---
+title: 连通性与树
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 13
+kind: theory
+tags: []
+status: complete
+---
+# Lec 13 连通性与树
 
 ## 1. 游走、迹、路径
 

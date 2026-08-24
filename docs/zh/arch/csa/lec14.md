@@ -1,4 +1,13 @@
-# L14：内存一致性模型（*Memory Consistency Models*）
+---
+title: 内存一致性模型（Memory Consistency Models）
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 14
+kind: system
+tags: []
+status: complete
+---
+# Lec 14 内存一致性模型（*Memory Consistency Models*）
 
 > MIT 6.5900 Fall 2024 · Daniel Sanchez 主题：一致性 vs 一致、顺序一致性（*SC*）、各种重排序如何破坏 SC、松弛内存模型、内存屏障、实现 SC、释放一致性
 
@@ -13,7 +22,7 @@
 
 ## 二、为什么一致很重要
 
-```
+```text
 处理器 1                    处理器 2
 Store (a), 10;             L: Load r1, (flag);
 Store (flag), 1;              if r1 == 0 goto L;
@@ -61,7 +70,7 @@ CPU 可在早先已提交的 store 还在内存系统中传播时**继续执行*
 
 ### 例 1：存储缓冲（Store Buffers）
 
-```
+```text
 进程 1                进程 2
 Store (flag1), 1;     Store (flag2), 1;
 Load r1, (flag2);     Load r2, (flag1);
@@ -75,7 +84,7 @@ Load r1, (flag2);     Load r2, (flag1);
 
 ### 例 3：非 FIFO 存储缓冲
 
-```
+```text
 进程 1            进程 2
 Store (a), 1;     Load r1, (flag);
 Store (flag), 1;  Load r2, (a);
@@ -89,7 +98,7 @@ Store (flag), 1;  Load r2, (a);
 
 ### 例 5：寄存器重命名
 
-```
+```text
 进程 1（初始 r1=r2=1）   进程 2
 Store (flag1), r1;       Store (flag2), r2;
 Load r1, (flag2);        Load r2, (flag1);
@@ -107,7 +116,7 @@ Load r1, (flag2);        Load r2, (flag1);
 
 ### 例 8：存储原子性（*Store Atomicity*）
 
-```
+```text
 进程1        进程2        进程3            进程4
 Store(a),1;  Store(a),2;  Load r1,(a);     Load r3,(a);
                           Load r2,(a);     Load r4,(a);
@@ -117,7 +126,7 @@ Store(a),1;  Store(a),2;  Load r1,(a);     Load r3,(a);
 
 ### 例 9：因果性（*Causality*）
 
-```
+```text
 进程1            进程2              进程3
 Store(flag1),1;  Load r1,(flag1);   Load r2,(flag2);
                  Store(flag2),1;    Load r3,(flag1);
@@ -139,7 +148,7 @@ Store(flag1),1;  Load r1,(flag1);   Load r2,(flag2);
 
 把开头的例子改造为：
 
-```
+```text
 处理器 1                处理器 2
 Store (a), 10;          L: Load r1, (flag);
 Fence_ww;                  if r1 == 0 goto L;
@@ -188,7 +197,7 @@ SC 的两个条件：
 
 只在**线程同步点**关心处理器间内存顺序，中间不关心；把所有同步指令当作**唯一的排序点**。
 
-```
+```text
 Acquire(lock)   // 之后所有 load 取到最新写入值
 ... 读写共享数据 ...
 Release(lock)   // 之前所有写在释放锁之前全局可见
@@ -204,7 +213,7 @@ Release(lock)   // 之前所有写在释放锁之前全局可见
 
 ------
 
-## 小结
+## 本讲小结
 
 - 一致管多地址读写的**可见时序**；**SC** 是最直观的模型（按序 + 原子 load/store），但几乎所有性能优化（存储缓冲、非阻塞 Cache、寄存器重命名、推测、非原子 store……）都会破坏它；
 - 松弛模型（TSO/PSO/RMO/WO 等）允许不同重排，用**内存屏障**在需要处恢复顺序；

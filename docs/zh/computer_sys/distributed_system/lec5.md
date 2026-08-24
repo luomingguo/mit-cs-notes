@@ -1,32 +1,33 @@
+---
+title: Golang
+course: 6.5840 分布式系统（Spring 2026）
+course_id: '6.5840'
+lecture: 5
+kind: system
+tags: []
+status: stub
+---
 # Lec 5 Golang
-
-
-
-
 
 ## Go 编程的思维
 
-
-
 ### Go 是什么 & 不是什么
 
-首先Go是面向对象而不是面向类型。Go 没有继承，任何类型都可以有方法，但没有类、和子类
+首先 Go 是面向对象而不是面向类型。Go 没有继承，任何类型都可以有方法，但没有类、和子类
 
 第二、Go（大部分情况下）是隐式的不是显式的。类型通过推断，而不是声明； 对象通过实现方法自动获得接口，而不是指定。
 
 第三，Go 是并发的，不是并行的。Go 的并发是为了更好的程序结构，而不是追求最高性能，不过它依然可以很好地利用所有 CPU 核心，而且有些程序即使完全不并行，使用并发编写也会更优雅。
 
-### Go无层次对象
+### Go 无层次对象
 
-Go有对象但无层次结构。 在 Java 中，类型层次结构是程序的基础，随着设计的演变，很难改变它。（妥协设计比改变基础更容易。） 
+Go 有对象但无层次结构。 在 Java 中，类型层次结构是程序的基础，随着设计的演变，很难改变它。（妥协设计比改变基础更容易。）
 
 Go 编程的主要内容并非类型和继承。Go 没有类型层次结构。最重要的设计决策无需事先做出，而且随着程序的开发，更改类型也很容易，因为编译器会自动推断它们之间的关系。 因此，Go 程序更加灵活，适应性更强。
 
-### Go无继承
+### Go 无继承
 
-
-
-我们先看JAVA的做法。
+我们先看 JAVA 的做法。
 
 ```java
 public static class ZlibCompressor {
@@ -58,11 +59,9 @@ public static class ZlibCompressor extends AbstractCompressor {
 }
 ```
 
-这就是常用的JAVA风格，继承抽象行为。
+这就是常用的 JAVA 风格，继承抽象行为。
 
-
-
-我们现在看Golang的做法。
+我们现在看 Golang 的做法。
 
 ```go
 type Compressor interface {
@@ -75,23 +74,21 @@ func CompressBuffer(c Compressor, in, out *Buffer) {
 }
 ```
 
-这是一个Good的Golang风格，只是使用抽象行为。
-
-
+这是一个 Good 的 Golang 风格，只是使用抽象行为。
 
 #### 隐式意味着灵活性
 
-在Go中，可以使用任何数量的Wrapper。一个类型可以满足多个接口，因此可以被任意数量的 抽象wrapper 使用。而在Java中，只能扩展一个抽象类， 可以使用Java接口，但仍需要注释原始实现，也就是说，需要编辑现有代码。（代码不属于你怎么办？）
+在 Go 中，可以使用任何数量的 Wrapper。一个类型可以满足多个接口，因此可以被任意数量的 抽象 wrapper 使用。而在 Java 中，只能扩展一个抽象类， 可以使用 Java 接口，但仍需要注释原始实现，也就是说，需要编辑现有代码。（代码不属于你怎么办？）
 
-在Go中，Compressor的实现者不太需要了解 CompressBuffer 甚至 Compressor接口。
+在 Go 中，Compressor 的实现者不太需要了解 CompressBuffer 甚至 Compressor 接口。
 
 ### 接口是轻量级的
 
-典型的GO接口只有1个或两个方法，新的程序员可能会将接口视为类型继承来构建块，并且打算用很多方法来创建接口，但这是错误的，他们应是**小而准确**的；因为接口小，它们**更灵活**；Go 的接口经常是**为特定场景、特定目的临时定义**的
+典型的 GO 接口只有 1 个或两个方法，新的程序员可能会将接口视为类型继承来构建块，并且打算用很多方法来创建接口，但这是错误的，他们应是**小而准确**的；因为接口小，它们**更灵活**；Go 的接口经常是**为特定场景、特定目的临时定义**的
 
 Go 接口是按需抽象，不是先建塔后填砖。
 
-**举个例子，泛化RPC**
+**举个例子，泛化 RPC**
 
 Go 中的 RPC 包使用 gob 包来对连接中的对象进行编组。我们需要一个使用 JSON 的变体。
 
@@ -123,7 +120,7 @@ func sendResponse(sending *sync.Mutex, req *Request,
 
 这个抽象是**“事后”**加上的。
 
-相比而言，Go无需管理类型层次，只是传了一个接口stub。不像Java那样，需要重构一个抽象类，创建JsonRPC/GobRPC 子类。
+相比而言，Go 无需管理类型层次，只是传了一个接口 stub。不像 Java 那样，需要重构一个抽象类，创建 JsonRPC/GobRPC 子类。
 
 ## Go 编程语言和环境
 
@@ -131,7 +128,7 @@ func sendResponse(sending *sync.Mutex, req *Request,
 
 我们对 Go 的一个目标是让它在不同的实现、执行上下文，甚至随着时间的推移，都能保持相同的行为。这种“枯燥乏味”的一致性行为，让开发者能够专注于日常工作，而 Go 则逐渐淡出人们的视线。
 
-首先，Go 语言尽可能地指定一致的结果，即使对于诸如空指针引用和数组越界索引之类的错误行为也是如此。Go 要求不一致行为的一个例外是map的迭代。我们发现，程序员经常会不经意地编写依赖于哈希函数的代码，导致在不同的架构或 Go 实现上得到不同的结果。
+首先，Go 语言尽可能地指定一致的结果，即使对于诸如空指针引用和数组越界索引之类的错误行为也是如此。Go 要求不一致行为的一个例外是 map 的迭代。我们发现，程序员经常会不经意地编写依赖于哈希函数的代码，导致在不同的架构或 Go 实现上得到不同的结果。
 
 为了使程序在所有情况下都保持相同的行为，一种选择是强制使用特定的哈希函数。然而，Go 却将映射迭代定义为非确定性的。该实现为每个映射使用不同的随机种子，并从哈希表中的随机偏移量开始对映射进行每次迭代。结果是，映射在不同实现之间始终不可预测：代码不会意外地依赖于实现细节。
 
@@ -141,9 +138,9 @@ func sendResponse(sending *sync.Mutex, req *Request,
 
 大规模软件开发需要大量的自动化和工具化。Go 语言从一开始就旨在通过简化工具化创建来鼓励此类工具的使用。
 
-开发人员的日常 Go 体验是通过 go 命令进行的。与仅编译或运行代码的语言命令不同，go 命令为开发周期的所有关键部分提供了子命令：go build 和 go install 用于构建和安装可执行文件，go test 用于运行测试用例，go get 用于添加新的依赖项。go 命令还支持通过编程方式访问构建细节（例如包图），从而创建新的工具。 
+开发人员的日常 Go 体验是通过 go 命令进行的。与仅编译或运行代码的语言命令不同，go 命令为开发周期的所有关键部分提供了子命令：go build 和 go install 用于构建和安装可执行文件，go test 用于运行测试用例，go get 用于添加新的依赖项。go 命令还支持通过编程方式访问构建细节（例如包图），从而创建新的工具。
 
-go vet 就是这样一个工具，它执行增量式、一次一个包的程序分析，其缓存方式与缓存编译后的目标文件支持增量构建的方式相同。go vet 工具旨在高精度地识别常见的正确性问题，以便开发人员习惯于关注其报告。简单的例子包括检查 fmt.Printf 及相关函数调用中的格式和参数是否匹配，或者诊断对变量或结构体字段的未使用写入。这些并非编译器错误，因为我们不希望旧代码仅仅因为发现了新的可能错误就停止编译。它们也不是编译器警告；用户会逐渐忽略这些警告。将检查放在单独的工具中，可以让它们在方便开发者的时间运行，而不会干扰正常的构建过程。即使使用 Go 编译器的其他实现，例如 Gccgo 或 Gollvm，所有开发者都可以使用相同的检查。增量方法使这些静态检查足够高效，以至于我们在运行测试本身之前，在 go test 期间自动运行它们。测试本身就是用户寻找错误的时刻，而报告通常有助于解释实际的测试失败。此增量框架也可供其他工具重用。 
+go vet 就是这样一个工具，它执行增量式、一次一个包的程序分析，其缓存方式与缓存编译后的目标文件支持增量构建的方式相同。go vet 工具旨在高精度地识别常见的正确性问题，以便开发人员习惯于关注其报告。简单的例子包括检查 fmt.Printf 及相关函数调用中的格式和参数是否匹配，或者诊断对变量或结构体字段的未使用写入。这些并非编译器错误，因为我们不希望旧代码仅仅因为发现了新的可能错误就停止编译。它们也不是编译器警告；用户会逐渐忽略这些警告。将检查放在单独的工具中，可以让它们在方便开发者的时间运行，而不会干扰正常的构建过程。即使使用 Go 编译器的其他实现，例如 Gccgo 或 Gollvm，所有开发者都可以使用相同的检查。增量方法使这些静态检查足够高效，以至于我们在运行测试本身之前，在 go test 期间自动运行它们。测试本身就是用户寻找错误的时刻，而报告通常有助于解释实际的测试失败。此增量框架也可供其他工具重用。
 
 分析程序的工具固然有用，但编辑程序的工具则更加出色，尤其是在程序维护方面，因为程序维护工作繁琐乏味，极易实现自动化。
 
@@ -161,17 +158,17 @@ Go 程序的标准布局是通过算法定义的。gofmt 工具会将源文件�
 
 仅仅下载包是不够的；我们还必须知道要使用哪些版本。Go 将包分组到称为**模块（module）**的版本化单元中。模块可以为其依赖项之一指定最低要求版本，但不能指定其他限制。在构建特定程序时，Go 会通过选择最高版本来解决依赖项模块的版本冲突：如果程序的一部分需要依赖项的 1.2.0 版本，而另一部分需要 1.3.0 版本，则 Go 会选择 1.3.0 版本——也就是说，Go 要求使用语义版本控制 ，其中 1.3.0 版本必须是 1.2.0 的直接替代品。另一方面，在这种情况下，即使 1.4.0 版本可用，Go 也不会选择它，因为程序的任何部分都没有明确要求该较新版本。此规则使构建可重复，并最大限度地降低了新版本引入的意外破坏性更改导致的潜在破坏风险。
 
-## Go并发模式
+## Go 并发模式
 
 **并发不是并行**
 
-并发concurrency: composition of independently executing processes
+并发 concurrency: composition of independently executing processes
 
-并行parallelism: simultaneous execution of computations
+并行 parallelism: simultaneous execution of computations
 
 并发是关于一次性处理很多事情；而并行是同时执行很多事情
 
-### 状态机goroutine
+### 状态机 goroutine
 
 目的： ``/"([^"\\]|\\.)*"/`` 检测字符串是否以双引号包围
 
@@ -285,7 +282,7 @@ for c != '"' {
 return true
 ```
 
-![截屏2024-04-29 14.12.55](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/662f3a6de8b0d.png)
+![截屏 2024-04-29 14.12.55](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/662f3a6de8b0d.png)
 
 ```go
 // 第7版
@@ -420,7 +417,6 @@ func (s *Server) Cancel(c chan<- Event) {
 
 ```
 
-
 这些是处理慢速 goroutines 的一些选项：
 
 1. 减缓事件生成。
@@ -493,7 +489,7 @@ func (s *Server) Cancel(c chan<- Event) {
 
 ```
 
-提示： 如果能将代码可读性变好的话，将锁改成goroutine
+提示： 如果能将代码可读性变好的话，将锁改成 goroutine
 
 ```go
 func helper(in <-chan Event, out chan<- Event) { 
@@ -521,7 +517,7 @@ func helper(in <-chan Event, out chan<- Event) {
 } 
 ```
 
-![截屏2024-04-29 12.53.21](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/662f27ca37c1c.png)
+![截屏 2024-04-29 12.53.21](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/662f27ca37c1c.png)
 
 ### Pattern#2 工作调度
 
@@ -556,7 +552,7 @@ func Schedule(servers []string, numTask int,
 
 提示，可以使用 goroutines 让独立的任务并发地运行。在这个例子中，每个任务都被包装在一个 goroutine 中，并从 `idle` 通道中获取空闲的服务器。通过使用 goroutines，每个任务可以独立运行，不会阻塞其他任务的执行
 
-![截屏2024-04-28 21.03.15](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/662e491c0b03e.png)
+![截屏 2024-04-28 21.03.15](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/662e491c0b03e.png)
 
 ```go
 func Schedule(servers []string, numTask int, 
@@ -655,10 +651,6 @@ func Schedule(servers chan string, numTask int,
 
 提示： 开发者使用 goroutines 来让独立的任务和关注点能够并行执行，这样可以更好地利用并发特性，提高程序的效率和性能
 
-
-
-
-
 ```go
 func Schedule(servers chan string, numTask int, 
   call func(srv string, task int) bool) { 
@@ -693,9 +685,7 @@ func Schedule(servers chan string, numTask int,
 } 
 ```
 
-
-
-### Pattern#3 复制C/S
+### Pattern#3 复制 C/S
 
 ```go 
 type ReplicatedClient interface { 
@@ -741,8 +731,6 @@ func (c *Client) Call(args Args) Reply {
 ```
 
 这个提示告诉我们，可以使用 goroutines 来让独立的任务在独立的 goroutines 中并发执行。在这个例子中，我们希望在调用远程服务器时异步执行，以允许请求并发处理。通过使用 goroutines，我们可以让请求调用函数 `c.callOne` 在一个单独的 goroutine 中执行，而不会阻塞当前的执行流程。这样可以提高程序的并发性能，并允许独立的任务在独立的 goroutines 中并行执行，从而提高整体系统的吞吐量和响应性
-
-
 
 ```go
 func (c *Client) Call(args Args) Reply { 
@@ -832,8 +820,6 @@ Done:
 
 这个提示告诉我们，有时使用 `goto` 语句是编写清晰代码的最佳方式。在这个例子中，`goto` 被用来跳出循环，并在最后处理完逻辑后返回结果。在这种情况下，使用 `goto` 可以简化代码逻辑，避免重复代码，并更清晰地表达程序的控制流程。
 
-
-
 ### Pattern#4 协议复用
 
 ```go
@@ -907,35 +893,29 @@ func (m *Mux) Call(args Msg) (reply Msg) {
 } 
 ```
 
-这种方式在协议复用的模式中是常见的，因为它允许在并发环境中安全地处理消息通信。编写代码的最清晰方式--使用goroutines、channels和mutexes
-
-
+这种方式在协议复用的模式中是常见的，因为它允许在并发环境中安全地处理消息通信。编写代码的最清晰方式--使用 goroutines、channels 和 mutexes
 
 ### 建议
 
 1. 在开发和甚至生产中使用竞态检测器（race detector）来检测并发问题。
 2. 当数据状态变得复杂时，将其转换为状态机以提高程序清晰度。
-3. 当程序更清晰时，将互斥锁（mutexes）转换为goroutines。
-4. 使用额外的goroutines来保存额外的代码状态。
-5. 使用goroutines让独立的关注点独立运行。
-6. 考虑慢goroutines的影响。
-7. 理解每次通信何时进行以及每个goroutine何时退出的原因和时间。
-8. 使用Ctrl-\ 终止程序并转储所有其goroutine的堆栈。
-9. 使用HTTP服务器的 /debug/pprof/goroutine 来检查活动goroutine的堆栈。
+3. 当程序更清晰时，将互斥锁（mutexes）转换为 goroutines。
+4. 使用额外的 goroutines 来保存额外的代码状态。
+5. 使用 goroutines 让独立的关注点独立运行。
+6. 考虑慢 goroutines 的影响。
+7. 理解每次通信何时进行以及每个 goroutine 何时退出的原因和时间。
+8. 使用 Ctrl-\ 终止程序并转储所有其 goroutine 的堆栈。
+9. 使用 HTTP 服务器的 /debug/pprof/goroutine 来检查活动 goroutine 的堆栈。
 10. 使用带缓冲的通道作为并发阻塞队列。
 11. 在引入无界队列之前，请仔细考虑。
 12. 关闭通道以表示不再发送值。
 13. 停止不需要的定时器。
-14. 优先使用defer解锁互斥锁。
+14. 优先使用 defer 解锁互斥锁。
 15. 如果这是编写代码的最清晰的方式，请使用互斥锁。
-16. 如果这是编写代码的最清晰的方式，请使用goto。
-17. 如果这是编写代码的最清晰的方式，请同时使用goroutines、通道和互斥锁。
+16. 如果这是编写代码的最清晰的方式，请使用 goto。
+17. 如果这是编写代码的最清晰的方式，请同时使用 goroutines、通道和互斥锁。
 
-
-
-
-
-## FQA 
+## FQA
 
 > 如何阻止未使用变量的报错？
 
@@ -954,17 +934,15 @@ func main() {
 ```
 
 -  `goimports`，它可以自动重写 Go 源文件以添加或删除正确的导入项，当 Go 源文件被保存时自动运行
--  `gopls` 中， Go 的官方语言服务器，vscode用它来自动补全、跳转定义、类型检查、自动修复等。
+-  `gopls` 中， Go 的官方语言服务器，vscode 用它来自动补全、跳转定义、类型检查、自动修复等。
 
-这些在VScode中默认会被集成到Go插件里面。无需手动配置。
-
-
+这些在 VScode 中默认会被集成到 Go 插件里面。无需手动配置。
 
 > defer 的用法注意事项。
 
 Solution：
 
-1. defer是FILO，栈的思维，示例。
+1. defer 是 FILO，栈的思维，示例。
 
 ```go
 // prints 3 2 1 0 before surrounding function returns
@@ -994,14 +972,14 @@ Solution：Go 没有像 Java 或 Python 那样的异常机制（try-catch），�
 - `recover() interface{}`:
    用来**捕获 panic**，让程序恢复正常执行。但它**必须在 `defer` 函数中调用**才有效。
 
-**Panic的传播过程，称为Panicking**
+**Panic 的传播过程，称为 Panicking**
 
-当执行函数F时发生panic（显式调用panic）:
+当执行函数 F 时发生 panic（显式调用 panic）:
 
-1. 终止F的执行
-2. 所有被F defer执行的函数会照常执行（后进先出）。
+1. 终止 F 的执行
+2. 所有被 F defer 执行的函数会照常执行（后进先出）。
 3. 逐层向上传播 panic，直到 goroutine 的顶层。
-4. 没有被recover捕获，程序会打印堆栈信息并退出，包括panic参数值。
+4. 没有被 recover 捕获，程序会打印堆栈信息并退出，包括 panic 参数值。
 
 **recover 的作用和限制**
 
@@ -1009,9 +987,9 @@ Solution：Go 没有像 Java 或 Python 那样的异常机制（try-catch），�
 
 - 如果当前 goroutine 没有 panic，`recover()` 返回 `nil`。
 - 果当前 goroutine 正在 panic，`recover()` 返回传给 panic 的值
-- 一旦 recover 被成功调用（没有引发新的panic），panic 被“吞掉”，程序恢复正常执行。
+- 一旦 recover 被成功调用（没有引发新的 panic），panic 被“吞掉”，程序恢复正常执行。
 
-示例： 保护函数不让panic崩溃程序
+示例： 保护函数不让 panic 崩溃程序
 
 ```go
 func protected(g func()) {
@@ -1081,9 +1059,4 @@ for try := 0; try < 2; try++ {
 - **为什么强调并发与 goroutine？** 源于 Google 的系统编程需求；channel + 轻量并发简化复杂分布式系统。
 - **参数按值还是按引用传？** 多数类型按值；channel/map/slice 是引用语义；指针接收者也按引用。
 
-
-
-# 参考资料
-
-
-
+## 参考资料

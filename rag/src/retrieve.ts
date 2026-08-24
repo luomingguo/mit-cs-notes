@@ -12,6 +12,8 @@ export interface Passage {
   content: string
   /** rerank 相关性分，0~1 */
   score: number
+  /** 这一段落在哪种语义容器里，见 NOTESTYLE.md 第四节 */
+  blockKind: 'normal' | 'insight' | 'pitfall' | 'definition' | 'theorem' | 'example'
 }
 
 /** 引用链接：有锚点就直达小节 */
@@ -72,8 +74,16 @@ export async function retrieve(
       heading: r.heading,
       content: r.content,
       score: h.score,
+      blockKind: (r.block_kind ?? 'normal') as Passage['blockKind'],
     }
   })
+
+  // 「我的理解」块小幅提权。这是全站唯一由作者本人写的判断，读者问
+  // 「这个人怎么看」时必须排得上；权重刻意压得很小（+8%），只在 rerank
+  // 分数接近时起作用，不能让它盖过真正答题的段落。
+  passages.sort(
+    (a, b) => b.score * (b.blockKind === 'insight' ? 1.08 : 1) - a.score * (a.blockKind === 'insight' ? 1.08 : 1),
+  )
 
   return {
     passages,

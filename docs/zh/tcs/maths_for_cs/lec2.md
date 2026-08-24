@@ -1,12 +1,19 @@
+---
+title: 反证法和归纳法
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 2
+kind: theory
+tags: []
+status: stub
+---
 # Lec 2 反证法和归纳法
-
-
-
-
 
 ## 一、逻辑推导规则
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong> Definition </strong> 推导规则（<i>inference rule</i>）是将若干真命题组合推出另一真命题的规则。 </div>
+::: definition
+推导规则（*inference rule*）是将若干真命题组合推出另一真命题的规则。
+:::
 
 > ⊢ 为 推导符号 / 证明符号（*turnstile*）
 
@@ -24,8 +31,6 @@
 - 每步推导必须清晰，注明所用已有命题
 - 避免恐吓式证明（"Obviously…"、"Clearly…"、”显然成立“）
 - 基础数学事实可直接使用，无需逐条引公理
-
-
 
 ## 二、基本证明技术
 
@@ -75,8 +80,6 @@ $$n^2 = (2k+1)^2 = 4k^2 + 4k + 1 = 2(2k^2 + 2k) + 1$$
 
 本质上是推导规则 $(\neg P \implies \text{false}) \vdash P$ 的应用，又称间接证明（*indirect proof*）。
 
-
-
 **Example.** $\sqrt{2} \notin \mathbb{Q}$。
 
 *Proof by contradiction.* 假设 $\sqrt{2} \in \mathbb{Q}$，写成最简分数 $\sqrt{2} = a/b$（$\gcd(a,b)=1$）。
@@ -87,15 +90,13 @@ $$a^2 = 2b^2 \implies a^2 \text{ 为偶数} \implies a \text{ 为偶数}$$
 
 $a, b$ 均为偶数，与 $\gcd(a,b) = 1$ 矛盾。$\Rightarrow\Leftarrow$ $\blacksquare$
 
-
-
-## 四、证明大纲 
+## 四、证明大纲
 
 **思路：** 在真正动手推导之前，先根据命题的**逻辑形式**机械地拆解证明目标。
 
 **Example.** 定理：$\forall n \in \mathbb{Z},; F(n) \iff B(n+1)$。
 
-```
+```text
 Proof Outline:
   取任意整数 n；需证 F(n) iff B(n+1)。
   
@@ -105,11 +106,11 @@ Proof Outline:
 
 只要命题形式明确，无需了解 $F, B$ 的含义就能写出大纲。
 
-
-
 ## 五、数学归纳法
 
-<div style="border-left: 4px solid #4a90d9; background: #eaf2fb; padding: 10px 15px; margin: 10px 0; border-radius: 4px;"> <strong> 公理 </strong> 数学归纳法（<i>Proof</i>） </div>
+::: definition 公理
+数学归纳法（*Proof*）
+:::
 
 设 $P(n)$ 为关于 $n \in \mathbb{N}$ 的谓词。若
 
@@ -120,11 +121,7 @@ Proof Outline:
 
 归纳步骤中，"假设 $P(n)$ 为真"称为**归纳假设**（*induction hypothesis*, IH）。
 
-
-
 ### 5.1 标准示例
-
-
 
 **Example.** $\forall n \in \mathbb{N},; 1 + 2 + \cdots + n = \dfrac{n(n+1)}{2}$。
 
@@ -137,8 +134,6 @@ Proof Outline:
 $$\sum_{i=0}^{n+1} i = \underbrace{\sum_{i=0}^{n} i}_{= n(n+1)/2 \text{ by IH}} + (n+1) = \frac{n(n+1)}{2} + (n+1) = \frac{(n+1)(n+2)}{2}$$
 
 即 $P(n+1)$ 成立。由归纳原理，$P(n)$ 对所有 $n \in \mathbb{N}$ 成立。$\blacksquare$​
-
-
 
 ### 5.2 强化归纳假设
 
@@ -161,13 +156,7 @@ $$\sum_{i=0}^{n+1} i = \underbrace{\sum_{i=0}^{n} i}_{= n(n+1)/2 \text{ by IH}} 
 
 <img src="https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260618014623983.png" alt="image-20260618014623983" style="zoom:50%;" />
 
-
-
 **关键在于找到合适的 IH，这是一个技巧性很强的过程**
-
-
-
-
 
 ## 六、关键术语速查
 

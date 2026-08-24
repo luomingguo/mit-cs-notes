@@ -1,4 +1,13 @@
-# Lec 3 — Collision Resistance & File Authentication
+---
+title: 'Collision Resistance & File Authentication'
+course: 6.1600 计算机安全导论
+course_id: '6.1600'
+lecture: 3
+kind: theory
+tags: []
+status: complete
+---
+# Lec 3 Collision Resistance & File Authentication
 > MIT 6.1600 · Introduction to Computer Security
 
 ## 1. 哈希函数的基本定义

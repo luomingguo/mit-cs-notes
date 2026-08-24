@@ -1,3 +1,12 @@
+---
+title: 字体
+course: 6.4500 Web设计：语言和用户接口
+course_id: '6.4500'
+lecture: 17
+kind: design
+tags: []
+status: complete
+---
 # Lec 17 字体
 
 - 字体、样式、字重
@@ -7,8 +16,6 @@
 - 对齐与布局
 - 颜色与对比度
 - 响应式排版
-
-
 
 ## 字体种类
 

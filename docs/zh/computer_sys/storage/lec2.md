@@ -1,3 +1,12 @@
+---
+title: Flash SSD 操作 II
+course: 18-746 存储系统
+course_id: '18-746'
+lecture: 2
+kind: system
+tags: []
+status: complete
+---
 # Lec 2 Flash SSD 操作 II
 
 - He, Jun and Kannan, Sudarsun and Arpaci-Dusseau, Andrea C. and Arpaci-Dusseau, Remzi H.
@@ -8,4 +17,3 @@
   In *Proceedings of the 12th Conference on Hot Topics in Operating Systems*, 2009, pages 14--14
 - Sara McAllister and Yucong Sherry Wang and Benjamin Berg and Daniel S. Berger and George Amvrosiadis and Nathan Beckmann and Gregory R. Ganger
   [*FairyWREN: A Sustainable Cache for Emerging Write-Read-Erase Flash Interfaces*](https://www.usenix.org/system/files/osdi24-mcallister.pdf)
-

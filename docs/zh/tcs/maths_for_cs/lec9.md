@@ -1,4 +1,13 @@
-# Lecture 09: Modular Arithmetic
+---
+title: Modular Arithmetic
+course: 6.1200 计算机数学
+course_id: '6.1200'
+lecture: 9
+kind: theory
+tags: []
+status: complete
+---
+# Lec 09 Modular Arithmetic
 
 > MIT 6.1200J Mathematics for Computer Science, Spring 2024
 
@@ -33,7 +42,7 @@
 
 **示例（模 5）：**
 
-```
+```text
 [0] = { ..., -10, -5,  0,  5, 10, ... }
 [1] = { ...,  -9, -4,  1,  6, 11, ... }
 [2] = { ...,  -8, -3,  2,  7, 12, ... }

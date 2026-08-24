@@ -1,6 +1,13 @@
+---
+title: '介绍数据库 & 关系模型 & SQL'
+course: 6.5830 数据库系统
+course_id: '6.5830'
+lecture: 1
+kind: system
+tags: []
+status: complete
+---
 # Lec 1 介绍数据库 & 关系模型 & SQL
-
-
 
 ## 基本概念
 
@@ -13,17 +20,16 @@
 - 这门课里面提到的数据库是指： DBMS。
   - 用来存储和查询数据库的软件系统。
 
-
 ### 数据库分类
 
-![截屏2024-02-06 04.38.50](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66954d3007cb8.png)
+![截屏 2024-02-06 04.38.50](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66954d3007cb8.png)
 
-**数据模型(data model) & 布局(layout)**
+**数据模型（data model） & 布局（layout）**
 
 - 在数据库中构造和表示数据的系统方法
 - 对数据一致性、共享数据、以及高效访问持久化数据非常重要
 - 数据模型举例
-  - 关系型 （大部分DBMS采用）
+  - 关系型 （大部分 DBMS 采用）
   - 非关系型
     - K/V
     - 文档/XML/对象
@@ -35,21 +41,20 @@
     - 网络
     - 多值
 
-
 **Schema**
 
 是指给定一个数据模型，对该数据集合（实体）的一种描述
 
 **声明式查询**
 
-- 数据库查询过程(query processing)
+- 数据库查询过程（query processing）
 - 访问和操纵数据的算法
 
-**一致性/事务("ACID")**
+**一致性/事务（"ACID"）**
 
 **关系模型术语与日常生活术语对比**
 
-![截屏2024-02-21 11.52.43](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65d573948db93.png)
+![截屏 2024-02-21 11.52.43](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65d573948db93.png)
 
 ## 案例：动物园网站
 
@@ -62,19 +67,17 @@
   - 图片 & 地图
 - 动物饲养员
   - 喂养时间
-- 1K个动物，5K个URL， 10个管理员，200个动物饲养员
-
-
+- 1K 个动物，5K 个 URL， 10 个管理员，200 个动物饲养员
 
 ### 动物园数据模型
 
 #### 实体关系图
 
-![截屏2024-02-06 04.49.39](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669573f45e804.png)
+![截屏 2024-02-06 04.49.39](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669573f45e804.png)
 
-- 动物实体： 1名字、1年龄、1品种
-- 饲养员实体： 1名字
-- 笼子实体： 1清理时间、1建筑标号
+- 动物实体： 1 名字、1 年龄、1 品种
+- 饲养员实体： 1 名字
+- 笼子实体： 1 清理时间、1 建筑标号
 - 一个笼子实体**包含**多个动物实体
 - 一个动物饲养员看管多个笼子，一个笼子被多个饲养员看管
 
@@ -145,9 +148,7 @@ SQL，Structured Query Language，结构化查询语言
   SELECT r.name FROM animals WHERE r.species = 'giraffe';
   ```
 
-
-
-**查询32号建筑的笼子**
+**查询 32 号建筑的笼子**
 
 - 命令式
 
@@ -166,11 +167,9 @@ SQL，Structured Query Language，结构化查询语言
 
 可以看出命令式用了嵌套循环，而声明式是用连接的方式。
 
-
-
 **复杂的查询**
 
-![截屏2024-07-16 03.35.51](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66957a1e2b6de.png)
+![截屏 2024-07-16 03.35.51](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66957a1e2b6de.png)
 
 从上述例子中，我们得出结论，声明式查询**关注做什么，而不是怎么做**
 
@@ -181,9 +180,7 @@ SQL，Structured Query Language，结构化查询语言
     - 即插入操作会变慢，因为每次插入新记录时都需要保持排序顺序
   - 将动物表存储到哈希表中，或者树结构(“索引”）
 
-#### SQL执行过程
-
-
+#### SQL 执行过程
 
 ```mermaid
 graph TD;
@@ -194,9 +191,9 @@ graph TD;
 
 逻辑独立
 
-- 如果我们想要更改schem而不更改代码呢？
+- 如果我们想要更改 schem 而不更改代码呢？
 - 如果我们只是添加一列或者一个表
-- 视图允许我们将一个旧的schema映射到新的
+- 视图允许我们将一个旧的 schema 映射到新的
 
 视图
 
@@ -225,9 +222,9 @@ SELECT name, age, species,cageno,
 
 ### 不同的数据模型
 
-- 分层数据模型（IMS/DL1)， 20世纪60年代
-- 网络数据模型（CODASYL)， 20世纪70年代
-- 关系数据模型， 20世纪70年代
+- 分层数据模型（IMS/DL1)， 20 世纪 60 年代
+- 网络数据模型（CODASYL)， 20 世纪 70 年代
+- 关系数据模型， 20 世纪 70 年代
 
 ### 主要观点
 
@@ -237,7 +234,7 @@ SELECT name, age, species,cageno,
 
 **案例： 动物园网站**
 
-![截屏2024-07-16 04.04.25](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669580cf1abef.png)
+![截屏 2024-07-16 04.04.25](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669580cf1abef.png)
 
 schema： 属性名称和属性类型
 
@@ -248,17 +245,17 @@ schema： 属性名称和属性类型
 对动物数据模型进行小更改
 
 - 每个动物都在一个笼子里，多个动物可能共享一个笼子
-- 每个动物被1个饲养员照顾，饲养员需要照看多个动物
+- 每个动物被 1 个饲养员照顾，饲养员需要照看多个动物
 
 ### IMS（分层模型）
 
-- 数据被组织称段segment
+- 数据被组织称段 segment
 
   - 段是记录的集合，每个段都有相同的段类型。段类型定义了记录的结构
 
   - IMS 中的数据按段类型排列成树状结构，例如
 
-    ```
+    ```text
     Keepers
     	Animals
     		Cages
@@ -279,19 +276,17 @@ schema： 属性名称和属性类型
 
 **分层表示的例子**
 
-假如有两个饲养员，3个动物，2个笼子
+假如有两个饲养员，3 个动物，2 个笼子
 
-![截屏2024-07-16 09.38.31](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695cf1c64dea.png)
+![截屏 2024-07-16 09.38.31](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695cf1c64dea.png)
 
 这个例子中的物理表示方法为
 
-```
+```text
 Keeper1段
 A1段   A2段  A3段   // A表animal
 C1段   C2段  C3段   // C表cage
 ```
-
-
 
 #### 段的结构
 
@@ -304,7 +299,7 @@ C1段   C2段  C3段   // C表cage
 - GetUnique(segtype, pred)
 
   - 从指定段类型中获取满足特定条件（pred）的第一个记录
-  - 只有被组织成hash/有序段才能被支持
+  - 只有被组织成 hash/有序段才能被支持
 
 - GetNext(segtype, pred)
 
@@ -323,13 +318,11 @@ C1段   C2段  C3段   // C表cage
 
 **例子**
 
+![截屏 2024-07-16 09.54.38](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695d2e329fca.png)
 
+**1、 找到饲养员 Jane 看管的所有笼子**
 
-![截屏2024-07-16 09.54.38](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695d2e329fca.png)
-
-**1、 找到饲养员Jane看管的所有笼子**
-
-```
+```text
 GetUnique(Keepers, name="Jane") // 将当前位置隐式地导航到 Jane 的记录。此时，系统在 Keepers 段内，指向 Jane 的记录
 
 Until done:
@@ -339,9 +332,9 @@ Until done:
 
 `GetNextParent` 操作会在当前父记录（即 Jane）的范围内查找 `cages` 段的记录，并获取该记录的 ID
 
-**2、找到看管6号笼子的管理员**
+**2、找到看管 6 号笼子的管理员**
 
-```
+```text
 keep = GetUnique(keepers)
 Until done:
   cage = GetNextParent(cages, id=6)
@@ -360,7 +353,7 @@ Until done:
   - 根段的类型改变，也会如此
   - 如果根段是顺序存储的，那么无法在中间插入新的记录
 - 逻辑数据独立性的限制
-  - 如果schema改变了，程序也要跟着改
+  - 如果 schema 改变了，程序也要跟着改
 
 #### 逻辑数据独立性
 
@@ -371,7 +364,7 @@ Until done:
 
 这样一来，使用 `GN` 或 `GNP` 操作访问数据的程序必须更新，否则程序的行为可能不再符合预期
 
-```
+```text
 // 旧结构
 Keepers
   cages
@@ -384,17 +377,17 @@ cages
 
 ### CODASYL 数据模型
 
-用来解决IMS/PL1的局限性，基于图或网络数据模型
+用来解决 IMS/PL1 的局限性，基于图或网络数据模型
 
-![截屏2024-07-16 10.20.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695d91249142.png)
+![截屏 2024-07-16 10.20.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695d91249142.png)
 
-记录能够根据一些key被hash或者排序。
+记录能够根据一些 key 被 hash 或者排序。
 
-**找到Joe看管的所有笼子**
+**找到 Joe 看管的所有笼子**
 
-![截屏2024-07-16 10.24.31](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695d9e7981ef.png)
+![截屏 2024-07-16 10.24.31](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695d9e7981ef.png)
 
-```
+```text
 Find keepers(name = 'Joe')
 	Until done:
 		Find next animal in caredforby
@@ -423,7 +416,7 @@ Find keepers(name = 'Joe')
 
 - 面向集合的编程模型，不需要"导航"
 
-- 不需要物理数据模型的描述(!)
+- 不需要物理数据模型的描述（!）
   - 例如，不需要指定排序顺序、哈希等
 
 #### 基本特征
@@ -437,34 +430,32 @@ Find keepers(name = 'Joe')
 
 **例子说明**
 
-![截屏2024-07-16 10.33.50](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695dc1551b07.png)
-
-
+![截屏 2024-07-16 10.33.50](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695dc1551b07.png)
 
 ## 关系代数
 
-5个基本操作
+5 个基本操作
 
-- 投影Projection (π(T, c1, ... cn))
+- 投影 Projection (π(T, c1, ... cn))
   - 选择部分列组成的子集
-- 选择Selection(𝞂(T, pred))
+- 选择 Selection(𝞂(T, pred))
   - 选择满足条件的行组成的子集
-- 笛卡尔积(叉积，Cross Product) (T1 x T2)
+- 笛卡尔积（叉积，Cross Product） (T1 x T2)
   - 连接两个表
-- 联接(⨝(T1, T2, pred)) = 𝞂(T1 x T2, pred)
+- 联接（⨝(T1, T2, pred）) = 𝞂(T1 x T2, pred)
   - 用一个判定条件联接两个表
 - 集合的操作（并、差等）
 - ”代数“——对其自身的操作具有封闭性。 大白话就是说， 无论对数据库中的哪个关系（表）进行什么样的操作，都会得到一个新的关系（表）
 
-![截屏2024-02-21 16.23.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65d5b2fd62c4e.png)
+![截屏 2024-02-21 16.23.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/65d5b2fd62c4e.png)
 
 **用笛卡尔积实现连接**
 
-![截屏2024-07-16 10.45.49](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695dee3754fb.png)
+![截屏 2024-07-16 10.45.49](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695dee3754fb.png)
 
-**例子： 找到笼子号32的动物们**
+**例子： 找到笼子号 32 的动物们**
 
-```
+```text
 𝞂(
 	⨝ (
 		animals,
@@ -477,7 +468,7 @@ Find keepers(name = 'Joe')
 
 > 你觉得数据库就是这样实现代码？
 
-```
+```text
 ⨝(
 	animals,
 	𝞂 (
@@ -488,11 +479,9 @@ Find keepers(name = 'Joe')
 )
 ```
 
-
-
 ### 关系代数的等价规则
 
-- 连接重排序(目的得到的Join记录最少，一般有贪心算法和动态规划算法)
+- 连接重排序（目的得到的 Join 记录最少，一般有贪心算法和动态规划算法）
   - A ⨝ B = B ⨝ A
   - (A ⨝ B) join C = A ⨝ (B ⨝ C)
 - 选择重排序
@@ -518,19 +507,15 @@ WHERE a.cageno = c.no AND c.bldg = 32
 
 在上述查询中，并没有明确指定动物和笼子表格的数据表示方式。它们可以是排序的、存储在哈希表或树中等。如果改变了数据的物理表示方式，SQL 查询本身不会改变。
 
-
-
-
-
 ## 逻辑独立性
 
-逻辑数据独立性是指可以在不需要修改代码的情况下更改数据库schema。
+逻辑数据独立性是指可以在不需要修改代码的情况下更改数据库 schema。
 
 - 如果只是添加一个列或者表格，这并不会造成问题。
 - 视图（Views）允许我们将旧的模式映射到新的模式，使得旧的程序仍然可以正常工作。
 - 即使是在修改现有字段的情况下，通过良好的视图设计，也可以确保旧程序与新模式的兼容性。
 
-### 视图(View)简介
+### 视图（View）简介
 
 **视图**是一个基于其他表的逻辑定义表的方式。
 
@@ -569,7 +554,7 @@ FROM animals2 a
 
 ## 总结： IMS vs. CODASYL vs. 关系型
 
-![截屏2024-07-16 11.04.29](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695e3445f009.png)
+![截屏 2024-07-16 11.04.29](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695e3445f009.png)
 
 ## SQL
 
@@ -577,7 +562,7 @@ FROM animals2 a
 
 #### 引入
 
-![截屏2024-07-16 11.36.49](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695ead864fcb.png)
+![截屏 2024-07-16 11.36.49](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695ead864fcb.png)
 
 加入饲养员和笼子的关系如上所示
 
@@ -588,13 +573,11 @@ Schema:
 - Keepers(id, name)
 - keeps(kid, cageno)
 
-
-
-**找到32号建筑物中的所有笼子**
+**找到 32 号建筑物中的所有笼子**
 
 - 命令式
 
-  ```
+  ```text
   for each row a in animals:
   	for each row c in cages:
   		if a.acageno = c.no and c.bldg = 32
@@ -617,11 +600,9 @@ Schema:
   WHERE bldg = 32;
   ```
 
-  
-
 ### 别名与歧义
 
-![截屏2024-02-18 21.30.26](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695f062a140d.png)
+![截屏 2024-02-18 21.30.26](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6695f062a140d.png)
 
 **例子： 喂养熊的所有饲养员**
 
@@ -632,9 +613,9 @@ JOIN animals on cageno = no
 Where species = 'bear'
 ```
 
-> 这个sql语句并不能使用，为什么？
+> 这个 sql 语句并不能使用，为什么？
 
-因为 SELECT name 时候这个name的指代不明确，没有指明是哪个实体。改成animals.name即可
+因为 SELECT name 时候这个 name 的指代不明确，没有指明是哪个实体。改成 animals.name 即可
 
 ### 聚合
 
@@ -652,7 +633,7 @@ GROUP BY no
 
 > [!IMPORTANT]
 >
-> count(*)， 所有行都被统计（包括NULL）
+> count(*)， 所有行都被统计（包括 NULL）
 >
 > count(col) ，只统计非空的值的行
 
@@ -711,42 +692,38 @@ JOIN animals ON acageno =cageno
 WHERE species = 'Bear' AND = species = 'Giraffe'
 ```
 
-> 这个SQL并没有效果，为什么？
+> 这个 SQL 并没有效果，为什么？
 
-需要构建两个表，Bear keepers 和 Giraffe keepers，然后取交集 
+需要构建两个表，Bear keepers 和 Giraffe keepers，然后取交集
 
-**先构建Bear keepers表**
+**先构建 Bear keepers 表**
 
 ![image-20240716175623140](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/669643ca5ca5f.png)
 
-
-
 ![image-20240716175718377](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66964401c8d10.png)
 
-**再构建Giraffe keepers表**
+**再构建 Giraffe keepers 表**
 
-![截屏2024-07-16 17.59.04](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6696447286c80.png)
+![截屏 2024-07-16 17.59.04](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6696447286c80.png)
 
 **最后联接**
 
-![截屏2024-07-16 17.59.46](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6696449ba2f3d.png)
+![截屏 2024-07-16 17.59.46](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6696449ba2f3d.png)
 
+## SQL 必要练习 + 论文阅读
 
+1、 [完成 SQL 的练习]([1. SQL — A Practical Introduction to Databases (runestone.academy)](https://runestone.academy/ns/books/published/practical_db/PART1_SQL/index.html))
 
-## SQL必要练习 + 论文阅读
+2、 [完成关系模型（3.1 节）的练习]([3. RELATIONAL DATABASE THEORY — A Practical Introduction to Databases (runestone.academy)](https://runestone.academy/ns/books/published/practical_db/PART3_RELATIONAL_DATABASE_THEORY/index.html))
 
-1、 [完成SQL的练习]([1. SQL — A Practical Introduction to Databases (runestone.academy)](https://runestone.academy/ns/books/published/practical_db/PART1_SQL/index.html))
-
-2、 [完成关系模型（3.1节）的练习]([3. RELATIONAL DATABASE THEORY — A Practical Introduction to Databases (runestone.academy)](https://runestone.academy/ns/books/published/practical_db/PART3_RELATIONAL_DATABASE_THEORY/index.html))
-
-3、 阅读参考书上的Michael Stonebraker和Joseph Hellerstein的文章《What Goes Around Comes Around》中的第1至4节
+3、 阅读参考书上的 Michael Stonebraker 和 Joseph Hellerstein 的文章《What Goes Around Comes Around》中的第 1 至 4 节
 
 4、（可选）关系模型的开山鼻祖论文； E.F. Codd. A relational model of data for large shared data banks. Communications of the ACM, 1970.[[PDF](http://portal.acm.org/ft_gateway.cfm?id=362685&type=pdf&coll=GUIDE&dl=GUIDE&CFID=1781172&CFTOKEN=98614393)].
 
 回答以下问题：
 
-- 哪些类型的程序在SQL中编写起来容易？哪些类型的程序较难？
+- 哪些类型的程序在 SQL 中编写起来容易？哪些类型的程序较难？
 - 您觉得声明式编程比命令式编程更容易还是更难？
 - 什么是数据独立性的概念？为什么它很重要？
 - 关系模型背后的关键思想是什么？它们为何优于之前的模型？关系模型在哪些方面具有限制性？
-- “分层”模型（如IMS系统）与Codd提出的关系模型之间最重要的区别是什么？
+- “分层”模型（如 IMS 系统）与 Codd 提出的关系模型之间最重要的区别是什么？

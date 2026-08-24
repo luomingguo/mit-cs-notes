@@ -1,8 +1,11 @@
 ---
 title: 学习路径
+course: paths
+kind: system
+tags: []
+status: complete
 description: 从一个具体目标出发，把二十多门 MIT 课程的笔记串成一条有依赖顺序的阅读路线。
 ---
-
 # 学习路径
 
 目录树只能告诉你「有哪些课」，回答不了「我想搞懂数据库内核，该按什么顺序读」。

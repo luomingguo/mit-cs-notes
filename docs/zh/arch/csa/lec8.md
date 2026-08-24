@@ -1,25 +1,29 @@
+---
+title: 分支预测
+course: 6.590 计算机系统架构
+course_id: '6.590'
+lecture: 8
+kind: system
+tags: []
+status: complete
+---
 # Lec 8 分支预测
-
-
 
 ## 本讲主线
 
 深流水处理器里，分支惩罚严重限制性能。本讲沿"**方向预测**"与"**目标预测**"两条线展开:从静态预测 → 1-bit/2-bit BHT → 利用历史相关性的两级预测 → 锦标赛/TAGE;再用 **BTB + 返回栈**解决"目标地址何时可知"。
 
-
-
 ## 一、控制流惩罚
 
+::: example
+**问题:控制流惩罚 (*Control Flow Penalty*)**
 
+取指与分支解析之间现代处理器可能有 >10 段。预测错误时损失的工作量 ≈ **流水深度 × 流水宽度**。而 SPEC CPU 2017 中分支约占 11–19%,**分支间平均运行长度仅 5–10 条指令**——惩罚频繁发生。
+:::
 
-<div style="border-left:4px solid #d9534f; background:#fbeaea; padding:8px 14px; margin:10px 0;">
-<strong>问题:控制流惩罚 (<em>Control Flow Penalty</em>)</strong><br>
-取指与分支解析之间现代处理器可能有 >10 段。预测错误时损失的工作量 ≈ <strong>流水深度 × 流水宽度</strong>。而 SPEC CPU 2017 中分支约占 11–19%,<strong>分支间平均运行长度仅 5–10 条指令</strong>——惩罚频繁发生。
-</div>
+::: definition 每次取指依赖前一指令的两条信息
 
-
-<div style="border-left:4px solid #4a90d9; background:#eaf2fb; padding:8px 14px; margin:10px 0;">
-<strong>每次取指依赖前一指令的两条信息</strong><br></div>
+:::
 ① 前一条是否为 taken 分支?② 若是,目标地址是多少?对 RISC-V:
 
 
@@ -29,24 +33,23 @@
 | JALR           | Decode 后          | 寄存器读后   |
 | BRANCH(如 BLT) | Execute 后         | Decode 后    |
 
-
-
-
-
 ## 2. 静态与动态预测
 
-<div style="border-left:4px solid #4a90d9; background:#eaf2fb; padding:8px 14px; margin:10px 0;">
-<strong>静态预测 (<em>Static</em>)</strong><br>
-分支总体 taken 概率约 60–70%。ISA 可附"偏好方向"语义(如 MC88110),或允许编译器任选静态方向(PA-RISC、IA-64)。一个简单启发式:<strong>后向分支 90% taken(循环),前向分支约 50%</strong>。静态预测约 80% 准。</div>
+::: definition
+**静态预测 (*Static*)**
 
+分支总体 taken 概率约 60–70%。ISA 可附"偏好方向"语义（如 MC88110）,或允许编译器任选静态方向（PA-RISC、IA-64）。一个简单启发式:**后向分支 90% taken(循环),前向分支约 50%**。静态预测约 80% 准。
+:::
 
-<div style="border-left:4px solid #4a90d9; background:#eaf2fb; padding:8px 14px; margin:10px 0;">
-<strong>动态预测 (<em>Dynamic</em>):基于过去行为的反馈控制</strong><br>
-利用两类相关性:<br>
-• <strong>时间相关 (temporal)</strong>:某分支这次的结果是它下次结果的好预测。<br>
-• <strong>空间相关 (spatial)</strong>:多个分支可能高度相关地一起解析(偏好执行路径)。
-</div>
+::: definition
+**动态预测 (*Dynamic*):基于过去行为的反馈控制**
 
+利用两类相关性:
+
+• **时间相关 (temporal)**:某分支这次的结果是它下次结果的好预测。
+
+• **空间相关 (spatial)**:多个分支可能高度相关地一起解析（偏好执行路径）。
+:::
 
 **预测器原语 (*Predictor Primitive*,Emer & Gloy 1997)**:一张索引表,支持 Predict 与 Update,记作 $P[\text{Width}, \text{Depth}](\text{Index}; \text{Update})$。
 
@@ -54,137 +57,116 @@
 
 ## 3. 分支历史表 (BHT):1-bit 与 2-bit
 
-<div style="border-left:4px solid #4a90d9; background:#eaf2fb; padding:8px 14px; margin:10px 0;">
-<strong>1-bit 预测器(简单时间预测)</strong><br>
+::: definition 1-bit 预测器（简单时间预测）
 $A21064(PC; T) = P[1, 2K](PC; T)$,用 PC 索引,存上次结果。
-</div>
+:::
 
+::: example 1-bit 在循环分支上的弊端
+每次循环**至少错两次**(进入循环时一次、退出循环时一次)。
+:::
 
-<div style="border-left:4px solid #d9534f; background:#fbeaea; padding:8px 14px; margin:10px 0;">
-<strong>1-bit 在循环分支上的弊端</strong><br>
-每次循环<strong>至少错两次</strong>(进入循环时一次、退出循环时一次)。
-</div>
+::: definition 2-bit 预测器（Smith, 1981;又称 Bimodal / BHT）
+每项 2 位,管理为**饱和计数器**:11 强 taken、10 弱 taken、01 弱 not-taken、00 强 not-taken。方向预测**只在连续两次错误后才改变**,用 MSB 决定预测方向。
 
-
-<div style="border-left:4px solid #4a90d9; background:#eaf2fb; padding:8px 14px; margin:10px 0;">
-<strong>2-bit 预测器(Smith, 1981;又称 Bimodal / BHT)</strong><br>
-每项 2 位,管理为<strong>饱和计数器</strong>:11 强 taken、10 弱 taken、01 弱 not-taken、00 强 not-taken。方向预测<strong>只在连续两次错误后才改变</strong>,用 MSB 决定预测方向。<br>
 $A21164(PC; T) = \text{MSB}(\text{Counter}[2, 2K](PC; T))$
-</div>
+:::
 
-
-<div style="border-left:4px solid #3fa34d; background:#eafbe9; padding:8px 14px; margin:10px 0;">
-<strong>推论</strong><br>
-2-bit 把循环的错误预测从每循环 2 次降到 <strong>1 次</strong>。典型 4K 项 BHT、2 位/项,准确率 ~80–90%。为省空间,BHT 通常<strong>不打 tag</strong>(允许地址别名)。
-</div>
-
+::: theorem 推论
+2-bit 把循环的错误预测从每循环 2 次降到 **1 次**。典型 4K 项 BHT、2 位/项,准确率 ~80–90%。为省空间,BHT 通常**不打 tag**(允许地址别名)。
+:::
 
 ---
 
 ## 4. 利用历史相关性的两级预测
 
-<div style="border-left:4px solid #4a90d9; background:#eaf2fb; padding:8px 14px; margin:10px 0;">
-<strong>历史寄存器 / 模式历史表 (<em>PHT</em>,Yeh & Patt 1992)</strong><br>
-历史寄存器记录处理器最近 N 个分支的方向。利用空间相关:如 <code>if(x<7)</code> 为假则 <code>if(x<5)</code> 也为假。$\text{History}(\text{Index}; T) = P(\text{Index}; P \,\|\, T)$。
-</div>
+::: definition
+**历史寄存器 / 模式历史表 (*PHT*,Yeh & Patt 1992)**
 
+历史寄存器记录处理器最近 N 个分支的方向。利用空间相关:如 `if(x<7)` 为假则 `if(x<5)` 也为假。$\text{History}(\text{Index}; T) = P(\text{Index}; P \,\|\, T)$。
+:::
 
 几种组合方式:
 
 - **全局历史 (*Global*)**:用全局历史索引计数器。
 - **局部历史 (*Local*)**:用 PC 索引出该 PC 的局部历史,再索引计数器。
 - **GShare**:$\text{GShare}(PC;T) = \text{MSB}(\text{Counter}(\text{History}(0;T) \oplus PC; T))$——把全局历史与 PC **异或**后索引,兼顾全局模式与特定 PC。
-- **两级预测器(Pentium Pro, 1995)**:用最近两个分支结果选 4 组 BHT 之一,~95% 准。
+- **两级预测器（Pentium Pro, 1995）**:用最近两个分支结果选 4 组 BHT 之一,~95% 准。
 
-<div style="border-left:4px solid #4a90d9; background:#eaf2fb; padding:8px 14px; margin:10px 0;">
-<strong>锦标赛预测器 (<em>Tournament</em>,Alpha 21264, 1996)</strong><br>
-用一个<strong>选择器 (chooser)</strong> 学习"对下一分支用局部还是全局历史更好";全局历史推测更新、错误时恢复。在多种应用上声称 90–100% 成功。
-</div>
+::: definition
+**锦标赛预测器 (*Tournament*,Alpha 21264, 1996)**
 
+用一个**选择器 (chooser)** 学习"对下一分支用局部还是全局历史更好";全局历史推测更新、错误时恢复。在多种应用上声称 90–100% 成功。
+:::
 
-<div style="border-left:4px solid #4a90d9; background:#eaf2fb; padding:8px 14px; margin:10px 0;">
-<strong>TAGE 预测器(Seznec & Michaud, 2006)</strong><br>
-多个用<strong>不同历史长度</strong>的带 tag 组件级联,以 Bimodal 为基底,逐级"若我命中且更可信则用我的猜测,否则回退到下一级"。每组件含 Counter / Useful / Tag,在错误预测时分配表项。是当代最强方向预测器家族。
-</div>
-
+::: definition TAGE 预测器（Seznec & Michaud, 2006）
+多个用**不同历史长度**的带 tag 组件级联,以 Bimodal 为基底,逐级"若我命中且更可信则用我的猜测,否则回退到下一级"。每组件含 Counter / Useful / Tag,在错误预测时分配表项。是当代最强方向预测器家族。
+:::
 
 ---
 
 ## 5. 方向预测的局限 → 目标预测
 
-<div style="border-left:4px solid #d9534f; background:#fbeaea; padding:8px 14px; margin:10px 0;">
-<strong>问题:只预测方向不够</strong><br>
-方向预测器<strong>无法在目标地址确定前重定向取指流</strong>。即便正确预测 taken,仍要等目标算出——产生"正确预测 taken 分支的惩罚"和"寄存器跳转惩罚"。
-</div>
-
+::: example 问题:只预测方向不够
+方向预测器**无法在目标地址确定前重定向取指流**。即便正确预测 taken,仍要等目标算出——产生"正确预测 taken 分支的惩罚"和"寄存器跳转惩罚"。
+:::
 
 ### 5.1 分支目标缓冲 (*Branch Target Buffer, BTB*)
 
-<div style="border-left:4px solid #4a90d9; background:#eaf2fb; padding:8px 14px; margin:10px 0;">
-<strong>定义:BTB</strong><br>
-把预测目标地址(连同 BP 位)存起来,<strong>在 IF 段</strong>即决定 nPC:若预测 taken 则 nPC = target,否则 PC+4;稍后检查,错则 kill 并更新 BTB/BHT。
-</div>
+::: definition 定义:BTB
+把预测目标地址（连同 BP 位）存起来,**在 IF 段**即决定 nPC:若预测 taken 则 nPC = target,否则 PC+4;稍后检查,错则 kill 并更新 BTB/BHT。
+:::
 
+::: example 问题:地址碰撞
+未打 tag 的 BTB 会让非控制指令（如 1028 处的 Add）误命中某分支表项,导致错误重定向。**解决:给 BTB 项打 tag**——只为 taken 分支/跳转保留项,匹配失败则取 PC+4。好处:消除 ALU 指令后的假预测,且腾出空间存更多分支目标,在分支被取指/译码前就定出 next PC。
+:::
 
-<div style="border-left:4px solid #d9534f; background:#fbeaea; padding:8px 14px; margin:10px 0;">
-<strong>问题:地址碰撞</strong><br>
-未打 tag 的 BTB 会让非控制指令(如 1028 处的 Add)误命中某分支表项,导致错误重定向。<strong>解决:给 BTB 项打 tag</strong>——只为 taken 分支/跳转保留项,匹配失败则取 PC+4。好处:消除 ALU 指令后的假预测,且腾出空间存更多分支目标,在分支被取指/译码前就定出 next PC。
-</div>
-
-
-<div style="border-left:4px solid #3fa34d; background:#eafbe9; padding:8px 14px; margin:10px 0;">
-<strong>BTB 与 BHT 结合</strong><br>
-BTB 项比 BHT 贵得多,但能在<strong>更早的流水段</strong>重定向、并加速间接分支 (JALR);BHT 项多、更准,放在<strong>较晚段</strong>纠正 BTB 漏掉的 taken 分支。二者都在分支于 E 段解析后更新。
-</div>
-
+::: theorem BTB 与 BHT 结合
+BTB 项比 BHT 贵得多,但能在**更早的流水段**重定向、并加速间接分支 (JALR);BHT 项多、更准,放在**较晚段**纠正 BTB 漏掉的 taken 分支。二者都在分支于 E 段解析后更新。
+:::
 
 ### 5.2 返回栈 (*Subroutine Return Stack*)
 
-<div style="border-left:4px solid #4a90d9; background:#eaf2fb; padding:8px 14px; margin:10px 0;">
-<strong>JALR 的三类用途与 BTB 表现</strong><br>
-① switch(同一 case 重复用得好);② 动态函数调用(同一类型虚函数好);③ <strong>子程序返回</strong>——BTB 差,因为一个函数常被多处调用。<br>
-<strong>返回栈</strong>:调用时压入返回地址、返回指令译码时弹出,对返回比 BTB 准确得多(典型 8–16 项)。
-</div>
+::: definition JALR 的三类用途与 BTB 表现
+① switch(同一 case 重复用得好);② 动态函数调用（同一类型虚函数好）;③ **子程序返回**——BTB 差,因为一个函数常被多处调用。
 
+**返回栈**:调用时压入返回地址、返回指令译码时弹出,对返回比 BTB 准确得多（典型 8–16 项）。
+:::
 
-**行预测 (*Line Prediction*,Alpha 21x64)**:每周期预测要取的 cache 行(超标量下预测下一行),用未打 tag 的 BTB 结构,后续预测器再精化目标。
+**行预测 (*Line Prediction*,Alpha 21x64)**:每周期预测要取的 cache 行（超标量下预测下一行）,用未打 tag 的 BTB 结构,后续预测器再精化目标。
 
 ---
 
 ## 6. 分支预测全景
 
-<div style="border-left:4px solid #3fa34d; background:#eafbe9; padding:8px 14px; margin:10px 0;">
-按流水阶段层层校正:在 <strong>PC 生成</strong>处需立即给出 next PC(BTB);<strong>Decode</strong> 后知道指令类型与 PC 相对目标;<strong>寄存器读</strong>后知简单条件与寄存器目标;<strong>Execute</strong> 后知复杂条件与异常。<strong>推测检查不必总对</strong>——只要够准,错了能恢复即可。最好的预测器反映程序的真实行为。
-</div>
-
+::: theorem
+按流水阶段层层校正:在 **PC 生成**处需立即给出 next PC(BTB);**Decode** 后知道指令类型与 PC 相对目标;**寄存器读**后知简单条件与寄存器目标;**Execute** 后知复杂条件与异常。**推测检查不必总对**——只要够准,错了能恢复即可。最好的预测器反映程序的真实行为。
+:::
 
 > **下一讲:** Speculative Execution & Value Management(推测执行与值管理)
 
-
-
-**降低控制流惩罚的手段**:软件侧——循环展开 (loop unrolling) 增加运行长度、指令调度尽早算分支条件(价值有限);硬件侧——旁路、延迟槽、**准确推测(分支预测)**。
+**降低控制流惩罚的手段**:软件侧——循环展开 (loop unrolling) 增加运行长度、指令调度尽早算分支条件（价值有限）;硬件侧——旁路、延迟槽、**准确推测（分支预测）**。
 
 **指令执行阶段**
 
-![截屏2024-06-24 22.10.07](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b7048d89a.png)
+![截屏 2024-06-24 22.10.07](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b7048d89a.png)
 
-Fetch(取指)指从指令缓存(I-cache)中检索指令位的过程，并把即将执行的指令放到取指缓冲区(Fetch Buffer)
+Fetch(取指)指从指令缓存（I-cache）中检索指令位的过程，并把即将执行的指令放到取指缓冲区（Fetch Buffer）
 
-Decode(解码)：是指将指令从取指缓冲区转移到适当的发射缓冲区(Issue Buffer)，这个阶段处理器会分析指令的类型和操作数，并准备将其分发给死党的执行单元。这个阶段，指令会被译码
+Decode(解码)：是指将指令从取指缓冲区转移到适当的发射缓冲区（Issue Buffer），这个阶段处理器会分析指令的类型和操作数，并准备将其分发给死党的执行单元。这个阶段，指令会被译码
 
 (Issue(发射))：是指从发射缓冲区将指令和操作数送往执行单元（Functional Units）的过程。在这一阶段，处理器会根据指令的类型和资源的可用性，决定将哪条指令送到执行单元。
 
-执行阶段：在这一阶段，指令操作会在相应的功能单元中完成（例如ALU、FPU等），并生成结果。当执行完成时，所有的结果和异常标志都会变得可用。**有些说法，是发射阶段也是作为执行阶段的一部分**
+执行阶段：在这一阶段，指令操作会在相应的功能单元中完成（例如 ALU、FPU 等），并生成结果。当执行完成时，所有的结果和异常标志都会变得可用。**有些说法，是发射阶段也是作为执行阶段的一部分**
 
-Commit(提交阶段)，在这一阶段，指令操作会在相应的功能单元中完成（例如ALU、FPU等），并生成结果。当执行完成时，所有的结果和异常标志都会变得可用。
+Commit(提交阶段)，在这一阶段，指令操作会在相应的功能单元中完成（例如 ALU、FPU 等），并生成结果。当执行完成时，所有的结果和异常标志都会变得可用。
 
 ---
 
 **控制流惩罚**
 
-现代处理器在下一条指令地址计算（next PC calculation）和分支决策（branch resolution）之间可能有超过10个流水线阶段。这意味着分支预测在现代处理器中的重要性，因为如果分支预测错误，会导致大量的指令无效，浪费处理器资源并影响性能。
+现代处理器在下一条指令地址计算（next PC calculation）和分支决策（branch resolution）之间可能有超过 10 个流水线阶段。这意味着分支预测在现代处理器中的重要性，因为如果分支预测错误，会导致大量的指令无效，浪费处理器资源并影响性能。
 
-![截屏2024-06-24 22.38.22](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b70376fd0.png)
+![截屏 2024-06-24 22.38.22](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b70376fd0.png)
 
 如果流水线没有遵循正确的指令流，即出现分支预测错误，处理器将丢失大量工作。这可以通过以下两个因素来理解：
 
@@ -198,8 +180,8 @@ Commit(提交阶段)，在这一阶段，指令操作会在相应的功能单元
 
 假设：
 
-- **L** Loop length是流水线的长度，即流水线中从取指到提交所需的阶段数。
-- **W** pipline width是流水线的宽度，即每个时钟周期可以同时处理的指令数量。
+- **L** Loop length 是流水线的长度，即流水线中从取指到提交所需的阶段数。
+- **W** pipline width 是流水线的宽度，即每个时钟周期可以同时处理的指令数量。
 
 当分支预测错误时，处理器将丢失的工作量可以近似计算为：
 $$
@@ -208,17 +190,17 @@ $$
 
 ----
 
-根据提供的数据，SPEC CPU 2017的指令分布如下：
+根据提供的数据，SPEC CPU 2017 的指令分布如下：
 
-![截屏2024-06-24 22.46.05](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b70311858.png)
+![截屏 2024-06-24 22.46.05](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b70311858.png)
 
-意味着在SPECint基准测试中，每5.26条指令中有一条是分支指令，SPECfp基准测试中，每9.09条指令中有一条是分支指令。 理解这些数据对于优化编译器和处理器设计，尤其是分支预测器的设计，具有重要意义。
+意味着在 SPECint 基准测试中，每 5.26 条指令中有一条是分支指令，SPECfp 基准测试中，每 9.09 条指令中有一条是分支指令。 理解这些数据对于优化编译器和处理器设计，尤其是分支预测器的设计，具有重要意义。
 
 ----
 
 **RISC-V 分支和跳转**
 
-每条指令的fetch都需要依赖的前一条指令的信息。这些信息是：
+每条指令的 fetch 都需要依赖的前一条指令的信息。这些信息是：
 
 1. 前一条指令是否是一个“被执行”的分支指令。
 2. 如果是的话，目标地址是什么。
@@ -248,7 +230,7 @@ $$
 
 UltraSPARC-III 是一种超标量处理器，它的指令获取流水线包含多个阶段。
 
-- **4-way Superscalar**：处理器可以在同一个时钟周期内并行发射最多4条指令进行执行。
+- **4-way Superscalar**：处理器可以在同一个时钟周期内并行发射最多 4 条指令进行执行。
 
 - **In-order Issue**：指令按照程序顺序（in-order）发射到执行单元
 
@@ -261,9 +243,9 @@ UltraSPARC-III 是一种超标量处理器，它的指令获取流水线包含�
 - **Steer Instructions to Functional Units (J)** 将解码后的指令分发到适当的执行单元。
 - **Register File Read (R)** 读取需要的操作数。
 - **Integer Execute (E)** 执行整数运算指令。
-- **Remainder of execute pipeline** 涵盖了所有剩余的执行和写回阶段(+ 另外6个阶段)
+- **Remainder of execute pipeline** 涵盖了所有剩余的执行和写回阶段（+ 另外 6 个阶段）
 
-![截屏2024-06-24 23.17.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b7065b52c.png)
+![截屏 2024-06-24 23.17.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b7065b52c.png)
 
 >  **如何减少控制流惩罚**
 
@@ -277,7 +259,7 @@ UltraSPARC-III 是一种超标量处理器，它的指令获取流水线包含�
 
 硬件层面：
 
-- 旁路(Bypass)——立即使用计算结果
+- 旁路（Bypass）——立即使用计算结果
   - 计算结果可以直接传递给需要使用的指令，而无需等待结果写回寄存器。减少数据依赖引起的流水线停顿。
 - 改变架构——找其他事情做
   - 使用延迟槽（delay slots），即在可能导致流水线停顿的地方插入有用的指令，这需要软件的配合
@@ -292,14 +274,14 @@ UltraSPARC-III 是一种超标量处理器，它的指令获取流水线包含�
 
 在深度流水线处理器中，分支指令（如条件跳转）如果预测错误，会导致流水线停顿或执行无用指令，从而影响处理器的性能。这种影响被称为分支惩罚（Branch Penalties）。为了提高处理器的效率，需要尽量减少分支惩罚
 
-现代分支预测器的准确率已经超过95%，意味着它们在大多数情况下都能正确预测分支指令的结果，从而减少因分支指令引起的停顿和性能损失。
+现代分支预测器的准确率已经超过 95%，意味着它们在大多数情况下都能正确预测分支指令的结果，从而减少因分支指令引起的停顿和性能损失。
 
 > 分支预测需要什么硬件支持？
 
 预测结构：
 
 - 分支历史表（Branch History Tables, BHT)
-  - 记录最近的分支行为历史，用于预测未来的分支行为。BHT通常会记录每个分支指令的执行情况（例如，是否跳转）
+  - 记录最近的分支行为历史，用于预测未来的分支行为。BHT 通常会记录每个分支指令的执行情况（例如，是否跳转）
 - 分支目标缓冲区（Branch Target Buffers, BTB)：
   - 存储分支指令的目标地址。每当遇到分支指令时，可以快速查找目标地址，从而减少计算分支目标地址的时间。
 
@@ -318,29 +300,25 @@ UltraSPARC-III 是一种超标量处理器，它的指令获取流水线包含�
 
 **静态分支预测**
 
-总的来说， 一个分支指令被接受的概率是60～70%，这意味着在大多数情况下，分支指令会执行跳转操作。但是
+总的来说， 一个分支指令被接受的概率是 60～70%，这意味着在大多数情况下，分支指令会执行跳转操作。但是
 
 ISA 为分支指令附加“偏好跳转”或“偏好不跳转”的语义，处理器可以在缺乏其他预测信息时，依据这些偏好来做出初步预测。这种设计能够帮助处理器在大多数情况下做出更准确的预测，从而减少因错误预测带来的性能损失。
 
-比如bne0 (preferred taken) beq0 (not taken)
+比如 bne0 (preferred taken) beq0 (not taken)
 
 ISA 可以允许任意选择静态预测方向。指令集架构可以在不同的应用场景下灵活应对分支预测的需求
 
-
-
-![截屏2024-06-25 00.00.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b705394c8.png)
+![截屏 2024-06-25 00.00.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b705394c8.png)
 
 ---
 
 **动态预测**：基于过去的行为学习
 
-![截屏2024-06-25 00.07.40](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b705d6e09.png)
+![截屏 2024-06-25 00.07.40](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6836b705d6e09.png)
 
 分为两种相关性：
 
-- 空间相关性(Spatial correlation):空间相关性指的是多个分支指令在程序的空间位置上可能会以高度相关的方式解决。这意味着某些分支指令在特定的执行路径中经常会以相似的方式解决。空间相关性可以通过分析程序的结构或静态分析来推断，而不需要实际运行时数据。
-- 时间相关性(Temporal correlation): 分支指令在不同执行周期中解决的方式可能存在关联。换句话说，如果一个分支指令在上一次执行时采取了某种分支路径（例如跳转或不跳转），那么在下一次执行时，它很可能以相同的方式解决。这种相关性源于程序执行的局部性原理，即程序的执行在短期内往往会表现出相似的行为模式
-
-
+- 空间相关性（Spatial correlation）:空间相关性指的是多个分支指令在程序的空间位置上可能会以高度相关的方式解决。这意味着某些分支指令在特定的执行路径中经常会以相似的方式解决。空间相关性可以通过分析程序的结构或静态分析来推断，而不需要实际运行时数据。
+- 时间相关性（Temporal correlation）: 分支指令在不同执行周期中解决的方式可能存在关联。换句话说，如果一个分支指令在上一次执行时采取了某种分支路径（例如跳转或不跳转），那么在下一次执行时，它很可能以相同的方式解决。这种相关性源于程序执行的局部性原理，即程序的执行在短期内往往会表现出相似的行为模式
 
 时间相关性 分支的解析方式可以很好地预测它在下一次执行时的解析方式 空间相关性 多个分支可能以高度相关的方式解析（首选的执行路径）

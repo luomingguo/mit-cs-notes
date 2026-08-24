@@ -1,6 +1,21 @@
 import { defineConfig } from 'vitepress'
 
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
+import container from 'markdown-it-container'
+
+// NOTESTYLE.md 第四节定义的语义容器。默认标题写在这里，
+// `::: definition 完备性` 这样带标题时用作者写的。
+//
+// 这些不只是排版：rag/src/chunk.ts 的 cleanForEmbedding 会把容器名转成
+// 「定义：」「我的理解：」这样的中文前缀带进嵌入向量，检索时才分得清
+// 「这是课程内容」还是「这是作者本人的判断」。改动名字要两边一起改。
+const SEMANTIC_CONTAINERS = {
+  definition: { label: '定义', cls: 'note-definition' },
+  theorem: { label: '定理', cls: 'note-theorem' },
+  example: { label: '例', cls: 'note-example' },
+  insight: { label: '我的理解', cls: 'note-insight' },
+  pitfall: { label: '常见误区', cls: 'note-pitfall' },
+} as const
 // https://vitepress.dev/reference/site-config
 
 // 站点根路径。GitHub Pages 部署在 /mit-cs-notes/ 子路径下，
@@ -57,7 +72,17 @@ export default defineConfig({
       lazyLoading: false,
     },
     config: (md) => {
-      // md.use(<plugins>)
+      for (const [name, { label, cls }] of Object.entries(SEMANTIC_CONTAINERS)) {
+        md.use(container, name, {
+          render(tokens: any[], idx: number) {
+            const token = tokens[idx]
+            if (token.nesting !== 1) return '</div>\n'
+            // ::: definition 完备性  →  标题用「完备性」；不写就用默认 label
+            const title = token.info.trim().slice(name.length).trim() || label
+            return `<div class="note-block ${cls}"><p class="note-block-title">${md.utils.escapeHtml(title)}</p>\n`
+          },
+        })
+      }
     }
   },
   lastUpdated: true,
