@@ -14,10 +14,12 @@ const { title, description, language = 'zh' } = Astro.props;
 const homeHref = withBasePath('/');
 const zhHref = withBasePath('/zh/');
 const enHref = withBasePath('/en/');
+const pathsHref = withBasePath('/zh/paths');
 const searchIndexUrl = withBasePath('/search-index.json');
 const ragEnabled = siteBase() === '/';
 const siteOrigin = process.env.SITE_ORIGIN ?? 'https://notes.lobomiao.uk';
 const ogImage = new URL(withBasePath('/og-card.png'), siteOrigin).href;
+const favicon = withBasePath('/img/note_logo.svg');
 ---
 <!doctype html>
 <html lang={language === 'zh' ? 'zh-CN' : 'en'}>
@@ -26,6 +28,7 @@ const ogImage = new URL(withBasePath('/og-card.png'), siteOrigin).href;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href={favicon} type="image/svg+xml" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={`${title} · MIT CS Notes`} />
     <meta property="og:description" content={description} />
@@ -49,6 +52,7 @@ const ogImage = new URL(withBasePath('/og-card.png'), siteOrigin).href;
       <a class="brand atlas-brand" href={homeHref}><span>cs<span class="brand-dot">.</span>kb</span><small>knowledge base</small></a>
       <button class="atlas-search search-open" type="button" aria-label={language === 'zh' ? '打开搜索' : 'Open search'}><span aria-hidden="true">⌕</span><span>{language === 'zh' ? '搜索领域、课程和讲义…' : 'Search domains, courses and notes…'}</span><kbd>⌘K</kbd></button>
       <nav class="atlas-links" aria-label={language === 'zh' ? '全站导航' : 'Site navigation'}>
+        <a href={pathsHref}>{language === 'zh' ? '学习路径' : 'Learning paths'}</a>
         <a href={zhHref} aria-current={language === 'zh' ? 'page' : undefined}>中文</a>
         <a href={enHref} aria-current={language === 'en' ? 'page' : undefined}>EN</a>
         <button class="theme-toggle" type="button" aria-label={language === 'zh' ? '切换深浅色' : 'Toggle color theme'}>◐</button>

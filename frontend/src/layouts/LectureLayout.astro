@@ -48,9 +48,11 @@ const {
 } = Astro.props;
 const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
 const homeHref = withBasePath('/');
+const pathsHref = withBasePath('/zh/paths');
 const ragEnabled = siteBase() === '/';
 const siteOrigin = process.env.SITE_ORIGIN ?? 'https://notes.lobomiao.uk';
 const ogImage = new URL(withBasePath('/og-card.png'), siteOrigin).href;
+const favicon = withBasePath('/img/note_logo.svg');
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -59,6 +61,7 @@ const ogImage = new URL(withBasePath('/og-card.png'), siteOrigin).href;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href={favicon} type="image/svg+xml" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content={`${title} · MIT CS Notes`} />
     <meta property="og:description" content={description} />
@@ -105,7 +108,7 @@ const ogImage = new URL(withBasePath('/og-card.png'), siteOrigin).href;
         <div class="sidebar-scroll">
           <CourseNav domains={domains} lectures={lectures} courseName={courseName} courseId={courseId} courseHref={courseHref} totalNotes={totalNotes} />
         </div>
-        <div class="sidebar-foot"><span>Astro static site</span><span>真实 Markdown</span></div>
+        <div class="sidebar-foot"><a href={pathsHref}>学习路径 →</a><span>真实 Markdown</span></div>
       </aside>
 
       <main id="lecture-content" class="main-column">

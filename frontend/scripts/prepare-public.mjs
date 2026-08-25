@@ -11,8 +11,37 @@ const targetRoot = path.join(frontendRoot, '.public');
 
 await rm(targetRoot, { recursive: true, force: true });
 await mkdir(targetRoot, { recursive: true });
-await cp(docsPublic, targetRoot, { recursive: true, force: true });
-await cp(frontendStatic, targetRoot, { recursive: true, force: true });
+
+const staged = new Map();
+
+async function stageAsset(source, targetRelative, owner) {
+  if (path.basename(source) === '.DS_Store') return;
+  const publicPath = targetRelative.split(path.sep).join('/');
+  const previousOwner = staged.get(publicPath);
+  if (previousOwner) {
+    throw new Error(`公共资源路径冲突：/${publicPath}\n- ${previousOwner}\n- ${owner}`);
+  }
+  staged.set(publicPath, owner);
+  const target = path.join(targetRoot, targetRelative);
+  await mkdir(path.dirname(target), { recursive: true });
+  await cp(source, target, { force: true });
+}
+
+async function stageTree(sourceRoot, targetPrefix, ownerPrefix) {
+  for (const item of await readdir(sourceRoot, { withFileTypes: true })) {
+    const absolute = path.join(sourceRoot, item.name);
+    const relative = path.relative(sourceRoot, absolute);
+    if (item.isDirectory()) {
+      await stageTree(absolute, path.join(targetPrefix, item.name), `${ownerPrefix}/${item.name}`);
+      continue;
+    }
+    if (!item.isFile()) throw new Error(`不支持的公共资源类型：${absolute}`);
+    await stageAsset(absolute, path.join(targetPrefix, relative), `${ownerPrefix}/${relative}`);
+  }
+}
+
+await stageTree(docsPublic, '', 'docs/public');
+await stageTree(frontendStatic, '', 'frontend/static');
 
 async function copyContentAssets(directory) {
   for (const item of await readdir(directory, { withFileTypes: true })) {
@@ -25,10 +54,9 @@ async function copyContentAssets(directory) {
     const relative = path.relative(docsZh, absolute);
     const parts = relative.split(path.sep);
     const publicParts = parts.length >= 3 ? parts.slice(1) : parts;
-    const target = path.join(targetRoot, 'zh', ...publicParts);
-    await mkdir(path.dirname(target), { recursive: true });
-    await cp(absolute, target, { force: true });
+    await stageAsset(absolute, path.join('zh', ...publicParts), `docs/zh/${relative}`);
   }
 }
 
 await copyContentAssets(docsZh);
+console.info(`[public] staged ${staged.size} assets from docs/public, frontend/static and docs/zh`);

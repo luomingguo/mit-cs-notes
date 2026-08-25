@@ -3,9 +3,11 @@ import { getCollection, render } from 'astro:content';
 import CourseView from '@/components/CourseView.astro';
 import DomainView from '@/components/DomainView.astro';
 import HomeView from '@/components/HomeView.astro';
+import { LearningPath } from '@/components/LearningPath';
 import LectureLayout from '@/layouts/LectureLayout.astro';
 import { buildCatalog, courseForEntry, domainForEntry } from '@/lib/catalog';
 import { sourceHeadings } from '@/lib/heading-ids';
+import { loadLearningPaths } from '@/lib/learning-paths';
 import {
   buildNavLectures,
   buildTaxonomy,
@@ -81,6 +83,23 @@ const status = statusLabels[String(entryData.status ?? '')] ?? String(entryData.
 const searchIndexUrl = withBasePath('/search-index.json');
 const courseHref = course?.href ?? withBasePath('/zh/');
 const isContentPage = !isRootIndex(entry) && !isDomainIndex(entry) && !isCourseIndex(entry);
+const learningPathOpening = contentHtml.match(/<learningpath(?:\s[^>]*)?>/i);
+const hasLearningPath = Boolean(learningPathOpening?.index !== undefined);
+const learningPathSegments = hasLearningPath && learningPathOpening?.index !== undefined ? [
+  contentHtml.slice(0, learningPathOpening.index),
+  contentHtml.slice(learningPathOpening.index + learningPathOpening[0].length).replace(/<\/learningpath>\s*$/i, ''),
+] : [contentHtml];
+const sourceLearningPaths = hasLearningPath ? await loadLearningPaths() : null;
+const learningPaths = sourceLearningPaths ? {
+  ...sourceLearningPaths,
+  paths: Object.fromEntries(Object.entries(sourceLearningPaths.paths).map(([slug, route]) => [slug, {
+    ...route,
+    steps: route.steps.map((step) => ({
+      ...step,
+      notes: step.notes.map((note) => ({ ...note, url: withBasePath(note.url) })),
+    })),
+  }])),
+} : null;
 ---
 {isRootIndex(entry) ? (
   <HomeView catalog={catalog} />
@@ -129,7 +148,13 @@ const isContentPage = !isRootIndex(entry) && !isDomainIndex(entry) && !isCourseI
         </section>
       )}
 
-      <div class="note-article" set:html={contentHtml}></div>
+      {hasLearningPath && learningPaths ? (
+        <div class="note-article">
+          <Fragment set:html={learningPathSegments[0]} />
+          <LearningPath client:idle data={learningPaths} />
+          <Fragment set:html={learningPathSegments.slice(1).join('')} />
+        </div>
+      ) : <div class="note-article" set:html={contentHtml}></div>}
 
       {contentEntries.length > 1 && (
         <nav class="prev-next" aria-label="上一篇和下一篇">

@@ -2,6 +2,8 @@
 
 这是与旧 VitePress 完全隔离的新前端。内容集合直接只读加载 `../docs/zh/**/*.md`；本目录不复制或改写正文。
 
+`../docs/public/` 继续作为新旧前端和 RAG 共用的公共资源源目录。开发与构建前，`prepare:public` 会清空生成目录 `.public/`，再确定性导入公共资源、前端自有资源及正文附件；同一路径出现两个来源时会直接失败，不会静默覆盖。`verify:dist` 会逐文件比较 `docs/public` 与最终产物，并检查学习路径中的全部笔记链接。不要直接编辑或提交 `.public/`。
+
 - `npm run verify:content`：按确定性规则自动选择复杂真实笔记并验证覆盖项。
 - `npm run dev`：本地开发。
 - `npm run check`：Astro/TypeScript 静态检查。
