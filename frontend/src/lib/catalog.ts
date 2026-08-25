@@ -40,6 +40,7 @@ export interface DomainSummary {
   label: string;
   href: string;
   description: string;
+  heroImage: { src: string; alt: string } | null;
   noteCount: number;
   courseCount: number;
   tags: string[];
@@ -65,10 +66,7 @@ export interface LibraryCatalog {
 }
 
 function domainDescription(entry: NoteEntry | null, courses: CourseSummary[]): string {
-  const data = (entry ? dataOf(entry) : {}) as NoteEntry['data'] & {
-    hero?: { tagline?: unknown; text?: unknown };
-    description?: unknown;
-  };
+  const data = entry ? dataOf(entry) : ({} as ReturnType<typeof dataOf>);
   if (typeof data.hero?.tagline === 'string' && data.hero.tagline.trim()) return data.hero.tagline.trim();
   if (typeof data.description === 'string' && data.description.trim()) return data.description.trim();
   if (courses.length) {
@@ -76,6 +74,15 @@ function domainDescription(entry: NoteEntry | null, courses: CourseSummary[]): s
     return `收录 ${names.join('、')}${courses.length > names.length ? '等课程' : '课程'}的中文技术笔记。`;
   }
   return entry ? plainExcerpt(entry.body ?? '', 150) : '该领域暂无结构化简介。';
+}
+
+function domainHeroImage(entry: NoteEntry | null, label: string): DomainSummary['heroImage'] {
+  const image = entry ? dataOf(entry).hero?.image : undefined;
+  if (!image || typeof image.src !== 'string' || !image.src.trim()) return null;
+  return {
+    src: withBasePath(image.src.trim()),
+    alt: typeof image.alt === 'string' && image.alt.trim() ? image.alt.trim() : `${label}主题插图`,
+  };
 }
 
 function courseStatus(indexEntry: NoteEntry | null): string {
@@ -149,6 +156,7 @@ export function buildCatalog(entries: NoteEntry[]): LibraryCatalog {
       label,
       href: idToHref(indexEntry?.id ?? `${slug}/index`),
       description: domainDescription(indexEntry, domainCourses),
+      heroImage: domainHeroImage(indexEntry, label),
       noteCount: domainCourses.reduce((sum, course) => sum + course.noteCount, 0),
       courseCount: domainCourses.length,
       tags: [...new Set(domainCourses.flatMap((course) => course.tags))].sort((a, b) => a.localeCompare(b, 'zh')),

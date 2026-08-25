@@ -14,6 +14,12 @@ export interface NoteData {
   kind?: string;
   tags?: string[];
   status?: string;
+  description?: string;
+  hero?: {
+    tagline?: string;
+    text?: string;
+    image?: { src?: string; alt?: string };
+  };
 }
 
 export interface ComplexityFeatures {
@@ -315,7 +321,7 @@ export function buildNavLectures(entries: NoteEntry[], currentId: string): NavLe
 export function buildTaxonomy(entries: NoteEntry[], currentId: string): NavDomain[] {
   const byDomain = new Map<string, { notes: number; courses: Set<string> }>();
   for (const entry of entries) {
-    if (entry.id.endsWith('/index')) continue;
+    if (entry.id.endsWith('/index') || !entry.id.includes('/')) continue;
     const slug = canonicalDomainSlug(categoryOf(entry.id));
     const bucket = byDomain.get(slug) ?? { notes: 0, courses: new Set<string>() };
     bucket.notes += 1;

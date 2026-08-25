@@ -16,11 +16,14 @@ const { catalog, domain, contentHtml } = Astro.props;
     <CatalogSidebar catalog={catalog} activeDomain={domain.slug} />
     <div class="atlas-main">
       <nav class="atlas-breadcrumb" aria-label="面包屑"><a href={withBasePath('/')}>Home</a><span>/</span><span aria-current="page">{domain.label}</span></nav>
-      <header class="atlas-hero domain-hero">
-        <p class="atlas-kicker">DOMAIN · {domain.courseCount} COURSES</p>
-        <h1>{domain.label}</h1>
-        <p>{domain.description}</p>
-        <div class="atlas-stats">{domain.courseCount} 门课程 · {domain.noteCount} 篇真实笔记 · {domain.tags.length} 个已标注 tags</div>
+      <header class:list={['atlas-hero', 'domain-hero', { 'has-hero-image': domain.heroImage }]}>
+        <div class="domain-hero-copy">
+          <p class="atlas-kicker">DOMAIN · {domain.courseCount} COURSES</p>
+          <h1>{domain.label}</h1>
+          <p>{domain.description}</p>
+          <div class="atlas-stats">{domain.courseCount} 门课程 · {domain.noteCount} 篇真实笔记 · {domain.tags.length} 个已标注 tags</div>
+        </div>
+        {domain.heroImage && <figure class="domain-hero-image"><img src={domain.heroImage.src} alt={domain.heroImage.alt} /></figure>}
       </header>
 
       <div class="domain-content-grid">
