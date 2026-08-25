@@ -1,0 +1,60 @@
+---
+import AtlasLayout from '@/layouts/AtlasLayout.astro';
+import CatalogSidebar from '@/components/CatalogSidebar.astro';
+import type { LibraryCatalog } from '@/lib/catalog';
+
+interface Props { catalog: LibraryCatalog }
+const { catalog } = Astro.props;
+---
+<AtlasLayout title="计算机科学知识库" description="MIT EECS 公开课与开源项目的中文技术笔记知识库。">
+  <div class="atlas-shell">
+    <CatalogSidebar catalog={catalog} />
+    <div class="atlas-main">
+      <header class="atlas-hero">
+        <p class="atlas-kicker">PERSONAL COMPUTER SCIENCE LIBRARY</p>
+        <h1>计算机科学知识库</h1>
+        <p>把分散的课程讲义组织成可以按领域、课程和阅读顺序探索的长期技术知识库。</p>
+        <div class="atlas-stats">{catalog.totalNotes} 篇真实笔记 · {catalog.domains.length} 个领域 · {catalog.totalCourses} 门课程 · {catalog.tags.length} 个已标注概念</div>
+      </header>
+
+      <section class="atlas-section" aria-labelledby="domains-heading">
+        <div class="atlas-section-head"><h2 id="domains-heading">DOMAINS</h2><span>按真实目录与课程索引生成</span></div>
+        <div class="domain-grid">
+          {catalog.domains.map((domain, index) => (
+            <a class="domain-card" href={domain.href}>
+              <div class="domain-title"><span>{String(index + 1).padStart(2, '0')}</span><h3>{domain.label}</h3></div>
+              <p>{domain.description}</p>
+              <small>{domain.courseCount} 门课程 · {domain.noteCount} 篇笔记{domain.tags.length ? ` · ${domain.tags.length} 个 tags` : ''}</small>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <div class="atlas-lower-grid">
+        <section class="atlas-section">
+          <div class="atlas-section-head"><h2>RECENTLY UPDATED</h2><span>来自 Git 历史</span></div>
+          <div class="recent-list">
+            {catalog.recent.length ? catalog.recent.map((note) => (
+              <a href={note.href}>
+                <time datetime={note.updated}>{note.updated}</time>
+                <span>{note.title}</span>
+                <small>{note.course}</small>
+              </a>
+            )) : <p class="catalog-empty">Git 历史中暂无可用更新时间。</p>}
+          </div>
+        </section>
+        <section class="atlas-section">
+          <div class="atlas-section-head"><h2>COURSE ENTRY POINTS</h2><span>每个领域的真实课程入口</span></div>
+          <div class="entry-list">
+            {catalog.domains.map((domain) => (
+              <div>
+                <strong>{domain.label}</strong>
+                {domain.courses.length ? <a href={domain.courses[0].href}>{domain.courses[0].courseId || domain.courses[0].title} →</a> : <span>暂无已收录课程</span>}
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</AtlasLayout>

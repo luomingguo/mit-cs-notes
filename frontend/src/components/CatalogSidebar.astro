@@ -1,0 +1,32 @@
+---
+import type { LibraryCatalog } from '@/lib/catalog';
+
+interface Props {
+  catalog: LibraryCatalog;
+  activeDomain?: string;
+}
+const { catalog, activeDomain } = Astro.props;
+---
+<aside class="catalog-sidebar">
+  <section>
+    <h2 class="nav-label">SPINE</h2>
+    <nav class="catalog-domain-nav" aria-label="知识领域">
+      {catalog.domains.map((domain) => (
+        <a href={domain.href} aria-current={domain.slug === activeDomain ? 'page' : undefined}>
+          <span>{domain.slug === activeDomain ? '▾' : '▸'} {domain.label}</span>
+          <small>{domain.courseCount}</small>
+        </a>
+      ))}
+    </nav>
+  </section>
+  <section class="catalog-filter-section">
+    <h2 class="nav-label">LIBRARY</h2>
+    <p><span>中文讲义</span><strong>{catalog.totalNotes}</strong></p>
+    <p><span>课程</span><strong>{catalog.totalCourses}</strong></p>
+    <p><span>领域</span><strong>{catalog.domains.length}</strong></p>
+  </section>
+  <section class="catalog-filter-section">
+    <h2 class="nav-label">REAL TAGS · {catalog.tags.length}</h2>
+    {catalog.tags.length ? <div class="catalog-tags">{catalog.tags.slice(0, 12).map((tag) => <span>{tag}</span>)}</div> : <p class="catalog-empty">frontmatter 暂无可汇总 tags。</p>}
+  </section>
+</aside>

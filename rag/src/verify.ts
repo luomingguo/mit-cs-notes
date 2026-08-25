@@ -16,12 +16,23 @@ import { config } from './config.js'
 const DOCS = process.env.DOCS_DIR
   ? path.resolve(process.env.DOCS_DIR)
   : config.docsDir
-const DIST = path.join(DOCS, '.vitepress/dist')
+const DIST = process.env.DIST_DIR
+  ? path.resolve(process.env.DIST_DIR)
+  : path.join(DOCS, '.vitepress/dist')
 
-function distFileFor(url: string): string {
-  return url.endsWith('/')
-    ? path.join(DIST, url, 'index.html')
-    : path.join(DIST, `${url}.html`)
+async function distFileFor(url: string): Promise<string> {
+  const clean = url.replace(/^\/+|\/+$/g, '')
+  const candidates = [
+    path.join(DIST, clean, 'index.html'),
+    path.join(DIST, `${clean}.html`),
+  ]
+  for (const candidate of candidates) {
+    try {
+      await fs.access(candidate)
+      return candidate
+    } catch {}
+  }
+  return candidates[0]!
 }
 
 async function main() {
@@ -43,7 +54,7 @@ async function main() {
   for (const doc of docs) {
     let html: string
     try {
-      html = await fs.readFile(distFileFor(doc.url), 'utf8')
+      html = await fs.readFile(await distFileFor(doc.url), 'utf8')
       urlOk++
     } catch {
       urlMiss.push(`${doc.path}  ->  ${doc.url}`)
@@ -101,8 +112,9 @@ async function main() {
 ${sample.content.slice(0, 420).replace(/^/gm, '  ')}…`)
   }
 
-  // URL 必须 100% 命中；锚点允许少量偏差（会退化成跳页面顶部，不影响可用性）。
-  if (urlMiss.length > 0) process.exit(1)
+  // URL 和锚点都是外部契约。迁移后将偏差作为构建失败处理，避免引用
+  // 静默退化为页面顶部，掩盖标题 slug 规则的回归。
+  if (urlMiss.length > 0 || anchorBad.length > 0) process.exit(1)
 }
 
 main()

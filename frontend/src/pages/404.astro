@@ -1,0 +1,7 @@
+---
+import AtlasLayout from '@/layouts/AtlasLayout.astro';
+import { withBasePath } from '@/lib/notes';
+---
+<AtlasLayout title="页面未找到" description="请求的知识库页面不存在。">
+  <div class="not-found"><p class="atlas-kicker">404</p><h1>页面未找到</h1><p>这个 URL 没有对应的真实 Markdown 内容，或尚未纳入迁移映射。</p><a href={withBasePath('/')}>返回知识库首页 →</a></div>
+</AtlasLayout>

@@ -1,0 +1,21 @@
+---
+import { getCollection } from 'astro:content';
+import AtlasLayout from '@/layouts/AtlasLayout.astro';
+import { buildCatalog } from '@/lib/catalog';
+const catalog = buildCatalog(await getCollection('notes'));
+---
+<AtlasLayout language="en" title="MIT EECS Notes" description="A personal library of MIT EECS open-course notes, code examples, and exercises.">
+  <div class="english-home">
+    <p class="atlas-kicker">ENGLISH ENTRY</p>
+    <h1>MIT EECS Notes</h1>
+    <p>Open-course learning notes covering computer systems, theoretical computer science, security, architecture, programming languages, and software engineering.</p>
+    <div class="atlas-stats">{catalog.totalNotes} Chinese notes · {catalog.totalCourses} courses · {catalog.domains.length} domains</div>
+    <section>
+      <h2>Browse the Chinese knowledge base</h2>
+      <div class="domain-grid">
+        {catalog.domains.map((domain, index) => <a class="domain-card" href={domain.href}><div class="domain-title"><span>{String(index + 1).padStart(2, '0')}</span><h3>{domain.label}</h3></div><p>{domain.description}</p><small>{domain.courseCount} courses · {domain.noteCount} notes</small></a>)}
+      </div>
+    </section>
+    <p class="english-note">The repository currently contains only an English landing page; course notes remain in Chinese. This page preserves the existing locale contract without presenting machine-translated content as authored notes.</p>
+  </div>
+</AtlasLayout>

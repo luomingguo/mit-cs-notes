@@ -1,0 +1,7 @@
+---
+import { getCollection } from 'astro:content';
+import HomeView from '@/components/HomeView.astro';
+import { buildCatalog } from '@/lib/catalog';
+const catalog = buildCatalog(await getCollection('notes'));
+---
+<HomeView catalog={catalog} />

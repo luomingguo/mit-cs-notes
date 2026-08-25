@@ -1,0 +1,53 @@
+---
+import AtlasLayout from '@/layouts/AtlasLayout.astro';
+import CatalogSidebar from '@/components/CatalogSidebar.astro';
+import type { DomainSummary, LibraryCatalog } from '@/lib/catalog';
+import { withBasePath } from '@/lib/notes';
+
+interface Props {
+  catalog: LibraryCatalog;
+  domain: DomainSummary;
+  contentHtml: string;
+}
+const { catalog, domain, contentHtml } = Astro.props;
+---
+<AtlasLayout title={domain.label} description={domain.description}>
+  <div class="atlas-shell">
+    <CatalogSidebar catalog={catalog} activeDomain={domain.slug} />
+    <div class="atlas-main">
+      <nav class="atlas-breadcrumb" aria-label="面包屑"><a href={withBasePath('/')}>Home</a><span>/</span><span aria-current="page">{domain.label}</span></nav>
+      <header class="atlas-hero domain-hero">
+        <p class="atlas-kicker">DOMAIN · {domain.courseCount} COURSES</p>
+        <h1>{domain.label}</h1>
+        <p>{domain.description}</p>
+        <div class="atlas-stats">{domain.courseCount} 门课程 · {domain.noteCount} 篇真实笔记 · {domain.tags.length} 个已标注 tags</div>
+      </header>
+
+      <div class="domain-content-grid">
+        <section class="atlas-section">
+          <div class="atlas-section-head"><h2>COURSES · {domain.courseCount}</h2><span>按标题排序</span></div>
+          {domain.courses.length ? (
+            <div class="course-table">
+              <div class="course-table-head"><span>COURSE</span><span>LECTURES</span><span>NOTES</span><span>STATUS</span></div>
+              {domain.courses.map((course) => (
+                <a href={course.href}>
+                  <span><strong>{course.courseId || course.slug}</strong><small>{course.title.replace(course.courseId, '').trim() || course.title}</small></span>
+                  <span>{course.lectureCount || '—'}</span>
+                  <span>{course.noteCount}</span>
+                  <span>{course.status}</span>
+                </a>
+              ))}
+            </div>
+          ) : <p class="catalog-empty">该领域索引暂未关联可生成的课程目录。</p>}
+        </section>
+
+        <aside class="domain-facts">
+          <section><h2>CONCEPT INVENTORY</h2>{domain.tags.length ? <div class="catalog-tags">{domain.tags.map((tag) => <span>{tag}</span>)}</div> : <p>当前课程 frontmatter 暂无 tags。</p>}</section>
+          <section><h2>LEARNING RELATIONS</h2><p>尚无统一的 prerequisites / unlocks 结构化字段；不根据展示稿臆测依赖关系。</p></section>
+        </aside>
+      </div>
+
+      {contentHtml && <section class="catalog-source-section"><div class="atlas-section-head"><h2>领域原始笔记</h2><span>保留 Markdown 正文</span></div><div class="note-article catalog-markdown" set:html={contentHtml}></div></section>}
+    </div>
+  </div>
+</AtlasLayout>

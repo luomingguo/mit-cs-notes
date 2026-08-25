@@ -44,7 +44,10 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Install dependencies
-        run: npm ci # or pnpm install / yarn install / bun install
+        run: npm ci
+
+      - name: Install Astro frontend dependencies
+        run: npm ci --prefix frontend
 
       # 笔记规范检查（NOTESTYLE.md）。基线是当前的 error 数，只能降不能升 ——
       # 存量问题（空章节、超长章节、待补写的短文）要人工处理，
@@ -52,16 +55,23 @@ jobs:
       - name: Lint notes
         run: npm run notes:lint -- --summary --max-errors=1207
 
-      - name: Install math lib
-        run: npm add -D markdown-it-mathjax3
-  
-      - name: Build with VitePress
-        run: npm run docs:build # or pnpm docs:build / yarn docs:build / bun run docs:build
+      # 迁移期继续构建旧站，作为可回滚基线；发布产物使用下方 Astro 构建。
+      - name: Verify legacy VitePress rollback build
+        run: npm run docs:build
+
+      - name: Check Astro frontend
+        run: npm run site:check
+
+      - name: Build Astro for GitHub Pages
+        run: npm run site:build:pages
+
+      - name: Verify Astro routes, links and assets
+        run: npm run site:verify:pages
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: docs/.vitepress/dist
+          path: frontend/dist
 
   # Deployment job
   deploy:
@@ -79,6 +89,7 @@ jobs:
   # 部署到自建服务器 hk（https://notes.lobomiao.uk）。站点挂在根路径下，
   # 所以要用 DOCS_BASE=/ 单独构建一份产物，和上面的 Pages 版本互不影响。
   deploy-hk:
+    needs: build
     runs-on: ubuntu-latest
     name: Deploy to hk
     steps:
@@ -95,13 +106,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build with VitePress (root base)
-        run: npm run docs:build
+      - name: Install Astro frontend dependencies
+        run: npm ci --prefix frontend
+
+      - name: Install RAG verification dependencies
+        run: npm ci --prefix rag
+
+      - name: Build Astro (root base)
+        run: npm run site:build
+        env:
+          DOCS_BASE: /
+
+      - name: Verify Astro routes, links and assets
+        run: npm run site:verify
         env:
           DOCS_BASE: /
 
       - name: Pack dist
-        run: tar -czf dist.tar.gz -C docs/.vitepress/dist .
+        run: tar -czf dist.tar.gz -C frontend/dist .
 
       # 用 Workload Identity Federation 换取 GCP 凭证，仓库里不存任何长期密钥
       - name: Authenticate to Google Cloud
