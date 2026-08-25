@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # 在 hk 上执行的发布脚本，由 GitHub Actions 经 IAP 隧道 SSH 调用。
-# 约定：CI 已经把 dist.tar.gz 和 deploy/ 下的配置文件放到 /tmp/notes-deploy/。
+# 约定：CI 已经把 dist.tar.gz 和 deploy/ 下的配置文件放到 STAGE 指定的暂存目录。
 #
 # 发布是「先解包到独立目录、再原子切软链」，解包失败不会影响线上正在服务的版本。
 set -euo pipefail
 
 RELEASE="${1:?usage: remote-deploy.sh <release-id>}"
-# 上传目录默认由 CI 约定；手工发布时可以用 STAGE=... 指到别处
+# 手工发布默认使用固定目录；CI 会用 STAGE=... 指向每次运行独有的目录
 STAGE="${STAGE:-/tmp/notes-deploy}"
 APP=/home/mac/mit-cs-notes
 SITE="$APP/site"

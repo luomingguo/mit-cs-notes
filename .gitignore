@@ -7,3 +7,4 @@ cache
 .temp
 *.local
 *__pycache__
+.astro

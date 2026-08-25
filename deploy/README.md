@@ -34,7 +34,7 @@ push 到 `release` 分支后，`deploy-hk` job 会：
 
 1. 用 `DOCS_BASE=/` 构建并完成路由、资源与 RAG 锚点校验，再打包成 `dist.tar.gz`；
 2. 通过 Workload Identity Federation 换取 GCP 凭证（仓库里不存长期密钥）；
-3. 经 IAP 隧道把产物和 `deploy/` 下的配置传到 hk 的 `/tmp/notes-deploy/`；
+3. 经 IAP 隧道把产物和 `deploy/` 下的配置传到 hk 上本次运行独有的 `/tmp/notes-deploy-<run-id>-<attempt>/`；
 4. 在 hk 上执行 `remote-deploy.sh`：解包到新的 release 目录 → 校验产物 → 原子切软链 →
    `docker compose up -d` → 配置片段有变化才 reload Caddy → 清理旧版本 → 容器内自检首页。
 
