@@ -92,6 +92,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     name: Deploy to hk
+    env:
+      DEPLOY_STAGE: /tmp/notes-deploy-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -141,14 +143,22 @@ jobs:
         run: |
           gcloud compute ssh hk --zone=asia-east2-c --tunnel-through-iap --quiet \
             --ssh-key-expire-after=2h \
-            --command 'rm -rf /tmp/notes-deploy && mkdir -p /tmp/notes-deploy'
+            --command "umask 077 && mkdir '$DEPLOY_STAGE'"
           gcloud compute scp --zone=asia-east2-c --tunnel-through-iap --quiet \
             dist.tar.gz \
             deploy/docker-compose.yml deploy/nginx.conf deploy/notes.caddy deploy/remote-deploy.sh \
-            hk:/tmp/notes-deploy/
+            "hk:$DEPLOY_STAGE/"
 
       - name: Release on hk
         run: |
           gcloud compute ssh hk --zone=asia-east2-c --tunnel-through-iap --quiet \
             --ssh-key-expire-after=2h \
-            --command "bash /tmp/notes-deploy/remote-deploy.sh ${{ github.sha }}"
+            --command "STAGE='$DEPLOY_STAGE' bash '$DEPLOY_STAGE/remote-deploy.sh' '${{ github.sha }}'"
+
+      - name: Clean up hk staging files
+        if: always()
+        continue-on-error: true
+        run: |
+          gcloud compute ssh hk --zone=asia-east2-c --tunnel-through-iap --quiet \
+            --ssh-key-expire-after=2h \
+            --command "rm -rf '$DEPLOY_STAGE'"
