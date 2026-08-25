@@ -1,0 +1,124 @@
+---
+import { getCollection, render } from 'astro:content';
+import LectureLayout from '@/layouts/LectureLayout.astro';
+import {
+  buildNavLectures,
+  buildSearchIndex,
+  buildTaxonomy,
+  complexityOf,
+  courseEntriesOf,
+  courseIdOf,
+  courseOf,
+  dataOf,
+  domainLabelOf,
+  findBacklinks,
+  findPrevNext,
+  idToHref,
+  idToUrlPath,
+  lastUpdatedOf,
+  lectureOf,
+  plainExcerpt,
+  rewriteRenderedInternalLinks,
+  selectComplexNote,
+  tagsOf,
+  titleOf,
+} from '@/lib/notes';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes');
+  const selected = selectComplexNote(notes);
+  const courseEntries = courseEntriesOf(notes, selected.id);
+  const features = complexityOf(selected);
+  console.info(`[vertical-slice] selected ${selected.id}: ${JSON.stringify(features)}`);
+  return courseEntries.map((entry) => ({
+    params: { slug: idToUrlPath(entry.id) || undefined },
+    props: { entryId: entry.id, selectedId: selected.id },
+  }));
+}
+
+const { entryId, selectedId } = Astro.props as { entryId: string; selectedId: string };
+const allNotes = await getCollection('notes');
+const entry = allNotes.find((note) => note.id === entryId);
+if (!entry) throw new Error(`找不到内容：${entryId}`);
+
+const courseEntries = courseEntriesOf(allNotes, selectedId);
+const { headings } = await render(entry);
+const renderedHtml = (entry as typeof entry & { rendered?: { html?: string } }).rendered?.html ?? '';
+const contentHtml = rewriteRenderedInternalLinks(renderedHtml, entry.id);
+const title = titleOf(entry);
+const courseName = courseOf(entry);
+const courseId = courseIdOf(entry);
+const lecture = lectureOf(entry);
+const summary = plainExcerpt(entry.body ?? '');
+const navLectures = buildNavLectures(courseEntries, entry.id);
+const numberedLectures = courseEntries.filter((note) => lectureOf(note) !== undefined);
+const { prev, next } = findPrevNext(entry, courseEntries);
+const tags = tagsOf(entry);
+const backlinks = findBacklinks(entry, courseEntries);
+const lastUpdated = lastUpdatedOf(entry);
+const kindLabels: Record<string, string> = { theory: '理论', system: '系统', source: '源码研读', design: '设计' };
+const statusLabels: Record<string, string> = { complete: '完成', draft: '草稿', stub: '占位' };
+const entryData = dataOf(entry);
+const kind = kindLabels[String(entryData.kind ?? '')] ?? String(entryData.kind ?? '笔记');
+const status = statusLabels[String(entryData.status ?? '')] ?? String(entryData.status ?? '状态未知');
+const isSelectedSample = entry.id === selectedId;
+---
+<LectureLayout
+  title={title}
+  description={summary}
+  domains={buildTaxonomy(allNotes, entry.id)}
+  lectures={navLectures}
+  searchIndex={buildSearchIndex(courseEntries)}
+  headings={headings}
+  courseName={courseName}
+  courseId={courseId}
+  totalNotes={allNotes.filter((note) => !note.id.endsWith('/index')).length}
+  lecturePosition={lecture ?? null}
+  lectureCount={numberedLectures.length}
+  tags={tags}
+  backlinks={backlinks}
+>
+  <article class="lecture-article" data-qa-sample={isSelectedSample ? 'selected' : undefined}>
+    <header class="lecture-header">
+      <nav class="breadcrumb" aria-label="面包屑">
+        <span>{domainLabelOf(entry.id)}</span><span aria-hidden="true">/</span>
+        <a href={idToHref(courseEntries.find((note) => note.id.endsWith('/index'))?.id ?? entry.id)}>{courseId || courseName}</a>
+        {lecture !== undefined && <><span aria-hidden="true">/</span><span aria-current="page">lec{String(lecture).padStart(2, '0')}</span></>}
+      </nav>
+
+      <h1>{lecture !== undefined && <span class="title-kicker">Lec {lecture}</span>}{title}</h1>
+
+      <div class="meta-row">
+        <span class="meta-pill">{kind}</span><span aria-hidden="true">·</span><span>{status}</span>
+        {lastUpdated && <><span aria-hidden="true">·</span><span>更新于 {lastUpdated}</span></>}
+      </div>
+    </header>
+
+    <section class="lecture-summary" aria-labelledby="summary-heading">
+      <h2 id="summary-heading">摘要</h2>
+      <p>{summary}</p>
+    </section>
+
+    {(lecture !== undefined) && (
+      <section class="sequence-grid" aria-label="同课程前后关系">
+        <div class="sequence-item">
+          <span>承接</span>
+          {prev ? <a href={idToHref(prev.id)}>Lec {lectureOf(prev)} · {titleOf(prev)}</a> : <p>这是当前课程已收录的第一讲。</p>}
+        </div>
+        <div class="sequence-item">
+          <span>后续</span>
+          {next ? <a href={idToHref(next.id)}>Lec {lectureOf(next)} · {titleOf(next)}</a> : <p>当前课程暂无后续已收录讲义。</p>}
+        </div>
+      </section>
+    )}
+
+    <div class="note-article" set:html={contentHtml}></div>
+
+    {lecture !== undefined && (
+      <nav class="prev-next" aria-label="上一篇和下一篇">
+        {prev ? <a href={idToHref(prev.id)}><small>← 上一篇 · LEC {String(lectureOf(prev)).padStart(2, '0')}</small><span>{titleOf(prev)}</span></a> : <span></span>}
+        {next ? <a href={idToHref(next.id)} class="next"><small>下一篇 · LEC {String(lectureOf(next)).padStart(2, '0')} →</small><span>{titleOf(next)}</span></a> : <span></span>}
+      </nav>
+    )}
+  </article>
+</LectureLayout>

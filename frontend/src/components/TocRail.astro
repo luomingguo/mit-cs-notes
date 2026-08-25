@@ -1,0 +1,50 @@
+---
+import type { Backlink } from '@/lib/notes';
+
+interface Heading { depth: number; slug: string; text: string }
+interface Props {
+  headings: Heading[];
+  lecturePosition: number | null;
+  lectureCount: number;
+  tags: string[];
+  backlinks: Backlink[];
+}
+const { headings, lecturePosition, lectureCount, tags, backlinks } = Astro.props;
+---
+<div class="toc-rail-inner">
+  <section>
+    <h2 class="rail-label">ON THIS PAGE</h2>
+    <nav class="rail-toc" aria-label="本页目录">
+      {headings.map((heading) => (
+        <a href={`#${heading.slug}`} data-toc-link={heading.slug} data-active="false" class:list={{ 'toc-depth-3': heading.depth === 3 }}>
+          {heading.text}
+        </a>
+      ))}
+    </nav>
+  </section>
+
+  <section class="rail-section">
+    <h2 class="rail-label">LECTURE POSITION</h2>
+    <div class="position-row"><span>讲义序列</span><strong>第 {lecturePosition ?? '—'} / {lectureCount} 讲</strong></div>
+    <div class="position-track" aria-hidden="true"><span style={`width: ${lecturePosition && lectureCount ? (lecturePosition / lectureCount) * 100 : 0}%`}></span></div>
+    <p class="rail-note">来自 lecture 编号，不代表访客阅读进度。</p>
+  </section>
+
+  <section class="rail-section">
+    <h2 class="rail-label">RELATED CONCEPTS</h2>
+    {tags.length ? (
+      <div class="tag-list">{tags.map((tag) => <span>{tag}</span>)}</div>
+    ) : (
+      <p class="rail-empty">frontmatter 暂无 tags，未自动臆测概念。</p>
+    )}
+  </section>
+
+  <section class="rail-section">
+    <h2 class="rail-label">LINKED FROM · {backlinks.length}</h2>
+    {backlinks.length ? (
+      <div>{backlinks.map((link) => <a class="backlink" href={link.href}><span>{link.title}</span><small>{link.context}</small></a>)}</div>
+    ) : (
+      <p class="rail-empty">当前课程未发现指向本文的 Markdown 链接。</p>
+    )}
+  </section>
+</div>

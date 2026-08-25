@@ -1,0 +1,125 @@
+---
+import '@/styles/global.css';
+import { CommandPalette } from '@/components/CommandPalette';
+import { AskNotes } from '@/components/AskNotes';
+import { MobileNavSheet } from '@/components/MobileNavSheet';
+import { RelationsSheet } from '@/components/RelationsSheet';
+import { TocHighlighter } from '@/components/TocHighlighter';
+import CourseNav from '@/components/CourseNav.astro';
+import TocRail from '@/components/TocRail.astro';
+import type { Backlink, NavDomain, NavLecture, SearchItem } from '@/lib/notes';
+
+interface Heading { depth: number; slug: string; text: string }
+interface Props {
+  title: string;
+  description: string;
+  domains: NavDomain[];
+  lectures: NavLecture[];
+  searchIndex: SearchItem[];
+  headings: Heading[];
+  courseName: string;
+  courseId: string;
+  totalNotes: number;
+  lecturePosition: number | null;
+  lectureCount: number;
+  tags: string[];
+  backlinks: Backlink[];
+}
+
+const {
+  title,
+  description,
+  domains,
+  lectures,
+  searchIndex,
+  headings,
+  courseName,
+  courseId,
+  totalNotes,
+  lecturePosition,
+  lectureCount,
+  tags,
+  backlinks,
+} = Astro.props;
+const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <title>{title} · MIT CS Notes</title>
+    <script is:inline>
+      (function () {
+        try {
+          var saved = localStorage.getItem('mit-notes-theme');
+          var dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (error) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#lecture-content">跳到正文</a>
+
+    <header class="mobile-header">
+      <MobileNavSheet client:idle domains={domains} lectures={lectures} courseName={courseName} courseId={courseId} />
+      <a href="/" class="brand brand-mobile" aria-label="MIT CS Notes 首页"><span>cs<span class="brand-dot">.</span>kb</span></a>
+      <div class="mobile-actions">
+        <button class="icon-button search-open" type="button" aria-label="打开搜索">⌕</button>
+        <button class="icon-button theme-toggle" type="button" aria-label="切换深浅色">◐</button>
+      </div>
+    </header>
+
+    <div class="site-shell">
+      <aside class="left-sidebar">
+        <div class="sidebar-head">
+          <div class="brand-row">
+            <a href="/" class="brand"><span>cs<span class="brand-dot">.</span>kb</span><small>knowledge base</small></a>
+            <div class="sidebar-actions">
+              <button class="icon-button theme-toggle" type="button" aria-label="切换深浅色">◐</button>
+              <a class="icon-button" href="https://github.com/luomingguo" aria-label="GitHub" rel="noreferrer">gh</a>
+            </div>
+          </div>
+          <button class="search-trigger search-open" type="button">
+            <span aria-hidden="true">⌕</span><span>搜索笔记…</span><kbd>⌘K</kbd>
+          </button>
+        </div>
+        <div class="sidebar-scroll">
+          <CourseNav domains={domains} lectures={lectures} courseName={courseName} courseId={courseId} totalNotes={totalNotes} />
+        </div>
+        <div class="sidebar-foot"><span>Astro vertical slice</span><span>真实 Markdown</span></div>
+      </aside>
+
+      <main id="lecture-content" class="main-column">
+        <div class="tablet-relations">
+          <RelationsSheet client:idle headings={tocHeadings} lecturePosition={lecturePosition} lectureCount={lectureCount} tags={tags} backlinks={backlinks} />
+        </div>
+        <slot />
+      </main>
+
+      <aside class="right-sidebar">
+        <TocRail headings={tocHeadings} lecturePosition={lecturePosition} lectureCount={lectureCount} tags={tags} backlinks={backlinks} />
+      </aside>
+    </div>
+
+    <CommandPalette client:idle index={searchIndex} />
+    <AskNotes client:idle />
+    <TocHighlighter client:idle />
+    <script is:inline>
+      (function () {
+        document.querySelectorAll('.search-open').forEach(function (button) {
+          button.addEventListener('click', function () { window.dispatchEvent(new Event('open-note-search')); });
+        });
+        document.querySelectorAll('.theme-toggle').forEach(function (button) {
+          button.addEventListener('click', function () {
+            var dark = document.documentElement.classList.toggle('dark');
+            try { localStorage.setItem('mit-notes-theme', dark ? 'dark' : 'light'); } catch (error) {}
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

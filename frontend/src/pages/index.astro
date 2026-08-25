@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import { idToHref, selectComplexNote } from '@/lib/notes';
+
+const notes = await getCollection('notes');
+const selected = selectComplexNote(notes);
+const target = idToHref(selected.id);
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href={target} />
+    <title>正在打开自动选择的复杂讲义</title>
+  </head>
+  <body><p>正在打开<a href={target}>自动选择的真实复杂讲义</a>…</p></body>
+</html>
