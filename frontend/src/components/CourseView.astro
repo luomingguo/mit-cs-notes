@@ -1,0 +1,62 @@
+---
+import AtlasLayout from '@/layouts/AtlasLayout.astro';
+import CatalogSidebar from '@/components/CatalogSidebar.astro';
+import type { CourseSummary, DomainSummary, LibraryCatalog } from '@/lib/catalog';
+import { dataOf, idToHref, lastUpdatedOf, lectureOf, tagsOf, titleOf, withBasePath } from '@/lib/notes';
+
+interface Props {
+  catalog: LibraryCatalog;
+  domain: DomainSummary;
+  course: CourseSummary;
+  contentHtml: string;
+}
+const { catalog, domain, course, contentHtml } = Astro.props;
+const notes = course.entries.filter((entry) => !entry.id.endsWith('/index'));
+const statusLabel = (value: unknown) => value === 'complete' ? '完成' : value === 'draft' ? '草稿' : value === 'stub' ? '占位' : String(value ?? '未标注');
+---
+<AtlasLayout title={course.title} description={course.excerpt}>
+  <div class="atlas-shell">
+    <CatalogSidebar catalog={catalog} activeDomain={domain.slug} />
+    <div class="atlas-main">
+      <nav class="atlas-breadcrumb" aria-label="面包屑"><a href={withBasePath('/')}>Home</a><span>/</span><a href={domain.href}>{domain.label}</a><span>/</span><span aria-current="page">{course.courseId || course.slug}</span></nav>
+      <header class="course-hero">
+        <div>
+          <p class="atlas-kicker">COURSE · {course.courseId || course.slug}</p>
+          <h1>{course.title}</h1>
+          <p>{course.excerpt}</p>
+          <div class="atlas-stats">{course.lectureCount} 篇编号讲义 · {course.noteCount} 篇内容 · {course.tags.length} 个已标注 tags</div>
+        </div>
+        <dl class="course-facts">
+          <div><dt>DOMAIN</dt><dd>{domain.label}</dd></div>
+          <div><dt>STATUS</dt><dd>{course.status}</dd></div>
+          <div><dt>COURSE ID</dt><dd>{course.courseId || '未标注'}</dd></div>
+          <div><dt>RELATIONS</dt><dd>暂无结构化数据</dd></div>
+        </dl>
+      </header>
+
+      <div class="course-content-grid">
+        <section class="atlas-section">
+          <div class="atlas-section-head"><h2>LECTURE NOTES · {notes.length}</h2><span>来自目录与 frontmatter</span></div>
+          <div class="lecture-table">
+            <div class="lecture-table-head"><span>#</span><span>TITLE</span><span>STATUS</span><span>TAGS</span><span>UPDATED</span></div>
+            {notes.map((entry) => (
+              <a href={idToHref(entry.id)}>
+                <span>{lectureOf(entry) !== undefined ? String(lectureOf(entry)).padStart(2, '0') : '—'}</span>
+                <span><strong>{titleOf(entry)}</strong><small>{entry.id.split('/').at(-1)}</small></span>
+                <span>{statusLabel(dataOf(entry).status)}</span>
+                <span>{tagsOf(entry).length || '—'}</span>
+                <time datetime={lastUpdatedOf(entry) ?? undefined}>{lastUpdatedOf(entry) ?? '—'}</time>
+              </a>
+            ))}
+          </div>
+        </section>
+        <aside class="domain-facts">
+          <section><h2>CONCEPT INVENTORY</h2>{course.tags.length ? <div class="catalog-tags">{course.tags.map((tag) => <span>{tag}</span>)}</div> : <p>课程 frontmatter 暂无 tags，未自动生成概念。</p>}</section>
+          <section><h2>PREREQUISITES / UNLOCKS</h2><p>当前内容没有统一结构化字段；课程正文中的真实说明保留在下方。</p></section>
+        </aside>
+      </div>
+
+      {contentHtml && <section class="catalog-source-section"><div class="atlas-section-head"><h2>课程资料与说明</h2><span>来自课程 index.md</span></div><div class="note-article catalog-markdown" set:html={contentHtml}></div></section>}
+    </div>
+  </div>
+</AtlasLayout>

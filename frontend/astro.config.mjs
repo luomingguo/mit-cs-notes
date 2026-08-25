@@ -7,6 +7,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import remarkFlexibleContainers from 'remark-flexible-containers';
 import { rehypeInternalLinks } from './src/lib/rehype-internal-links.ts';
+import { remarkLegacyHeadingIds } from './src/lib/heading-ids.ts';
 
 const CONTAINER_LABELS = {
   definition: '定义',
@@ -14,9 +15,18 @@ const CONTAINER_LABELS = {
   example: '例',
   insight: '我的理解',
   pitfall: '常见误区',
+  tip: '提示',
+  warning: '警告',
+  danger: '危险',
+  info: '信息',
+  details: '详细信息',
 };
 
+const base = process.env.DOCS_BASE ?? '/';
+
 export default defineConfig({
+  base,
+  publicDir: './.public',
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],
@@ -24,6 +34,7 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [
+        remarkLegacyHeadingIds,
         [
           remarkFlexibleContainers,
           {

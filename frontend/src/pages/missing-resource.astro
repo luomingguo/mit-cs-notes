@@ -1,0 +1,7 @@
+---
+import AtlasLayout from '@/layouts/AtlasLayout.astro';
+import { withBasePath } from '@/lib/notes';
+---
+<AtlasLayout title="附件尚未收录" description="源 Markdown 引用了仓库中不存在的本地附件。">
+  <div class="not-found"><p class="atlas-kicker">MISSING RESOURCE</p><h1>附件尚未收录</h1><p>原始 Markdown 引用了一个本地附件，但该文件目前不在仓库中。迁移层保留这个诚实状态，不用其他文件冒充原附件。</p><a href={withBasePath('/')}>返回知识库首页 →</a></div>
+</AtlasLayout>

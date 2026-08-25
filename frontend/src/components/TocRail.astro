@@ -24,10 +24,10 @@ const { headings, lecturePosition, lectureCount, tags, backlinks } = Astro.props
   </section>
 
   <section class="rail-section">
-    <h2 class="rail-label">LECTURE POSITION</h2>
-    <div class="position-row"><span>讲义序列</span><strong>第 {lecturePosition ?? '—'} / {lectureCount} 讲</strong></div>
+    <h2 class="rail-label">CONTENT POSITION</h2>
+    <div class="position-row"><span>课程内容序列</span><strong>第 {lecturePosition ?? '—'} / {lectureCount} 篇</strong></div>
     <div class="position-track" aria-hidden="true"><span style={`width: ${lecturePosition && lectureCount ? (lecturePosition / lectureCount) * 100 : 0}%`}></span></div>
-    <p class="rail-note">来自 lecture 编号，不代表访客阅读进度。</p>
+    <p class="rail-note">来自课程目录顺序，不代表访客阅读进度。</p>
   </section>
 
   <section class="rail-section">

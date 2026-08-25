@@ -42,9 +42,9 @@ export function RelationsSheet({
             </nav>
           </section>
           <section className="rail-section">
-            <h2 className="rail-label">讲义序列</h2>
-            <p className="rail-value">第 {lecturePosition ?? '—'} / {lectureCount} 讲</p>
-            <p className="rail-note">来自 lecture 编号，不代表阅读进度。</p>
+            <h2 className="rail-label">课程内容序列</h2>
+            <p className="rail-value">第 {lecturePosition ?? '—'} / {lectureCount} 篇</p>
+            <p className="rail-note">来自课程目录顺序，不代表阅读进度。</p>
           </section>
           <section className="rail-section">
             <h2 className="rail-label">相关概念</h2>

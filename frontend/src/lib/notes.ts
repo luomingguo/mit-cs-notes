@@ -1,5 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -33,7 +34,7 @@ export interface SearchItem {
   title: string;
   course: string;
   href: string;
-  type: 'lecture' | 'course';
+  type: 'lecture' | 'course' | 'domain';
   typeLabel: string;
   excerpt: string;
 }
@@ -48,6 +49,7 @@ export interface NavLecture {
 export interface NavDomain {
   slug: string;
   label: string;
+  href: string;
   noteCount: number;
   courseCount: number;
   active: boolean;
@@ -64,11 +66,42 @@ const DOMAIN_LABELS: Record<string, string> = {
   computer_sys: '计算机系统',
   language: '编程语言',
   opensource: '开源项目',
+  opensrc: '开源项目',
   security: '计算机安全',
   sw_eng: '软件工程',
   tcs: '理论计算机科学',
   index: '知识索引',
 };
+
+const SITE_BASE = normalizeBase(process.env.DOCS_BASE ?? '/');
+const SOURCE_CATEGORIES = new Set(['arch', 'computer_sys', 'index', 'language', 'opensource', 'security', 'sw_eng', 'tcs']);
+let gitUpdatedCache: Map<string, string> | null = null;
+
+function projectRoot(): string {
+  const candidates = [
+    process.cwd(),
+    path.resolve(process.cwd(), '..'),
+    fileURLToPath(new URL('../../../', import.meta.url)),
+  ];
+  return candidates.find((candidate) => existsSync(path.join(candidate, 'docs', 'zh'))) ?? candidates[0];
+}
+
+function normalizeBase(value: string): string {
+  const withLeadingSlash = value.startsWith('/') ? value : `/${value}`;
+  return withLeadingSlash === '/' ? '/' : `${withLeadingSlash.replace(/\/+$/, '')}/`;
+}
+
+export function withBasePath(href: string): string {
+  if (!href || /^(https?:|mailto:|tel:|#)/.test(href)) return href;
+  const absolute = href.startsWith('/') ? href : `/${href}`;
+  if (SITE_BASE === '/') return absolute;
+  const prefix = SITE_BASE.slice(0, -1);
+  return absolute === prefix || absolute.startsWith(`${prefix}/`) ? absolute : `${prefix}${absolute}`;
+}
+
+export function siteBase(): string {
+  return SITE_BASE;
+}
 
 export function dataOf(entry: NoteEntry): NoteData {
   return entry.data as NoteData;
@@ -100,6 +133,10 @@ export function categoryOf(id: string): string {
   return id.split('/')[0] || 'index';
 }
 
+export function canonicalDomainSlug(category: string): string {
+  return category === 'opensource' ? 'opensrc' : category;
+}
+
 export function courseSlugOf(id: string): string {
   return id.split('/')[1] || id.split('/')[0] || 'notes';
 }
@@ -109,20 +146,54 @@ export function courseKeyOf(id: string): string {
 }
 
 export function domainLabelOf(id: string): string {
-  const category = categoryOf(id);
+  const category = canonicalDomainSlug(categoryOf(id));
   return DOMAIN_LABELS[category] ?? category.replaceAll('_', ' ');
+}
+
+export function isRootIndex(entry: NoteEntry): boolean {
+  return entry.id === 'index';
+}
+
+export function isDomainIndex(entry: NoteEntry): boolean {
+  const parts = entry.id.split('/');
+  return parts.length === 2 && parts[1] === 'index';
+}
+
+export function isCourseIndex(entry: NoteEntry): boolean {
+  const parts = entry.id.split('/');
+  return parts.length >= 3 && parts.at(-1) === 'index';
 }
 
 /** Preserve the VitePress public rewrite: /zh/:category/:course/* -> /zh/:course/*. */
 export function idToUrlPath(id: string): string {
-  const [, ...rest] = id.split('/');
-  return rest.join('/').replace(/\/index$/, '').replace(/^index$/, '');
+  const parts = id.split('/');
+  if (id === 'index') return '';
+  if (parts.length === 2 && parts[1] === 'index') return parts[0];
+  const publicParts = parts.length >= 3 ? parts.slice(1) : parts;
+  return publicParts.join('/').replace(/\/index$/, '').replace(/^index$/, '');
 }
 
 export function idToHref(id: string): string {
   const publicPath = idToUrlPath(id);
-  if (!publicPath) return '/zh/';
-  return id.endsWith('/index') ? `/zh/${publicPath}/` : `/zh/${publicPath}`;
+  if (!publicPath) return withBasePath('/zh/');
+  return withBasePath(id.endsWith('/index') ? `/zh/${publicPath}/` : `/zh/${publicPath}`);
+}
+
+function resolvedContentAssetPath(resolved: string): string {
+  const parts = resolved.split('/');
+  const publicParts = parts.length >= 3 ? parts.slice(1) : parts;
+  return withBasePath(`/zh/${publicParts.join('/')}`);
+}
+
+function canonicalAbsoluteHref(href: string): string {
+  const match = href.match(/^([^?#]*)([?#].*)?$/);
+  let hrefPath = match?.[1] ?? href;
+  const suffix = match?.[2] ?? '';
+  const parts = hrefPath.split('/').filter(Boolean);
+  if (parts[0] === 'zh' && parts.length >= 3 && SOURCE_CATEGORIES.has(parts[1])) {
+    hrefPath = `/${['zh', ...parts.slice(2)].join('/')}${hrefPath.endsWith('/') ? '/' : ''}`;
+  }
+  return `${withBasePath(hrefPath)}${suffix}`;
 }
 
 /**
@@ -132,22 +203,34 @@ export function idToHref(id: string): string {
  */
 export function rewriteRenderedInternalLinks(html: string, currentId: string): string {
   const sourceDirectory = path.posix.dirname(currentId);
-  return html.replace(/href="([^"]+)"/g, (attribute, href: string) => {
-    if (/^(https?:|mailto:|#|\/)/.test(href)) return attribute;
+  const protectedSegments: string[] = [];
+  const protectedHtml = html.replace(/<(pre|code)\b[\s\S]*?<\/\1>/gi, (segment) => {
+    const index = protectedSegments.push(segment) - 1;
+    return `@@PROTECTED-${index}@@`;
+  });
+  const rewritten = protectedHtml.replace(/(href|src)="([^"]+)"/g, (attribute, name: string, href: string) => {
+    if (/^(https?:|mailto:|tel:|data:|#)/.test(href)) return attribute;
+    if (/^\[https?:/.test(href)) return `${name}="${href.slice(1)}"`;
+    if (href.startsWith('/')) return `${name}="${canonicalAbsoluteHref(href)}"`;
     const match = href.match(/^([^?#]*)([?#].*)?$/);
     const hrefPath = match?.[1] ?? href;
     const suffix = match?.[2] ?? '';
     const extension = path.posix.extname(hrefPath);
-    if (extension && extension !== '.md') return attribute;
     const resolved = path.posix
       .normalize(path.posix.join(sourceDirectory, hrefPath))
       .replace(/\.md$/, '');
-    const publicSegments = resolved.split('/').slice(1);
-    const isIndex = publicSegments.at(-1) === 'index';
-    if (isIndex) publicSegments.pop();
-    const publicHref = `/zh/${publicSegments.join('/')}${isIndex ? '/' : ''}${suffix}`;
-    return `href="${publicHref}"`;
+    if (extension && extension !== '.md') {
+      const sourceAsset = path.join(projectRoot(), 'docs', 'zh', resolved);
+      if (name === 'href' && !existsSync(sourceAsset)) return `${name}="${withBasePath('/missing-resource/')}"`;
+      return `${name}="${resolvedContentAssetPath(resolved)}${suffix}"`;
+    }
+    if (name === 'src') return attribute;
+    const isIndex = resolved.endsWith('/index') || resolved === 'index';
+    const publicPath = idToUrlPath(resolved);
+    const publicHref = withBasePath(`/zh/${publicPath}${isIndex ? '/' : ''}`);
+    return `href="${publicHref}${suffix}"`;
   });
+  return rewritten.replace(/@@PROTECTED-(\d+)@@/g, (_placeholder, index: string) => protectedSegments[Number(index)] ?? '');
 }
 
 export function complexityOf(entry: NoteEntry): ComplexityFeatures {
@@ -210,7 +293,7 @@ export function courseEntriesOf(entries: NoteEntry[], id: string): NoteEntry[] {
 }
 
 export function findPrevNext(entry: NoteEntry, courseEntries: NoteEntry[]) {
-  const lectures = courseEntries.filter((item) => lectureOf(item) !== undefined);
+  const lectures = courseEntries.filter((item) => !isCourseIndex(item));
   const index = lectures.findIndex((item) => item.id === entry.id);
   return {
     prev: index > 0 ? lectures[index - 1] : null,
@@ -220,7 +303,7 @@ export function findPrevNext(entry: NoteEntry, courseEntries: NoteEntry[]) {
 
 export function buildNavLectures(entries: NoteEntry[], currentId: string): NavLecture[] {
   return entries
-    .filter((entry) => lectureOf(entry) !== undefined)
+    .filter((entry) => !isCourseIndex(entry))
     .map((entry) => ({
       number: lectureOf(entry) ?? null,
       title: titleOf(entry),
@@ -233,17 +316,18 @@ export function buildTaxonomy(entries: NoteEntry[], currentId: string): NavDomai
   const byDomain = new Map<string, { notes: number; courses: Set<string> }>();
   for (const entry of entries) {
     if (entry.id.endsWith('/index')) continue;
-    const slug = categoryOf(entry.id);
+    const slug = canonicalDomainSlug(categoryOf(entry.id));
     const bucket = byDomain.get(slug) ?? { notes: 0, courses: new Set<string>() };
     bucket.notes += 1;
     bucket.courses.add(courseKeyOf(entry.id));
     byDomain.set(slug, bucket);
   }
-  const currentDomain = categoryOf(currentId);
+  const currentDomain = canonicalDomainSlug(categoryOf(currentId));
   return [...byDomain.entries()]
     .map(([slug, value]) => ({
       slug,
       label: DOMAIN_LABELS[slug] ?? slug.replaceAll('_', ' '),
+      href: withBasePath(`/zh/${slug}/`),
       noteCount: value.notes,
       courseCount: value.courses.size,
       active: slug === currentDomain,
@@ -273,20 +357,30 @@ export function plainExcerpt(source: string, maxLength = 180): string {
 }
 
 export function buildSearchIndex(entries: NoteEntry[]): SearchItem[] {
-  const indexEntry = entries.find((entry) => entry.id.endsWith('/index'));
-  const courseItem: SearchItem[] = indexEntry
-    ? [{
-        id: indexEntry.id,
-        title: courseOf(indexEntry),
-        course: courseIdOf(indexEntry),
-        href: idToHref(indexEntry.id),
-        type: 'course',
-        typeLabel: '课程',
-        excerpt: plainExcerpt(indexEntry.body ?? '', 96),
-      }]
-    : [];
-  return courseItem.concat(entries
-    .filter((entry) => lectureOf(entry) !== undefined)
+  const domains = entries
+    .filter(isDomainIndex)
+    .map((entry) => ({
+      id: entry.id,
+      title: titleOf(entry),
+      course: '领域',
+      href: idToHref(entry.id),
+      type: 'domain' as const,
+      typeLabel: '领域',
+      excerpt: plainExcerpt(entry.body ?? '', 96),
+    }));
+  const courses = entries
+    .filter(isCourseIndex)
+    .map((entry) => ({
+      id: entry.id,
+      title: courseOf(entry),
+      course: courseIdOf(entry),
+      href: idToHref(entry.id),
+      type: 'course' as const,
+      typeLabel: '课程',
+      excerpt: plainExcerpt(entry.body ?? '', 96),
+    }));
+  const notes = entries
+    .filter((entry) => !entry.id.endsWith('/index') && !isRootIndex(entry))
     .map((entry) => ({
       id: entry.id,
       title: titleOf(entry),
@@ -295,7 +389,8 @@ export function buildSearchIndex(entries: NoteEntry[]): SearchItem[] {
       type: 'lecture' as const,
       typeLabel: '讲义',
       excerpt: plainExcerpt(entry.body ?? '', 96),
-    })));
+    }));
+  return [...domains, ...courses, ...notes];
 }
 
 function normalizedLinkTargets(source: string): string[] {
@@ -325,15 +420,27 @@ export function tagsOf(entry: NoteEntry): string[] {
 }
 
 export function lastUpdatedOf(entry: NoteEntry): string | null {
-  const repoRoot = fileURLToPath(new URL('../../../', import.meta.url));
-  const sourcePath = path.join(repoRoot, 'docs', 'zh', `${entry.id}.md`);
-  try {
-    const value = execFileSync('git', ['log', '-1', '--format=%cs', '--', sourcePath], {
-      cwd: repoRoot,
-      encoding: 'utf8',
-    }).trim();
-    return value || null;
-  } catch {
-    return null;
+  if (!gitUpdatedCache) {
+    gitUpdatedCache = new Map<string, string>();
+    try {
+      const history = execFileSync('git', ['log', '--format=@@%cs', '--name-only', '--', 'docs/zh'], {
+        cwd: projectRoot(),
+        encoding: 'utf8',
+        maxBuffer: 32 * 1024 * 1024,
+      });
+      let date = '';
+      for (const line of history.split('\n')) {
+        if (line.startsWith('@@')) {
+          date = line.slice(2);
+          continue;
+        }
+        if (!date || !line.startsWith('docs/zh/') || !line.endsWith('.md')) continue;
+        const id = line.slice('docs/zh/'.length, -'.md'.length);
+        if (!gitUpdatedCache.has(id)) gitUpdatedCache.set(id, date);
+      }
+    } catch {
+      gitUpdatedCache.clear();
+    }
   }
+  return gitUpdatedCache.get(entry.id) ?? null;
 }

@@ -6,33 +6,34 @@ interface Props {
   lectures: NavLecture[];
   courseName: string;
   courseId: string;
+  courseHref: string;
   totalNotes: number;
 }
 
-const { domains, lectures, courseName, courseId, totalNotes } = Astro.props;
+const { domains, lectures, courseName, courseId, courseHref, totalNotes } = Astro.props;
 ---
 <div class="course-nav">
   <section class="nav-section">
     <div class="nav-label">LIBRARY</div>
     <div class="nav-summary"><span>中文笔记</span><span>{totalNotes}</span></div>
-    <div class="nav-summary"><span>当前课程</span><span>{lectures.length} 讲</span></div>
+    <div class="nav-summary"><span>当前课程</span><span>{lectures.length} 篇</span></div>
   </section>
 
   <section class="nav-section">
     <div class="nav-label">DOMAINS</div>
     <div class="domain-list">
       {domains.map((domain) => (
-        <div class:list={['domain-row', { active: domain.active }]} title={`${domain.courseCount} 门课程 · ${domain.noteCount} 篇讲义`}>
+        <a href={domain.href} class:list={['domain-row', { active: domain.active }]} title={`${domain.courseCount} 门课程 · ${domain.noteCount} 篇讲义`}>
           <span class="domain-caret" aria-hidden="true">{domain.active ? '▾' : '▸'}</span>
           <span>{domain.label}</span>
           <span class="domain-count">{domain.courseCount}</span>
-        </div>
+        </a>
       ))}
     </div>
   </section>
 
   <section class="nav-section current-course">
-    <a class="course-heading" href={`/zh/${Astro.url.pathname.split('/')[2]}/`}>
+    <a class="course-heading" href={courseHref}>
       <span class="course-id">{courseId}</span>
       <span>{courseName.replace(courseId, '').trim()}</span>
     </a>

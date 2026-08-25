@@ -126,7 +126,10 @@ export function extractHeadings(body: string): Heading[] {
   const seen = new Map<string, number>()
   const out: Heading[] = []
 
-  for (const m of clean.matchAll(/^(#{1,6})\s+(.+)$/gm)) {
+  // Only spaces/tabs may separate the marker from its text. Using `\s+` here
+  // also consumes newlines, so an empty `###` incorrectly turns the following
+  // paragraph into a heading and produces an anchor no renderer can emit.
+  for (const m of clean.matchAll(/^(#{1,6})[ \t]+(.+)$/gm)) {
     const text = plainHeading(m[2]!)
     const base = slugifyHeading(text)
     if (!base) continue

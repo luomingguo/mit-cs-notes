@@ -30,9 +30,9 @@ export function MobileNavSheet({
           <div className="mb-5">
             <div className="mb-2 font-mono text-[9px] tracking-[0.14em] text-faint">领域</div>
             {domains.map((domain) => (
-              <div key={domain.slug} className={`flex items-center justify-between rounded-md px-2 py-1.5 text-[13px] ${domain.active ? 'bg-secondary text-foreground' : 'text-muted-foreground'}`}>
+              <a href={domain.href} key={domain.slug} className={`flex items-center justify-between rounded-md px-2 py-1.5 text-[13px] ${domain.active ? 'bg-secondary text-foreground' : 'text-muted-foreground'}`}>
                 <span>{domain.label}</span><span className="font-mono text-[9px] text-faint">{domain.courseCount} 门</span>
-              </div>
+              </a>
             ))}
           </div>
           <div className="mb-2 font-mono text-[9px] tracking-[0.14em] text-faint">{courseId} · {courseName}</div>

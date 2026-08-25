@@ -8,6 +8,7 @@ import { TocHighlighter } from '@/components/TocHighlighter';
 import CourseNav from '@/components/CourseNav.astro';
 import TocRail from '@/components/TocRail.astro';
 import type { Backlink, NavDomain, NavLecture, SearchItem } from '@/lib/notes';
+import { siteBase, withBasePath } from '@/lib/notes';
 
 interface Heading { depth: number; slug: string; text: string }
 interface Props {
@@ -15,10 +16,12 @@ interface Props {
   description: string;
   domains: NavDomain[];
   lectures: NavLecture[];
-  searchIndex: SearchItem[];
+  searchIndex?: SearchItem[];
+  searchIndexUrl?: string;
   headings: Heading[];
   courseName: string;
   courseId: string;
+  courseHref: string;
   totalNotes: number;
   lecturePosition: number | null;
   lectureCount: number;
@@ -31,10 +34,12 @@ const {
   description,
   domains,
   lectures,
-  searchIndex,
+  searchIndex = [],
+  searchIndexUrl,
   headings,
   courseName,
   courseId,
+  courseHref,
   totalNotes,
   lecturePosition,
   lectureCount,
@@ -42,6 +47,10 @@ const {
   backlinks,
 } = Astro.props;
 const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+const homeHref = withBasePath('/');
+const ragEnabled = siteBase() === '/';
+const siteOrigin = process.env.SITE_ORIGIN ?? 'https://notes.lobomiao.uk';
+const ogImage = new URL(withBasePath('/og-card.png'), siteOrigin).href;
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -50,6 +59,12 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={`${title} · MIT CS Notes`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
     <title>{title} · MIT CS Notes</title>
     <script is:inline>
       (function () {
@@ -66,7 +81,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
 
     <header class="mobile-header">
       <MobileNavSheet client:idle domains={domains} lectures={lectures} courseName={courseName} courseId={courseId} />
-      <a href="/" class="brand brand-mobile" aria-label="MIT CS Notes 首页"><span>cs<span class="brand-dot">.</span>kb</span></a>
+      <a href={homeHref} class="brand brand-mobile" aria-label="MIT CS Notes 首页"><span>cs<span class="brand-dot">.</span>kb</span></a>
       <div class="mobile-actions">
         <button class="icon-button search-open" type="button" aria-label="打开搜索">⌕</button>
         <button class="icon-button theme-toggle" type="button" aria-label="切换深浅色">◐</button>
@@ -77,7 +92,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
       <aside class="left-sidebar">
         <div class="sidebar-head">
           <div class="brand-row">
-            <a href="/" class="brand"><span>cs<span class="brand-dot">.</span>kb</span><small>knowledge base</small></a>
+            <a href={homeHref} class="brand"><span>cs<span class="brand-dot">.</span>kb</span><small>knowledge base</small></a>
             <div class="sidebar-actions">
               <button class="icon-button theme-toggle" type="button" aria-label="切换深浅色">◐</button>
               <a class="icon-button" href="https://github.com/luomingguo" aria-label="GitHub" rel="noreferrer">gh</a>
@@ -88,9 +103,9 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
           </button>
         </div>
         <div class="sidebar-scroll">
-          <CourseNav domains={domains} lectures={lectures} courseName={courseName} courseId={courseId} totalNotes={totalNotes} />
+          <CourseNav domains={domains} lectures={lectures} courseName={courseName} courseId={courseId} courseHref={courseHref} totalNotes={totalNotes} />
         </div>
-        <div class="sidebar-foot"><span>Astro vertical slice</span><span>真实 Markdown</span></div>
+        <div class="sidebar-foot"><span>Astro static site</span><span>真实 Markdown</span></div>
       </aside>
 
       <main id="lecture-content" class="main-column">
@@ -105,8 +120,8 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
       </aside>
     </div>
 
-    <CommandPalette client:idle index={searchIndex} />
-    <AskNotes client:idle />
+    <CommandPalette client:idle index={searchIndex} indexUrl={searchIndexUrl} />
+    {ragEnabled && <AskNotes client:idle />}
     <TocHighlighter client:idle />
     <script is:inline>
       (function () {

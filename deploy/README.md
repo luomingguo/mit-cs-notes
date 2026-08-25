@@ -7,8 +7,8 @@
 | GitHub Pages | https://luomingguo.github.io/mit-cs-notes/ | `/mit-cs-notes/` | `.github/workflows/deploy.yml` 的 `build` / `deploy` job |
 | 自建服务器 hk | https://notes.lobomiao.uk | `/` | 同一个 workflow 的 `deploy-hk` job |
 
-base 由 `DOCS_BASE` 环境变量控制（见 `docs/.vitepress/config.mts`），不设置时默认走 Pages 的子路径，
-所以本地 `npm run docs:dev` 的行为和 Pages 一致。
+base 由 `DOCS_BASE` 环境变量控制。生产产物由 `frontend/` 的 Astro 构建生成；旧 VitePress 在迁移期仍由 CI 构建，用作回滚基线。
+本地 Astro 开发使用根路径；Pages 兼容性由 `npm run site:build:pages` 与 `npm run site:verify:pages` 验证。
 
 ## hk 上的结构
 
@@ -32,7 +32,7 @@ nginx 容器挂载的是 `site/` 整个目录而不是 `current` 本身 —— b
 
 push 到 `release` 分支后，`deploy-hk` job 会：
 
-1. 用 `DOCS_BASE=/` 构建，打包成 `dist.tar.gz`（约 26 MB）；
+1. 用 `DOCS_BASE=/` 构建并完成路由、资源与 RAG 锚点校验，再打包成 `dist.tar.gz`；
 2. 通过 Workload Identity Federation 换取 GCP 凭证（仓库里不存长期密钥）；
 3. 经 IAP 隧道把产物和 `deploy/` 下的配置传到 hk 的 `/tmp/notes-deploy/`；
 4. 在 hk 上执行 `remote-deploy.sh`：解包到新的 release 目录 → 校验产物 → 原子切软链 →
