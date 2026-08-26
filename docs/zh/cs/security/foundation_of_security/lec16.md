@@ -1,9 +1,7 @@
 ---
 title: '案例研究：iOS 安全（Case Study: iOS Security）'
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 16
-kind: theory
 tags: []
 status: complete
 ---

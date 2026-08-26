@@ -1,9 +1,7 @@
 ---
 title: 加密的实际应用（Encryption in Practice）
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 11
-kind: theory
 tags: []
 status: complete
 ---

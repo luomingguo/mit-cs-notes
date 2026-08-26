@@ -1,9 +1,7 @@
 ---
 title: 安全和隐私
-course: 6.S984 数据中心计算
-course_id: '6.S984'
+type: lecture
 lecture: 14
-kind: system
 tags: []
 status: complete
 ---

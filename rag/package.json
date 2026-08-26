@@ -8,7 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "ingest": "tsx src/ingest.ts",
     "paths": "tsx src/paths.ts",
-    "verify": "tsx src/verify.ts",
+    "verify": "node --import tsx src/verify.ts",
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",

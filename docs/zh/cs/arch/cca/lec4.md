@@ -1,9 +1,7 @@
 ---
 title: '调度约束与瞬态历史寄存器（Scheduling & EHRs）'
-course: 6.1920 建构式计算机架构，CCA
-course_id: '6.1920'
+type: lecture
 lecture: 4
-kind: system
 tags: []
 status: complete
 ---

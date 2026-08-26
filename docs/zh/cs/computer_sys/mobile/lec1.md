@@ -1,9 +1,7 @@
 ---
 title: 课程介绍与核心思想
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 1
-kind: system
 tags: []
 status: complete
 ---

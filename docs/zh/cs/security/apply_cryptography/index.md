@@ -1,8 +1,8 @@
 ---
 title: 6.5610 应用密码学与安全（Spring 2026）
+type: course
 course: 6.5610 应用密码学与安全（Spring 2026）
 course_id: '6.5610'
-kind: theory
 tags: []
 status: complete
 ---

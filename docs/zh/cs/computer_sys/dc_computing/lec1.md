@@ -1,9 +1,7 @@
 ---
 title: 介绍
-course: 6.S984 数据中心计算
-course_id: '6.S984'
+type: lecture
 lecture: 1
-kind: system
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: '分布式 FS & NAS 接口'
-course: 18-746 存储系统
-course_id: '18-746'
+type: lecture
 lecture: 10
-kind: system
 tags: []
 status: complete
 ---

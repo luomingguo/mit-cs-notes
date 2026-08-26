@@ -1,7 +1,7 @@
 ---
 title: Introduction
-course: 算法工程师训练
-kind: system
+type: course
+course: 算法工程
 tags: []
 status: complete
 ---

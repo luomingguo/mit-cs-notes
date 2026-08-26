@@ -1,9 +1,7 @@
 ---
 title: 流水线基础
-course: 6.1910 计算结构（Fall 25）
-course_id: '6.1910'
+type: lecture
 lecture: 15
-kind: system
 tags: []
 status: complete
 ---

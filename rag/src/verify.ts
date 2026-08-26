@@ -108,6 +108,11 @@ async function main() {
   const pct = (p: number) => lens[Math.floor(lens.length * p)] ?? 0
   const withAnchor = all.filter((c) => c.anchor).length
   const withHeading = all.filter((c) => c.heading).length
+  const docsWithTldr = docs.filter((doc) => doc.tldr)
+  const summaryChunks = all.filter((chunk) => chunk.blockKind === 'summary')
+  const badSummaryDocs = docsWithTldr.filter((doc) =>
+    summaryChunks.filter((chunk) => chunk.docPath === doc.path).length !== 1,
+  )
 
   console.log(`
 ———— 切块 ————
@@ -115,7 +120,13 @@ async function main() {
   平均每篇  ${(all.length / docs.length).toFixed(1)} 块
   长度 p50  ${pct(0.5)}   p90 ${pct(0.9)}   最长 ${lens.at(-1)}   最短 ${lens[0]}
   带锚点    ${((withAnchor / all.length) * 100).toFixed(1)}%
-  带面包屑  ${((withHeading / all.length) * 100).toFixed(1)}%`)
+  带面包屑  ${((withHeading / all.length) * 100).toFixed(1)}%
+  TL;DR 块  ${summaryChunks.length}/${docsWithTldr.length}（每篇应恰好 1 块）`)
+
+  if (badSummaryDocs.length) {
+    console.log('\nTL;DR 切块异常：')
+    badSummaryDocs.slice(0, 20).forEach((doc) => console.log(`  ${doc.path}`))
+  }
 
   // 抽一块看看清洗结果，人眼确认没把正文洗坏
   const sample = all.find((c) => c.content.length > 400 && c.heading)
@@ -130,7 +141,7 @@ ${sample.content.slice(0, 420).replace(/^/gm, '  ')}…`)
 
   // URL 和锚点都是外部契约。迁移后将偏差作为构建失败处理，避免引用
   // 静默退化为页面顶部，掩盖标题 slug 规则的回归。
-  if (urlMiss.length > 0 || anchorBad.length > 0) process.exit(1)
+  if (urlMiss.length > 0 || anchorBad.length > 0 || badSummaryDocs.length > 0) process.exit(1)
 }
 
 main()

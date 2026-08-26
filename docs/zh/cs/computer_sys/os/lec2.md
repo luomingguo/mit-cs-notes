@@ -1,9 +1,7 @@
 ---
 title: 用 C 语言编程 Xv6
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 2
-kind: system
 tags: []
 status: complete
 ---

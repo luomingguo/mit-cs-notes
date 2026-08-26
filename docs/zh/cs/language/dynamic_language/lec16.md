@@ -1,9 +1,7 @@
 ---
 title: 低级虚拟机 II（Low-Level VM II）——语法制导翻译与控制流图
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 16
-kind: theory
 tags: []
 status: complete
 ---

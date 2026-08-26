@@ -1,9 +1,7 @@
 ---
 title: 案例研究：公钥基础设施（PKI）
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 7
-kind: theory
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 安全（Security）
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 22
-kind: system
 tags: []
 status: complete
 ---

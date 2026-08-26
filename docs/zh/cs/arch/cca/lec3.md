@@ -1,9 +1,7 @@
 ---
 title: '存储器与多规则系统（Memory, BRAM & Multi-Rule Systems）'
-course: 6.1920 建构式计算机架构，CCA
-course_id: '6.1920'
+type: lecture
 lecture: 3
-kind: system
 tags: []
 status: complete
 ---

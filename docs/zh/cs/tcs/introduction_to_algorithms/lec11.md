@@ -1,8 +1,7 @@
 ---
 title: 加权最短路径
-course: 算法导论
+type: lecture
 lecture: 11
-kind: theory
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: ISA
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 2
-kind: system
 tags: []
 status: complete
 ---

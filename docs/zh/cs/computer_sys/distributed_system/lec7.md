@@ -1,9 +1,7 @@
 ---
 title: 容错复制：Raft
-course: 6.5840 分布式系统（Spring 2026）
-course_id: '6.5840'
+type: lecture
 lecture: 7
-kind: system
 tags: []
 status: complete
 ---

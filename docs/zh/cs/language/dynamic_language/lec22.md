@@ -1,9 +1,7 @@
 ---
 title: 寄存器分配 II（Register Allocation II）——线性扫描与图着色
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 22
-kind: theory
 tags: []
 status: complete
 ---

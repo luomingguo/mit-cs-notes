@@ -10,7 +10,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {
-  DOCS_DIR, KIND_BY_COURSE, SECTION_MIN, SECTION_MAX, C,
+  DOCS_DIR, NOTE_TYPES, TAG_RE, SECTION_MIN, SECTION_MAX, C,
   splitFrontmatter, stripCodeFences, stripMathBlocks, extractHeadings,
   sections, isVagueHeading, walkNotes, classify, fenceRanges, FENCE_RE,
 } from './notes-lib.mjs'
@@ -24,8 +24,8 @@ const flags = Object.fromEntries(
 )
 const targets = argv.filter((a) => !a.startsWith('--'))
 
-// course_id 不在必填里：算法导论、软件性能工程这几门本来就没有 MIT 课号。
-const REQUIRED_FM = ['title', 'course', 'kind', 'tags', 'status']
+// 课程名与课号由最近的课程 index.md 继承；子页不重复维护。
+const REQUIRED_FM = ['title', 'status']
 
 /** 术语表。文件不在就跳过术语检查，不让 lint 因此挂掉。 */
 const VOCAB = await (async () => {
@@ -36,7 +36,6 @@ const VOCAB = await (async () => {
     return []
   }
 })()
-const VALID_KIND = new Set(['theory', 'system', 'source', 'design'])
 const VALID_STATUS = new Set(['complete', 'draft', 'stub'])
 
 /** 一条 finding。level: error | warning | info */
@@ -67,34 +66,55 @@ async function lintFile(file, docsDir) {
       const v = fm[k]
       const empty = !(k in fm) || v === '' || (Array.isArray(v) && v.length === 0)
       if (!empty) continue
-      // tags 只能人工填，fix 生成的是空数组。单独归一条 warning，
-      // 否则 490 篇的 tags 会把 error 基线彻底淹掉，CI 门槛就失去意义了。
-      if (k === 'tags') out.push(f('warning', 'no-tags', 'tags 为空，需人工补 3–6 个概念词'))
-      else out.push(f('error', 'frontmatter-field', `frontmatter 缺 ${k}`))
+      out.push(f('error', 'frontmatter-field', `frontmatter 缺 ${k}`))
     }
-    if (fm.kind && !VALID_KIND.has(fm.kind)) {
-      out.push(f('error', 'bad-kind', `kind=${fm.kind} 不是 theory|system|source|design`))
+    if (meta.isContentPage && !fm.type) {
+      out.push(f('error', 'no-type', `缺 type；按路径推断为 ${meta.inferredType}`))
+    }
+    if (fm.type && !NOTE_TYPES.has(fm.type)) {
+      out.push(f('error', 'bad-type', `type=${fm.type} 不在 course|lecture|paper|concept|assignment|project 中`))
+    }
+    if (fm.type && meta.inferredType && fm.type !== meta.inferredType) {
+      out.push(f('error', 'type-path-mismatch', `type=${fm.type} 与目录职责 ${meta.inferredType} 不符`))
+    }
+    if (meta.isCourseIndex && !fm.course) {
+      out.push(f('warning', 'course-metadata', '课程 index.md 缺 course；迁移前暂以 H1 或目录名回退'))
+    }
+    if (meta.inferredType && meta.inferredType !== 'course' && (fm.course || fm.course_id)) {
+      out.push(f('info', 'repeated-course-metadata', '子页的 course/course_id 可删除；解析时以课程 index.md 为准'))
+    }
+
+    if (meta.isContentPage) {
+      if ('tags' in fm && !Array.isArray(fm.tags)) {
+        out.push(f('error', 'bad-tags-shape', 'tags 必须使用行内数组，例如 [cache, locality]'))
+      }
+      const tags = Array.isArray(fm.tags) ? fm.tags : []
+      if (tags.length === 0) {
+        out.push(f('warning', 'no-tags', 'tags 为空，需人工补 2–5 个跨文档概念键'))
+      } else {
+        if (tags.length < 2) out.push(f('warning', 'few-tags', `只有 ${tags.length} 个 tag；通常应为 2–5 个`))
+        if (tags.length > 7) out.push(f('error', 'too-many-tags', `${tags.length} 个 tags，超过上限 7`))
+        const duplicates = tags.filter((tag, i) => tags.indexOf(tag) !== i)
+        if (duplicates.length) out.push(f('error', 'duplicate-tags', `tags 重复：${[...new Set(duplicates)].join(', ')}`))
+        const invalid = tags.filter((tag) => !TAG_RE.test(tag))
+        if (invalid.length) out.push(f('error', 'bad-tag-format', `tags 应为小写 kebab-case：${invalid.join(', ')}`))
+      }
     }
     if (fm.status && !VALID_STATUS.has(fm.status)) {
       out.push(f('error', 'bad-status', `status=${fm.status} 不是 complete|draft|stub`))
-    }
-    if (fm.kind && meta.kind && fm.kind !== meta.kind) {
-      out.push(f('warning', 'kind-mismatch', `kind=${fm.kind} 与目录映射 ${meta.kind} 不符`))
     }
     if (/^Lec\s*\d|^L\d|^Lecture\s*\d/i.test(fm.title ?? '')) {
       out.push(f('warning', 'title-has-prefix', 'frontmatter title 不该带 Lec N 前缀'))
     }
   }
-  if (!meta.kind && !meta.isCourseRoot) {
-    out.push(f('warning', 'unmapped-course', `${meta.courseKey} 未登记在 notes-lib.mjs 的 KIND_BY_COURSE`))
-  }
-
   // stub 页只查到这里，后面的内容规则对占位页没意义
   if (isStub) return { rel, meta, findings: out }
 
   // ── 标题 ─────────────────────────────────────────────────────
   const hs = extractHeadings(body)
   const h1s = hs.filter((h) => h.level === 1)
+  const h2s = hs.filter((h) => h.level === 2)
+  const tldrs = h2s.filter((h) => h.text.trim().toLowerCase() === 'tl;dr')
 
   if (h1s.length === 0) {
     out.push(f('error', 'no-h1', '没有 H1'))
@@ -111,6 +131,24 @@ async function lintFile(file, docsDir) {
     }
   }
 
+  // TL;DR 是页面摘要和 RAG 独立摘要块的共同来源。旧文档渐进迁移，缺失先告警。
+  if (meta.isContentPage) {
+    if (tldrs.length === 0) {
+      out.push(f('warning', 'no-tldr', '缺唯一的「## TL;DR」摘要'))
+    } else {
+      if (tldrs.length > 1) out.push(f('error', 'multi-tldr', `出现 ${tldrs.length} 个「## TL;DR」`, tldrs[1].line))
+      if (h2s[0] !== tldrs[0]) out.push(f('error', 'tldr-position', '「## TL;DR」必须是正文第一个 H2', tldrs[0].line))
+      const tldr = sections(body).find((s) => s.level === 2 && s.text.trim().toLowerCase() === 'tl;dr')
+      if (tldr) {
+        const bullets = (tldr.own.match(/^\s*[-*+]\s+\S/gm) ?? []).length
+        if (bullets < 3 || bullets > 5) {
+          out.push(f('warning', 'tldr-bullets', `TL;DR 建议 3–5 条要点，当前 ${bullets} 条`, tldr.line))
+        }
+        if (tldr.ownLen > 700) out.push(f('warning', 'tldr-long', `TL;DR 共 ${tldr.ownLen} 字符，应保持可独立快速阅读`, tldr.line))
+      }
+    }
+  }
+
   // 层级跳跃
   for (let i = 1; i < hs.length; i++) {
     if (hs[i].level > hs[i - 1].level + 1) {
@@ -119,24 +157,23 @@ async function lintFile(file, docsDir) {
     }
   }
   for (const h of hs) {
-    if (h.level >= 4 && meta.kind !== 'system') {
-      out.push(f('info', 'deep-heading', `H${h.level} 嵌套过深：${h.text}`, h.line))
-    }
+    if (h.level >= 4) out.push(f('info', 'deep-heading', `H${h.level} 嵌套过深：${h.text}`, h.line))
   }
 
   // ── 章节 ─────────────────────────────────────────────────────
   const secs = sections(body).filter((s) => s.level >= 2)
   for (const s of secs) {
+    const isTldr = s.level === 2 && s.text.trim().toLowerCase() === 'tl;dr'
     if (s.ownLen === 0) {
       out.push(f('error', 'empty-section', `空章节（下面直接是另一个标题）：${s.text}`, s.line))
-    } else if (s.ownLen < SECTION_MIN && s.totalLen < SECTION_MIN) {
+    } else if (!isTldr && s.ownLen < SECTION_MIN && s.totalLen < SECTION_MIN) {
       out.push(f('info', 'short-section', `章节仅 ${s.ownLen} 字符，低于 chunk.ts 的 MIN：${s.text}`, s.line))
     }
-    if (s.level === 2 && s.totalLen > SECTION_MAX) {
+    if (!isTldr && s.level === 2 && s.totalLen > SECTION_MAX) {
       out.push(f('error', 'long-section',
         `H2 章节 ${s.totalLen} 字符 > ${SECTION_MAX}，会被 chunk.ts 硬切，需拆 H3：${s.text}`, s.line))
     }
-    if (s.level >= 2 && isVagueHeading(s.text)) {
+    if (!isTldr && s.level >= 2 && isVagueHeading(s.text)) {
       out.push(f('warning', 'vague-heading', `标题无主题词：${s.text}`, s.line))
     }
     // 代码占比
@@ -156,14 +193,10 @@ async function lintFile(file, docsDir) {
 
   // ── 必填区块 ─────────────────────────────────────────────────
   if (fm?.status === 'complete') {
-    if (!/^##\s*我的理解\s*$/m.test(body) && !/:::\s*insight/.test(body)) {
+    if (meta.inferredType !== 'course' && !/^##\s*我的理解\s*$/m.test(body) && !/:::\s*insight/.test(body)) {
       out.push(f('warning', 'no-insight', '缺「## 我的理解」区块'))
     }
-    const h2s = secs.filter((s) => s.level === 2)
-    if (h2s.length && !/小结/.test(h2s.at(-1).text)) {
-      out.push(f('warning', 'no-summary', '结尾缺「本讲小结：<主题词>」'))
-    }
-    if (h2s.length === 0) {
+    if (meta.isContentPage && h2s.length === 0) {
       out.push(f('error', 'no-h2', '没有任何 H2，无法按章节分块'))
     }
   }
@@ -258,7 +291,11 @@ async function lintFile(file, docsDir) {
 
 const docsDir = path.resolve(DOCS_DIR)
 const files = targets.length
-  ? targets.map((t) => path.resolve(t))
+  ? [...new Set((await Promise.all(targets.map(async (target) => {
+      const resolved = path.resolve(target)
+      const stat = await fs.stat(resolved)
+      return stat.isDirectory() ? walkNotes(resolved) : [resolved]
+    }))).flat())].sort()
   : await walkNotes(docsDir)
 
 const results = []
@@ -289,7 +326,7 @@ if (!flags.summary) {
       a.findings.filter((x) => x.level === 'error').length)
 
   for (const r of shown) {
-    console.log(`\n${C.bold(r.rel)} ${C.gray(r.meta.kind ?? '?')}`)
+    console.log(`\n${C.bold(r.rel)} ${C.gray(r.meta.inferredType ?? '-')}`)
     for (const fd of r.findings.sort((a, b) => RANK[a.level] - RANK[b.level])) {
       const tag = fd.level === 'error' ? C.red('error') : fd.level === 'warning' ? C.yellow(' warn') : C.gray(' info')
       const loc = fd.line ? C.gray(`:${fd.line}`) : ''

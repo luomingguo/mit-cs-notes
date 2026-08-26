@@ -1,8 +1,7 @@
 ---
 title: Bentley 程序优化的法则
-course: 软件性能工程
+type: lecture
 lecture: 2
-kind: system
 tags: []
 status: complete
 ---

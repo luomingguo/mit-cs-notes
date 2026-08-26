@@ -1,8 +1,7 @@
 ---
 title: 竞态和并行
-course: 软件性能工程
+type: lecture
 lecture: 8
-kind: system
 tags: []
 status: complete
 ---

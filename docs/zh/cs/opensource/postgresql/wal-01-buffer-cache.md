@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 中的 WAL — 1. 缓冲区缓存（Buffer Cache）
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

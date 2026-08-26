@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 中的锁 — 1. 关系级锁（Relation-level locks）
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

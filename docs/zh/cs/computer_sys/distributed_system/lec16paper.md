@@ -1,8 +1,6 @@
 ---
 title: 论文阅读： Facebook 扩展 Memcached 之路
-course: 6.5840 分布式系统（Spring 2026）
-course_id: '6.5840'
-kind: system
+type: paper
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 坑洞检测（Pothole Detection / Pothole Patrol）
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 10
-kind: system
 tags: []
 status: complete
 ---

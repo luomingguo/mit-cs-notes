@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 中的 MVCC — 4. 快照
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

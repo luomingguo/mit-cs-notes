@@ -1,9 +1,7 @@
 ---
 title: '磁盘分页 & 超级页'
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 9
-kind: system
 tags: []
 status: complete
 ---

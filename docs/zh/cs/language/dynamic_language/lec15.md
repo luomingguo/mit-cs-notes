@@ -1,9 +1,7 @@
 ---
 title: 低级虚拟机 I（Low-Level Virtual Machines I）——从 AST 解释器到字节码 VM
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 15
-kind: theory
 tags: []
 status: complete
 ---

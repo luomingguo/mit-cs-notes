@@ -1,9 +1,7 @@
 ---
 title: 垃圾回收 I（Garbage Collection I）——可达性与引用计数
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 12
-kind: theory
 tags: []
 status: complete
 ---

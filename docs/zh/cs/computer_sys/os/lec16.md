@@ -1,9 +1,7 @@
 ---
 title: 高性能网络与调度
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 16
-kind: system
 tags: []
 status: complete
 ---

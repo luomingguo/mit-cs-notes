@@ -1,9 +1,7 @@
 ---
 title: 继承和面向对象编程
-course: 6.1010 程序设计基础（Python版）
-course_id: '6.1010'
+type: lecture
 lecture: 9
-kind: system
 tags: []
 status: complete
 ---

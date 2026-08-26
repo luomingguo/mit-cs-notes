@@ -1,9 +1,7 @@
 ---
 title: 穿墙感知（Seeing through Walls / Device-Free Localization）
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 4
-kind: system
 tags: []
 status: complete
 ---

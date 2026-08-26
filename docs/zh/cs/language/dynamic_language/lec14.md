@@ -1,9 +1,7 @@
 ---
 title: 垃圾回收 III（GC III）——分代与增量回收
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 14
-kind: theory
 tags: []
 status: complete
 ---

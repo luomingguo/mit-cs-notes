@@ -1,8 +1,7 @@
 ---
 title: 二叉树
-course: 算法导论
+type: lecture
 lecture: 6
-kind: theory
 tags: []
 status: complete
 ---

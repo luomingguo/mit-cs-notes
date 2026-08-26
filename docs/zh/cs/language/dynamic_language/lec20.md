@@ -1,9 +1,7 @@
 ---
 title: 代码生成 II（Code Generation II）——汇编代码生成与机器模型
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 20
-kind: theory
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 可靠性（Reliability）
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 19
-kind: system
 tags: []
 status: complete
 ---

@@ -1,12 +1,18 @@
 ---
 title: 6.1920 建构式计算机架构，CCA
+type: course
 course: 6.1920 建构式计算机架构，CCA
 course_id: '6.1920'
-kind: system
-tags: []
+tags: [computer-architecture, processor-design, cache-coherence]
 status: complete
 ---
 # 6.1920 建构式计算机架构，CCA
+
+## TL;DR
+
+- 本课程用建构式方法研究处理器微架构：从组合电路和流水线逐步构造乱序、多核处理器。
+- 实验以 Bluespec SystemVerilog 描述真实硬件机制，覆盖缓存、虚拟内存、中断与缓存一致性。
+- 推荐按讲次顺序学习；6.1910 计算结构是主要前置知识，期末项目将各机制整合到 FPGA 多核处理器中。
 
 ## 先行条件
 

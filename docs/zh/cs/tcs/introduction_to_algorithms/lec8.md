@@ -1,8 +1,7 @@
 ---
 title: '优先队列 & 二叉堆'
-course: 算法导论
+type: lecture
 lecture: 8
-kind: theory
 tags: []
 status: complete
 ---

@@ -1,10 +1,5 @@
 ---
 title: 计算机安全
-course: security
-kind: system
-tags: []
-status: stub
-sidebarDepth: '2'
 ---
 # CS 课程 7 大部分
 

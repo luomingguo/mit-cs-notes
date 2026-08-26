@@ -1,8 +1,6 @@
 ---
 title: P2P 与 Chord 查找协议
-course: 6.5820/6.S04 计算机网络
-course_id: '6.5820'
-kind: system
+type: lecture
 tags: []
 status: complete
 ---

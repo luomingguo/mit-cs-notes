@@ -1,7 +1,7 @@
 ---
 title: PostgreSQL 内核原理系列（中文讲解笔记）
+type: course
 course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 虚拟机技术加强模块化
-course: 6.1800 计算机系统工程
-course_id: '6.1800'
+type: lecture
 lecture: 6
-kind: system
 tags: []
 status: complete
 ---

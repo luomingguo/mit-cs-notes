@@ -1,9 +1,7 @@
 ---
 title: 'CMOS 技术 & 布尔运算到门电路'
-course: 6.1910 计算结构（Fall 25）
-course_id: '6.1910'
+type: lecture
 lecture: 5
-kind: system
 tags: []
 status: complete
 ---

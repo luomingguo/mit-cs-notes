@@ -1,9 +1,7 @@
 ---
 title: TCP
-course: 6.1800 计算机系统工程
-course_id: '6.1800'
+type: lecture
 lecture: 11
-kind: system
 tags: []
 status: complete
 ---

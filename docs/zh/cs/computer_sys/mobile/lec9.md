@@ -1,9 +1,7 @@
 ---
 title: 惯性感知（Inertial Sensing）
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 9
-kind: system
 tags: []
 status: complete
 ---

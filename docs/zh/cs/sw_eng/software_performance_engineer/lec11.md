@@ -1,8 +1,7 @@
 ---
 title: 存储分配
-course: 软件性能工程
+type: lecture
 lecture: 11
-kind: system
 tags: []
 status: complete
 ---

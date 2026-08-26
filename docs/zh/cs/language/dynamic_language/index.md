@@ -1,8 +1,8 @@
 ---
 title: 6.112 动态计算机语言工程
+type: course
 course: 6.112 动态计算机语言工程
 course_id: '6.112'
-kind: theory
 tags: []
 status: complete
 ---

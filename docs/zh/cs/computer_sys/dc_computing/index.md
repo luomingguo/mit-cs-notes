@@ -1,15 +1,13 @@
 ---
 title: 数据中心计算
+type: course
 course: 6.S984 数据中心计算
 course_id: '6.S984'
-kind: system
 tags: []
 status: complete
 titleTemplate: 公开课
 description: Ron的计算机课堂
 layout: doc
-sidebar: 'true'
-aside: 'true'
 ---
 # 6.S984 数据中心计算
 ## 先行条件

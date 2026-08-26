@@ -1,8 +1,7 @@
 ---
 title: 旅行商问题
-course: 软件性能工程
+type: lecture
 lecture: 21
-kind: system
 tags: []
 status: complete
 ---

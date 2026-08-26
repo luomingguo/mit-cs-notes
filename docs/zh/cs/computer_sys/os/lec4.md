@@ -1,9 +1,7 @@
 ---
 title: '操作系统的组织 & 微内核'
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 4
-kind: system
 tags: []
 status: complete
 ---

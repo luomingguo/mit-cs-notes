@@ -1,9 +1,7 @@
 ---
 title: 片上网络 II：拓扑与路由
-course: 6.1920 建构式计算机架构，CCA
-course_id: '6.1920'
+type: lecture
 lecture: 16
-kind: system
 tags: []
 status: complete
 ---

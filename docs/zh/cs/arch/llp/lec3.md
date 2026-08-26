@@ -1,9 +1,7 @@
 ---
 title: 'C 语言的数组&字符串&结构体'
-course: 6.1904 C语言的底层汇编
-course_id: '6.1904'
+type: lecture
 lecture: 3
-kind: system
 tags: []
 status: complete
 ---

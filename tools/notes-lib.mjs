@@ -9,42 +9,13 @@ import path from 'node:path'
 
 export const DOCS_DIR = 'docs'
 
-// ── 课程目录 → kind 映射 ──────────────────────────────────────────
-// 键是 zh 之后的「学科/分类/课程」三段。新增课程时在这里登记，
-// 漏登记会被 lint 报出来，不会静默按错误的骨架检查。
-export const KIND_BY_COURSE = {
-  'cs/tcs/maths_for_cs': 'theory',
-  'cs/tcs/introduction_to_algorithms': 'theory',
-  'cs/security/apply_cryptography': 'theory',
-  'cs/security/foundation_of_security': 'theory',
-  'cs/language/dynamic_language': 'theory',
-  'cs/language/computer_language': 'theory',
-  'cs/language/sicp': 'theory',
-  'cs/language/introdution_to_cpp': 'system',
+/** 页面在知识库中的主要职责；与 NOTESTYLE.md 的内容契约保持一致。 */
+export const NOTE_TYPES = new Set([
+  'course', 'lecture', 'paper', 'concept', 'assignment', 'project',
+])
 
-  'cs/arch/cca': 'system',
-  'cs/arch/csa': 'system',
-  'cs/arch/computation_structures': 'system',
-  'cs/arch/llp': 'system',
-  'cs/computer_sys/computer_sys_eng': 'system',
-  'cs/computer_sys/database_system': 'system',
-  'cs/computer_sys/dc_computing': 'system',
-  'cs/computer_sys/distributed_system': 'system',
-  'cs/computer_sys/mobile': 'system',
-  'cs/computer_sys/network': 'system',
-  'cs/computer_sys/os': 'system',
-  'cs/computer_sys/storage': 'system',
-  'cs/sw_eng/software_performance_engineer': 'system',
-  'cs/sw_eng/multicore_programming': 'system',
-  'cs/sw_eng/fundamentals_of_programming': 'system',
-  'cs/sw_eng/algorithm_engineer': 'system',
-
-  'cs/opensource/postgresql': 'source',
-
-  'cs/sw_eng/designftw': 'design',
-  'cs/sw_eng/software_design': 'design',
-  'cs/sw_eng/element_of_software_construction': 'design',
-}
+/** tags 是跨文档复用的稳定概念键，不接受空格、大小写或下划线。 */
+export const TAG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 /** 无信息量的章节标题。命中即报 warning —— 它们在 embedText 的上下文头里不可分。 */
 export const VAGUE_HEADINGS = new Set([
@@ -125,13 +96,14 @@ function yamlScalar(v) {
 }
 
 export function stringifyFrontmatter(fm) {
-  const order = ['title', 'course', 'course_id', 'lecture', 'kind', 'tags', 'status', 'source']
+  const order = ['title', 'type', 'course', 'course_id', 'lecture', 'tags', 'status', 'source']
   const keys = [...order.filter((k) => k in fm), ...Object.keys(fm).filter((k) => !order.includes(k))]
   const lines = keys.map((k) => {
     const v = fm[k]
     if (Array.isArray(v)) return `${k}: [${v.map(yamlScalar).join(', ')}]`
     // 课号 6.5610 / 18-746 一律带引号，否则 YAML 会当成浮点数或日期
     if (k === 'course_id') return `${k}: '${String(v).replace(/'/g, "''")}'`
+    if (k === 'lecture' && /^\d+$/.test(String(v))) return `${k}: ${v}`
     return `${k}: ${yamlScalar(v)}`
   })
   return `---\n${lines.join('\n')}\n---\n`
@@ -268,15 +240,32 @@ export function classify(relPath) {
   const category = segs.length >= 4 ? segs[2] : ''
   const courseSlug = segs.length >= 5 ? segs[3] : category || segs[1] || ''
   const courseKey = [discipline, category, courseSlug].filter(Boolean).join('/')
+  const isCourseIndex = segs.length === 5 && segs.at(-1) === 'index'
+  const isDomainIndex = segs.length === 4 && segs.at(-1) === 'index'
+  const nestedType = NOTE_TYPES.has(segs[4]) && segs[4] !== 'course' && segs.length >= 6
+    ? segs[4]
+    : undefined
+  const basename = segs.at(-1) ?? ''
+  const rootChildType = /^lab\d*$/i.test(basename)
+    ? 'assignment'
+    : /paper$/i.test(basename)
+      ? 'paper'
+      : 'lecture'
+  const inferredType = isCourseIndex
+    ? 'course'
+    : nestedType ?? (segs.length >= 5 && basename !== 'index' ? rootChildType : undefined)
   return {
     lang,
     discipline,
     category,
     courseSlug,
     courseKey,
-    kind: KIND_BY_COURSE[courseKey],
+    inferredType,
     // 课程 index.md、分类 index.md 不是正文页，规则放宽
     isIndex: segs.at(-1) === 'index',
+    isCourseIndex,
+    isDomainIndex,
+    isContentPage: Boolean(inferredType),
     isCourseRoot: segs.length <= 4,
   }
 }
@@ -294,16 +283,15 @@ const COURSE_NAME_OVERRIDE = {
 const courseNameCache = new Map()
 export async function courseName(docsDir, lang, discipline, category, courseSlug, fallback) {
   const override = COURSE_NAME_OVERRIDE[`${discipline}/${category}/${courseSlug}`]
-  if (override) return override
   const dir = path.join(docsDir, lang, discipline, category, courseSlug)
   if (courseNameCache.has(dir)) return courseNameCache.get(dir)
   let name = fallback
   try {
     const raw = await fs.readFile(path.join(dir, 'index.md'), 'utf8')
-    const { body } = splitFrontmatter(raw)
-    name = body.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? fallback
+    const { fm, body } = splitFrontmatter(raw)
+    name = fm?.course ?? override ?? body.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? fm?.title ?? fallback
   } catch {
-    /* 没有 index.md 就用目录名 */
+    name = override ?? fallback
   }
   courseNameCache.set(dir, name)
   return name

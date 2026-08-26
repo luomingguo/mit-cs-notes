@@ -1,9 +1,7 @@
 ---
 title: '片上网络（一）：拓扑与流量控制（On-Chip Networks I: Topology / Flow Control）'
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 15
-kind: system
 tags: []
 status: complete
 ---

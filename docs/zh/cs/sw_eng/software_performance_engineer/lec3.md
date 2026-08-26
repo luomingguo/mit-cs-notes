@@ -1,8 +1,7 @@
 ---
 title: 比特运算技巧
-course: 软件性能工程
+type: lecture
 lecture: 3
-kind: system
 tags: []
 status: complete
 ---

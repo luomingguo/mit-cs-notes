@@ -1,9 +1,7 @@
 ---
 title: 语法分析 II — 自顶向下解析（Top-Down Parsing）
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 4
-kind: theory
 tags: []
 status: complete
 ---

@@ -1,8 +1,6 @@
 ---
 title: 四、中间盒
-course: 6.5820/6.S04 计算机网络
-course_id: '6.5820'
-kind: system
+type: lecture
 tags: []
 status: complete
 ---

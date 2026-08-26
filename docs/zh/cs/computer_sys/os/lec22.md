@@ -1,9 +1,7 @@
 ---
 title: 内核可扩展性（BPF）
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 22
-kind: system
 tags: []
 status: complete
 ---

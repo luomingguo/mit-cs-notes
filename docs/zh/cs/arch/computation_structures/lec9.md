@@ -1,9 +1,7 @@
 ---
 title: 可编程机器（ISA 与汇编）
-course: 6.1910 计算结构（Fall 25）
-course_id: '6.1910'
+type: lecture
 lecture: 9
-kind: system
 tags: []
 status: complete
 ---

@@ -1,8 +1,7 @@
 ---
 title: 图优化
-course: 软件性能工程
+type: lecture
 lecture: 22
-kind: system
 tags: []
 status: stub
 ---

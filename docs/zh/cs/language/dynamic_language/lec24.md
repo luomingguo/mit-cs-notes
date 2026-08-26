@@ -1,9 +1,7 @@
 ---
 title: 静态分析 II（Static Analysis II）——格、转移函数、不动点与终止
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 24
-kind: theory
 tags: []
 status: complete
 ---

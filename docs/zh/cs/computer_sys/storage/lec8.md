@@ -1,9 +1,7 @@
 ---
 title: 磁盘阵列组织
-course: 18-746 存储系统
-course_id: '18-746'
+type: lecture
 lecture: 8
-kind: system
 tags: []
 status: complete
 ---

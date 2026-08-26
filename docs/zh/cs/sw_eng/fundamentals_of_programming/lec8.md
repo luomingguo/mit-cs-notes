@@ -1,9 +1,7 @@
 ---
 title: 自定义类型
-course: 6.1010 程序设计基础（Python版）
-course_id: '6.1010'
+type: lecture
 lecture: 8
-kind: system
 tags: []
 status: complete
 ---

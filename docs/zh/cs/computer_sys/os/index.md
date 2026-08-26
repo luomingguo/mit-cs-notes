@@ -1,8 +1,8 @@
 ---
 title: 6.1810 操作系统工程
+type: course
 course: 6.1810 操作系统工程
 course_id: '6.1810'
-kind: system
 tags: []
 status: complete
 ---

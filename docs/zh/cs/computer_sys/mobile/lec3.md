@@ -1,9 +1,7 @@
 ---
 title: 'GPS 与室内定位实战（GPS & Practical Indoor Localization）'
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 3
-kind: system
 tags: []
 status: complete
 ---

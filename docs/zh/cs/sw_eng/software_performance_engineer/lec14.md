@@ -1,8 +1,7 @@
 ---
 title: 缓存和高效缓存算法
-course: 软件性能工程
+type: lecture
 lecture: 14
-kind: system
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 缓存组织与内存管（Cache Organization and Memory Management）
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 3
-kind: system
 tags: []
 status: complete
 ---

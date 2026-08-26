@@ -1,9 +1,7 @@
 ---
 title: TypeScript 基础
-course: 6.1020 软件构造基础
-course_id: '6.1020'
+type: lecture
 lecture: 0
-kind: design
 tags: []
 status: complete
 ---

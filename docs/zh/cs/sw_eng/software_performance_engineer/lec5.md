@@ -1,8 +1,7 @@
 ---
 title: 从 C 到汇编语言
-course: 软件性能工程
+type: lecture
 lecture: 5
-kind: system
 tags: []
 status: complete
 ---

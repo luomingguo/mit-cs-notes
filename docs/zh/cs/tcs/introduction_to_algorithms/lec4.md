@@ -1,8 +1,7 @@
 ---
 title: 哈希
-course: 算法导论
+type: lecture
 lecture: 4
-kind: theory
 tags: []
 status: complete
 ---

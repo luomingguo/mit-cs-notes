@@ -1,8 +1,7 @@
 ---
 title: AVL 树
-course: 算法导论
+type: lecture
 lecture: 7
-kind: theory
 tags: []
 status: complete
 ---

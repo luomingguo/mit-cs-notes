@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 查询系列 — 3. 顺序扫描
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

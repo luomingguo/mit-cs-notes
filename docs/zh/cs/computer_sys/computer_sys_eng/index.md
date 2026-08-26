@@ -1,8 +1,8 @@
 ---
 title: 6.1800 计算机系统工程
+type: course
 course: 6.1800 计算机系统工程
 course_id: '6.1800'
-kind: system
 tags: []
 status: complete
 ---

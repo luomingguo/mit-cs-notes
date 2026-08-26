@@ -1,8 +1,7 @@
 ---
-title: 'Johnson''s 算法'
-course: 算法导论
+title: 'Johnson''''s 算法'
+type: lecture
 lecture: 14
-kind: theory
 tags: []
 status: complete
 ---

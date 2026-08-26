@@ -1,9 +1,7 @@
 ---
 title: 从 BSV 到芯片：硅综合与 FPGA
-course: 6.1920 建构式计算机架构，CCA
-course_id: '6.1920'
+type: lecture
 lecture: 18
-kind: system
 tags: []
 status: complete
 ---

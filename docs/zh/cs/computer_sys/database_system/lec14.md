@@ -1,9 +1,7 @@
 ---
 title: 故障恢复（Part I)
-course: 6.5830 数据库系统
-course_id: '6.5830'
+type: lecture
 lecture: 14
-kind: system
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 分支预测
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 8
-kind: system
 tags: []
 status: complete
 ---

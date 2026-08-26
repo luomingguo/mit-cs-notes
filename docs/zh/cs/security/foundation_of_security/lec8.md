@@ -1,9 +1,7 @@
 ---
 title: 传输层安全导论（Intro to Transport Security）
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 8
-kind: theory
 tags: []
 status: complete
 ---

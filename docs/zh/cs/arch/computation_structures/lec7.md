@@ -1,9 +1,7 @@
 ---
 title: 用接口实现时序电路模块
-course: 6.1910 计算结构（Fall 25）
-course_id: '6.1910'
+type: lecture
 lecture: 7
-kind: system
 tags: []
 status: complete
 ---

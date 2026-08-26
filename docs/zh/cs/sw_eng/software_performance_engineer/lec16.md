@@ -1,8 +1,7 @@
 ---
 title: 不确定性并行编程
-course: 软件性能工程
+type: lecture
 lecture: 16
-kind: system
 tags: []
 status: complete
 ---

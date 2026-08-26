@@ -1,8 +1,8 @@
 ---
 title: 6.1904 C 语言的底层汇编
+type: course
 course: 6.1904 C语言的底层汇编
 course_id: '6.1904'
-kind: system
 tags: []
 status: complete
 ---

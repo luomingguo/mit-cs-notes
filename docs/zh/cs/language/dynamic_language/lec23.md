@@ -1,9 +1,7 @@
 ---
 title: 静态分析 I（Static Analysis I）——数据流分析框架与格
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 23
-kind: theory
 tags: []
 status: complete
 ---

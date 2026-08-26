@@ -1,9 +1,7 @@
 ---
 title: Modular Arithmetic
-course: 6.1200 计算机数学
-course_id: '6.1200'
+type: lecture
 lecture: 9
-kind: theory
 tags: []
 status: complete
 ---

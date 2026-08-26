@@ -17,6 +17,7 @@ import {
   courseOf,
   dataOf,
   domainLabelOf,
+  extractTldr,
   findBacklinks,
   findPrevNext,
   idToHref,
@@ -31,6 +32,8 @@ import {
   selectComplexNote,
   tagsOf,
   titleOf,
+  typeLabelOf,
+  typeOf,
   withBasePath,
 } from '@/lib/notes';
 
@@ -71,14 +74,14 @@ const courseName = course?.title ?? courseOf(entry);
 const courseId = course?.courseId ?? courseIdOf(entry);
 const lecture = lectureOf(entry);
 const summary = plainExcerpt(entry.body ?? '');
+const hasTldr = Boolean(extractTldr(entry.body ?? ''));
 const navLectures = buildNavLectures(courseEntries, entry.id);
 const tags = tagsOf(entry);
 const backlinks = findBacklinks(entry, allNotes);
 const lastUpdated = lastUpdatedOf(entry);
-const kindLabels: Record<string, string> = { theory: '理论', system: '系统', source: '源码研读', design: '设计' };
 const statusLabels: Record<string, string> = { complete: '完成', draft: '草稿', stub: '占位' };
 const entryData = dataOf(entry);
-const kind = kindLabels[String(entryData.kind ?? '')] ?? String(entryData.kind ?? '笔记');
+const noteType = typeLabelOf(typeOf(entry));
 const status = statusLabels[String(entryData.status ?? '')] ?? String(entryData.status ?? '状态未知');
 const searchIndexUrl = withBasePath('/search-index.json');
 const courseHref = course?.href ?? withBasePath('/zh/');
@@ -134,12 +137,12 @@ const learningPaths = sourceLearningPaths ? {
 
         <h1>{lecture !== undefined && <span class="title-kicker">Lec {lecture}</span>}{title}</h1>
         <div class="meta-row">
-          <span class="meta-pill">{kind}</span><span aria-hidden="true">·</span><span>{status}</span>
+          <span class="meta-pill">{noteType}</span><span aria-hidden="true">·</span><span>{status}</span>
           {lastUpdated && <><span aria-hidden="true">·</span><span>更新于 {lastUpdated}</span></>}
         </div>
       </header>
 
-      <section class="lecture-summary" aria-labelledby="summary-heading"><h2 id="summary-heading">摘要</h2><p>{summary}</p></section>
+      {!hasTldr && <section class="lecture-summary" aria-labelledby="summary-heading"><h2 id="summary-heading">摘要</h2><p>{summary}</p></section>}
 
       {contentEntries.length > 1 && (
         <section class="sequence-grid" aria-label="同课程前后关系">

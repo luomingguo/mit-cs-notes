@@ -1,9 +1,7 @@
 ---
 title: 加强可靠性技术
-course: 18-746 存储系统
-course_id: '18-746'
+type: lecture
 lecture: 13
-kind: system
 tags: []
 status: complete
 ---

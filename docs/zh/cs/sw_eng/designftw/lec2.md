@@ -1,9 +1,7 @@
 ---
 title: Web 网页结构：HTML
-course: 6.4500 Web设计：语言和用户接口
-course_id: '6.4500'
+type: lecture
 lecture: 2
-kind: design
 tags: []
 status: complete
 ---

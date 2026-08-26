@@ -1,9 +1,7 @@
 ---
 title: 网络连接（Network Connectivity）：BLE 与低功耗广域网
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 5
-kind: system
 tags: []
 status: complete
 ---

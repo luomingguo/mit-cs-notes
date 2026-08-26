@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 索引 — 1（导论）
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

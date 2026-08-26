@@ -1,9 +1,7 @@
 ---
 title: 微码与 VLIW 处理器（Microcoded and VLIW Processors）
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 18
-kind: system
 tags: []
 status: complete
 ---

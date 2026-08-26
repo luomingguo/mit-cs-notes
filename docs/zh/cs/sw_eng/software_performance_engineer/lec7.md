@@ -1,8 +1,7 @@
 ---
 title: 多核编程
-course: 软件性能工程
+type: lecture
 lecture: 7
-kind: system
 tags: []
 status: complete
 ---

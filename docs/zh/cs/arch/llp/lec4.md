@@ -1,9 +1,7 @@
 ---
 title: RISC-V 汇编：寄存器与指令
-course: 6.1904 C语言的底层汇编
-course_id: '6.1904'
+type: lecture
 lecture: 4
-kind: system
 tags: []
 status: complete
 ---

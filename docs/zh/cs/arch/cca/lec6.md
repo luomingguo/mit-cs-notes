@@ -1,9 +1,7 @@
 ---
 title: 流水线处理器
-course: 6.1920 建构式计算机架构，CCA
-course_id: '6.1920'
+type: lecture
 lecture: 6
-kind: system
 tags: []
 status: complete
 ---

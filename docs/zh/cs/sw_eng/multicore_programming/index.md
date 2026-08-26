@@ -1,8 +1,8 @@
 ---
 title: 6.5080/6.836 Multicore Programming
+type: course
 course: 6.5080/6.836 Multicore Programming
 course_id: '6.5080'
-kind: system
 tags: []
 status: complete
 ---

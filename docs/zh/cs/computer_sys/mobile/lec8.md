@@ -1,9 +1,7 @@
 ---
 title: 自动驾驶汽车（Self-Driving Cars）
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 8
-kind: system
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 函数、类和 this
-course: 6.4500 Web设计：语言和用户接口
-course_id: '6.4500'
+type: lecture
 lecture: 16
-kind: design
 tags: []
 status: complete
 ---

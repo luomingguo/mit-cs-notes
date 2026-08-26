@@ -1,9 +1,7 @@
 ---
 title: '介绍数据库 & 关系模型 & SQL'
-course: 6.5830 数据库系统
-course_id: '6.5830'
+type: lecture
 lecture: 1
-kind: system
 tags: []
 status: complete
 ---

@@ -1,7 +1,6 @@
 ---
 title: 学习路径
 course: paths
-kind: system
 tags: []
 status: complete
 description: 从一个具体目标出发，把二十多门 MIT 课程的笔记串成一条有依赖顺序的阅读路线。

@@ -1,9 +1,7 @@
 ---
 title: Promises 语法
-course: 6.1020 软件构造基础
-course_id: '6.1020'
+type: lecture
 lecture: 15
-kind: design
 tags: []
 status: complete
 ---

@@ -1,7 +1,7 @@
 ---
 title: Introduction
+type: course
 course: 软件设计
-kind: design
 tags: []
 status: complete
 ---

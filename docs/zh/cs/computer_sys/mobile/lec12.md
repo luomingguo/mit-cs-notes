@@ -1,9 +1,7 @@
 ---
 title: 海洋物联网（Ocean IoT）
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 12
-kind: system
 tags: []
 status: complete
 ---

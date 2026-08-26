@@ -1,9 +1,7 @@
 ---
 title: 渐进分析
-course: 6.1200 计算机数学
-course_id: '6.1200'
+type: lecture
 lecture: 6
-kind: theory
 tags: []
 status: complete
 ---

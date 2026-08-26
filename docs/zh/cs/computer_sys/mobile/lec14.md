@@ -1,9 +1,7 @@
 ---
 title: 无线神经辐射场（Wireless NeRFs）
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 14
-kind: system
 tags: []
 status: complete
 ---

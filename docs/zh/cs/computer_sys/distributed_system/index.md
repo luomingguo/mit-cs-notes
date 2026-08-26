@@ -1,8 +1,8 @@
 ---
 title: 6.5840 分布式系统（Spring 2026）
+type: course
 course: 6.5840 分布式系统（Spring 2026）
 course_id: '6.5840'
-kind: system
 tags: []
 status: complete
 ---

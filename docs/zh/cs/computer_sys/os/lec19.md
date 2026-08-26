@@ -1,9 +1,7 @@
 ---
 title: '文件系统性能 & 快速崩溃恢复'
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 19
-kind: system
 tags: []
 status: complete
 ---

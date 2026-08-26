@@ -1,8 +1,6 @@
 ---
 title: 视频流（Video Streaming / ABR）
-course: 6.5820/6.S04 计算机网络
-course_id: '6.5820'
-kind: system
+type: lecture
 tags: []
 status: complete
 ---

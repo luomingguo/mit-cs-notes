@@ -1,9 +1,7 @@
 ---
 title: 多线程技术
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 11
-kind: system
 tags: []
 status: complete
 ---

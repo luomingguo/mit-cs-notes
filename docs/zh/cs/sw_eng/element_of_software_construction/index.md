@@ -1,16 +1,10 @@
 ---
 title: 软件构造基础
+type: course
 course: 6.1020 软件构造基础
 course_id: '6.1020'
-kind: design
 tags: []
 status: stub
-sidebarDepth: '2'
-sidebar: 'true'
-aside: right
-editLink: 'true'
-lastUpdated: 'true'
-outline: '2'
 ---
 # 6.1020 软件构造基础
 

@@ -1,9 +1,7 @@
 ---
 title: 编译器概览（Overview of Compilation）
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 1
-kind: theory
 tags: []
 status: complete
 ---

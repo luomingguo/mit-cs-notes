@@ -1,9 +1,7 @@
 ---
 title: 数据库存储管理
-course: 6.5830 数据库系统
-course_id: '6.5830'
+type: lecture
 lecture: 5
-kind: system
 tags: []
 status: complete
 ---

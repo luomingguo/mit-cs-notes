@@ -1,8 +1,7 @@
 ---
 title: 动态规划 IV：切割问题
-course: 算法导论
+type: lecture
 lecture: 18
-kind: theory
 tags: []
 status: complete
 prev: 'Get Started | Markdown'

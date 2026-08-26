@@ -1,9 +1,7 @@
 ---
 title: Linux ext3 的崩溃恢复
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 18
-kind: system
 tags: []
 status: complete
 ---

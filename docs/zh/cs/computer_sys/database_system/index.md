@@ -1,16 +1,10 @@
 ---
 title: 数据库系统
+type: course
 course: 6.5830 数据库系统
 course_id: '6.5830'
-kind: system
 tags: []
 status: stub
-sidebarDepth: '2'
-sidebar: 'true'
-aside: right
-editLink: 'true'
-lastUpdated: 'true'
-outline: '2'
 ---
 # 6.5830 数据库系统
 

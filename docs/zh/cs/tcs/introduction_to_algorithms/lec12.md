@@ -1,8 +1,7 @@
 ---
 title: Bellman-Ford
-course: 算法导论
+type: lecture
 lecture: 12
-kind: theory
 tags: []
 status: complete
 ---

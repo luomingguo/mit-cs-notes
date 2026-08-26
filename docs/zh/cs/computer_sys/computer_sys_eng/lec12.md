@@ -1,9 +1,7 @@
 ---
 title: 网络资源管理
-course: 6.1800 计算机系统工程
-course_id: '6.1800'
+type: lecture
 lecture: 12
-kind: system
 tags: []
 status: complete
 ---

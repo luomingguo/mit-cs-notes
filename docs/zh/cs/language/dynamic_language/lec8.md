@@ -1,9 +1,7 @@
 ---
 title: 语义（堆与记录）——带堆的操作语义
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 8
-kind: theory
 tags: []
 status: complete
 ---

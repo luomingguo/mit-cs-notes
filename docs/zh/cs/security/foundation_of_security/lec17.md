@@ -1,9 +1,7 @@
 ---
 title: 软件安全（Software Security）
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 17
-kind: theory
 tags: []
 status: complete
 ---

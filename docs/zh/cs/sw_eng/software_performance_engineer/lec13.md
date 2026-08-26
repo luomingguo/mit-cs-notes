@@ -1,8 +1,7 @@
 ---
 title: Cilk 运行时系统
-course: 软件性能工程
+type: lecture
 lecture: 13
-kind: system
 tags: []
 status: complete
 ---

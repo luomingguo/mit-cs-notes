@@ -1,9 +1,7 @@
 ---
 title: 语法分析 III — First 集与建树（Parsing：Systematic Predictive Parsing）
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 5
-kind: theory
 tags: []
 status: complete
 ---

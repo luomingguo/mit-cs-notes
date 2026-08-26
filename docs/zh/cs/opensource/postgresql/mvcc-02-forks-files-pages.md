@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 中的 MVCC — 2. 分支、文件与页面
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

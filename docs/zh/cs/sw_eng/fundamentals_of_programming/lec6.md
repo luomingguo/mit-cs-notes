@@ -1,9 +1,7 @@
 ---
 title: 递归和迭代器
-course: 6.1010 程序设计基础（Python版）
-course_id: '6.1010'
+type: lecture
 lecture: 6
-kind: system
 tags: []
 status: complete
 ---

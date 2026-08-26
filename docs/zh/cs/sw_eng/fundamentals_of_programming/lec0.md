@@ -1,9 +1,7 @@
 ---
 title: '设计程序指南 & 命令行工具'
-course: 6.1010 程序设计基础（Python版）
-course_id: '6.1010'
+type: lecture
 lecture: 0
-kind: system
 tags: []
 status: complete
 ---

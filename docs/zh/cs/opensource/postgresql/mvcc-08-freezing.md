@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 中的 MVCC — 8. 冻结（Freezing）
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

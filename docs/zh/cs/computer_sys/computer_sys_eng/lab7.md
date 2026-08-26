@@ -1,8 +1,6 @@
 ---
 title: Lab 7 Valgrind
-course: 6.1800 计算机系统工程
-course_id: '6.1800'
-kind: system
+type: assignment
 tags: []
 status: complete
 ---

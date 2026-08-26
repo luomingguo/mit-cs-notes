@@ -1,8 +1,7 @@
 ---
 title: 编译器能做什么，不能做什么
-course: 软件性能工程
+type: lecture
 lecture: 6
-kind: system
 tags: []
 status: complete
 ---

@@ -5,13 +5,14 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 export type NoteEntry = CollectionEntry<'notes'>;
+export type NoteType = 'course' | 'lecture' | 'paper' | 'concept' | 'assignment' | 'project';
 
 export interface NoteData {
   title?: string;
+  type?: NoteType;
   course?: string;
   course_id?: string | number;
   lecture?: number;
-  kind?: string;
   tags?: string[];
   status?: string;
   description?: string;
@@ -40,7 +41,7 @@ export interface SearchItem {
   title: string;
   course: string;
   href: string;
-  type: 'lecture' | 'course' | 'domain';
+  type: NoteType | 'domain';
   typeLabel: string;
   excerpt: string;
 }
@@ -129,6 +130,32 @@ export function courseOf(entry: NoteEntry): string {
 export function courseIdOf(entry: NoteEntry): string {
   const id = dataOf(entry).course_id;
   return id === undefined ? '' : String(id);
+}
+
+const NOTE_TYPE_LABELS: Record<NoteType, string> = {
+  course: '课程',
+  lecture: '讲义',
+  paper: '论文',
+  concept: '概念',
+  assignment: '作业',
+  project: '项目',
+};
+
+/** 显式 type 优先；路径推断只作为容错，不是 frontmatter 的替代。 */
+export function typeOf(entry: NoteEntry): NoteType {
+  const explicit = dataOf(entry).type;
+  if (explicit && explicit in NOTE_TYPE_LABELS) return explicit;
+  if (isCourseIndex(entry)) return 'course';
+  const nested = entry.id.split('/')[3];
+  if (nested === 'paper' || nested === 'concept' || nested === 'assignment' || nested === 'project') return nested;
+  const basename = entry.id.split('/').at(-1) ?? '';
+  if (/^lab\d*$/i.test(basename)) return 'assignment';
+  if (/paper$/i.test(basename)) return 'paper';
+  return 'lecture';
+}
+
+export function typeLabelOf(type: NoteType): string {
+  return NOTE_TYPE_LABELS[type];
 }
 
 export function lectureOf(entry: NoteEntry): number | undefined {
@@ -384,7 +411,28 @@ export function buildTaxonomy(entries: NoteEntry[], currentId: string): NavDomai
     .sort((a, b) => Number(b.active) - Number(a.active) || a.label.localeCompare(b.label, 'zh'));
 }
 
+function cleanExcerpt(source: string): string {
+  return source
+    .replace(/^\s*[-*+]\s+/gm, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[*_`>#]/g, '')
+    .replace(/\$([^$]+)\$/g, '$1')
+    .replace(/^:::[^\n]*$/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** 提取唯一的 H2 TL;DR；H3 属于摘要，遇到下一个 H1/H2 才结束。 */
+export function extractTldr(source: string, maxLength = Number.POSITIVE_INFINITY): string {
+  const withoutFrontmatter = source.replace(/^---[\s\S]*?---\s*/, '');
+  const match = withoutFrontmatter.match(/^##[ \t]+TL;DR[ \t]*\r?\n([\s\S]*?)(?=^#{1,2}[ \t]+|(?![\s\S]))/mi);
+  const text = match ? cleanExcerpt(match[1]) : '';
+  return text.length > maxLength ? `${text.slice(0, maxLength).trim()}…` : text;
+}
+
 export function plainExcerpt(source: string, maxLength = 180): string {
+  const tldr = extractTldr(source, maxLength);
+  if (tldr) return tldr;
   const withoutFrontmatter = source.replace(/^---[\s\S]*?---\s*/, '');
   const paragraphs = withoutFrontmatter
     .split(/\n\s*\n/)
@@ -393,19 +441,13 @@ export function plainExcerpt(source: string, maxLength = 180): string {
       block.length > 35 &&
       !/^(#|```|:::|\||!\[|<img|---|\$\$)/.test(block),
     )
-    .map((block) =>
-      block
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-        .replace(/[*_`>#]/g, '')
-        .replace(/\$([^$]+)\$/g, '$1')
-        .replace(/\s+/g, ' ')
-        .trim(),
-    );
+    .map(cleanExcerpt);
   const text = paragraphs[0] || '该文档暂无可提取的正文摘要。';
   return text.length > maxLength ? `${text.slice(0, maxLength).trim()}…` : text;
 }
 
 export function buildSearchIndex(entries: NoteEntry[]): SearchItem[] {
+  const courseIndexes = new Map(entries.filter(isCourseIndex).map((entry) => [courseKeyOf(entry.id), entry]));
   const domains = entries
     .filter(isDomainIndex)
     .map((entry) => ({
@@ -430,15 +472,19 @@ export function buildSearchIndex(entries: NoteEntry[]): SearchItem[] {
     }));
   const notes = entries
     .filter((entry) => !entry.id.endsWith('/index') && !isRootIndex(entry))
-    .map((entry) => ({
-      id: entry.id,
-      title: titleOf(entry),
-      course: courseOf(entry),
-      href: idToHref(entry.id),
-      type: 'lecture' as const,
-      typeLabel: '讲义',
-      excerpt: plainExcerpt(entry.body ?? '', 96),
-    }));
+    .map((entry) => {
+      const parent = courseIndexes.get(courseKeyOf(entry.id));
+      const type = typeOf(entry);
+      return {
+        id: entry.id,
+        title: titleOf(entry),
+        course: parent ? courseOf(parent) : courseOf(entry),
+        href: idToHref(entry.id),
+        type,
+        typeLabel: typeLabelOf(type),
+        excerpt: plainExcerpt(entry.body ?? '', 96),
+      };
+    });
   return [...domains, ...courses, ...notes];
 }
 

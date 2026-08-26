@@ -1,8 +1,7 @@
 ---
 title: 多线程算法分析
-course: 软件性能工程
+type: lecture
 lecture: 9
-kind: system
 tags: []
 status: stub
 ---

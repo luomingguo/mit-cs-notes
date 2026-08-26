@@ -1,9 +1,7 @@
 ---
 title: 向量机与 SIMD
-course: 6.1920 建构式计算机架构，CCA
-course_id: '6.1920'
+type: lecture
 lecture: 14
-kind: system
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 声学感知攻击（Acoustic Sensing Attacks）
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 11
-kind: system
 tags: []
 status: complete
 ---

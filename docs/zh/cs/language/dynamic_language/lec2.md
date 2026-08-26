@@ -1,9 +1,7 @@
 ---
 title: 词法分析（Lexing）
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 2
-kind: theory
 tags: []
 status: stub
 ---

@@ -1,9 +1,7 @@
 ---
 title: 事务内存（Transactional Memory）
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 17
-kind: system
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 复杂流水线与分支预测
-course: 6.1910 计算结构（Fall 25）
-course_id: '6.1910'
+type: lecture
 lecture: 22
-kind: system
 tags: []
 status: complete
 ---

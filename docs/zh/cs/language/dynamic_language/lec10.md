@@ -1,9 +1,7 @@
 ---
 title: 语义（闭包 I）——链式栈与堆上帧
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 10
-kind: theory
 tags: []
 status: complete
 ---

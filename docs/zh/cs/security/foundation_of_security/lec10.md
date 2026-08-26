@@ -1,9 +1,7 @@
 ---
 title: 密钥交换与公钥加密
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 10
-kind: theory
 tags: []
 status: complete
 ---

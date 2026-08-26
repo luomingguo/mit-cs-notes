@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 中的锁 — 2. 行级锁（Row-level locks）
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

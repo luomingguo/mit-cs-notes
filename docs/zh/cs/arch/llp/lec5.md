@@ -1,9 +1,7 @@
 ---
 title: 调用约定、栈与内存布局
-course: 6.1904 C语言的底层汇编
-course_id: '6.1904'
+type: lecture
 lecture: 5
-kind: system
 tags: []
 status: complete
 ---

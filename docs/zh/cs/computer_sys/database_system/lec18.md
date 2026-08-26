@@ -1,9 +1,7 @@
 ---
 title: 集群计算：Spark
-course: 6.5830 数据库系统
-course_id: '6.5830'
+type: lecture
 lecture: 18
-kind: system
 tags: []
 status: complete
 ---

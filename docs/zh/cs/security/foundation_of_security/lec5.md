@@ -1,9 +1,7 @@
 ---
 title: 数字签名：基于哈希
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 5
-kind: theory
 tags: []
 status: complete
 ---

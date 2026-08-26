@@ -1,9 +1,7 @@
 ---
 title: 物联网定位基础（Fundamentals of IoT Localization）
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 2
-kind: system
 tags: []
 status: complete
 ---

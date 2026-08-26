@@ -1,9 +1,7 @@
 ---
 title: '语义（闭包 II / 收官）——作用域语义对比与"免费的对象"'
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 11
-kind: theory
 tags: []
 status: complete
 ---

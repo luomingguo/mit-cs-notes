@@ -1,9 +1,7 @@
 ---
 title: 目录式缓存一致性（Directory-Based Cache Coherence）
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 13
-kind: system
 tags: []
 status: complete
 ---

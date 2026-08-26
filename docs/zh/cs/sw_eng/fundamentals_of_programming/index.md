@@ -1,8 +1,8 @@
 ---
 title: 6.1010 程序设计基础（Python 版）
+type: course
 course: 6.1010 程序设计基础（Python版）
 course_id: '6.1010'
-kind: system
 tags: []
 status: complete
 ---

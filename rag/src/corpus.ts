@@ -14,15 +14,19 @@ export interface SourceDoc {
   category: string
   /** 课程目录名，如 os */
   courseSlug: string
-  /** 课程可读名，取自课程 index.md 的首个 H1，如 6.1810 操作系统工程 */
+  /** 课程可读名，优先取课程 index.md 的 course 字段，如 6.1810 操作系统工程 */
   course: string
+  /** 课程页的稳定课号；子页从最近的课程 index.md 继承。 */
+  courseId: string
   title: string
-  /** NOTESTYLE.md 的四类骨架：theory | system | source | design */
-  kind: string
+  /** 页面主要职责；路径推断只作为容错。 */
+  docType: 'course' | 'lecture' | 'paper' | 'concept' | 'assignment' | 'project' | ''
   /** frontmatter 里的概念词，人工填 */
   tags: string[]
   /** complete | draft | stub。stub 不进检索库 */
   status: string
+  /** `## TL;DR` 的 Markdown 内容；切块时会成为独立 summary 块。 */
+  tldr: string
   /** 二级标题拼接，给学习路径生成器看文章结构 */
   outline: string
   body: string
@@ -224,14 +228,38 @@ function firstH1(body: string): string | undefined {
   return m?.[1]?.trim()
 }
 
-async function readCourseName(dir: string, fallback: string): Promise<string> {
+interface CourseMetadata {
+  course: string
+  courseId: string
+}
+
+/** 课程 index.md 是课程名和课号的唯一规范来源。 */
+async function readCourseMetadata(dir: string, fallback: string): Promise<CourseMetadata> {
   try {
     const raw = await fs.readFile(path.join(dir, 'index.md'), 'utf8')
     const { body, frontmatter } = stripFrontmatter(raw)
-    return firstH1(body) ?? frontmatterField(frontmatter, 'title') ?? fallback
+    return {
+      course: frontmatterField(frontmatter, 'course') ?? firstH1(body) ?? frontmatterField(frontmatter, 'title') ?? fallback,
+      courseId: frontmatterField(frontmatter, 'course_id') ?? '',
+    }
   } catch {
-    return fallback
+    return { course: fallback, courseId: '' }
   }
+}
+
+function inferDocType(segments: string[]): SourceDoc['docType'] {
+  if (segments.length === 5 && segments.at(-1) === 'index') return 'course'
+  const nested = segments[4]
+  if (nested === 'paper' || nested === 'concept' || nested === 'assignment' || nested === 'project') return nested
+  const basename = segments.at(-1) ?? ''
+  if (/^lab\d*$/i.test(basename)) return 'assignment'
+  if (/paper$/i.test(basename)) return 'paper'
+  return segments.length >= 5 && segments.at(-1) !== 'index' ? 'lecture' : ''
+}
+
+/** 精确匹配 H2 TL;DR；H3 属于摘要内容，下一个 H1/H2 才结束。 */
+export function extractTldr(body: string): string {
+  return body.match(/^##[ \t]+TL;DR[ \t]*\r?\n([\s\S]*?)(?=^#{1,2}[ \t]+|(?![\s\S]))/mi)?.[1]?.trim() ?? ''
 }
 
 async function walk(dir: string, out: string[] = []): Promise<string[]> {
@@ -250,7 +278,7 @@ async function walk(dir: string, out: string[] = []): Promise<string[]> {
 
 export async function collectDocuments(docsDir: string): Promise<SourceDoc[]> {
   const roots = ['zh', 'en']
-  const courseNameCache = new Map<string, string>()
+  const courseMetadataCache = new Map<string, CourseMetadata>()
   const docs: SourceDoc[] = []
 
   for (const root of roots) {
@@ -270,6 +298,10 @@ export async function collectDocuments(docsDir: string): Promise<SourceDoc[]> {
       // 首页是 layout: home 的营销页，没有检索价值。
       if (frontmatterField(frontmatter, 'layout') === 'home') continue
 
+      const segments = relPath.replace(/\.md$/, '').split('/')
+      // 学科/领域 index 是导航页，不是 course/lecture 知识文档。
+      if (segments.length === 4 && segments.at(-1) === 'index') continue
+
       // 占位页不进检索库。以前是按 body 长度粗判（< 200 字符），会两头误伤：
       // 短而写完的笔记被丢掉，300 字的占位页反而进库。现在按 NOTESTYLE.md
       // 的 status 字段显式判断，没有 frontmatter 的才退回长度启发式。
@@ -277,7 +309,6 @@ export async function collectDocuments(docsDir: string): Promise<SourceDoc[]> {
       if (status === 'stub') continue
       if (!status && body.trim().length < 200) continue
 
-      const segments = relPath.replace(/\.md$/, '').split('/')
       const lang = segments[0] ?? 'zh'
       // zh/学科/分类/课程/文件 -> discipline=学科, category=分类, courseSlug=课程
       // zh/学科/分类/index     -> courseSlug=分类（领域索引的回退显示名）
@@ -289,11 +320,16 @@ export async function collectDocuments(docsDir: string): Promise<SourceDoc[]> {
       const courseDir = segments.length >= 5
         ? path.join(docsDir, lang, discipline, category, courseSlug)
         : path.join(docsDir, lang, ...[discipline, category].filter(Boolean))
-      let course = courseNameCache.get(courseDir)
-      if (course === undefined) {
-        course = await readCourseName(courseDir, courseSlug)
-        courseNameCache.set(courseDir, course)
+      let courseMeta = courseMetadataCache.get(courseDir)
+      if (courseMeta === undefined) {
+        courseMeta = await readCourseMetadata(courseDir, courseSlug)
+        courseMetadataCache.set(courseDir, courseMeta)
       }
+
+      const explicitType = frontmatterField(frontmatter, 'type')
+      const inferredType = inferDocType(segments)
+      const docType = (explicitType ?? inferredType) as SourceDoc['docType']
+      const tldr = extractTldr(body)
 
       const title =
         firstH1(body) ??
@@ -312,15 +348,18 @@ export async function collectDocuments(docsDir: string): Promise<SourceDoc[]> {
         discipline,
         category,
         courseSlug,
-        course,
+        course: courseMeta.course,
+        courseId: courseMeta.courseId,
         title,
-        kind: frontmatterField(frontmatter, 'kind') ?? '',
+        docType,
         tags: frontmatterList(frontmatter, 'tags'),
         status: status || 'complete',
+        tldr,
         outline,
         body,
         chars: body.length,
-        fileHash: crypto.createHash('sha1').update(raw).digest('hex'),
+        // 父课程元数据变化时，子文档也必须重新 upsert；否则数据库会保留旧课程名。
+        fileHash: crypto.createHash('sha1').update(raw).update(JSON.stringify(courseMeta)).digest('hex'),
       })
     }
   }

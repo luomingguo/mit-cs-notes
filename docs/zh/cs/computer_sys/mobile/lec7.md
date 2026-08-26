@@ -1,9 +1,7 @@
 ---
 title: '无电池传感与智慧城市（Batteryless Sensing & Smart Cities）'
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 7
-kind: system
 tags: []
 status: complete
 ---

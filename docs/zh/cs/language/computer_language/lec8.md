@@ -1,9 +1,7 @@
 ---
 title: 数据流分析（Dataflow Analysis）
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 8
-kind: theory
 tags: []
 status: complete
 ---

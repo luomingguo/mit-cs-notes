@@ -1,9 +1,7 @@
 ---
 title: 代码生成 I（Code Generation I）——为什么要编译到机器码
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 18
-kind: theory
 tags: []
 status: complete
 ---

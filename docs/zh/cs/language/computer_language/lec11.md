@@ -1,9 +1,7 @@
 ---
 title: 并行化（Parallelization）
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 11
-kind: theory
 tags: []
 status: complete
 ---

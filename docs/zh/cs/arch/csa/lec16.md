@@ -1,9 +1,7 @@
 ---
 title: '片上网络（二）：路由器微架构与路由（On-Chip Networks II: Router Microarchitecture & Routing）'
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 16
-kind: system
 tags: []
 status: complete
 ---

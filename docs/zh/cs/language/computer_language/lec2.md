@@ -1,9 +1,7 @@
 ---
 title: 用正则表达式与上下文无关文法规范语言
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 2
-kind: theory
 tags: []
 status: complete
 ---

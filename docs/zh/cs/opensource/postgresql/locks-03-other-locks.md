@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 中的锁 — 3. 其他类型的锁（Other locks）
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 寄存器分配（Register Allocation）
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 10
-kind: theory
 tags: []
 status: complete
 ---

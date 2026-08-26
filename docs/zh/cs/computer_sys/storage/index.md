@@ -1,8 +1,8 @@
 ---
 title: 18-746 存储系统
+type: course
 course: 18-746 存储系统
 course_id: '18-746'
-kind: system
 tags: []
 status: complete
 ---

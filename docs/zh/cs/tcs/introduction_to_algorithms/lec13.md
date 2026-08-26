@@ -1,8 +1,7 @@
 ---
-title: 'Dijkstra''s 算法'
-course: 算法导论
+title: 'Dijkstra''''s 算法'
+type: lecture
 lecture: 13
-kind: theory
 tags: []
 status: complete
 ---

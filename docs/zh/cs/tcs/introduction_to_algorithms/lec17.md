@@ -1,8 +1,7 @@
 ---
 title: '动态规划, Part 3: ASPS, Parens, Piano'
-course: 算法导论
+type: lecture
 lecture: 17
-kind: theory
 tags: []
 status: complete
 ---

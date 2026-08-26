@@ -1,9 +1,7 @@
 ---
 title: '设备驱动 & 中断'
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 11
-kind: system
 tags: []
 status: complete
 ---

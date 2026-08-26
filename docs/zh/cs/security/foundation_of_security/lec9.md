@@ -1,9 +1,7 @@
 ---
 title: 认证加密（Authenticated Encryption）
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 9
-kind: theory
 tags: []
 status: complete
 ---

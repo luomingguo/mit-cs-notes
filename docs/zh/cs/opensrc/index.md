@@ -1,10 +1,5 @@
 ---
 title: 开源项目研读
-course: opensrc
-kind: system
-tags: []
-status: stub
-sidebarDepth: '1'
 ---
 # CS 课程 7 大部分
 

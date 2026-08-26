@@ -1,9 +1,7 @@
 ---
 title: 网络与 OS
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 15
-kind: system
 tags: []
 status: complete
 ---

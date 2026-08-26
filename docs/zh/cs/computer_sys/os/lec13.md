@@ -1,9 +1,7 @@
 ---
 title: 线程切换与调度
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 13
-kind: system
 tags: []
 status: complete
 ---

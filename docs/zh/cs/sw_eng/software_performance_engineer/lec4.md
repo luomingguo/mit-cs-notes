@@ -1,8 +1,7 @@
 ---
 title: 汇编语言和计算机架构
-course: 软件性能工程
+type: lecture
 lecture: 4
-kind: system
 tags: []
 status: complete
 ---

@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 索引 — 2（访问方法接口）
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

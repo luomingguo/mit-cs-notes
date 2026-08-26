@@ -1,9 +1,7 @@
 ---
 title: '网状网络与多跳路由（Mesh Networking & Multi-Hop Routing）'
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 6
-kind: system
 tags: []
 status: complete
 ---

@@ -1,8 +1,7 @@
 ---
 title: 缓存参数无关算法
-course: 软件性能工程
+type: lecture
 lecture: 15
-kind: system
 tags: []
 status: complete
 ---

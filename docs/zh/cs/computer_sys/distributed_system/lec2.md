@@ -1,9 +1,7 @@
 ---
 title: 'RPC & 线程'
-course: 6.5840 分布式系统（Spring 2026）
-course_id: '6.5840'
+type: lecture
 lecture: 2
-kind: system
 tags: []
 status: complete
 ---

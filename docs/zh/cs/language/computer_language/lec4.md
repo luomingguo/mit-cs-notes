@@ -1,9 +1,7 @@
 ---
 title: 中间表示（OPP）
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 4
-kind: theory
 tags: []
 status: complete
 ---

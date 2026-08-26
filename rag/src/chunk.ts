@@ -9,6 +9,8 @@ export interface Chunk {
   anchor: string
   lang: string
   course: string
+  docType: SourceDoc['docType']
+  tags: string[]
   docTitle: string
   /** 面包屑：页面管理 > PTE中的标志位含义 */
   heading: string
@@ -22,7 +24,7 @@ export interface Chunk {
   blockKind: BlockKind
 }
 
-export type BlockKind = 'normal' | 'insight' | 'pitfall' | 'definition' | 'theorem' | 'example'
+export type BlockKind = 'normal' | 'summary' | 'insight' | 'pitfall' | 'definition' | 'theorem' | 'example'
 
 /**
  * 容器名 → 送进嵌入向量的中文前缀。
@@ -204,16 +206,17 @@ export function chunkDocument(doc: SourceDoc): Chunk[] {
     heading: string
     anchor: string
     text: string
+    isSummary: boolean
   }
   const sections: Section[] = []
 
   if (headings.length === 0) {
-    sections.push({ heading: '', anchor: '', text: doc.body })
+    sections.push({ heading: '', anchor: '', text: doc.body, isSummary: false })
   } else {
     // 首个标题之前的引言部分
     const preamble = doc.body.slice(0, headings[0]!.index).trim()
     if (preamble.length > MIN) {
-      sections.push({ heading: '', anchor: '', text: preamble })
+      sections.push({ heading: '', anchor: '', text: preamble, isSummary: false })
     }
 
     // 维护标题栈，生成 h2 > h3 这样的面包屑
@@ -238,12 +241,36 @@ export function chunkDocument(doc: SourceDoc): Chunk[] {
         anchor: h.slug,
         // 去掉标题行本身，标题已经进了 heading 字段和上下文头
         text: text.replace(/^#{1,6}\s+.+$/m, '').trim(),
+        isSummary: h.level === 2 && h.text.trim().toLowerCase() === 'tl;dr',
       })
     }
   }
 
   for (const section of sections) {
     const cleaned = cleanForEmbedding(section.text)
+    // TL;DR 是显式的检索摘要：无论是否低于 MIN，都独立保留且不与相邻章节合并。
+    if (section.isSummary) {
+      if (!cleaned) continue
+      const id = crypto.createHash('sha1').update(`${doc.path}#${ordinal}`).digest('hex')
+      chunks.push({
+        id,
+        docPath: doc.path,
+        url: doc.url,
+        anchor: section.anchor,
+        lang: doc.lang,
+        course: doc.course,
+        docType: doc.docType,
+        tags: doc.tags,
+        docTitle: doc.title,
+        heading: 'TL;DR',
+        ordinal,
+        content: cleaned,
+        contentHash: crypto.createHash('sha1').update(cleaned).digest('hex'),
+        blockKind: 'summary',
+      })
+      ordinal++
+      continue
+    }
     if (cleaned.length < MIN) continue
 
     for (const piece of packParagraphs(splitParagraphs(cleaned))) {
@@ -259,6 +286,8 @@ export function chunkDocument(doc: SourceDoc): Chunk[] {
         anchor: section.anchor,
         lang: doc.lang,
         course: doc.course,
+        docType: doc.docType,
+        tags: doc.tags,
         docTitle: doc.title,
         heading: section.heading,
         ordinal,

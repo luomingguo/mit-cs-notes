@@ -1,9 +1,7 @@
 ---
 title: 什么是计算机安全？
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 1
-kind: theory
 tags: []
 status: complete
 ---

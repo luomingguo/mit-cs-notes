@@ -1,8 +1,7 @@
 ---
 title: '动态规划, Part2: LCS, LIS, Coins'
-course: 算法导论
+type: lecture
 lecture: 16
-kind: theory
 tags: []
 status: complete
 ---

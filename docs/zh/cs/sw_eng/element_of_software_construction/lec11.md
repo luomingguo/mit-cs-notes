@@ -1,9 +1,7 @@
 ---
 title: 递归数据类型
-course: 6.1020 软件构造基础
-course_id: '6.1020'
+type: lecture
 lecture: 11
-kind: design
 tags: []
 status: complete
 ---

@@ -150,6 +150,7 @@ export function buildCatalog(entries: NoteEntry[]): LibraryCatalog {
   }).sort((a, b) => a.domainLabel.localeCompare(b.domainLabel, 'zh') || a.title.localeCompare(b.title, 'zh'));
 
   const coursesByDomain = new Map<string, CourseSummary[]>();
+  const coursesByKey = new Map(courses.map((course) => [course.key, course]));
   for (const course of courses) {
     const group = coursesByDomain.get(course.domainKey) ?? [];
     group.push(course);
@@ -180,13 +181,16 @@ export function buildCatalog(entries: NoteEntry[]): LibraryCatalog {
 
   const recent = entries
     .filter((entry) => !entry.id.endsWith('/index'))
-    .map((entry) => ({
-      title: titleOf(entry),
-      href: idToHref(entry.id),
-      course: courseIdOf(entry) || courseOf(entry),
-      status: String(dataOf(entry).status ?? '未标注'),
-      updated: lastUpdatedOf(entry) ?? '',
-    }))
+    .map((entry) => {
+      const parent = coursesByKey.get(courseKeyOf(entry.id));
+      return {
+        title: titleOf(entry),
+        href: idToHref(entry.id),
+        course: parent?.courseId || parent?.title || courseIdOf(entry) || courseOf(entry),
+        status: String(dataOf(entry).status ?? '未标注'),
+        updated: lastUpdatedOf(entry) ?? '',
+      };
+    })
     .filter((entry) => entry.updated)
     .sort((a, b) => b.updated.localeCompare(a.updated) || a.title.localeCompare(b.title, 'zh'))
     .slice(0, 8);

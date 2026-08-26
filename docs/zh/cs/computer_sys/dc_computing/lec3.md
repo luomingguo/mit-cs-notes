@@ -1,9 +1,7 @@
 ---
 title: 电源管理
-course: 6.S984 数据中心计算
-course_id: '6.S984'
+type: lecture
 lecture: 3
-kind: system
 tags: []
 status: stub
 ---

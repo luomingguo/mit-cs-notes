@@ -1,9 +1,7 @@
 ---
 title: Schema 设计
-course: 6.5830 数据库系统
-course_id: '6.5830'
+type: lecture
 lecture: 3
-kind: system
 tags: []
 status: complete
 ---

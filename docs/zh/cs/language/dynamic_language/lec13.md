@@ -1,9 +1,7 @@
 ---
 title: 垃圾回收 II（GC II）——标记-清扫与复制式回收
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 13
-kind: theory
 tags: []
 status: complete
 ---

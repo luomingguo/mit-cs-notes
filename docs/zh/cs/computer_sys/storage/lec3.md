@@ -1,9 +1,7 @@
 ---
 title: 磁盘驱动操作
-course: 18-746 存储系统
-course_id: '18-746'
+type: lecture
 lecture: 3
-kind: system
 tags: []
 status: complete
 ---

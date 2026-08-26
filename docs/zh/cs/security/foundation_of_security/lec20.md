@@ -1,9 +1,7 @@
 ---
 title: 隐私与零信任证明
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 20
-kind: theory
 tags: []
 status: complete
 ---

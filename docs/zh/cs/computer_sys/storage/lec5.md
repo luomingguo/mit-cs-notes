@@ -1,9 +1,7 @@
 ---
 title: 文件系统的组织
-course: 18-746 存储系统
-course_id: '18-746'
+type: lecture
 lecture: 5
-kind: system
 tags: []
 status: complete
 ---

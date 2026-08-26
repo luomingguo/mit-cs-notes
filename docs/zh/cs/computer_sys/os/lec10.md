@@ -1,9 +1,7 @@
 ---
 title: 用户级虚拟内存
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 10
-kind: system
 tags: []
 status: complete
 ---

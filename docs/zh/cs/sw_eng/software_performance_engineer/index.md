@@ -1,15 +1,9 @@
 ---
 title: 软件性能工程
+type: course
 course: 软件性能工程
-kind: system
 tags: []
 status: complete
-sidebarDepth: '2'
-sidebar: 'true'
-aside: right
-editLink: 'true'
-lastUpdated: 'true'
-outline: '2'
 ---
 # 软件性能工程
 

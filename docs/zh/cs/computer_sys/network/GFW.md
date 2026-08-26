@@ -1,8 +1,6 @@
 ---
 title: 防火长城（GFW：审查与规避）
-course: 6.5820/6.S04 计算机网络
-course_id: '6.5820'
-kind: system
+type: lecture
 tags: []
 status: complete
 ---

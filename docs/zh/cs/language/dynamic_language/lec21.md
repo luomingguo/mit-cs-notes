@@ -1,9 +1,7 @@
 ---
 title: 寄存器分配 I（Register Allocation I）——活跃性分析、死代码消除与活跃区间
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 21
-kind: theory
 tags: []
 status: complete
 ---

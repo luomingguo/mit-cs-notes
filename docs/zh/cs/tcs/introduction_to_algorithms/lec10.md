@@ -1,8 +1,7 @@
 ---
 title: 深度优先搜索
-course: 算法导论
+type: lecture
 lecture: 10
-kind: theory
 tags: []
 status: complete
 ---

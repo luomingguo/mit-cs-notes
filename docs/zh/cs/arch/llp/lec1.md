@@ -1,9 +1,7 @@
 ---
 title: 二进制基础
-course: 6.1904 C语言的底层汇编
-course_id: '6.1904'
+type: lecture
 lecture: 1
-kind: system
 tags: []
 status: complete
 ---

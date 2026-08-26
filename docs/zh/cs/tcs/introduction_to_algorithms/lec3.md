@@ -1,8 +1,7 @@
 ---
 title: 排序
-course: 算法导论
+type: lecture
 lecture: 3
-kind: theory
 tags: []
 status: complete
 ---

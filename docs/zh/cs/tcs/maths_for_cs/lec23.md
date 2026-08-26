@@ -1,9 +1,7 @@
 ---
 title: 大偏差界——切比雪夫与切尔诺夫界
-course: 6.1200 计算机数学
-course_id: '6.1200'
+type: lecture
 lecture: 23
-kind: theory
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: '安全介绍&身份认证'
-course: 6.1800 计算机系统工程
-course_id: '6.1800'
+type: lecture
 lecture: 21
-kind: system
 tags: []
 status: complete
 ---

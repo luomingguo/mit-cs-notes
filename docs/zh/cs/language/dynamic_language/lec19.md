@@ -1,9 +1,7 @@
 ---
 title: 优化（Optimizations）——暴露 IR、类型/值分析、栈缓存与寄存器分配
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 19
-kind: theory
 tags: []
 status: complete
 ---

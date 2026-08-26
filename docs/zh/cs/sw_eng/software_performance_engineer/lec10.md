@@ -1,8 +1,7 @@
 ---
 title: 测量和计时
-course: 软件性能工程
+type: lecture
 lecture: 10
-kind: system
 tags: []
 status: complete
 ---

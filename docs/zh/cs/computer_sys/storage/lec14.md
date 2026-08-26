@@ -1,9 +1,7 @@
 ---
 title: lec14
-course: 18-746 存储系统
-course_id: '18-746'
+type: lecture
 lecture: 14
-kind: system
 tags: []
 status: stub
 ---

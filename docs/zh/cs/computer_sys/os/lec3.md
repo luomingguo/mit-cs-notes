@@ -1,9 +1,7 @@
 ---
 title: 操作系统设计（隔离、进程与内核组织）
-course: 6.1810 操作系统工程
-course_id: '6.1810'
+type: lecture
 lecture: 3
-kind: system
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 语义（IMP）——完整大步操作语义
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 7
-kind: theory
 tags: []
 status: complete
 ---

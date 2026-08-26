@@ -1,8 +1,7 @@
 ---
 title: 复杂度
-course: 算法导论
+type: lecture
 lecture: 19
-kind: theory
 tags: []
 status: complete
 ---

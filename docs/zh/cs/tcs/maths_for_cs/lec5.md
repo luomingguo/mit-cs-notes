@@ -1,9 +1,7 @@
 ---
 title: 求和
-course: 6.1200 计算机数学
-course_id: '6.1200'
+type: lecture
 lecture: 5
-kind: theory
 tags: []
 status: complete
 ---

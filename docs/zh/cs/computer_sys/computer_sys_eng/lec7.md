@@ -1,9 +1,7 @@
 ---
 title: 性能
-course: 6.1800 计算机系统工程
-course_id: '6.1800'
+type: lecture
 lecture: 7
-kind: system
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 处理器流水线： 数据和控制冒险
-course: 6.1910 计算结构（Fall 25）
-course_id: '6.1910'
+type: lecture
 lecture: 16
-kind: system
 tags: []
 status: complete
 ---

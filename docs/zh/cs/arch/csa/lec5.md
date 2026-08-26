@@ -1,9 +1,7 @@
 ---
 title: '指令流水线——冒险消解与时序约束（Instruction Pipelining: Hazard Resolution, Timing Constraints）'
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 5
-kind: system
 tags: []
 status: complete
 ---

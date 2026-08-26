@@ -1,9 +1,7 @@
 ---
 title: '介绍 & 总览'
-course: 6.4500 Web设计：语言和用户接口
-course_id: '6.4500'
+type: lecture
 lecture: 1
-kind: design
 tags: []
 status: complete
 ---

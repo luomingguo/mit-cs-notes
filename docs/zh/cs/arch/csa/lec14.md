@@ -1,9 +1,7 @@
 ---
 title: 内存一致性模型（Memory Consistency Models）
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 14
-kind: system
 tags: []
 status: complete
 ---

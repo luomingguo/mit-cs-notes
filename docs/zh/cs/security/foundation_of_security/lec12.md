@@ -1,9 +1,7 @@
 ---
 title: 安全系统架构（Architecting a Secure System）
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 12
-kind: theory
 tags: []
 status: complete
 ---

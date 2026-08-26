@@ -1,10 +1,5 @@
 ---
 title: 理论计算机
-course: tcs
-kind: system
-tags: []
-status: complete
-sidebarDepth: '1'
 ---
 # CS 课程 7 大部分
 

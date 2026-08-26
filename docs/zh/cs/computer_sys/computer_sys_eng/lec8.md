@@ -1,9 +1,7 @@
 ---
 title: 计算机网络介绍
-course: 6.1800 计算机系统工程
-course_id: '6.1800'
+type: lecture
 lecture: 8
-kind: system
 tags: []
 status: complete
 ---

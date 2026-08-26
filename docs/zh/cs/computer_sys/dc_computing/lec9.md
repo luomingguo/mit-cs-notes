@@ -1,9 +1,7 @@
 ---
 title: 应用框架
-course: 6.S984 数据中心计算
-course_id: '6.S984'
+type: lecture
 lecture: 9
-kind: system
 tags: []
 status: complete
 ---

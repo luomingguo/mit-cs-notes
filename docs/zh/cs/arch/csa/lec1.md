@@ -1,9 +1,7 @@
 ---
 title: 计算机体系架构的介绍
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 1
-kind: system
 tags: []
 status: complete
 ---

@@ -1,8 +1,7 @@
 ---
 title: '介绍&矩阵乘法'
-course: 软件性能工程
+type: lecture
 lecture: 1
-kind: system
 tags: []
 status: complete
 ---

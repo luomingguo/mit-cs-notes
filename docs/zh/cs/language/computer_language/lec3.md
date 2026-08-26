@@ -1,9 +1,7 @@
 ---
 title: 自顶向下分析（Top-Down Parsing）
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 3
-kind: theory
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 加速器（一）（Accelerators I）
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 23
-kind: system
 tags: []
 status: complete
 ---

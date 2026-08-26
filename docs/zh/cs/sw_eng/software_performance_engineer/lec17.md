@@ -1,8 +1,7 @@
 ---
 title: 内存模型和无锁同步
-course: 软件性能工程
+type: lecture
 lecture: 17
-kind: system
 tags: []
 status: stub
 ---

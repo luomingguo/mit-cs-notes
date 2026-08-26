@@ -1,8 +1,8 @@
 ---
 title: 6.4500 Web 设计：语言和用户接口
+type: course
 course: 6.4500 Web设计：语言和用户接口
 course_id: '6.4500'
-kind: design
 tags: []
 status: complete
 ---

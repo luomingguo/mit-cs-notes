@@ -1,8 +1,6 @@
 ---
 title: 基础设施
-course: 6.1010 程序设计基础（Python版）
-course_id: '6.1010'
-kind: system
+type: assignment
 tags: []
 status: complete
 ---

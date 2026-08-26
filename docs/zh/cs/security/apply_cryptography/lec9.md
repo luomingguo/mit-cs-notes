@@ -1,9 +1,7 @@
 ---
 title: 全同态加密 I（FHE）
-course: 6.5610 应用密码学与安全（Spring 2026）
-course_id: '6.5610'
+type: lecture
 lecture: 9
-kind: theory
 tags: []
 status: complete
 ---

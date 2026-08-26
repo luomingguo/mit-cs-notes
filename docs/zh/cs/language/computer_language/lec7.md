@@ -1,9 +1,7 @@
 ---
 title: 程序分析与优化（基本块内）
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 7
-kind: theory
 tags: []
 status: complete
 ---

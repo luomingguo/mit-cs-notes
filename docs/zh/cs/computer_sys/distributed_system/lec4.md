@@ -1,9 +1,7 @@
 ---
 title: 链式复制（Chain Replication）
-course: 6.5840 分布式系统（Spring 2026）
-course_id: '6.5840'
+type: lecture
 lecture: 4
-kind: system
 tags: []
 status: complete
 ---

@@ -1,8 +1,8 @@
 ---
 title: 6.1200 计算机数学
+type: course
 course: 6.1200 计算机数学
 course_id: '6.1200'
-kind: theory
 tags: []
 status: complete
 ---

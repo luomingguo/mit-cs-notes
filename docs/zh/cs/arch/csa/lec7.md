@@ -1,9 +1,7 @@
 ---
 title: '复杂流水线——乱序执行、寄存器重命名与异常（Out-of-Order Execution, Register Renaming, and Exceptions）'
-course: 6.590 计算机系统架构
-course_id: '6.590'
+type: lecture
 lecture: 7
-kind: system
 tags: []
 status: complete
 ---

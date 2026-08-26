@@ -1,9 +1,7 @@
 ---
 title: CPU 时序攻击（CPU Timing Attacks）
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 15
-kind: theory
 tags: []
 status: complete
 ---

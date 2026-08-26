@@ -1,9 +1,7 @@
 ---
 title: 循环优化（Loop Optimizations）
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 9
-kind: theory
 tags: []
 status: complete
 ---

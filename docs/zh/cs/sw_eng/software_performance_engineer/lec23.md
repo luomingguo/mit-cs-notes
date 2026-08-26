@@ -1,8 +1,7 @@
 ---
 title: GPU 架构
-course: 软件性能工程
+type: lecture
 lecture: 23
-kind: system
 tags: []
 status: complete
 ---

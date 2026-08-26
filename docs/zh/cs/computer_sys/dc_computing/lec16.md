@@ -1,9 +1,7 @@
 ---
 title: 性能调试
-course: 6.S984 数据中心计算
-course_id: '6.S984'
+type: lecture
 lecture: 16
-kind: system
 tags: []
 status: complete
 ---

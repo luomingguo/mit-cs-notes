@@ -8,6 +8,17 @@ import type { SearchItem } from '@/lib/notes';
 
 type Filter = 'all' | SearchItem['type'];
 
+const FILTER_LABELS: Record<SearchItem['type'], string> = {
+  domain: '领域',
+  course: '课程',
+  lecture: '讲义',
+  paper: '论文',
+  concept: '概念',
+  assignment: '作业',
+  project: '项目',
+};
+const FILTER_ORDER: SearchItem['type'][] = ['domain', 'course', 'lecture', 'paper', 'concept', 'assignment', 'project'];
+
 export function CommandPalette({ index = [], indexUrl }: { index?: SearchItem[]; indexUrl?: string }) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState(index);
@@ -52,6 +63,10 @@ export function CommandPalette({ index = [], indexUrl }: { index?: SearchItem[];
       return `${item.title} ${item.course} ${item.excerpt}`.toLocaleLowerCase('zh').includes(needle);
     });
   }, [filter, items, query]);
+  const availableFilters = useMemo(
+    () => FILTER_ORDER.filter((type) => items.some((item) => item.type === type)),
+    [items],
+  );
 
   const go = (href: string) => {
     setOpen(false);
@@ -66,14 +81,9 @@ export function CommandPalette({ index = [], indexUrl }: { index?: SearchItem[];
           搜索结果来自完整真实语料，使用上下方向键选择，回车打开。
         </DialogDescription>
         <Command shouldFilter={false} loop>
-          <CommandInput value={query} onValueChange={setQuery} placeholder={indexUrl ? '搜索全站领域、课程与讲义…' : `搜索本课程 ${items.filter((item) => item.type === 'lecture').length} 篇讲义…`} autoFocus />
-          <div className="flex gap-1.5 border-b border-border px-3 py-2">
-            {([
-              ['all', '全部'],
-              ['domain', '领域'],
-              ['lecture', '讲义'],
-              ['course', '课程'],
-            ] as const).map(([value, label]) => (
+          <CommandInput value={query} onValueChange={setQuery} placeholder={indexUrl ? '搜索全站领域、课程与笔记…' : `搜索本课程 ${items.length} 篇内容…`} autoFocus />
+          <div className="flex flex-wrap gap-1.5 border-b border-border px-3 py-2">
+            {([['all', '全部'] as const, ...availableFilters.map((type) => [type, FILTER_LABELS[type]] as const)]).map(([value, label]) => (
               <Button
                 key={value}
                 type="button"

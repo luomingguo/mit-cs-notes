@@ -1,9 +1,7 @@
 ---
 title: 长尾延迟
-course: 6.S984 数据中心计算
-course_id: '6.S984'
+type: lecture
 lecture: 13
-kind: system
 tags: []
 status: complete
 ---

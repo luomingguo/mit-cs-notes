@@ -1,8 +1,7 @@
 ---
 title: 数据结构
-course: 算法导论
+type: lecture
 lecture: 2
-kind: theory
 tags: []
 status: complete
 ---

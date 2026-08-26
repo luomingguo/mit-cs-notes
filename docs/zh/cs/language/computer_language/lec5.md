@@ -1,9 +1,7 @@
 ---
 title: 语义分析（Semantic Analysis）
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 5
-kind: theory
 tags: []
 status: complete
 ---

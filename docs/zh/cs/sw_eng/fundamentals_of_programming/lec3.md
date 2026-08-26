@@ -1,9 +1,7 @@
 ---
 title: 洪水填充和迷宫路径查找
-course: 6.1010 程序设计基础（Python版）
-course_id: '6.1010'
+type: lecture
 lecture: 3
-kind: system
 tags: []
 status: complete
 ---

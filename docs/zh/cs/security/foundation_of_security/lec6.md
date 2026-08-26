@@ -1,9 +1,7 @@
 ---
 title: '数字签名: RSA'
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 6
-kind: theory
 tags: []
 status: complete
 ---

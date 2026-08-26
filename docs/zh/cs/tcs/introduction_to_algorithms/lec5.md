@@ -1,8 +1,7 @@
 ---
 title: 线性排序
-course: 算法导论
+type: lecture
 lecture: 5
-kind: theory
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: '回调函数 & GUI'
-course: 6.1020 软件构造基础
-course_id: '6.1020'
+type: lecture
 lecture: 17
-kind: design
 tags: []
 status: complete
 ---

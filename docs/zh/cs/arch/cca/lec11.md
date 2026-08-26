@@ -1,9 +1,7 @@
 ---
 title: 乱序执行
-course: 6.1920 建构式计算机架构，CCA
-course_id: '6.1920'
+type: lecture
 lecture: 11
-kind: system
 tags: []
 status: complete
 ---

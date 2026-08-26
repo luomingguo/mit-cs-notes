@@ -1,9 +1,7 @@
 ---
 title: 现代 JS 和 DOM 的介绍
-course: 6.4500 Web设计：语言和用户接口
-course_id: '6.4500'
+type: lecture
 lecture: 12
-kind: design
 tags: []
 status: complete
 ---

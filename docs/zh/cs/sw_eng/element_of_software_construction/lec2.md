@@ -1,9 +1,7 @@
 ---
 title: 测试
-course: 6.1020 软件构造基础
-course_id: '6.1020'
+type: lecture
 lecture: 2
-kind: design
 tags: []
 status: complete
 ---

@@ -1,9 +1,7 @@
 ---
 title: 索引和访问方法
-course: 6.5830 数据库系统
-course_id: '6.5830'
+type: lecture
 lecture: 7
-kind: system
 tags: []
 status: complete
 ---

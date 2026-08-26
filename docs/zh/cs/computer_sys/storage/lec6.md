@@ -1,9 +1,7 @@
 ---
 title: 文件系统组织：缓存和文件系统集成
-course: 18-746 存储系统
-course_id: '18-746'
+type: lecture
 lecture: 6
-kind: system
 tags: []
 status: complete
 ---

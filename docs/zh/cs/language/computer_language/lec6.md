@@ -1,9 +1,7 @@
 ---
 title: 代码生成
-course: 6.1100 计算机语言工程
-course_id: '6.1100'
+type: lecture
 lecture: 6
-kind: theory
 tags: []
 status: complete
 ---

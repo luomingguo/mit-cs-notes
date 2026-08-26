@@ -44,18 +44,19 @@ export async function applySchema(): Promise<void> {
 
 export async function upsertDocument(doc: SourceDoc): Promise<void> {
   await getPool().query(
-    `INSERT INTO documents (path, url, lang, discipline, course_slug, course, category, title, outline, chars, file_hash, kind, tags, status, updated_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14, now())
+    `INSERT INTO documents (path, url, lang, discipline, course_slug, course, course_id, category, title, doc_type, tldr, outline, chars, file_hash, tags, status, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16, now())
      ON CONFLICT (path) DO UPDATE SET
        url=EXCLUDED.url, lang=EXCLUDED.lang, discipline=EXCLUDED.discipline, course_slug=EXCLUDED.course_slug,
-       course=EXCLUDED.course, category=EXCLUDED.category, title=EXCLUDED.title,
+       course=EXCLUDED.course, course_id=EXCLUDED.course_id, category=EXCLUDED.category, title=EXCLUDED.title,
+       doc_type=EXCLUDED.doc_type, tldr=EXCLUDED.tldr,
        outline=EXCLUDED.outline, chars=EXCLUDED.chars, file_hash=EXCLUDED.file_hash,
-       kind=EXCLUDED.kind, tags=EXCLUDED.tags, status=EXCLUDED.status,
+       tags=EXCLUDED.tags, status=EXCLUDED.status,
        updated_at=now()`,
     [
       doc.path, doc.url, doc.lang, doc.discipline, doc.courseSlug, doc.course,
-      doc.category, doc.title, doc.outline, doc.chars, doc.fileHash,
-      doc.kind, doc.tags, doc.status,
+      doc.courseId, doc.category, doc.title, doc.docType, doc.tldr,
+      doc.outline, doc.chars, doc.fileHash, doc.tags, doc.status,
     ],
   )
 }
@@ -105,8 +106,8 @@ export async function replaceDocChunks(
     // 一次多行 INSERT，而不是一块一条。
     // 从本地经 SSH/IAP 隧道灌库时，每条 INSERT 都是一次网络往返 ——
     // 6700 块就是 6700 次往返，光延迟就要十几分钟。合并后降到每篇一次。
-    // 每行 14 个参数，Postgres 的参数上限是 65535，所以按 500 行一批切。
-    const COLS = 14
+    // 每行 16 个参数，Postgres 的参数上限是 65535，所以按 500 行一批切。
+    const COLS = 16
     const PER_BATCH = 500
 
     for (let start = 0; start < chunks.length; start += PER_BATCH) {
@@ -119,19 +120,21 @@ export async function replaceDocChunks(
         const base = j * COLS
         const ph = Array.from({ length: COLS }, (_, k) => `$${base + k + 1}`)
         // 第 12 个占位符是向量，要显式转型
-        rows.push(`(${ph.slice(0, 11).join(',')},${ph[11]}::vector,${ph[12]},${ph[13]})`)
+        rows.push(`(${ph.slice(0, 11).join(',')},${ph[11]}::vector,${ph.slice(12).join(',')})`)
         values.push(
           c.id, c.docPath, c.url, c.anchor, c.lang, c.course, c.docTitle,
           c.heading, c.ordinal, c.content, c.contentHash,
           typeof e === 'string' ? e : toVectorLiteral(e),
           new Date(),
           c.blockKind,
+          c.docType,
+          c.tags,
         )
       })
 
       await client.query(
         `INSERT INTO chunks
-           (id, doc_path, url, anchor, lang, course, doc_title, heading, ordinal, content, content_hash, embedding, updated_at, block_kind)
+           (id, doc_path, url, anchor, lang, course, doc_title, heading, ordinal, content, content_hash, embedding, updated_at, block_kind, doc_type, tags)
          VALUES ${rows.join(',')}`,
         values,
       )
@@ -164,6 +167,8 @@ export interface SearchRow {
   content: string
   distance: number
   block_kind: string
+  doc_type: string
+  tags: string[]
 }
 
 /**
@@ -187,7 +192,7 @@ export async function searchChunks(
       langFilter = 'WHERE lang = $3'
     }
     const { rows } = await client.query<SearchRow>(
-      `SELECT id, url, anchor, course, doc_title, heading, content, block_kind,
+      `SELECT id, url, anchor, course, doc_title, heading, content, block_kind, doc_type, tags,
               embedding <=> $1::vector AS distance
          FROM chunks
          ${langFilter}
@@ -230,8 +235,11 @@ export interface DocIndexRow {
   discipline: string
   course: string
   course_slug: string
+  course_id: string
   category: string
   title: string
+  doc_type: string
+  tags: string[]
   outline: string
   chars: number
 }
@@ -239,7 +247,7 @@ export interface DocIndexRow {
 /** 全站文档索引，喂给学习路径生成器 */
 export async function listDocumentIndex(lang = 'zh'): Promise<DocIndexRow[]> {
   const { rows } = await getPool().query<DocIndexRow>(
-    `SELECT url, discipline, course, course_slug, category, title, outline, chars
+    `SELECT url, discipline, course, course_slug, course_id, category, title, doc_type, tags, outline, chars
        FROM documents WHERE lang = $1
       ORDER BY discipline, category, course_slug, path`,
     [lang],

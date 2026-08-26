@@ -1,9 +1,7 @@
 ---
 title: 组合逻辑设备和布尔算术
-course: 6.1910 计算结构（Fall 25）
-course_id: '6.1910'
+type: lecture
 lecture: 2
-kind: system
 tags: []
 status: complete
 ---

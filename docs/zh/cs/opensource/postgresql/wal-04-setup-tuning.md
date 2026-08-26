@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 中的 WAL — 4. 配置与调优（Setup and Tuning）
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

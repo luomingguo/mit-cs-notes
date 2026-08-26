@@ -1,9 +1,7 @@
 ---
 title: 云数据仓库——Snowflake
-course: 6.5830 数据库系统
-course_id: '6.5830'
+type: lecture
 lecture: 20
-kind: system
 tags: []
 status: complete
 ---

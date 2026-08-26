@@ -1,9 +1,7 @@
 ---
 title: 农业物联网（Agriculture IoT）
-course: 6.1820 移动和传感器计算
-course_id: '6.1820'
+type: lecture
 lecture: 13
-kind: system
 tags: []
 status: complete
 ---

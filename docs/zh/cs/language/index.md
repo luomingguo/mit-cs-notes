@@ -1,10 +1,5 @@
 ---
 title: 编程语言
-course: language
-kind: system
-tags: []
-status: stub
-sidebarDepth: '2'
 ---
 # CS 课程 7 大部分
 

@@ -1,9 +1,7 @@
 ---
 title: '抽象函数 & 表示不变式'
-course: 6.1020 软件构造基础
-course_id: '6.1020'
+type: lecture
 lecture: 7
-kind: design
 tags: []
 status: complete
 ---

@@ -1,8 +1,7 @@
 ---
 title: 介绍
-course: 算法导论
+type: lecture
 lecture: 1
-kind: theory
 tags: []
 status: complete
 ---

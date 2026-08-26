@@ -1,8 +1,7 @@
 ---
 title: DSL 和 自动调优
-course: 软件性能工程
+type: lecture
 lecture: 18
-kind: system
 tags: []
 status: complete
 ---

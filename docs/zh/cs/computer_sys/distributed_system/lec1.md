@@ -1,9 +1,7 @@
 ---
 title: '介绍 & MapReduce'
-course: 6.5840 分布式系统（Spring 2026）
-course_id: '6.5840'
+type: lecture
 lecture: 1
-kind: system
 tags: []
 status: complete
 ---

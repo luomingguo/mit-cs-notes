@@ -1,7 +1,6 @@
 ---
 title: PostgreSQL 中的 WAL — 3. 检查点（Checkpoint）
-course: PostgreSQL 内核原理系列（中文讲解笔记）
-kind: source
+type: lecture
 tags: []
 status: complete
 ---

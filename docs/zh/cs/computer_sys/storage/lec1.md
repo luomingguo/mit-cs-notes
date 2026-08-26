@@ -1,9 +1,7 @@
 ---
 title: '概述 & Flash SSD 操作 I'
-course: 18-746 存储系统
-course_id: '18-746'
+type: lecture
 lecture: 1
-kind: system
 tags: []
 status: complete
 ---

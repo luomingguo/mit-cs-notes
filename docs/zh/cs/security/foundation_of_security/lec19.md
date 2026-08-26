@@ -1,9 +1,7 @@
 ---
 title: 运行时防御（Runtime Defenses）
-course: 6.1600 计算机安全导论
-course_id: '6.1600'
+type: lecture
 lecture: 19
-kind: theory
 tags: []
 status: complete
 ---

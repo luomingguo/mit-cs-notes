@@ -1,9 +1,7 @@
 ---
 title: 语义（导论）——操作语义与求值关系
-course: 6.112 动态计算机语言工程
-course_id: '6.112'
+type: lecture
 lecture: 6
-kind: theory
 tags: []
 status: complete
 ---

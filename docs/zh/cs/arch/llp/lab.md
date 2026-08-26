@@ -1,8 +1,6 @@
 ---
 title: 实验部分
-course: 6.1904 C语言的底层汇编
-course_id: '6.1904'
-kind: system
+type: assignment
 tags: []
 status: complete
 ---

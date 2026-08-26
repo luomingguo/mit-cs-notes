@@ -10,10 +10,12 @@ export interface Passage {
   docTitle: string
   heading: string
   content: string
+  docType: string
+  tags: string[]
   /** rerank 相关性分，0~1 */
   score: number
   /** 这一段落在哪种语义容器里，见 NOTESTYLE.md 第四节 */
-  blockKind: 'normal' | 'insight' | 'pitfall' | 'definition' | 'theorem' | 'example'
+  blockKind: 'normal' | 'summary' | 'insight' | 'pitfall' | 'definition' | 'theorem' | 'example'
 }
 
 /** 引用链接：有锚点就直达小节 */
@@ -73,6 +75,8 @@ export async function retrieve(
       docTitle: r.doc_title,
       heading: r.heading,
       content: r.content,
+      docType: r.doc_type,
+      tags: r.tags,
       score: h.score,
       blockKind: (r.block_kind ?? 'normal') as Passage['blockKind'],
     }

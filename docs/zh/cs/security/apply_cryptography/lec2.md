@@ -1,9 +1,7 @@
 ---
 title: 对称加密：从 PRF 构造
-course: 6.5610 应用密码学与安全（Spring 2026）
-course_id: '6.5610'
+type: lecture
 lecture: 2
-kind: theory
 tags: []
 status: complete
 ---

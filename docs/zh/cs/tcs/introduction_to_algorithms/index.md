@@ -1,15 +1,9 @@
 ---
 title: 算法导论
+type: course
 course: 算法导论
-kind: theory
 tags: []
 status: complete
-sidebarDepth: '2'
-sidebar: 'true'
-aside: right
-editLink: 'true'
-lastUpdated: 'true'
-outline: '2'
 ---
 # 算法导论
 

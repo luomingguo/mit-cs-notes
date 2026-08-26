@@ -1,8 +1,8 @@
 ---
 title: 6.1100 计算机语言工程
+type: course
 course: 6.1100 计算机语言工程
 course_id: '6.1100'
-kind: theory
 tags: []
 status: complete
 ---

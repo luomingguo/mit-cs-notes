@@ -1,9 +1,7 @@
 ---
 title: LSM 树及其应用
-course: 18-746 存储系统
-course_id: '18-746'
+type: lecture
 lecture: 16
-kind: system
 tags: []
 status: complete
 ---

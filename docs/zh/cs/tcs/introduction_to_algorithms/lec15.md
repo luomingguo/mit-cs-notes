@@ -1,8 +1,7 @@
 ---
 title: '动态规划 I: SRTBOT'
-course: 算法导论
+type: lecture
 lecture: 15
-kind: theory
 tags: []
 status: complete
 ---

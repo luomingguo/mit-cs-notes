@@ -1,9 +1,7 @@
 ---
 title: 并发与同步
-course: 6.1910 计算结构（Fall 25）
-course_id: '6.1910'
+type: lecture
 lecture: 24
-kind: system
 tags: []
 status: complete
 ---
