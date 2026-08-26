@@ -7,7 +7,7 @@
 | GitHub Pages | https://luomingguo.github.io/mit-cs-notes/ | `/mit-cs-notes/` | `.github/workflows/deploy.yml` 的 `build` / `deploy` job |
 | 自建服务器 hk | https://notes.lobomiao.uk | `/` | 同一个 workflow 的 `deploy-hk` job |
 
-base 由 `DOCS_BASE` 环境变量控制。生产产物由 `frontend/` 的 Astro 构建生成；旧 VitePress 在迁移期仍由 CI 构建，用作回滚基线。
+base 由 `DOCS_BASE` 环境变量控制。生产产物统一由 `frontend/` 的 Astro 构建生成。
 本地 Astro 开发使用根路径；Pages 兼容性由 `npm run site:build:pages` 与 `npm run site:verify:pages` 验证。
 
 ## hk 上的结构

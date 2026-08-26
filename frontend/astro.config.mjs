@@ -7,7 +7,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import remarkFlexibleContainers from 'remark-flexible-containers';
 import { rehypeInternalLinks } from './src/lib/rehype-internal-links.ts';
-import { remarkLegacyHeadingIds } from './src/lib/heading-ids.ts';
+import { remarkStableHeadingIds } from './src/lib/heading-ids.ts';
 
 const CONTAINER_LABELS = {
   definition: '定义',
@@ -34,7 +34,7 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [
-        remarkLegacyHeadingIds,
+        remarkStableHeadingIds,
         [
           remarkFlexibleContainers,
           {

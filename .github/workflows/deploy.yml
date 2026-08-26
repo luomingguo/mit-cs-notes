@@ -55,10 +55,6 @@ jobs:
       - name: Lint notes
         run: npm run notes:lint -- --summary --max-errors=1207
 
-      # 迁移期继续构建旧站，作为可回滚基线；发布产物使用下方 Astro 构建。
-      - name: Verify legacy VitePress rollback build
-        run: npm run docs:build
-
       - name: Check Astro frontend
         run: npm run site:check
 

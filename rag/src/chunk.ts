@@ -9,6 +9,8 @@ export interface Chunk {
   anchor: string
   lang: string
   course: string
+  docType: SourceDoc['docType']
+  tags: string[]
   docTitle: string
   /** 面包屑：页面管理 > PTE中的标志位含义 */
   heading: string
@@ -22,12 +24,12 @@ export interface Chunk {
   blockKind: BlockKind
 }
 
-export type BlockKind = 'normal' | 'insight' | 'pitfall' | 'definition' | 'theorem' | 'example'
+export type BlockKind = 'normal' | 'summary' | 'insight' | 'pitfall' | 'definition' | 'theorem' | 'example'
 
 /**
  * 容器名 → 送进嵌入向量的中文前缀。
  *
- * 必须和 docs/.vitepress/config.mts 的 SEMANTIC_CONTAINERS 保持同名。
+ * 必须和 frontend/astro.config.mjs 的 CONTAINER_LABELS 保持同名。
  * 以前 cleanForEmbedding 把承载这些语义的 <div> 剥成空格，「这是定义」还是
  * 「这是作者的判断」在向量里完全看不出来；现在把它变成正文的一部分。
  */
@@ -82,7 +84,7 @@ function cleanForEmbedding(md: string): string {
       // 一样剥掉 —— 读者问「作者怎么看」时，靠的就是这个前缀能被召回。
       .replace(/^:::[ \t]*([a-z]+)[ \t]*(.*)$/gim, (line, name: string, title: string) => {
         const label = CONTAINER_LABEL[name.toLowerCase()]
-        if (!label) return '' // VitePress 内置的 tip/warning/raw 等，直接去壳
+        if (!label) return '' // 非检索语义的 tip/warning/raw 等只去壳，不写类型前缀
         return title.trim() ? `${label}（${title.trim()}）：` : `${label}：`
       })
       // 容器闭合行
@@ -204,16 +206,17 @@ export function chunkDocument(doc: SourceDoc): Chunk[] {
     heading: string
     anchor: string
     text: string
+    isSummary: boolean
   }
   const sections: Section[] = []
 
   if (headings.length === 0) {
-    sections.push({ heading: '', anchor: '', text: doc.body })
+    sections.push({ heading: '', anchor: '', text: doc.body, isSummary: false })
   } else {
     // 首个标题之前的引言部分
     const preamble = doc.body.slice(0, headings[0]!.index).trim()
     if (preamble.length > MIN) {
-      sections.push({ heading: '', anchor: '', text: preamble })
+      sections.push({ heading: '', anchor: '', text: preamble, isSummary: false })
     }
 
     // 维护标题栈，生成 h2 > h3 这样的面包屑
@@ -238,12 +241,36 @@ export function chunkDocument(doc: SourceDoc): Chunk[] {
         anchor: h.slug,
         // 去掉标题行本身，标题已经进了 heading 字段和上下文头
         text: text.replace(/^#{1,6}\s+.+$/m, '').trim(),
+        isSummary: h.level === 2 && h.text.trim().toLowerCase() === 'tl;dr',
       })
     }
   }
 
   for (const section of sections) {
     const cleaned = cleanForEmbedding(section.text)
+    // TL;DR 是显式的检索摘要：无论是否低于 MIN，都独立保留且不与相邻章节合并。
+    if (section.isSummary) {
+      if (!cleaned) continue
+      const id = crypto.createHash('sha1').update(`${doc.path}#${ordinal}`).digest('hex')
+      chunks.push({
+        id,
+        docPath: doc.path,
+        url: doc.url,
+        anchor: section.anchor,
+        lang: doc.lang,
+        course: doc.course,
+        docType: doc.docType,
+        tags: doc.tags,
+        docTitle: doc.title,
+        heading: 'TL;DR',
+        ordinal,
+        content: cleaned,
+        contentHash: crypto.createHash('sha1').update(cleaned).digest('hex'),
+        blockKind: 'summary',
+      })
+      ordinal++
+      continue
+    }
     if (cleaned.length < MIN) continue
 
     for (const piece of packParagraphs(splitParagraphs(cleaned))) {
@@ -259,6 +286,8 @@ export function chunkDocument(doc: SourceDoc): Chunk[] {
         anchor: section.anchor,
         lang: doc.lang,
         course: doc.course,
+        docType: doc.docType,
+        tags: doc.tags,
         docTitle: doc.title,
         heading: section.heading,
         ordinal,

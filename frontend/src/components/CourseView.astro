@@ -16,7 +16,7 @@ const statusLabel = (value: unknown) => value === 'complete' ? '完成' : value 
 ---
 <AtlasLayout title={course.title} description={course.excerpt}>
   <div class="atlas-shell">
-    <CatalogSidebar catalog={catalog} activeDomain={domain.slug} />
+    <CatalogSidebar catalog={catalog} activeDomain={domain.key} />
     <div class="atlas-main">
       <nav class="atlas-breadcrumb" aria-label="面包屑"><a href={withBasePath('/')}>Home</a><span>/</span><a href={domain.href}>{domain.label}</a><span>/</span><span aria-current="page">{course.courseId || course.slug}</span></nav>
       <header class="course-hero">

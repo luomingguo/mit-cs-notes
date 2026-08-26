@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-sub: #fbfbfa;
+    --surface: #f6f6f4;
+    --surface-2: #efefec;
+    --text: #17171a;
+    --text-2: #3f3f45;
+    --muted: #74746e;
+    --faint: #a3a39c;
+    --line: #e6e6e2;
+    --line-2: #d6d6d1;
+    --accent: #1f5fa8;
+    --accent-soft: #eaf1f9;
+    --code-bg: #f7f7f5;
+    --kw: #8a3ea8;
+    --str: #1d7a52;
+    --num: #a8552a;
+    --cmt: #9a9a93;
+    --shadow: 0 1px 2px rgba(20,20,25,.05), 0 8px 24px rgba(20,20,25,.06);
+  }
+  html[data-theme="dark"] {
+    --bg: #121215;
+    --bg-sub: #16161a;
+    --surface: #1b1b20;
+    --surface-2: #23232a;
+    --text: #ececeb;
+    --text-2: #c9c9c6;
+    --muted: #8f8f89;
+    --faint: #6a6a66;
+    --line: #27272d;
+    --line-2: #33333b;
+    --accent: #79b0e8;
+    --accent-soft: #17222e;
+    --code-bg: #17171b;
+    --kw: #c99ae0;
+    --str: #7fc9a3;
+    --num: #e0a97f;
+    --cmt: #6d6d68;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  }
+  html { color-scheme: light dark; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: Helvetica, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 2px; }
+  ::selection { background: var(--accent-soft); }
+  .katex { font-size: 1.02em; }
+  .katex-display { margin: 0 !important; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 8px; border: 3px solid var(--bg); }
+</style>
+</helmet>
+
+<div style="display: flex; min-height: 100vh; min-width: 1300px; background: var(--bg); position: relative;">
+
+  <!-- ═══ LEFT SIDEBAR ═══ -->
+  <aside style="width: 292px; flex: none; border-right: 1px solid var(--line); background: var(--bg-sub); height: 100vh; position: sticky; top: 0; display: flex; flex-direction: column;">
+
+    <div style="padding: 20px 20px 14px; display: flex; flex-direction: column; gap: 14px; border-bottom: 1px solid var(--line);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: baseline; gap: 8px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; letter-spacing: -0.03em; color: var(--text);">cs<span style="color: var(--accent);">.</span>kb</div>
+          <div style="font-size: 11px; color: var(--faint); letter-spacing: 0.02em;">knowledge base</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <div onClick="{{ toggleTheme }}" title="Toggle theme" style="width: 26px; height: 26px; border: 1px solid var(--line-2); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); font-size: 12px; background: var(--bg);" style-hover="border-color: var(--accent); color: var(--accent);">◐</div>
+          <a href="#" title="GitHub" style="width: 26px; height: 26px; border: 1px solid var(--line-2); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 10px; background: var(--bg); text-decoration: none;" style-hover="border-color: var(--accent); color: var(--accent);">gh</a>
+          <a href="#" title="Résumé" style="width: 26px; height: 26px; border: 1px solid var(--line-2); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 10px; background: var(--bg); text-decoration: none;" style-hover="border-color: var(--accent); color: var(--accent);">cv</a>
+        </div>
+      </div>
+
+      <div onClick="{{ openSearch }}" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 9px; border: 1px solid var(--line-2); border-radius: 7px; background: var(--bg); cursor: pointer; color: var(--muted);" style-hover="border-color: var(--accent);">
+        <span style="font-size: 12px; opacity: .7;">⌕</span>
+        <span style="font-size: 12.5px; flex: 1;">Search notes and concepts</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; color: var(--faint);">⌘K</span>
+      </div>
+    </div>
+
+    <div style="flex: 1; overflow-y: auto; padding: 16px 12px 40px; display: flex; flex-direction: column; gap: 20px;">
+
+      <div style="display: flex; flex-direction: column; gap: 3px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: var(--faint); padding: 0 8px 6px;">LIBRARY</div>
+        <a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; border-radius: 5px; font-size: 13px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span>Overview</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">812</span></a>
+        <a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; border-radius: 5px; font-size: 13px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span>Concepts</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">340</span></a>
+        <a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; border-radius: 5px; font-size: 13px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span>Recently updated</span></a>
+        <a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; border-radius: 5px; font-size: 13px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span>Graph</span></a>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 3px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: var(--faint); padding: 0 8px 6px;">DOMAINS</div>
+
+        <div style="display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; font-size: 13px; font-weight: 600; color: var(--text);">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); width: 12px;">▾</span>
+          <span>Computer Systems</span>
+        </div>
+        <div style="margin-left: 15px; border-left: 1px solid var(--line); padding-left: 6px; display: flex; flex-direction: column; gap: 2px;">
+          <div style="display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; font-weight: 600; color: var(--text);">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); width: 10px;">▾</span>
+            <span>CSAPP</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--faint); margin-left: auto;">9/24</span>
+          </div>
+          <div style="margin-left: 12px; display: flex; flex-direction: column; gap: 1px;">
+            <a href="#" style="display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: baseline; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; background: var(--accent-soft); color: var(--accent); font-weight: 600; text-decoration: none;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: .8;">01</span><span>Bits, bytes, integers</span>
+            </a>
+            <a href="#" style="display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: baseline; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">02</span><span>Floating point</span></a>
+            <a href="#" style="display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: baseline; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">03</span><span>Machine programming I</span></a>
+            <a href="#" style="display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: baseline; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">04</span><span>Machine programming II</span></a>
+            <a href="#" style="display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: baseline; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">07</span><span>Linking</span></a>
+            <a href="#" style="display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: baseline; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">09</span><span>Virtual memory</span></a>
+            <div style="display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: baseline; padding: 5px 8px; font-size: 12.5px; color: var(--faint);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px;">10</span><span style="font-style: italic;">Virtual memory II</span></div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint); padding: 5px 8px 2px;">+ 17 more</div>
+          </div>
+          <a href="#" style="display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); width: 10px;">▸</span><span>6.1810 OS Engineering</span></a>
+          <a href="#" style="display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); width: 10px;">▸</span><span>6.824 Distributed Systems</span></a>
+          <a href="#" style="display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); width: 10px;">▸</span><span>15-445 Databases</span></a>
+          <a href="#" style="display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; font-size: 12.5px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); width: 10px;">▸</span><span>Computer Networks</span></a>
+        </div>
+
+        <a href="#" style="display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; font-size: 13px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); width: 12px;">▸</span><span>Programming Languages</span></a>
+        <a href="#" style="display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; font-size: 13px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); width: 12px;">▸</span><span>Computer Architecture</span></a>
+        <a href="#" style="display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; font-size: 13px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); width: 12px;">▸</span><span>Computer Security</span></a>
+        <a href="#" style="display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; font-size: 13px; color: var(--text-2); text-decoration: none;" style-hover="background: var(--surface);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--faint); width: 12px;">▸</span><span>Software Engineering</span></a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <main style="flex: 1 1 auto; min-width: 660px; display: flex; justify-content: center; padding: 0 44px;">
+    <article style="width: 100%; max-width: 720px; padding: 40px 0 96px; display: flex; flex-direction: column; gap: 30px;">
+
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace;">
+          <a href="#" style="color: var(--muted); text-decoration: none;" style-hover="color: var(--accent);">Computer Systems</a>
+          <span style="color: var(--faint);">/</span>
+          <a href="#" style="color: var(--muted); text-decoration: none;" style-hover="color: var(--accent);">CSAPP</a>
+          <span style="color: var(--faint);">/</span>
+          <span style="color: var(--text-2);">lec01</span>
+        </div>
+
+        <h1 style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 40px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; color: var(--text); text-wrap: balance;">Bits, bytes, and integer representation</h1>
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <span style="display: inline-flex; align-items: center; gap: 5px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--str); border: 1px solid var(--line-2); border-radius: 20px; padding: 3px 9px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--str);"></span>evergreen</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted);">CSAPP §2.1–2.3</span>
+          <span style="color: var(--line-2);">·</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted);">updated 18 Apr 2026</span>
+          <span style="color: var(--line-2);">·</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted);">1,840 words</span>
+          <span style="color: var(--line-2);">·</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted);">9 revisions</span>
+        </div>
+
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-2); background: var(--surface); border: 1px solid var(--line); border-radius: 5px; padding: 3px 8px; text-decoration: none;" style-hover="border-color: var(--accent); color: var(--accent);">#representation</a>
+          <a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-2); background: var(--surface); border: 1px solid var(--line); border-radius: 5px; padding: 3px 8px; text-decoration: none;" style-hover="border-color: var(--accent); color: var(--accent);">#c-language</a>
+          <a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-2); background: var(--surface); border: 1px solid var(--line); border-radius: 5px; padding: 3px 8px; text-decoration: none;" style-hover="border-color: var(--accent); color: var(--accent);">#memory</a>
+          <a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-2); background: var(--surface); border: 1px solid var(--line); border-radius: 5px; padding: 3px 8px; text-decoration: none;" style-hover="border-color: var(--accent); color: var(--accent);">#fundamentals</a>
+        </div>
+      </div>
+
+      <div style="border-left: 2px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: var(--accent);">SUMMARY</div>
+        <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 7px; font-family: 'Source Serif 4', Georgia, serif; font-size: 16.5px; line-height: 1.55; color: var(--text-2);">
+          <li>Integers are fixed-width bit patterns. Arithmetic on them is modular, not mathematical.</li>
+          <li>Two's complement lets one adder circuit serve both addition and subtraction — the price is an asymmetric range.</li>
+          <li>Nearly every C integer bug is a signed/unsigned conversion or an overflow, and both are fully predictable from the encoding.</li>
+        </ul>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div style="border: 1px solid var(--line); border-radius: 8px; padding: 13px 15px; display: flex; flex-direction: column; gap: 7px; background: var(--bg-sub);">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: var(--faint);">REQUIRES</div>
+          <div style="font-size: 13px; line-height: 1.6; color: var(--text-2);">Binary and hex arithmetic · basic C types</div>
+        </div>
+        <div style="border: 1px solid var(--line); border-radius: 8px; padding: 13px 15px; display: flex; flex-direction: column; gap: 7px; background: var(--bg-sub);">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: var(--faint);">UNLOCKS</div>
+          <div style="font-size: 13px; line-height: 1.6; color: var(--text-2);"><a href="#" style="color: var(--accent);">lec02 Floating point</a> · <a href="#" style="color: var(--accent);">Buffer overflows</a></div>
+        </div>
+      </div>
+
+      <div style="height: 1px; background: var(--line);"></div>
+
+      <!-- BODY -->
+      <div ref="{{ bodyRef }}" style="display: flex; flex-direction: column; gap: 28px;">
+
+        <section id="s1" style="display: flex; flex-direction: column; gap: 16px;">
+          <h2 style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 25px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); scroll-margin-top: 24px;">1. Bit patterns and words</h2>
+          <p style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 17.5px; line-height: 1.72; color: var(--text-2); text-wrap: pretty;">A modern machine stores everything — source, images, instructions, this note — as sequences of bits. Meaning is not in the bits; it is in the interpretation the program applies to them. The same 32-bit pattern is a signed integer, an unsigned integer, a float, or four ASCII characters depending only on which instruction touches it.</p>
+          <p style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 17.5px; line-height: 1.72; color: var(--text-2); text-wrap: pretty;">The <em>word size</em> of a machine is the nominal size of a pointer, and it bounds the virtual address space: a <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.86em; background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px;">w</code>-bit machine addresses at most <span data-tex="2^w">2^w</span> bytes. On x86-64 that is <span data-tex="2^{64}">2^{64}</span> bytes of address space, of which current hardware wires only 48 bits.</p>
+
+          <h3 style="margin: 6px 0 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 19px; font-weight: 600; color: var(--text); scroll-margin-top: 24px;" id="s1-1">1.1 Hexadecimal as a reading aid</h3>
+          <p style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 17.5px; line-height: 1.72; color: var(--text-2); text-wrap: pretty;">Hex exists because one hex digit is exactly four bits, so the mapping is memorisable and local — you can translate any window of a byte string without carrying context. Reading raw memory dumps in decimal is a mistake; the digit boundaries no longer line up with anything the hardware does.</p>
+
+          <div style="border: 1px solid var(--line); border-radius: 8px; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;">
+              <thead>
+                <tr style="background: var(--surface);">
+                  <th style="text-align: left; padding: 9px 14px; font-weight: 500; color: var(--muted); font-size: 10px; letter-spacing: 0.1em; border-bottom: 1px solid var(--line);">C TYPE</th>
+                  <th style="text-align: right; padding: 9px 14px; font-weight: 500; color: var(--muted); font-size: 10px; letter-spacing: 0.1em; border-bottom: 1px solid var(--line);">BYTES (x86-64)</th>
+                  <th style="text-align: right; padding: 9px 14px; font-weight: 500; color: var(--muted); font-size: 10px; letter-spacing: 0.1em; border-bottom: 1px solid var(--line);">SIGNED RANGE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding: 8px 14px; border-bottom: 1px solid var(--line); color: var(--text-2);">char</td><td style="padding: 8px 14px; text-align: right; border-bottom: 1px solid var(--line); color: var(--text-2);">1</td><td style="padding: 8px 14px; text-align: right; border-bottom: 1px solid var(--line); color: var(--muted);">−128 … 127</td></tr>
+                <tr><td style="padding: 8px 14px; border-bottom: 1px solid var(--line); color: var(--text-2);">short</td><td style="padding: 8px 14px; text-align: right; border-bottom: 1px solid var(--line); color: var(--text-2);">2</td><td style="padding: 8px 14px; text-align: right; border-bottom: 1px solid var(--line); color: var(--muted);">−32,768 … 32,767</td></tr>
+                <tr><td style="padding: 8px 14px; border-bottom: 1px solid var(--line); color: var(--text-2);">int</td><td style="padding: 8px 14px; text-align: right; border-bottom: 1px solid var(--line); color: var(--text-2);">4</td><td style="padding: 8px 14px; text-align: right; border-bottom: 1px solid var(--line); color: var(--muted);">±2.15 × 10⁹</td></tr>
+                <tr><td style="padding: 8px 14px; color: var(--text-2);">long / void *</td><td style="padding: 8px 14px; text-align: right; color: var(--text-2);">8</td><td style="padding: 8px 14px; text-align: right; color: var(--muted);">±9.22 × 10¹⁸</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="s2" style="display: flex; flex-direction: column; gap: 16px;">
+          <h2 style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 25px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); scroll-margin-top: 24px;">2. Two's complement</h2>
+          <p style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 17.5px; line-height: 1.72; color: var(--text-2); text-wrap: pretty;">Unsigned interpretation is the obvious one: every bit contributes a positive power of two. Signed interpretation keeps that rule for all bits except the most significant, whose weight is negated:</p>
+
+          <div style="border: 1px solid var(--line); border-radius: 8px; background: var(--bg-sub); padding: 22px 20px; display: flex; flex-direction: column; gap: 16px; align-items: center;">
+            <div data-tex-display="B2U_w(\vec{x}) = \sum_{i=0}^{w-1} x_i\,2^{i} \qquad B2T_w(\vec{x}) = -x_{w-1}2^{w-1} + \sum_{i=0}^{w-2} x_i\,2^{i}" style="font-size: 15px; color: var(--text);">B2U / B2T</div>
+          </div>
+
+          <p style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 17.5px; line-height: 1.72; color: var(--text-2); text-wrap: pretty;">The consequence worth memorising is the asymmetry of the range, <span data-tex="-2^{w-1} \le x \le 2^{w-1}-1">range</span>: there is one more negative value than positive. So <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.86em; background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px;">-INT_MIN</code> is not representable, and negating it silently returns <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.86em; background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px;">INT_MIN</code> again. Every "abs() is always positive" bug traces back to this one line.</p>
+
+          <div style="border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--code-bg);">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-bottom: 1px solid var(--line); background: var(--surface);">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.08em; color: var(--muted);">C · overflow.c</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--faint); cursor: pointer;" style-hover="color: var(--accent);">copy</span>
+            </div>
+            <pre style="margin: 0; padding: 16px 18px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.75; color: var(--text-2); tab-size: 4;"><span style="color: var(--cmt);">/* Both branches are reachable. Neither is a compiler bug. */</span>
+<span style="color: var(--kw);">int</span> x = INT_MIN;
+<span style="color: var(--kw);">if</span> (-x &lt; <span style="color: var(--num);">0</span>)
+    puts(<span style="color: var(--str);">"negation of INT_MIN is still negative"</span>);
+
+<span style="color: var(--kw);">unsigned</span> <span style="color: var(--kw);">int</span> u = <span style="color: var(--num);">0</span>;
+<span style="color: var(--kw);">if</span> (u - <span style="color: var(--num);">1</span> &gt; u)
+    puts(<span style="color: var(--str);">"unsigned wraps to UINT_MAX"</span>);   <span style="color: var(--cmt);">// modular, well-defined</span></pre>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="border: 1px solid var(--line); border-radius: 8px; height: 190px; background: repeating-linear-gradient(135deg, var(--surface) 0 9px, var(--bg-sub) 9px 18px); display: flex; align-items: center; justify-content: center;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 5px 10px;">figure — 4-bit number wheel</span>
+            </div>
+            <div style="font-size: 12.5px; color: var(--muted); line-height: 1.55;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-2);">Fig 1</span> — the same sixteen bit patterns under unsigned and signed interpretation. Addition is rotation; overflow is crossing the seam.</div>
+          </div>
+        </section>
+
+        <section id="s3" style="display: flex; flex-direction: column; gap: 16px;">
+          <h2 style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 25px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); scroll-margin-top: 24px;">3. Conversion pitfalls in C</h2>
+          <p style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 17.5px; line-height: 1.72; color: var(--text-2); text-wrap: pretty;">Casting between signed and unsigned of the same width does not touch the bits — it only changes the interpretation function applied to them. The danger is that C applies those casts <em>implicitly</em>: in a mixed comparison the signed operand is converted to unsigned, so a negative length check can pass a bounds test it should have failed.</p>
+
+          <div style="border: 1px solid var(--num); border-radius: 8px; padding: 15px 18px; display: flex; flex-direction: column; gap: 8px; background: var(--bg-sub);">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: var(--num);">COMMON CONFUSION</div>
+            <div style="font-family: 'Source Serif 4', Georgia, serif; font-size: 16.5px; line-height: 1.6; color: var(--text-2);">Signed overflow is <em>undefined behaviour</em>; unsigned overflow is well-defined modular arithmetic. These are not the same rule, and optimisers exploit the difference aggressively.</div>
+          </div>
+        </section>
+
+        <section id="s4" style="display: flex; flex-direction: column; gap: 14px; border-top: 1px solid var(--line); padding-top: 26px;">
+          <h2 style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: var(--muted); font-weight: 500; scroll-margin-top: 24px;">OPEN QUESTIONS · 1</h2>
+          <div style="display: flex; gap: 12px; align-items: flex-start;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--num); padding-top: 3px;">?</span>
+            <div style="font-family: 'Source Serif 4', Georgia, serif; font-size: 16.5px; line-height: 1.6; color: var(--text-2);">Why did the C standard leave signed overflow undefined rather than mandating wrapping, given that every mainstream target uses two's complement? Read the C99 rationale document.</div>
+          </div>
+        </section>
+
+        <section id="s5" style="display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--line); padding-top: 26px;">
+          <h2 style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: var(--muted); font-weight: 500; scroll-margin-top: 24px;">REFERENCES</h2>
+          <div style="display: flex; flex-direction: column; gap: 9px; font-size: 14px; line-height: 1.6; color: var(--text-2);">
+            <div style="display: grid; grid-template-columns: 26px 1fr; gap: 4px;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--faint);">[1]</span><span>Bryant &amp; O'Hallaron. <em>Computer Systems: A Programmer's Perspective</em>, 3e, §2.1–2.3.</span></div>
+            <div style="display: grid; grid-template-columns: 26px 1fr; gap: 4px;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--faint);">[2]</span><span>CMU 15-213, Lecture 02 — <em>Bits, Bytes and Integers</em>.</span></div>
+            <div style="display: grid; grid-template-columns: 26px 1fr; gap: 4px;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--faint);">[3]</span><span>Warren. <em>Hacker's Delight</em>, 2e, ch. 2.</span></div>
+          </div>
+        </section>
+
+        <nav style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; border-top: 1px solid var(--line); padding-top: 26px;">
+          <a href="#" style="border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 5px; text-decoration: none;" style-hover="border-color: var(--accent); background: var(--bg-sub);">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--faint);">← COURSE INDEX</span>
+            <span style="font-size: 15px; color: var(--text); font-weight: 500;">CSAPP</span>
+          </a>
+          <a href="#" style="border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 5px; align-items: flex-end; text-decoration: none;" style-hover="border-color: var(--accent); background: var(--bg-sub);">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--faint);">LEC 02 →</span>
+            <span style="font-size: 15px; color: var(--text); font-weight: 500;">Floating point</span>
+          </a>
+        </nav>
+      </div>
+    </article>
+  </main>
+
+  <!-- ═══ RIGHT RAIL ═══ -->
+  <aside style="width: 276px; flex: none; height: 100vh; position: sticky; top: 0; overflow-y: auto; padding: 40px 24px 60px 0; display: flex; flex-direction: column; gap: 26px;">
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: var(--faint);">ON THIS PAGE</div>
+      <div style="display: flex; flex-direction: column; border-left: 1px solid var(--line);">
+        <a href="#s1" data-toc="s1" style="padding: 5px 0 5px 13px; font-size: 12.5px; color: var(--accent); font-weight: 600; box-shadow: inset 1px 0 0 var(--accent); text-decoration: none;">1. Bit patterns and words</a>
+        <a href="#s1-1" data-toc="s1-1" style="padding: 5px 0 5px 26px; font-size: 12.5px; color: var(--muted); text-decoration: none;" style-hover="color: var(--text);">1.1 Hexadecimal</a>
+        <a href="#s2" data-toc="s2" style="padding: 5px 0 5px 13px; font-size: 12.5px; color: var(--muted); text-decoration: none;" style-hover="color: var(--text);">2. Two's complement</a>
+        <a href="#s3" data-toc="s3" style="padding: 5px 0 5px 13px; font-size: 12.5px; color: var(--muted); text-decoration: none;" style-hover="color: var(--text);">3. Conversion pitfalls in C</a>
+        <a href="#s4" data-toc="s4" style="padding: 5px 0 5px 13px; font-size: 12.5px; color: var(--muted); text-decoration: none;" style-hover="color: var(--text);">Open questions</a>
+        <a href="#s5" data-toc="s5" style="padding: 5px 0 5px 13px; font-size: 12.5px; color: var(--muted); text-decoration: none;" style-hover="color: var(--text);">References</a>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 11px; border-top: 1px solid var(--line); padding-top: 20px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: var(--faint);">COURSE PROGRESS</div>
+      <div style="display: flex; align-items: baseline; justify-content: space-between;">
+        <span style="font-size: 13px; color: var(--text-2);">CSAPP</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text);">9 / 24</span>
+      </div>
+      <div style="height: 5px; border-radius: 4px; background: var(--surface-2); overflow: hidden;"><div style="width: 37.5%; height: 100%; background: var(--accent); border-radius: 4px;"></div></div>
+      <div style="display: flex; gap: 3px; flex-wrap: wrap; padding-top: 3px;">
+        <div title="lec01 evergreen" style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+        <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2);"></div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 11px; border-top: 1px solid var(--line); padding-top: 20px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: var(--faint);">RELATED CONCEPTS</div>
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <a href="#" style="display: flex; justify-content: space-between; align-items: baseline; padding: 7px 8px; margin: 0 -8px; border-radius: 6px; text-decoration: none;" style-hover="background: var(--surface);">
+          <span style="font-size: 13px; color: var(--text-2);">Two's complement</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">14</span>
+        </a>
+        <a href="#" style="display: flex; justify-content: space-between; align-items: baseline; padding: 7px 8px; margin: 0 -8px; border-radius: 6px; text-decoration: none;" style-hover="background: var(--surface);">
+          <span style="font-size: 13px; color: var(--text-2);">Endianness</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">6</span>
+        </a>
+        <a href="#" style="display: flex; justify-content: space-between; align-items: baseline; padding: 7px 8px; margin: 0 -8px; border-radius: 6px; text-decoration: none;" style-hover="background: var(--surface);">
+          <span style="font-size: 13px; color: var(--text-2);">Integer overflow</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">9</span>
+        </a>
+        <a href="#" style="display: flex; justify-content: space-between; align-items: baseline; padding: 7px 8px; margin: 0 -8px; border-radius: 6px; text-decoration: none;" style-hover="background: var(--surface);">
+          <span style="font-size: 13px; color: var(--text-2);">Sign extension</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">4</span>
+        </a>
+        <a href="#" style="display: flex; justify-content: space-between; align-items: baseline; padding: 7px 8px; margin: 0 -8px; border-radius: 6px; text-decoration: none;" style-hover="background: var(--surface);">
+          <span style="font-size: 13px; color: var(--text-2);">Undefined behaviour</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">11</span>
+        </a>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 11px; border-top: 1px solid var(--line); padding-top: 20px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; color: var(--faint);">LINKED FROM · 7</div>
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <a href="#" style="display: flex; flex-direction: column; gap: 2px; padding: 7px 8px; margin: 0 -8px; border-radius: 6px; text-decoration: none;" style-hover="background: var(--surface);">
+          <span style="font-size: 13px; color: var(--text-2);">Buffer overflows</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">6.858 · lec03</span>
+        </a>
+        <a href="#" style="display: flex; flex-direction: column; gap: 2px; padding: 7px 8px; margin: 0 -8px; border-radius: 6px; text-decoration: none;" style-hover="background: var(--surface);">
+          <span style="font-size: 13px; color: var(--text-2);">Datapath and ALU design</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">CS152 · lec04</span>
+        </a>
+        <a href="#" style="display: flex; flex-direction: column; gap: 2px; padding: 7px 8px; margin: 0 -8px; border-radius: 6px; text-decoration: none;" style-hover="background: var(--surface);">
+          <span style="font-size: 13px; color: var(--text-2);">Primitive types and coercion</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">TAPL · lec02</span>
+        </a>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); padding: 6px 0 0;">4 more →</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ SEARCH PALETTE ═══ -->
+  <sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSearch }}" style="position: fixed; inset: 0; background: rgba(10,10,14,.42); backdrop-filter: blur(3px); z-index: 60; display: flex; justify-content: center; padding-top: 12vh;">
+      <div onClick="{{ stop }}" style="width: 640px; max-height: 66vh; background: var(--bg); border: 1px solid var(--line-2); border-radius: 12px; box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line);">
+          <span style="color: var(--faint); font-size: 14px;">⌕</span>
+          <input ref="{{ inputRef }}" value="{{ query }}" onChange="{{ onQuery }}" placeholder="Search 812 notes, 340 concepts…" style="flex: 1; border: none; outline: none; background: transparent; font-family: Helvetica, Arial, sans-serif; font-size: 15px; color: var(--text);" />
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; color: var(--faint);">ESC</span>
+        </div>
+        <div style="display: flex; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line); overflow-x: auto;">
+          <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+            <div onClick="{{ f.pick }}" style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 20px; cursor: pointer; white-space: nowrap; border: 1px solid var(--line-2); color: var(--muted);" style-hover="border-color: var(--accent); color: var(--accent);">{{ f.label }}</div>
+          </sc-for>
+        </div>
+        <div style="flex: 1; overflow-y: auto; padding: 8px;">
+          <sc-for list="{{ results }}" as="r" hint-placeholder-count="5">
+            <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 8px; cursor: pointer;" style-hover="background: var(--surface);">
+              <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+                <div style="font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ r.title }}</div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted);">{{ r.path }}</div>
+              </div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.06em; color: var(--muted); border: 1px solid var(--line-2); border-radius: 20px; padding: 2px 8px; white-space: nowrap;">{{ r.kind }}</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 28px 14px; text-align: center; font-size: 13.5px; color: var(--muted);">No matches. Try a concept name, course code, or tag.</div>
+          </sc-if>
+        </div>
+        <div style="display: flex; gap: 16px; padding: 9px 14px; border-top: 1px solid var(--line); background: var(--bg-sub); font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--faint);">
+          <span>↑↓ navigate</span><span>↵ open</span><span>⇧↵ open in split</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#8a3ea8&quot;,&quot;options&quot;:[&quot;#1f5fa8&quot;,&quot;#8a3ea8&quot;,&quot;#1d7a52&quot;,&quot;#a8552a&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Theme&quot;},&quot;defaultTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Theme&quot;}}">
+const CORPUS = [
+  { title: "Bits, bytes, and integer representation", path: "systems / csapp / lec01", kind: "lecture" },
+  { title: "Two's complement", path: "concept", kind: "concept" },
+  { title: "Integer overflow", path: "concept", kind: "concept" },
+  { title: "Floating point: IEEE 754", path: "systems / csapp / lec02", kind: "lecture" },
+  { title: "Virtual memory: page table walks", path: "systems / csapp / lec09", kind: "lecture" },
+  { title: "Linking: symbols and relocation", path: "systems / csapp / lec07", kind: "lecture" },
+  { title: "Buffer overflows and stack smashing", path: "security / 6.858 / lec03", kind: "lecture" },
+  { title: "Return-oriented programming", path: "security / 6.858 / lec04", kind: "lecture" },
+  { title: "Cache coherence: MESI", path: "architecture / cs152 / lec14", kind: "lecture" },
+  { title: "Hindley–Milner type inference", path: "languages / tapl / lec06", kind: "lecture" },
+  { title: "Linearizability vs serializability", path: "concept", kind: "concept" },
+  { title: "Raft: leader election", path: "systems / 6.824 / lec05", kind: "lecture" },
+  { title: "Write-ahead logging", path: "concept", kind: "concept" },
+  { title: "CSAPP", path: "systems / csapp", kind: "course" },
+  { title: "6.1810 Operating System Engineering", path: "systems / 6.1810", kind: "course" },
+  { title: "#representation", path: "38 tags", kind: "tag" },
+  { title: "#memory", path: "38 tags", kind: "tag" }
+];
+
+class Component extends DCLogic {
+  state = { searchOpen: false, query: "", filter: "all" };
+
+  componentDidMount() {
+    const saved = (() => { try { return localStorage.getItem("cskb-theme"); } catch (e) { return null; } })();
+    const initial = saved || this.props.defaultTheme || "light";
+    document.documentElement.dataset.theme = initial;
+    if (this.props.accentColor) this.applyAccent();
+
+    this._keys = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); this.setState({ searchOpen: true }); }
+      if (e.key === "Escape") this.setState({ searchOpen: false });
+    };
+    window.addEventListener("keydown", this._keys);
+
+    this._math = setInterval(() => {
+      if (!window.katex || !this.body) return;
+      clearInterval(this._math);
+      this.body.querySelectorAll("[data-tex]").forEach(el => {
+        try { window.katex.render(el.getAttribute("data-tex"), el, { throwOnError: false }); } catch (err) {}
+      });
+      this.body.querySelectorAll("[data-tex-display]").forEach(el => {
+        try { window.katex.render(el.getAttribute("data-tex-display"), el, { throwOnError: false, displayMode: true }); } catch (err) {}
+      });
+    }, 120);
+
+    this._obs = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        document.querySelectorAll("[data-toc]").forEach(a => {
+          const on = a.getAttribute("data-toc") === en.target.id;
+          a.style.color = on ? "var(--accent)" : "var(--muted)";
+          a.style.fontWeight = on ? "600" : "400";
+          a.style.boxShadow = on ? "inset 1px 0 0 var(--accent)" : "none";
+        });
+      });
+    }, { rootMargin: "-10% 0px -70% 0px" });
+    setTimeout(() => {
+      ["s1", "s1-1", "s2", "s3", "s4", "s5"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) this._obs.observe(el);
+      });
+    }, 60);
+  }
+
+  componentDidUpdate(prev) {
+    if (prev.accentColor !== this.props.accentColor) this.applyAccent();
+    if (this.state.searchOpen && this.input) this.input.focus();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this._keys);
+    clearInterval(this._math);
+    if (this._obs) this._obs.disconnect();
+  }
+
+  applyAccent() {
+    const c = this.props.accentColor;
+    if (c) document.documentElement.style.setProperty("--accent", c);
+  }
+
+  renderVals() {
+    const q = this.state.query.trim().toLowerCase();
+    const f = this.state.filter;
+    const results = CORPUS
+      .filter(r => f === "all" || r.kind === f)
+      .filter(r => !q || r.title.toLowerCase().includes(q) || r.path.toLowerCase().includes(q))
+      .slice(0, 8);
+
+    return {
+      searchOpen: this.state.searchOpen,
+      query: this.state.query,
+      results,
+      noResults: results.length === 0,
+      bodyRef: (el) => { this.body = el; },
+      inputRef: (el) => { this.input = el; if (el) el.focus(); },
+      openSearch: () => this.setState({ searchOpen: true }),
+      closeSearch: () => this.setState({ searchOpen: false }),
+      stop: (e) => e.stopPropagation(),
+      onQuery: (e) => this.setState({ query: e.target.value }),
+      toggleTheme: () => {
+        const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem("cskb-theme", next); } catch (e) {}
+      },
+      filters: [
+        { label: "ALL", pick: () => this.setState({ filter: "all" }) },
+        { label: "LECTURES", pick: () => this.setState({ filter: "lecture" }) },
+        { label: "CONCEPTS", pick: () => this.setState({ filter: "concept" }) },
+        { label: "COURSES", pick: () => this.setState({ filter: "course" }) },
+        { label: "TAGS", pick: () => this.setState({ filter: "tag" }) }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

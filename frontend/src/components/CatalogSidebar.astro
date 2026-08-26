@@ -12,8 +12,8 @@ const { catalog, activeDomain } = Astro.props;
     <h2 class="nav-label">SPINE</h2>
     <nav class="catalog-domain-nav" aria-label="知识领域">
       {catalog.domains.map((domain) => (
-        <a href={domain.href} aria-current={domain.slug === activeDomain ? 'page' : undefined}>
-          <span>{domain.slug === activeDomain ? '▾' : '▸'} {domain.label}</span>
+        <a href={domain.href} aria-current={domain.key === activeDomain ? 'page' : undefined}>
+          <span>{domain.key === activeDomain ? '▾' : '▸'} {domain.label}</span>
           <small>{domain.courseCount}</small>
         </a>
       ))}

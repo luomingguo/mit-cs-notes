@@ -1,0 +1,4 @@
+interface:
+  display_name: "Course Notes Audit"
+  short_description: "检查单门课程的笔记规范与 RAG 就绪度"
+  default_prompt: "Use $course-notes-audit to audit this course directory against NOTESTYLE.md and report its RAG readiness."

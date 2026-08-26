@@ -5,13 +5,14 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 export type NoteEntry = CollectionEntry<'notes'>;
+export type NoteType = 'course' | 'lecture' | 'paper' | 'concept' | 'assignment' | 'project';
 
 export interface NoteData {
   title?: string;
+  type?: NoteType;
   course?: string;
   course_id?: string | number;
   lecture?: number;
-  kind?: string;
   tags?: string[];
   status?: string;
   description?: string;
@@ -40,7 +41,7 @@ export interface SearchItem {
   title: string;
   course: string;
   href: string;
-  type: 'lecture' | 'course' | 'domain';
+  type: NoteType | 'domain';
   typeLabel: string;
   excerpt: string;
 }
@@ -80,7 +81,8 @@ const DOMAIN_LABELS: Record<string, string> = {
 };
 
 const SITE_BASE = normalizeBase(process.env.DOCS_BASE ?? '/');
-const SOURCE_CATEGORIES = new Set(['arch', 'computer_sys', 'index', 'language', 'opensource', 'security', 'sw_eng', 'tcs']);
+const SOURCE_CATEGORIES = new Set(['arch', 'computer_sys', 'index', 'language', 'opensource', 'opensrc', 'security', 'sw_eng', 'tcs']);
+const DISCIPLINE_SLUGS = new Set(['cs', 'psy', 'mgnt']);
 let gitUpdatedCache: Map<string, string> | null = null;
 
 function projectRoot(): string {
@@ -130,13 +132,45 @@ export function courseIdOf(entry: NoteEntry): string {
   return id === undefined ? '' : String(id);
 }
 
+const NOTE_TYPE_LABELS: Record<NoteType, string> = {
+  course: '课程',
+  lecture: '讲义',
+  paper: '论文',
+  concept: '概念',
+  assignment: '作业',
+  project: '项目',
+};
+
+/** 显式 type 优先；路径推断只作为容错，不是 frontmatter 的替代。 */
+export function typeOf(entry: NoteEntry): NoteType {
+  const explicit = dataOf(entry).type;
+  if (explicit && explicit in NOTE_TYPE_LABELS) return explicit;
+  if (isCourseIndex(entry)) return 'course';
+  const nested = entry.id.split('/')[3];
+  if (nested === 'paper' || nested === 'concept' || nested === 'assignment' || nested === 'project') return nested;
+  const basename = entry.id.split('/').at(-1) ?? '';
+  if (/^lab\d*$/i.test(basename)) return 'assignment';
+  if (/paper$/i.test(basename)) return 'paper';
+  return 'lecture';
+}
+
+export function typeLabelOf(type: NoteType): string {
+  return NOTE_TYPE_LABELS[type];
+}
+
 export function lectureOf(entry: NoteEntry): number | undefined {
   const lecture = dataOf(entry).lecture;
   return typeof lecture === 'number' && Number.isFinite(lecture) ? lecture : undefined;
 }
 
+export function disciplineOf(id: string): string {
+  const parts = id.split('/');
+  return parts.length >= 2 ? parts[0] ?? '' : '';
+}
+
 export function categoryOf(id: string): string {
-  return id.split('/')[0] || 'index';
+  const parts = id.split('/');
+  return disciplineOf(id) ? parts[1] ?? '' : parts[0] || 'index';
 }
 
 export function canonicalDomainSlug(category: string): string {
@@ -144,11 +178,16 @@ export function canonicalDomainSlug(category: string): string {
 }
 
 export function courseSlugOf(id: string): string {
-  return id.split('/')[1] || id.split('/')[0] || 'notes';
+  const parts = id.split('/');
+  return disciplineOf(id) ? parts[2] || parts[1] || 'notes' : parts[0] || 'notes';
 }
 
 export function courseKeyOf(id: string): string {
-  return `${categoryOf(id)}/${courseSlugOf(id)}`;
+  return [disciplineOf(id), categoryOf(id), courseSlugOf(id)].filter(Boolean).join('/');
+}
+
+export function domainKeyOf(id: string): string {
+  return [disciplineOf(id), canonicalDomainSlug(categoryOf(id))].filter(Boolean).join('/');
 }
 
 export function domainLabelOf(id: string): string {
@@ -162,20 +201,33 @@ export function isRootIndex(entry: NoteEntry): boolean {
 
 export function isDomainIndex(entry: NoteEntry): boolean {
   const parts = entry.id.split('/');
-  return parts.length === 2 && parts[1] === 'index';
+  return parts.length === 3 && parts[2] === 'index';
 }
 
 export function isCourseIndex(entry: NoteEntry): boolean {
   const parts = entry.id.split('/');
-  return parts.length >= 3 && parts.at(-1) === 'index';
+  return parts.length >= 4 && parts.at(-1) === 'index';
 }
 
-/** Preserve the VitePress public rewrite: /zh/:category/:course/* -> /zh/:course/*. */
+function sourcePartsToPublicParts(parts: string[]): string[] {
+  if (parts.length < 2) return parts;
+  const [discipline, category = '', ...rest] = parts;
+  const publicDomain = canonicalDomainSlug(category);
+
+  // 计算机课程沿用迁移前的稳定 URL；其他学科保留学科前缀来隔离同名课程。
+  if (discipline === 'cs') {
+    if (rest.length === 1 && rest[0] === 'index') return [publicDomain];
+    return rest;
+  }
+  if (rest.length === 1 && rest[0] === 'index') return [discipline, publicDomain];
+  return [discipline, ...rest];
+}
+
+/** Stable public routes: cs keeps /zh/:course/*; other disciplines use /zh/:discipline/:course/*. */
 export function idToUrlPath(id: string): string {
   const parts = id.split('/');
   if (id === 'index') return '';
-  if (parts.length === 2 && parts[1] === 'index') return parts[0];
-  const publicParts = parts.length >= 3 ? parts.slice(1) : parts;
+  const publicParts = sourcePartsToPublicParts(parts);
   return publicParts.join('/').replace(/\/index$/, '').replace(/^index$/, '');
 }
 
@@ -187,7 +239,11 @@ export function idToHref(id: string): string {
 
 function resolvedContentAssetPath(resolved: string): string {
   const parts = resolved.split('/');
-  const publicParts = parts.length >= 3 ? parts.slice(1) : parts;
+  const [discipline, category = '', ...rest] = parts;
+  const publicDomain = canonicalDomainSlug(category);
+  const publicParts = parts.length === 3
+    ? discipline === 'cs' ? [publicDomain, ...rest] : [discipline, publicDomain, ...rest]
+    : sourcePartsToPublicParts(parts);
   return withBasePath(`/zh/${publicParts.join('/')}`);
 }
 
@@ -196,8 +252,19 @@ function canonicalAbsoluteHref(href: string): string {
   let hrefPath = match?.[1] ?? href;
   const suffix = match?.[2] ?? '';
   const parts = hrefPath.split('/').filter(Boolean);
-  if (parts[0] === 'zh' && parts.length >= 3 && SOURCE_CATEGORIES.has(parts[1])) {
-    hrefPath = `/${['zh', ...parts.slice(2)].join('/')}${hrefPath.endsWith('/') ? '/' : ''}`;
+  if (parts[0] === 'zh') {
+    const routeParts = parts.slice(1);
+    let sourceId = '';
+    if (routeParts.length >= 3 && DISCIPLINE_SLUGS.has(routeParts[0])) {
+      sourceId = routeParts.join('/');
+    } else if (routeParts.length >= 2 && SOURCE_CATEGORIES.has(routeParts[0])) {
+      sourceId = ['cs', ...routeParts].join('/');
+    }
+    if (sourceId) {
+      const publicPath = idToUrlPath(sourceId);
+      const directory = sourceId.endsWith('/index') || hrefPath.endsWith('/');
+      hrefPath = `/zh/${publicPath}${directory ? '/' : ''}`;
+    }
   }
   return `${withBasePath(hrefPath)}${suffix}`;
 }
@@ -322,26 +389,50 @@ export function buildTaxonomy(entries: NoteEntry[], currentId: string): NavDomai
   const byDomain = new Map<string, { notes: number; courses: Set<string> }>();
   for (const entry of entries) {
     if (entry.id.endsWith('/index') || !entry.id.includes('/')) continue;
-    const slug = canonicalDomainSlug(categoryOf(entry.id));
-    const bucket = byDomain.get(slug) ?? { notes: 0, courses: new Set<string>() };
+    const key = domainKeyOf(entry.id);
+    const bucket = byDomain.get(key) ?? { notes: 0, courses: new Set<string>() };
     bucket.notes += 1;
     bucket.courses.add(courseKeyOf(entry.id));
-    byDomain.set(slug, bucket);
+    byDomain.set(key, bucket);
   }
-  const currentDomain = canonicalDomainSlug(categoryOf(currentId));
+  const currentDomain = domainKeyOf(currentId);
   return [...byDomain.entries()]
-    .map(([slug, value]) => ({
-      slug,
-      label: DOMAIN_LABELS[slug] ?? slug.replaceAll('_', ' '),
-      href: withBasePath(`/zh/${slug}/`),
-      noteCount: value.notes,
-      courseCount: value.courses.size,
-      active: slug === currentDomain,
-    }))
+    .map(([key, value]) => {
+      const [discipline, slug] = key.split('/');
+      return {
+        slug: key,
+        label: DOMAIN_LABELS[slug] ?? slug.replaceAll('_', ' '),
+        href: idToHref(`${discipline}/${slug}/index`),
+        noteCount: value.notes,
+        courseCount: value.courses.size,
+        active: key === currentDomain,
+      };
+    })
     .sort((a, b) => Number(b.active) - Number(a.active) || a.label.localeCompare(b.label, 'zh'));
 }
 
+function cleanExcerpt(source: string): string {
+  return source
+    .replace(/^\s*[-*+]\s+/gm, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[*_`>#]/g, '')
+    .replace(/\$([^$]+)\$/g, '$1')
+    .replace(/^:::[^\n]*$/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** 提取唯一的 H2 TL;DR；H3 属于摘要，遇到下一个 H1/H2 才结束。 */
+export function extractTldr(source: string, maxLength = Number.POSITIVE_INFINITY): string {
+  const withoutFrontmatter = source.replace(/^---[\s\S]*?---\s*/, '');
+  const match = withoutFrontmatter.match(/^##[ \t]+TL;DR[ \t]*\r?\n([\s\S]*?)(?=^#{1,2}[ \t]+|(?![\s\S]))/mi);
+  const text = match ? cleanExcerpt(match[1]) : '';
+  return text.length > maxLength ? `${text.slice(0, maxLength).trim()}…` : text;
+}
+
 export function plainExcerpt(source: string, maxLength = 180): string {
+  const tldr = extractTldr(source, maxLength);
+  if (tldr) return tldr;
   const withoutFrontmatter = source.replace(/^---[\s\S]*?---\s*/, '');
   const paragraphs = withoutFrontmatter
     .split(/\n\s*\n/)
@@ -350,19 +441,13 @@ export function plainExcerpt(source: string, maxLength = 180): string {
       block.length > 35 &&
       !/^(#|```|:::|\||!\[|<img|---|\$\$)/.test(block),
     )
-    .map((block) =>
-      block
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-        .replace(/[*_`>#]/g, '')
-        .replace(/\$([^$]+)\$/g, '$1')
-        .replace(/\s+/g, ' ')
-        .trim(),
-    );
+    .map(cleanExcerpt);
   const text = paragraphs[0] || '该文档暂无可提取的正文摘要。';
   return text.length > maxLength ? `${text.slice(0, maxLength).trim()}…` : text;
 }
 
 export function buildSearchIndex(entries: NoteEntry[]): SearchItem[] {
+  const courseIndexes = new Map(entries.filter(isCourseIndex).map((entry) => [courseKeyOf(entry.id), entry]));
   const domains = entries
     .filter(isDomainIndex)
     .map((entry) => ({
@@ -387,15 +472,19 @@ export function buildSearchIndex(entries: NoteEntry[]): SearchItem[] {
     }));
   const notes = entries
     .filter((entry) => !entry.id.endsWith('/index') && !isRootIndex(entry))
-    .map((entry) => ({
-      id: entry.id,
-      title: titleOf(entry),
-      course: courseOf(entry),
-      href: idToHref(entry.id),
-      type: 'lecture' as const,
-      typeLabel: '讲义',
-      excerpt: plainExcerpt(entry.body ?? '', 96),
-    }));
+    .map((entry) => {
+      const parent = courseIndexes.get(courseKeyOf(entry.id));
+      const type = typeOf(entry);
+      return {
+        id: entry.id,
+        title: titleOf(entry),
+        course: parent ? courseOf(parent) : courseOf(entry),
+        href: idToHref(entry.id),
+        type,
+        typeLabel: typeLabelOf(type),
+        excerpt: plainExcerpt(entry.body ?? '', 96),
+      };
+    });
   return [...domains, ...courses, ...notes];
 }
 
@@ -441,7 +530,9 @@ export function lastUpdatedOf(entry: NoteEntry): string | null {
           continue;
         }
         if (!date || !line.startsWith('docs/zh/') || !line.endsWith('.md')) continue;
-        const id = line.slice('docs/zh/'.length, -'.md'.length);
+        const historicalId = line.slice('docs/zh/'.length, -'.md'.length);
+        const first = historicalId.split('/')[0];
+        const id = SOURCE_CATEGORIES.has(first) ? `cs/${historicalId}` : historicalId;
         if (!gitUpdatedCache.has(id)) gitUpdatedCache.set(id, date);
       }
     } catch {

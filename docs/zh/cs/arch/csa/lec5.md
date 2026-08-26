@@ -1,0 +1,155 @@
+---
+title: '指令流水线——冒险消解与时序约束（Instruction Pipelining: Hazard Resolution, Timing Constraints）'
+type: lecture
+lecture: 5
+tags: []
+status: complete
+---
+# Lec 05 指令流水线——冒险消解与时序约束（*Instruction Pipelining: Hazard Resolution, Timing Constraints*）
+
+> MIT 6.5900 Fall 2024 · Daniel Sanchez 主题：理想流水线与 CPI、三类冒险、数据冒险消解（停顿/旁路/推测）、控制冒险与跳转/分支、异常处理
+
+------
+
+## 一、理想流水线与吞吐
+
+五级流水线 RISC-V：F（取指）/ D（译码）/ E（执行）/ M（访存）/ W（写回）。
+
+稳态下：**CPI = 1，IPC = 1**，每条指令 5 周期延迟，在飞指令数 $N=5$。
+
+$$ T = \frac{N}{L} $$
+
+> 流水线**提高时钟频率**，但**指令依赖可能增大 CPI**。
+
+------
+
+## 二、三类冒险（*Hazards*）
+
+流水线中指令可能这样相互作用：
+
+- **结构冒险**（*Structural Hazard*）：某指令需要的资源正被流水线中另一指令占用；
+- **数据冒险**（*Data Hazard*）：某指令依赖更早指令产生的值；
+- **控制冒险**（*Control Hazard*）：依赖关系在于计算下一个 PC（分支、中断）。
+
+------
+
+## 三、数据冒险及其消解
+
+例：`a1 ← a0 + 10; a3 ← a1 + 12` —— 第二条在第一条写回前读 a1，读到**陈旧**值。
+
+三种策略：
+
+- **策略 1 停顿**（*Stall*）：冻结较早的流水级等待结果可用；
+- **策略 2 旁路**（*Bypass / Forwarding*）：结果一算出就尽快送到较早的流水级；
+- **策略 3 推测**（*Speculate*）：对依赖关系猜测——猜对无需特殊动作，猜错则 kill 并重启。
+
+### 策略 1：停顿
+
+当译码（D）级指令读取的寄存器是任一在飞指令（在 E/M/W）要写的目的寄存器时，停顿 D 与 F 级。
+
+**停顿控制逻辑**：把译码级指令的源寄存器与未提交指令的目的寄存器比较。但并非每条指令都写/读寄存器，故需 **we（写使能）**与 **re（读使能）**。
+
+源/目的寄存器表：
+
+| 类型      | 源       | 目的 |
+| --------- | -------- | ---- |
+| ALU       | rs1, rs2 | rd   |
+| ALUi / LW | rs1      | rd   |
+| SW        | rs1, rs2 | —    |
+| BRANCH    | rs1, rs2 | —    |
+| JAL       | —        | rd   |
+| JALR      | rs1      | rd   |
+
+**停顿信号**（部分）：
+
+$$ \text{stall} = \big[(rs1_D{=}rd_E)we_E + (rs1_D{=}rd_M)we_M + (rs1_D{=}rd_W)we_W\big]re1_D + (\text{rs2 同理}) $$
+
+### Load/Store 冒险
+
+`M[(a1)+7] ← (a2); a4 ← M[(a3)+5]` —— 若 $(a1)+7 = (a3)+5$ 则有数据冒险，但因**存储系统一周期完成写**而避免。Load/Store 冒险有时在流水线、有时在存储系统本身解决。
+
+### 策略 2：旁路
+
+每次停顿引入一个气泡 ⇒ CPI > 1。数据其实在 **Execute 之后**就可用，可加一条**旁路通路**把 ALU 输出送回其输入。
+
+**旁路信号**：$\text{ASrc} = (rs1_D{=}rd_E)\cdot we_E \cdot re1_D$。但只有 ALU/ALUi 能从此旁路受益，Load 与 JAL 不能 → 把 $we_E$ 拆成 **we-bypass** 与 **we-stall** 两部分。
+
+**全旁路数据通路**后，是否还需停顿？仍需——**因为 Load 有两周期延迟**：
+
+$$ \text{stall} = (rs1_D{=}rd_E)(opcode_E{=}LW)(rd_E{\neq}0)re1_D + (\text{rs2 同理}) $$
+
+------
+
+## 四、控制冒险
+
+### 下一个 PC 需要什么
+
+| 指令            | 需要                                 | 何时知道 |
+| --------------- | ------------------------------------ | -------- |
+| JAL             | opcode、offset、PC                   | —        |
+| JALR            | opcode、offset、寄存器值             | —        |
+| 条件分支（BEQ） | opcode、offset、PC、寄存器（判条件） | —        |
+| 其他（算术）    | opcode、PC                           | —        |
+
+各项已知的阶段：**PC → 取指**；**opcode、offset → 译码**；**寄存器值 → 译码**；**分支条件 ((rs1)==(rs2)) → 执行**（或译码）。
+
+### 推测下一个 PC 为 PC+4
+
+一个好的猜测是 `PC+4`。猜错（下一条不是 PC+4）时需 **kill**。
+
+**流水化跳转**：要 kill 一条已取指令，就在 IR 中插入 nop：
+
+$$ \text{IRSrcD} = \begin{cases} \text{nop} & opcode_D \in {JAL, JALR} \ \text{IM} & \text{其他} \end{cases} $$
+
+> JAL/JALR 跳转后需 kill 紧随的一条指令（一个气泡）。
+
+### 流水化条件分支
+
+分支条件直到**执行级**才知道。译码级该怎么办？**继续推测**——译码 I3、取指 I4。若分支 taken：kill 后续两条指令，且译码级指令无效（故 stall 信号无效，taken 时不停顿）。
+
+控制方程（PC 与 IR 的多路选择，**优先较老的指令**即执行级优先于译码级）：
+
+```text
+IRSrcD = case opcodeE: Taken branch → nop
+                       else → (case opcodeD: JAL/JALR → nop; else → IM)
+IRSrcE = case opcodeE: Taken branch → nop
+                       else → stall·nop + !stall·IR_D
+PCSrc  = case opcodeE: Taken branch → pc+imm (来自 E)
+                       else → (case opcodeD: JAL → pc+imm(D); JALR → rs1+imm(D); else → pc+4)
+```
+
+> nop ⇒ kill；pc+imm/rs1+imm ⇒ restart；pc+4 ⇒ speculate（推测）。
+
+### 减少分支代价
+
+- **在译码级解析**：在译码级加一个额外比较器，可去掉一个气泡（流水线图与跳转相同）；
+- **分支延迟槽**（*Branch Delay Slot*）：改变 ISA 语义，使跳转/分支后那条指令**总被执行**，给编译器机会填入有用指令（否则那里会是气泡）；
+- 其他技术：**分支预测**（后续讲，可大幅降低分支代价）。
+
+------
+
+## 五、异常引起的控制冒险
+
+- 指令可能在不同流水级遭遇异常，须**优先处理较早指令的异常**；
+- 典型策略：**记录异常，在到达提交点（修改体系结构状态之处）时处理第一个异常**——在提交点更新 Cause/EPC、kill 各级、从处理程序 PC 取指；异步中断也在提交点注入。
+
+------
+
+## 六、为何 CPI > 1
+
+- **全旁路可能太贵**：通常只提供常用通路，某些少用旁路会增加周期时间、抵消降 CPI 的好处；
+- **Load 有两周期延迟**：load 后一条不能用其结果；MIPS-I 定义了软件可见的 **load 延迟槽**（编译器调度独立指令或插 NOP），MIPS-II 移除；
+- **条件分支/跳转/异常引入气泡**：kill 分支后的指令（无延迟槽时，如 MIPS）。
+
+> 有软件可见延迟槽的机器可能执行大量编译器插入的 NOP。
+
+------
+
+## 本讲小结
+
+- 流水线靠提高时钟频率提速，但三类冒险（结构/数据/控制）会增大 CPI；
+- 数据冒险用**停顿、旁路、推测**消解：全旁路后只剩 **Load-use** 的一周期停顿；
+- 控制冒险用**推测 PC+4** + kill 处理，分支可移到译码级解析或用**延迟槽/分支预测**降代价；
+- 异常作为控制冒险，用**提交点统一处理 + 优先较早指令**保证精确性。
+
+> 下一讲：超标量与记分牌流水线

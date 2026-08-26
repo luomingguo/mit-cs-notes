@@ -8,13 +8,17 @@ CREATE EXTENSION IF NOT EXISTS vector;
 -- 也用来判断哪些文件自上次 ingest 后变过。
 -- ============================================================
 CREATE TABLE IF NOT EXISTS documents (
-  path         TEXT PRIMARY KEY,        -- 相对 docs/ 的源码路径，如 zh/computer_sys/os/lec5.md
+  path         TEXT PRIMARY KEY,        -- 相对 docs/ 的源码路径，如 zh/cs/computer_sys/os/lec5.md
   url          TEXT NOT NULL,           -- 站点真实 URL，如 /zh/os/lec5（已应用 rewrites）
   lang         TEXT NOT NULL,           -- zh | en
+  discipline   TEXT NOT NULL DEFAULT '',-- cs | psy | mgnt；无学科层的全局页为空
   course_slug  TEXT NOT NULL,           -- os
   course       TEXT NOT NULL,           -- 6.1810 操作系统工程
-  category     TEXT NOT NULL,           -- computer_sys（config.mts 里的分类段）
+  course_id    TEXT NOT NULL DEFAULT '',-- 6.1810；子页继承课程 index.md
+  category     TEXT NOT NULL,           -- computer_sys（源目录中的分类段）
   title        TEXT NOT NULL,           -- Lec 5 虚拟内存 & 页表
+  doc_type     TEXT NOT NULL DEFAULT '',-- course | lecture | paper | concept | assignment | project
+  tldr         TEXT NOT NULL DEFAULT '',-- 页面 ## TL;DR 的原始摘要内容
   outline      TEXT NOT NULL DEFAULT '',-- 二级标题拼接，给路径生成器看结构用
   chars        INTEGER NOT NULL DEFAULT 0,
   file_hash    TEXT NOT NULL,           -- 整篇内容哈希，用于增量判断
@@ -41,7 +45,10 @@ CREATE TABLE IF NOT EXISTS chunks (
   content      TEXT NOT NULL,
   content_hash TEXT NOT NULL,           -- 只有它变了才重新调用嵌入 API
   embedding    vector(__EMBED_DIM__),
-  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  block_kind   TEXT NOT NULL DEFAULT 'normal',
+  doc_type     TEXT NOT NULL DEFAULT '',
+  tags         TEXT[] NOT NULL DEFAULT '{}'
 );
 
 CREATE INDEX IF NOT EXISTS chunks_doc_idx ON chunks (doc_path);
@@ -83,21 +90,31 @@ CREATE OR REPLACE VIEW content_gaps AS
 -- 库不用重建，重建 chunks 表意味着重新调一遍嵌入 API，那是要花钱的。
 -- ============================================================
 
--- kind：theory | system | source | design，NOTESTYLE.md 的四类骨架。
--- tags：人工填的概念词。status：complete | draft | stub。
-ALTER TABLE documents ADD COLUMN IF NOT EXISTS kind   TEXT NOT NULL DEFAULT '';
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS tags   TEXT[] NOT NULL DEFAULT '{}';
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'complete';
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS discipline TEXT NOT NULL DEFAULT '';
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS course_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS doc_type TEXT NOT NULL DEFAULT '';
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS tldr TEXT NOT NULL DEFAULT '';
 
-CREATE INDEX IF NOT EXISTS documents_kind_idx ON documents (kind);
 CREATE INDEX IF NOT EXISTS documents_tags_idx ON documents USING gin (tags);
+CREATE INDEX IF NOT EXISTS documents_discipline_idx ON documents (discipline);
+CREATE INDEX IF NOT EXISTS documents_type_idx ON documents (doc_type);
+
+-- 历史 kind 分类已由目录归属和 doc_type 替代。
+DROP INDEX IF EXISTS documents_kind_idx;
+ALTER TABLE documents DROP COLUMN IF EXISTS kind;
 
 -- block_kind：这一块落在哪种语义容器里。
 -- insight = 作者本人的判断，是这批笔记相对讲义的增量价值，检索时要能加权。
 ALTER TABLE chunks ADD COLUMN IF NOT EXISTS block_kind TEXT NOT NULL DEFAULT 'normal';
+ALTER TABLE chunks ADD COLUMN IF NOT EXISTS doc_type TEXT NOT NULL DEFAULT '';
+ALTER TABLE chunks ADD COLUMN IF NOT EXISTS tags TEXT[] NOT NULL DEFAULT '{}';
 
 CREATE INDEX IF NOT EXISTS chunks_block_kind_idx ON chunks (block_kind)
   WHERE block_kind <> 'normal';
+CREATE INDEX IF NOT EXISTS chunks_type_idx ON chunks (doc_type);
+CREATE INDEX IF NOT EXISTS chunks_tags_idx ON chunks USING gin (tags);
 
 -- 每门课有多少「我的理解」—— 补写进度看这个视图。
 CREATE OR REPLACE VIEW insight_coverage AS

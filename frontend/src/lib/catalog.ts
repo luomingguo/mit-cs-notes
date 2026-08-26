@@ -6,6 +6,8 @@ import {
   courseKeyOf,
   courseOf,
   dataOf,
+  disciplineOf,
+  domainKeyOf,
   domainLabelOf,
   idToHref,
   isCourseIndex,
@@ -21,6 +23,8 @@ import {
 export interface CourseSummary {
   key: string;
   slug: string;
+  disciplineSlug: string;
+  domainKey: string;
   domainSlug: string;
   domainLabel: string;
   title: string;
@@ -36,7 +40,9 @@ export interface CourseSummary {
 }
 
 export interface DomainSummary {
+  key: string;
   slug: string;
+  disciplineSlug: string;
   label: string;
   href: string;
   description: string;
@@ -93,12 +99,12 @@ function courseStatus(indexEntry: NoteEntry | null): string {
 export function buildCatalog(entries: NoteEntry[]): LibraryCatalog {
   const domainIndexes = new Map<string, NoteEntry>();
   for (const entry of entries.filter(isDomainIndex)) {
-    domainIndexes.set(canonicalDomainSlug(categoryOf(entry.id)), entry);
+    domainIndexes.set(domainKeyOf(entry.id), entry);
   }
 
   const groupedCourses = new Map<string, NoteEntry[]>();
   for (const entry of entries) {
-    if (entry.id.split('/').length < 3) continue;
+    if (entry.id.split('/').length < 4) continue;
     const key = courseKeyOf(entry.id);
     const group = groupedCourses.get(key) ?? [];
     group.push(entry);
@@ -118,12 +124,16 @@ export function buildCatalog(entries: NoteEntry[]): LibraryCatalog {
     });
     const indexEntry = sorted.find(isCourseIndex) ?? null;
     const first = indexEntry ?? sorted[0];
+    const disciplineSlug = disciplineOf(first.id);
+    const domainKey = domainKeyOf(first.id);
     const domainSlug = canonicalDomainSlug(categoryOf(first.id));
     const noteEntries = sorted.filter((entry) => !isCourseIndex(entry));
     const tags = [...new Set(sorted.flatMap(tagsOf))].sort((a, b) => a.localeCompare(b, 'zh'));
     return {
       key,
-      slug: key.split('/')[1],
+      slug: key.split('/').at(-1) ?? key,
+      disciplineSlug,
+      domainKey,
       domainSlug,
       domainLabel: domainLabelOf(first.id),
       title: indexEntry ? courseOf(indexEntry) : courseOf(first),
@@ -140,21 +150,25 @@ export function buildCatalog(entries: NoteEntry[]): LibraryCatalog {
   }).sort((a, b) => a.domainLabel.localeCompare(b.domainLabel, 'zh') || a.title.localeCompare(b.title, 'zh'));
 
   const coursesByDomain = new Map<string, CourseSummary[]>();
+  const coursesByKey = new Map(courses.map((course) => [course.key, course]));
   for (const course of courses) {
-    const group = coursesByDomain.get(course.domainSlug) ?? [];
+    const group = coursesByDomain.get(course.domainKey) ?? [];
     group.push(course);
-    coursesByDomain.set(course.domainSlug, group);
+    coursesByDomain.set(course.domainKey, group);
   }
 
-  const domainSlugs = new Set([...domainIndexes.keys(), ...coursesByDomain.keys()]);
-  const domains: DomainSummary[] = [...domainSlugs].map((slug) => {
-    const domainCourses = coursesByDomain.get(slug) ?? [];
-    const indexEntry = domainIndexes.get(slug) ?? null;
+  const domainKeys = new Set([...domainIndexes.keys(), ...coursesByDomain.keys()]);
+  const domains: DomainSummary[] = [...domainKeys].map((key) => {
+    const [disciplineSlug, slug] = key.split('/');
+    const domainCourses = coursesByDomain.get(key) ?? [];
+    const indexEntry = domainIndexes.get(key) ?? null;
     const label = indexEntry ? titleOf(indexEntry) : domainCourses[0]?.domainLabel ?? slug.replaceAll('_', ' ');
     return {
+      key,
       slug,
+      disciplineSlug,
       label,
-      href: idToHref(indexEntry?.id ?? `${slug}/index`),
+      href: idToHref(indexEntry?.id ?? `${disciplineSlug}/${slug}/index`),
       description: domainDescription(indexEntry, domainCourses),
       heroImage: domainHeroImage(indexEntry, label),
       noteCount: domainCourses.reduce((sum, course) => sum + course.noteCount, 0),
@@ -167,13 +181,16 @@ export function buildCatalog(entries: NoteEntry[]): LibraryCatalog {
 
   const recent = entries
     .filter((entry) => !entry.id.endsWith('/index'))
-    .map((entry) => ({
-      title: titleOf(entry),
-      href: idToHref(entry.id),
-      course: courseIdOf(entry) || courseOf(entry),
-      status: String(dataOf(entry).status ?? '未标注'),
-      updated: lastUpdatedOf(entry) ?? '',
-    }))
+    .map((entry) => {
+      const parent = coursesByKey.get(courseKeyOf(entry.id));
+      return {
+        title: titleOf(entry),
+        href: idToHref(entry.id),
+        course: parent?.courseId || parent?.title || courseIdOf(entry) || courseOf(entry),
+        status: String(dataOf(entry).status ?? '未标注'),
+        updated: lastUpdatedOf(entry) ?? '',
+      };
+    })
     .filter((entry) => entry.updated)
     .sort((a, b) => b.updated.localeCompare(a.updated) || a.title.localeCompare(b.title, 'zh'))
     .slice(0, 8);
@@ -189,8 +206,8 @@ export function buildCatalog(entries: NoteEntry[]): LibraryCatalog {
 }
 
 export function domainForEntry(catalog: LibraryCatalog, entry: NoteEntry): DomainSummary | null {
-  const slug = canonicalDomainSlug(categoryOf(entry.id));
-  return catalog.domains.find((domain) => domain.slug === slug) ?? null;
+  const key = domainKeyOf(entry.id);
+  return catalog.domains.find((domain) => domain.key === key) ?? null;
 }
 
 export function courseForEntry(catalog: LibraryCatalog, entry: NoteEntry): CourseSummary | null {

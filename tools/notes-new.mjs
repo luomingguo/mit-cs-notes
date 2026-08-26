@@ -1,149 +1,206 @@
 #!/usr/bin/env node
-// 按 NOTESTYLE.md 的骨架生成一篇新笔记。
+// 按 NOTESTYLE.md 的页面职责生成一篇新笔记。
 //
-//   npm run notes:new -- --course os --lecture 21
-//   npm run notes:new -- --course os --lecture 21 --title "网络栈" --en "Network Stack"
-//   npm run notes:new -- --course postgresql --slug queries-05-nested-loop --title "嵌套循环连接"
-//
-// kind 从课程目录推导（notes-lib.mjs 的 KIND_BY_COURSE），也可以 --kind 覆盖。
+//   npm run notes:new -- --course os --lecture 21 --title "网络栈"
+//   npm run notes:new -- --course cca --type concept --slug cache-locality --title "缓存局部性"
+//   npm run notes:new -- --discipline psy --course intro --lecture 2 --title "研究方法"
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { DOCS_DIR, KIND_BY_COURSE, C, stringifyFrontmatter, courseName } from './notes-lib.mjs'
+import { DOCS_DIR, NOTE_TYPES, C, stringifyFrontmatter, courseName } from './notes-lib.mjs'
 
-const flags = Object.fromEntries(
-  process.argv.slice(2).filter((a) => a.startsWith('--')).map((a) => {
-    const [k, v] = a.replace(/^--/, '').split('=')
-    return [k, v ?? true]
-  }),
-)
-
-// --course os --lecture 21 这种写法里值会跟在后面，一并收进来
 const argv = process.argv.slice(2)
+const flags = {}
 for (let i = 0; i < argv.length; i++) {
-  if (argv[i].startsWith('--') && !argv[i].includes('=') && argv[i + 1] && !argv[i + 1].startsWith('--')) {
-    flags[argv[i].replace(/^--/, '')] = argv[i + 1]
+  const arg = argv[i]
+  if (!arg.startsWith('--')) continue
+  const [rawKey, inline] = arg.replace(/^--/, '').split('=', 2)
+  if (inline !== undefined) flags[rawKey] = inline
+  else if (argv[i + 1] && !argv[i + 1].startsWith('--')) flags[rawKey] = argv[++i]
+  else flags[rawKey] = true
+}
+
+async function findCourses(docsDir, discipline, wantedSlug) {
+  const disciplineDir = path.join(docsDir, 'zh', discipline)
+  const found = []
+  let categories = []
+  try {
+    categories = await fs.readdir(disciplineDir, { withFileTypes: true })
+  } catch {
+    return found
   }
+  for (const category of categories) {
+    if (!category.isDirectory() || category.name.startsWith('.')) continue
+    if (flags.category && category.name !== flags.category) continue
+    const candidate = path.join(disciplineDir, category.name, wantedSlug)
+    try {
+      if ((await fs.stat(candidate)).isDirectory()) found.push({ category: category.name, dir: candidate })
+    } catch { /* 不是这门课 */ }
+  }
+  return found
 }
 
 if (!flags.course) {
-  console.error('用法: npm run notes:new -- --course <课程目录名> --lecture <N> [--title 标题] [--en English]')
-  console.error('\n可用课程：')
-  for (const k of Object.keys(KIND_BY_COURSE)) console.error(`  ${k.split('/')[1].padEnd(34)} ${KIND_BY_COURSE[k]}`)
+  console.error('用法: npm run notes:new -- --course <课程目录名> (--lecture <N> | --type <类型> --slug <文件名>) [--discipline cs] [--category arch] [--title 标题]')
   process.exit(1)
 }
 
-const courseKey = Object.keys(KIND_BY_COURSE).find((k) => k.endsWith(`/${flags.course}`))
-if (!courseKey) {
-  console.error(C.red(`未知课程 "${flags.course}"，先在 tools/notes-lib.mjs 的 KIND_BY_COURSE 里登记`))
-  process.exit(1)
-}
-
-const [category, slug] = courseKey.split('/')
-const kind = flags.kind ?? KIND_BY_COURSE[courseKey]
 const docsDir = path.resolve(DOCS_DIR)
-const course = await courseName(docsDir, 'zh', category, slug, slug)
-const courseId = course.match(/^(\d+[.\-][\dA-Za-z.]+)/)?.[1]
-
-const title = flags.title ?? '待填标题'
-const en = flags.en ? `（*${flags.en}*）` : ''
-const lecture = flags.lecture ? Number(flags.lecture) : undefined
-const basename = flags.slug ?? (lecture ? `lec${lecture}` : null)
-
-if (!basename) {
-  console.error(C.red('需要 --lecture <N> 或 --slug <文件名>'))
+const discipline = String(flags.discipline ?? 'cs')
+const matches = await findCourses(docsDir, discipline, String(flags.course))
+if (matches.length === 0) {
+  console.error(C.red(`找不到课程目录 docs/zh/${discipline}/*/${flags.course}`))
+  process.exit(1)
+}
+if (matches.length > 1) {
+  console.error(C.red(`课程目录名不唯一，请加 --category：${matches.map((m) => m.category).join(', ')}`))
   process.exit(1)
 }
 
-const file = path.join(docsDir, 'zh', category, slug, `${basename}.md`)
+const { category, dir: courseDir } = matches[0]
+const lecture = flags.lecture === undefined ? undefined : Number(flags.lecture)
+if (lecture !== undefined && (!Number.isInteger(lecture) || lecture <= 0)) {
+  console.error(C.red('--lecture 必须是正整数'))
+  process.exit(1)
+}
+
+const noteType = String(flags.type ?? (lecture ? 'lecture' : ''))
+if (!noteType || !NOTE_TYPES.has(noteType) || noteType === 'course') {
+  console.error(C.red('--type 必须是 lecture|paper|concept|assignment|project；课程页请直接维护 index.md'))
+  process.exit(1)
+}
+if (lecture && noteType !== 'lecture') {
+  console.error(C.red('--lecture 只能和 type=lecture 一起使用'))
+  process.exit(1)
+}
+
+const basename = String(flags.slug ?? (lecture ? `lec${lecture}` : ''))
+if (!basename || !/^[a-z0-9][a-z0-9-]*$/i.test(basename)) {
+  console.error(C.red('需要 --slug <kebab-case 文件名>，或为 lecture 提供 --lecture <N>'))
+  process.exit(1)
+}
+
+const targetDir = noteType === 'lecture' ? courseDir : path.join(courseDir, noteType)
+const file = path.join(targetDir, `${basename}.md`)
 try {
   await fs.access(file)
   console.error(C.red(`${path.relative(process.cwd(), file)} 已存在，不覆盖`))
   process.exit(1)
 } catch { /* 不存在，正常 */ }
 
-const fm = { title, course, ...(courseId ? { course_id: courseId } : {}), ...(lecture ? { lecture } : {}), kind, tags: [], status: 'draft' }
-
-const h1 = lecture ? `# Lec ${lecture} ${title}${en}` : `# ${title}${en}`
-const crumb = `> ${course}${lecture ? ` · Lecture ${lecture}` : ''} · 关键词：（填 4–6 个概念词）`
-
-// NOTESTYLE.md 第七节的四类骨架
-const BODY = {
-  theory: `## 0. 问题
-
-（要解决的是什么？给出形式化定义。）
-
-## 1. 构造
-
-（方案本身。）
-
-## 2. 关键性质
-
-::: definition
-（安全性 / 复杂度 / 正确性。）
-:::
-
-## 3. 工程视角
-
-（真实系统里怎么用，有什么坑。）
-`,
-  system: `## 本讲定位
-
-（承上启下。用一句具体的问题立住动机，别写"本讲介绍 X"。）
-
-## 1. 机制
-
-（这个东西是什么、解决什么。）
-
-## 2. 实现走读
-
-（源码或伪码。每段代码前要有一句散文说明它在做什么。）
-
-## 3. 权衡与代价
-
-（为什么不用另一种方案。）
-`,
-  source: `## 引言
-
-（显式承接上一篇 + 预告本篇。）
-
-## （主体，按递进拆小节）
-
-## 代价与关键因素
-`,
-  design: `## 场景
-
-（什么情况下会遇到这个问题。）
-
-## 原则
-
-（抽象出的设计原则。）
-
-## 案例
-
-## 反例与坑
-
-（这一节往往比正面案例更有价值。）
-`,
+const course = await courseName(docsDir, 'zh', discipline, category, String(flags.course), String(flags.course))
+const title = String(flags.title ?? '待填标题')
+const en = flags.en ? `（*${flags.en}*）` : ''
+const fm = {
+  title,
+  type: noteType,
+  ...(lecture ? { lecture } : {}),
+  tags: [],
+  status: 'draft',
+  ...(flags.source ? { source: String(flags.source) } : {}),
 }
 
+const bodies = {
+  lecture: `## 本讲要解决的问题
+
+（说明动机，以及它承接或解锁的知识。）
+
+## 核心机制
+
+（解释概念、过程与因果关系。）
+
+## 例子与实现
+
+（用例子、公式、代码或图验证机制。）
+
+## 权衡与边界
+
+（什么时候有效，代价是什么，容易在哪里误用。）`,
+  paper: `## 研究问题与主张
+
+（论文试图解决什么，核心主张是什么。）
+
+## 方法与证据
+
+（方法、实验设置和最关键证据。）
+
+## 局限与批判
+
+（证据没有覆盖什么，哪些结论不能外推。）
+
+## 与现有知识的连接
+
+（链接到相关 lecture、concept、paper 或 project。）`,
+  concept: `## 定义与边界
+
+（给出可独立理解的定义，并说明不属于它的情况。）
+
+## 直觉与机制
+
+（解释为什么成立、如何运作。）
+
+## 例子与反例
+
+（至少各给一个。）
+
+## 关系
+
+（前置概念、相邻概念和应用场景。）`,
+  assignment: `## 任务与约束
+
+（问题、输入输出、限制条件和完成标准。）
+
+## 解法
+
+（推导与关键实现。）
+
+## 验证
+
+（测试、边界情况和结果。）
+
+## 复盘
+
+（错误尝试、取舍与可迁移经验。）`,
+  project: `## 问题与目标
+
+（用户问题、范围和成功标准。）
+
+## 架构与关键决策
+
+（组件关系、数据流和取舍。）
+
+## 实现
+
+（关键模块与接口。）
+
+## 验证与结果
+
+（测试、指标、限制和后续工作。）`,
+}
+
+const h1 = lecture ? `# Lec ${lecture} ${title}${en}` : `# ${title}${en}`
+const crumb = `> ${course}${lecture ? ` · Lecture ${lecture}` : ''}`
 const content = `${stringifyFrontmatter(fm)}${h1}
 
 ${crumb}
 
-${BODY[kind] ?? BODY.system}
+## TL;DR
+
+- （这篇笔记解决的核心问题。）
+- （最重要的机制、主张或结果。）
+- （适用边界，以及它连接到什么知识。）
+
+${bodies[noteType]}
+
 ## 我的理解
 
 ::: insight
-（用自己的话写。三选一：为什么这个设计是这样 / 和哪门课的哪个概念是一回事 / 一开始理解错在哪。
-这一节是这篇笔记相对讲义的唯一增量，不写就等于没写。）
+（写自己的判断：为什么这样设计、它与什么概念相通，或原先的理解哪里错了。）
 :::
-
-## 本讲小结：（补主题词）
-
--
 `
 
+await fs.mkdir(targetDir, { recursive: true })
 await fs.writeFile(file, content, 'utf8')
-console.log(`${C.green('已创建')} ${path.relative(process.cwd(), file)}  ${C.gray(`kind=${kind}`)}`)
+console.log(`${C.green('已创建')} ${path.relative(process.cwd(), file)}  ${C.gray(`type=${noteType}`)}`)
+console.log(C.gray('课程名与课号将从最近的课程 index.md 继承。'))
 console.log(C.gray(`写完跑：npm run notes:lint -- ${path.relative(process.cwd(), file)}`))

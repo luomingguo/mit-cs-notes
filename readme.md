@@ -26,13 +26,12 @@ MIT CS Notes 起源于个人公开课学习笔记，但目标不只是按课程�
 
 ## 内容与系统架构
 
-`docs/**/*.md` 是唯一的笔记源文件。前端只读加载 Markdown，RAG 服务也从同一批内容切分和建立索引，因此正文不会被锁定在某个 UI 框架或专有数据格式中。
+`docs/**/*.md` 是唯一的笔记源文件。中文课程按 `docs/zh/<学科>/<领域>/<课程>/` 组织；现有计算机课程位于 `docs/zh/cs/`，后续心理学与管理学可分别使用 `docs/zh/psy/`、`docs/zh/mgnt/`。前端只读加载 Markdown，RAG 服务也从同一批内容切分和建立索引，因此正文不会被锁定在某个 UI 框架或专有数据格式中。
 
 ```mermaid
 flowchart LR
     M["docs/zh · Markdown 内容源"] --> A["Astro 静态前端"]
     M --> Q["RAG 切分与检索"]
-    M -. "迁移期回滚验证" .-> V["旧 VitePress 构建"]
     A --> P["GitHub Pages · 子路径"]
     A --> H["自建站点 · 根路径"]
     Q --> H
@@ -40,25 +39,25 @@ flowchart LR
 
 | 目录 | 作用 |
 |---|---|
-| `docs/` | Markdown 笔记、图片及公开静态资源；内容的唯一事实来源 |
+| `docs/` | Markdown 笔记与正文附件；内容的唯一事实来源 |
+| `public/` | Astro 前端与 RAG 共用的公开静态资源 |
 | `frontend/` | Astro + React islands 生产前端，负责页面、搜索和交互 |
 | `rag/` | Node.js + PostgreSQL/pgvector 问答与学习路径服务 |
 | `tools/` | 笔记规范检查、机械修复与新笔记脚手架 |
 | `deploy/` | 自建站点的 Nginx、Caddy 与原子发布配置 |
-| `docs/.vitepress/` | 迁移期保留的旧站配置，仅作为回滚基线 |
 
 前端技术栈为 **Astro、React、Tailwind CSS、shadcn/Radix UI 与 Motion**。Astro 负责静态内容和页面骨架，React 仅用于搜索、抽屉和问答等需要客户端状态的交互，正文在 JavaScript 不可用时仍可阅读。
 
 ## 本地运行
 
-CI 使用 Node.js 24。只启动新的 Astro 站点：
+CI 使用 Node.js 24。启动 Astro 站点：
 
 ```bash
 npm ci --prefix frontend
-npm --prefix frontend run dev
+npm run dev
 ```
 
-默认开发地址由 Astro 在终端中给出。根目录的 `npm run dev` 仍指向迁移期旧 VitePress；新前端请使用上面的 `frontend` 命令。
+默认开发地址由 Astro 在终端中给出。
 
 执行与 CI 接近的完整检查：
 
@@ -68,7 +67,6 @@ npm ci --prefix frontend
 npm ci --prefix rag
 
 npm run notes:lint -- --summary --max-errors=1207
-npm run docs:build
 npm run site:check
 npm run site:build
 npm run site:verify
@@ -78,6 +76,9 @@ npm run site:verify
 
 | 命令 | 说明 |
 |---|---|
+| `npm run dev` | 启动 Astro 本地开发服务器 |
+| `npm run build` | 构建 Astro 根路径版本 |
+| `npm run preview` | 预览 Astro 静态产物 |
 | `npm run site:check` | 检查 Astro 与 TypeScript |
 | `npm run site:build` | 构建根路径版本到 `frontend/dist/` |
 | `npm run site:build:pages` | 构建 `/mit-cs-notes/` 子路径版本 |
@@ -106,7 +107,7 @@ npm run site:verify
 
 ## 发布
 
-推送到 `release` 分支后，GitHub Actions 会先检查笔记、构建旧站回滚基线，再构建并验证 Astro 产物：
+推送到 `release` 分支后，GitHub Actions 会检查笔记，并构建、验证 Astro 产物：
 
 - GitHub Pages 发布在 `/mit-cs-notes/` 子路径下，作为纯静态镜像；
 - 自建站点发布在根路径下，并可接入独立部署的 RAG 服务；

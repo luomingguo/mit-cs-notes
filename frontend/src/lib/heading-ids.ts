@@ -65,7 +65,7 @@ export function sourceHeadings(source: string): SourceHeading[] {
   });
 }
 
-export function remarkLegacyHeadingIds() {
+export function remarkStableHeadingIds() {
   return (tree: any, file: any) => {
     const source = String(file.value ?? '');
     const seen = new Map<string, number>();

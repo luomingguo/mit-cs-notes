@@ -1,0 +1,562 @@
+---
+title: Cilk 运行时系统
+type: lecture
+lecture: 13
+tags: []
+status: complete
+---
+# Lec 13 Cilk 运行时系统
+
+**大纲**
+
+- Cilk 回顾
+
+- 功能分析
+- 性能分析
+- 双端工作队列的实现
+- Spawning 计算
+- Stealing 计算
+- synchronizing 计算
+
+## Cilk 回顾
+
+**Cilk 编程**
+
+```c
+// 顺序执行矩阵乘法， 运行时间T_S
+for (int i = 0; i < n; i++) {
+	for (int k =0; k < n; k++) {
+  	for (int j = 0; j < n; j++) {
+      C[i][j] += A[i][k] * B[k][j];
+    } 
+  }
+}
+
+// Cilk 矩阵惩罚， 在P个处理器的运行时间T_P
+cilk_for(int = 0; i < n; i++)
+  for (int k = 0; k < n; k++)
+    for (int j = 0; j < n; j++)
+      C[i][j] += A[i][k] * B[k][j];
+```
+
+**Cilk 调度**
+
+- Cilk 并发平台允许程序员表达逻辑并行
+- Cilk 调度器在运行时动态地将执行程序映射到各个处理器核
+- Cilk 的 work-stealing(随机工作偷窃)调度算法可证明是高效的
+
+```c
+int64_t fib(int64_t n) {
+  if (n < 2) {
+    return n;
+  } else {
+    int64_t x, y;
+    x = cilk_spawn fib(n-1);
+    y = fib(n-2);
+    cilk_sync;
+    return (x + y);
+  }
+}
+```
+
+**Cilk 平台**
+
+![截屏 2024-06-25 11.59.59](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a40cebab9d.png)
+
+编译器和运行时库（libcilkrts.so）一起实现了 Cilk 运行时系统
+
+**编译器生成了什么？**
+
+![截屏 2024-06-25 12.04.05](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a41bfab88e.png)
+
+后面我们将自顶向下学习 Cilk 运行时系统
+
+---
+
+## 功能分析
+
+探讨下面这个例子
+
+![截屏 2024-06-25 12.20.07](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a4581a279e.png)
+
+该程序的执行可以看作一种计算有向图模型， 随着程序的运行，计算有向图动态地展开。
+
+**顺序执行**（单处理器）
+
+![截屏 2024-06-25 12.46.40](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a4bc37e140.png)执行到cilk_spawn时， 就像是调用普通函数一样，我们会得到一个执行 fib(3)的新帧, 然后我们有可执行的链路，并且有一个绿色链路，在 fib(4)帧中。此时处理器会怎么做呢？ 下潜到 fib(3)， 最终得到
+
+![截屏 2024-06-25 12.36.43](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a496c3c909.png)
+
+**并行执行：Steal**
+
+![截屏 2024-06-25 12.55.48](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a4de04ae8f.png)
+
+假设还有一个处理器 P2，无事可做它就会在帧 fib(4)中偷取任务，而 P1 还在下潜的可用执行链中，此时 P2 就跳出来，帮 P1 执行。P2 只是设置了指令指针，指向绿色的，此时就像执行普通函数一样，继续下潜调用 fib(2)。此时也可能出现另外一处理器 P3 偷窃另一块计算
+
+![截屏 2024-06-25 12.37.27](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a499485492.png)
+
+> 问题 1:
+>
+> 一个处理器如何在一个运行的函数中间开始执行呢？
+
+**并行执行： Sync**
+
+![截屏 2024-06-25 12.38.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a49c0695a8.png)
+
+我们假设 P3 决定返回给帧 fib(3)，执行到 cilk_sync 时， P3 不能执行 sync, 因为 P1 的计算尚未完成， 并且它并不需要管 P2，他在另树的另外一遍进行计算，它只需要等待 P1
+
+> 问题 2:
+>
+> cilk_sync 如何只等待嵌套的子计算？怎么实现的呢？
+>
+> 在 Cilk 语言中，`cilk_sync` 用于等待所有由当前函数直接生成的子计算（即子任务）完成。这意味着，当执行 `cilk_sync` 时，它只会等待那些在当前函数作用域内直接生成的子任务完成，而不会等待其他更外层或同级生成的任务。
+
+**初步功能分析**
+
+- 单个工作线程必须能够像普通串行计算一样独立执行计算。
+
+- 窃取者必须能够跳入正在执行的函数中，窃取其后续操作。
+
+- 同步操作必须能够暂停一个函数的执行，直到子计算完成。
+
+>  我们还需要什么功能才能实现呢？
+
+**回顾一下： Cilk 实现了仙人掌栈**
+
+Cilk 支持 C 的指针规则： 一个指向栈空间的指针能够从父（线程）到子（线程），而不能从子（线程）到父（线程）
+
+![截屏 2024-06-25 13.29.45](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a55d2def3f.png)
+
+**更细节地探讨： 工作偷窃**
+
+假设每个工人（处理器）维护着一个工作双端队列，用来存储准备执行的任务（"ready strands"），这些任务等待被分配到处理器上运行。像堆栈一样操作队列底部，意味着新任务添加到队列尾部，处理器也会优先从队列底部取出任务来执行。每个双端队列包含着 spawned 帧和调用帧。
+
+![截屏 2024-06-25 13.39.55](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a5832201bc.png)
+
+当有个家伙已经把他自己工作做完后，他回去随机找个其他家伙去偷工作，具体而言，从它的队列顶部偷，而且是偷一堆工作。
+
+![截屏 2024-06-25 13.41.15](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a58835dc72.png)
+
+具体例子，假如他挑选了 P3 这个家伙，他会**偷到下一个 spawned 为止**
+
+![截屏 2024-06-25 13.49.09](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a5a5f428e9.png)
+
+ 这种偷帧（stealing frame）的会涉及到
+
+- 需要什么同步机制？
+- 栈会发生什么？
+- 效率怎么样？
+
+**最终功能分析**
+
+- 单个工作线程必须能够像普通串行计算一样独立执行计算。
+
+- 窃取者必须能够跳入正在执行的函数中，窃取其后续操作。
+
+- 同步操作必须能够暂停一个函数的执行，直到子计算完成。
+
+- 运行时必须为其并行工作线程实现一种仙人掌栈（cactus stack）
+- 窃取者必须能够处理混合调用和生成的函数。
+
+## 性能分析
+
+> [!IMPORTANT]
+>
+> Cilk 的工作偷窃调度器实现的在 P 个处理器的期望运行时间
+> Tp ≈ T_1 / P + O(T∞)
+>
+> T_1/P，工人花费在工作的时间，
+>
+> O(T∞)， 工人花费在偷工作的时间
+>
+> 如果我们提供更多的处理器执行， 且程序执行时间能够随着 P 数量线性减小，那么意味着工人花费在工作上的占据绝大多数
+
+看看这个例子
+
+![截屏 2024-06-25 14.02.17](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a5d7454f03.png)
+
+理想状态下，我们希望将一个顺序代码放到 P 个处理器的机器执行，能够有 P 倍的加速.
+
+我们做个正式的定义：
+
+- **TS**：串行程序的工作量，即串行程序完成所有任务所需的时间。
+
+- **T1**：并行化做个串行程序的总工作量，即所有处理器完成所有任务所需的总时间。假设只有一个处理器时，并行程序需要的时间。
+
+- **T∞**：并行程序的跨度（span），即完成所有任务的最长路径所需的时间
+
+- **TP**：P 个处理器上并行程序的执行时间
+
+要在 P 个处理器上实现线性加速，即：
+$$
+TP \approx \frac{TS}{P}
+$$
+为了实现这个目标，并行程序必须具备以下两个条件：
+
+足够的并行性
+$$
+\frac{T1}{T∞} ≫ P
+$$
+高工作效率
+$$
+\frac{TS}{T1} \approx 1
+$$
+
+---
+
+**工作优先原则**
+
+为了优化具有足够并行性的程序执行，Cilk 运行时系统的实现通过遵守工作优先原则来保持高工作效率： 为了普通的串行执行进行优化，即使代价是增加偷取时的一些额外计算。
+
+工作优先原则指导了 Cilk 运行时系统在编译器和运行时库之间的分工。
+
+**编译器**
+
+- 使用少量小数据结构，例如，工作者和栈帧。
+- 实现了在没有发生任务窃取时函数执行的优化快速路径。
+
+**运行时库**
+
+- 使用较大的数据结构。
+- 处理执行的慢路径，例如，当发生任务窃取时
+
+----
+
+## 双端工作队列的实现
+
+**基本概念**
+
+```c
+int foo(int n) {
+  int x, y;
+  x = cilk_spawn bar(n);
+  y = baz(n);
+  cilk_sync;
+  return x + y;
+}
+```
+
+- 函数 foo 是 spawning 函数，意思是 foo 包含了 silk_spawn 语句
+- bar 由 foo 生成（spawned）
+- 如果有 baz 的调用， 则这个调用会发生在生成的任务执行（spawn）完毕后
+
+----
+
+**工作双端队列的需求**
+
+![截屏 2024-06-25 14.33.50](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a64dd8d065.png)
+
+- 偷窃者应该像堆栈一样操作自己的双端队列。
+- 一个偷窃操作需要将连续的多个帧的所有权转移给偷窃者。
+- 抢劫者需要能够恢复继续执行点
+
+**一个思路： 工人的双端队列是一个外部结构，其中包含指向栈帧的指针**。
+
+- **Cilk 工人**维护双端队列的头部和尾部指针。
+- **可窃取的栈帧**额外维护一个结构，用于存储偷窃该栈帧所需的信息
+
+![image-20240625143748968](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a65c11126a.png)
+
+----
+
+**实现细节**
+
+Intel Cilk Plus 运行时如何实现并行计算的基本思路：
+
+- 每个生成的子计算都在自己的 spawn-helper 函数中运行。
+- 运行时系统维护三种基本的数据结构，这些结构在工作线程执行任务时被使用：
+  - 每个工作线程使用的工作线程结构（worker structure）。
+  - 每个生成函数实例都对应一个 Cilk 栈帧结构（Cilk stack-frame structure）。
+  - 每个 cilk_spawn 实例都对应的 spawn-helper 栈帧（spawn-helper stack frame）。
+
+```text
+                   ┌─────────────────────────┐
+                   │       Worker 1          │
+                   │                         │
+                   │  ┌─────────────────┐    │
+                   │  │ Cilk Stack Frame │    │
+                   │  │  (Function A)    │    │
+                   │  └─────────────────┘    │
+                   │                         │
+                   │  ┌─────────────────┐    │
+                   │  │  Spawn-Helper    │    │
+                   │  │  Stack Frame     │    │
+                   │  │  (cilk_spawn B)  │    │
+                   │  └─────────────────┘    │
+                   │                         │
+                   └─────────────────────────┘
+                   ┌─────────────────────────┐
+                   │       Worker 2          │
+                   │                         │
+                   │  ┌─────────────────┐    │
+                   │  │ Cilk Stack Frame │    │
+                   │  │  (Function C)    │    │
+                   │  └─────────────────┘    │
+                   │                         │
+                   │  ┌─────────────────┐    │
+                   │  │  Spawn-Helper    │    │
+                   │  │  Stack Frame     │    │
+                   │  │  (cilk_spawn D)  │    │
+                   │  └─────────────────┘    │
+                   │                         │
+                   └─────────────────────────┘
+```
+
+---
+
+**Spawn-Helper 函数**
+
+![截屏 2024-06-25 15.57.31](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a787e7f656.png)
+
+---
+
+**Stack-Frame 结构**
+
+![截屏 2024-06-25 15.59.20](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a78e44cd0f.png)
+
+每个 Cilk 栈帧存储内容：
+
+- context buffer, ctx, 存储者足够的信息在继续点 恢复函数的执行，比如 cilk_spawn 或者 cilk_sync.
+- flag ，标记状态
+- parent，标记它的父帧栈
+
+![截屏 2024-06-25 16.02.39](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a79a8de621.png)
+
+---
+
+**Cilk Worker 结构（简化版）**
+
+每个 Cilk 工作线程包含
+
+- 能够被偷窃的双端队列，在调用栈的外部
+- 指向当前帧栈道指针
+
+![截屏 2024-06-25 16.08.26](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a7b01bc61b.png)
+
+函数对象是绿色部分，本地变量是米色部分，foo_sf 是 foo 实例内的 CilkRTS 帧栈
+
+---
+
+##   **Spawning 计算**
+
+一个**spawn 函数**的伪代码
+
+所有框选的代码都与运行时有关
+
+![截屏 2024-06-25 16.23.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a7e7c93911.png)
+
+一个**spawn_helper**函数的伪代码
+
+![截屏 2024-06-25 16.28.40](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a7fc434e29.png)
+
+同样的，他也对初始化栈帧；__cilkrts_detect()，会对双端队列进行更新，然后是实际的调用，最后是清除操作
+
+---
+
+1、 进入一个 Spawning 函数时，Cilk worker 当前的帧栈就更新了
+
+![截屏 2024-06-25 16.34.51](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a8131ece5a.png)
+
+2、 准备 Spawn
+
+![截屏 2024-06-25 16.35.40](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a816604b2d.png)
+
+Cilk 使用 setjmp 函数用来允许偷窃者偷窃继续执行点。
+
+setjmp 的参数接受一个 buffer(ctx buffer)，这个 buffer 存在于 Cilkrts 的帧栈中，``setjmp``函数会存储恢复函数所需要执行函数所必要的信息存到 ctx buffer 中。
+
+> 那 setjmp 到底需要存储什么信息呢？
+
+- Callee-saved register 被调用方保存的寄存器（负责保存和恢复的寄存器），即 foo 函数需要负责保存的
+- %rip
+- %rbp
+- %rsp
+
+![截屏 2024-06-25 16.59.18](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667a86f263beb.png)
+
+然后我们添加了父指针，已经更新
+
+![截屏 2024-06-26 10.48.59](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667b81a6b7843.png)
+
+![截屏 2024-06-26 10.49.18](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667b81b9deafd.png)
+
+从 Spawn 返回
+
+---
+
+**从双端队列出列**
+
+在\_\_cilkrts_leave_frame，工作线程尝试从双端队列尾部 pop 一个栈帧。此时有两种可能：
+
+1. 如果 pop 成功了， 则一如既往的正常执行
+2. 如果 pop 失败了，则工作线程把工作都做完了，他会成为一个偷窃者，然后参数从其他受害者的 deque 的顶部偷取工作。
+
+> 那种情况更值得优化
+
+情况 1
+
+---
+
+**Stealing 计算**
+
+**如何偷取一个帧**
+
+![截屏 2024-06-26 19.07.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667bf7101bcfd.png)
+
+偷窃者的 current_sf 最终指向双端队列的顶部
+
+![截屏 2024-06-26 19.07.57](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667bf6990795c.png)
+
+ 这里需要对双端队列并发访问进行处理
+
+![截屏 2024-06-26 19.12.34](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667bf7a81d27e.png)
+
+**以下是同步访问双端队列的协议**
+
+```c
+// worker协议
+void push() {
+  tail++;
+}
+bool pop() {
+  tail--;
+  if (head > tail) {
+    tail++;
+    lock(L);
+    tail--;
+    if (head > tail)  {
+      tail++;
+      unlock(L);
+      return FAILURE;
+    }
+    unlock(L);
+  }
+  return SUCCESS;
+}
+
+// worker（工作线程）和 thief（偷窃线程）使用 THE 协议（THE protocol）来协调对双端队列（deque）的操作。THE 协议是一个锁自由（lock-free）的协议
+bool steal() {
+  lock(L);
+  head++;
+  if (head > tail) {
+    head--;
+    unlock(L);
+  }
+  return FAILURE;
+  unlock(L);
+  return SUCCESS;
+}
+```
+
+从高的层次理解， 小偷在进行任何操作之前始终会抓住双端队列的锁。worker 线程会做的是，乐观地从双端队列 pop 工作出来，**只有**当 deque 看起来是空的时候才会去抓住锁。
+
+---
+
+**恢复继续执行点**
+
+Clik 使用 longjmp 函数来恢复一个被偷窃的继续执行点
+
+```c
+int foo(int n) {
+  ...;
+  if (!setjmp(sf.ctx))  // 受害者提前执行setjmp来存储寄存器（将特定的帧栈buffer作为入参）状态到foo_sf.ctx
+    spawn_bar(&x, n);
+  ...;
+}
+```
+
+![image-20240627002751384](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667c4194039e5.png)
+
+ 偷窃者的工作线程执行 longjmp（） 来设置偷窃者的寄存器，恢复被盗的继续执行点，并且把当前帧栈指针指向 foo_st。
+
+longjmp 返回后发生什么呢？
+
+`setjmp` 和 `longjmp` 函数之间的契约，确保了在并行计算中，一个“盗贼”（thief）能够正确地恢复执行上下文（continuation）。具体来说：
+
+- 当你直接调用 `setjmp` 时，它返回 `0`，并将当前的执行状态保存到传入的缓冲区中
+
+- 当你调用 `longjmp(buffer, x)` 时，程序的执行会跳转回之前调用 `setjmp` 的地方。
+
+  此时，`setjmp` 不再返回 `0`，而是返回 `x`，即 `longjmp` 传递的第二个参数
+
+```c
+int foo(int n) {
+  ...;
+  if (!setjmp(sf.ctx))  //  // 因为“盗贼”通过调用 longjmp(current_sf->ctx, 1) 到达这个点，条件判断为假，盗贼跳转到继续执行部分(continuation)。
+    spawn_bar(&x, n);
+  ...;
+}
+```
+
+----
+
+**实现仙人掌 Stack**
+
+偷窃者维护者们他们的调用栈，并使用指针技巧来实现仙人掌栈。
+
+![截屏 2024-06-27 02.11.22](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667c59d2dc55e.png)
+
+这样偷窃者就可以通过使用受害者的%rbp 访问 foo 函数中所有状态。 通过保存%rbp 和更新%rsp 来执行调用
+
+----
+
+## Synchronizing 计算
+
+高度的概括下如何运作的。
+
+![截屏 2024-06-27 02.15.49](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667c5ae3bd6c0.png)
+
+---
+
+**同步的关心的问题**
+
+如果一个工作线程在所有生成的子计算完成之前到达了 cilk_sync，那么该工作线程应该成为一个盗贼，但工作线程当前的函数帧不应该消失！
+
+- 现有的子计算可能会访问该帧中的状态，因为这是它们的父帧。
+- 未来，另一个工作线程必须恢复该帧并执行 cilk_sync。
+- cilk_sync 只适用于该帧的嵌套子计算，而不是所有的子计算或工作线程。
+
+---
+
+实现原理——全帧树（Full-Frame Tree）
+
+![截屏 2024-06-27 02.19.29](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667c5bb8f3b28.png)
+
+全帧树为所有的并行子计算维护着状态，比如他们的定位以及于其他子计算的关系。
+
+ ![截屏 2024-06-27 02.52.31](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667c63794ba1f.png)
+
+---
+
+**全帧树如何形成**
+
+![截屏 2024-06-27 02.55.08](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667c6417bf214.png)
+
+![截屏 2024-06-27 02.57.52](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667c64b801df4.png)
+
+> 如果程序具有充足的并行性，当程序执行到达 cilk_sync 时，我们通常期望会发生什么？
+
+答案：执行的函数不包含未完成的生成子计算。
+
+> 运行时系统如何优化这种情况？
+
+![截屏 2024-06-27 02.59.20](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667c6518a02c8.png)
+
+---
+
+Sync 的编译代码
+
+![截屏 2024-06-27 03.00.27](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/667c655754d99.png)
+
+编译用于实现 cilkrts_sync 的代码在执行一个昂贵的对 Cilk 运行时库中的__cilkrts_sync E 的调用之前，会先检查 flags 字段。 这是一种优化，如果你不需要同步，则不要做任何计算，否则会发生
+
+----
+
+**运行时其他特性**
+
+Cilk 运行时系统实现了许多其他功能和优化：
+
+- 简化和易于维护全帧树的方案。
+- 支持 C++异常的数据结构和协议增强。
+- 支持归约器超对象的全帧之间的兄弟指针。
+- 谱系，用于在并行中高效地为每个链分配唯一的、确定的 ID。

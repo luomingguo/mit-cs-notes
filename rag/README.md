@@ -2,7 +2,7 @@
 
 给「MIT Notes by Ron」加两个能力：
 
-- **问我的笔记** —— 读者提问，服务在全站 468 篇笔记里检索，让大模型给出带出处的回答。
+- **问我的笔记** —— 读者提问，服务在全站笔记里检索，让大模型给出带出处的回答。
 - **学习路径** —— 从一个具体目标出发，把二十多门课的笔记串成有依赖顺序的阅读路线。
 
 单门课的笔记网上到处都是，跨二十多门课的语义检索和路线规划只有掌握全景的人做得到。这是这个笔记站真正难以复制的部分。
@@ -17,7 +17,7 @@
     ▼
 Caddy (hk, 已有的 edge 网关)
     ├── /rag/*  ──► notes-rag:3100   Node 服务
-    └── 其余    ──► notes-web:80     VitePress 静态产物
+    └── 其余    ──► notes-web:80     Astro 静态产物
                           │
                     notes-db:5432    Postgres + pgvector
 ```
@@ -82,7 +82,8 @@ docker run -d --name notes-db-dev \
 
 ```bash
 npm run smoke               # 先验服务商连通性（嵌入/重排/生成三项）
-npm run verify              # 校验 URL/锚点映射（需要先 npm run docs:build）
+npm --prefix ../frontend run build
+npm run verify              # 用 Astro 产物校验 URL/锚点映射
 npm run ingest              # 入库，约 6700 块
 npm run paths               # 生成学习路径
 npm run dev                 # 起服务
@@ -167,7 +168,7 @@ ssh hk 'sudo cp /tmp/notes.caddy /home/mac/infra/edge/sites/ && \
 
 ```bash
 curl -s https://notes.lobomiao.uk/rag/health
-# {"ok":true,"chunks":6724}
+# {"ok":true,"chunks":<当前数量>}
 ```
 
 **7. 挂上备份**
@@ -191,6 +192,8 @@ npm run ingest
 ```
 
 增量是两层的：文件哈希没变的整篇跳过；文件变了也只对内容变过的块重新调嵌入 API。改一个错别字不会重嵌整篇。
+
+从旧目录升级到 `docs/zh/cs/` 时，首次 `npm run ingest` 会把文档主键迁到新源码路径，并按旧路径复用内容未变的块向量；不需要为这次纯目录迁移使用 `--force`。入库完成后，旧路径记录会按正常的下线清理流程删除。
 
 **换嵌入模型**
 
@@ -216,15 +219,16 @@ npm run paths                  # 全部
 npm run paths -- --goal db-kernel   # 只重生成一条
 ```
 
-生成后会同时写入 `docs/public/rag-paths.json`，需要重新构建站点才会生效。
+生成后会同时写入 `public/rag-paths.json`，需要重新构建站点才会生效。
 
-**改了 config.mts 的 rewrites 或升级 VitePress 之后**
+**修改了 Astro 公开路由或标题锚点规则之后**
 
 ```bash
-npm run docs:build && cd rag && npm run verify
+npm run site:build
+npm run site:verify
 ```
 
-URL 映射必须 100% 命中。锚点允许少量偏差（标题里带 LaTeX 公式的会对不上，退化成跳页面顶部，不影响可用性）。
+URL 和锚点映射都必须 100% 命中，避免 RAG 引用静默跳到 404 或错误章节。
 
 ---
 

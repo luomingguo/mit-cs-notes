@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const frontendRoot = fileURLToPath(new URL('../', import.meta.url));
 const distRoot = path.join(frontendRoot, 'dist');
 const docsRoot = path.resolve(frontendRoot, '../docs/zh');
-const docsPublicRoot = path.resolve(frontendRoot, '../docs/public');
+const publicRoot = path.resolve(frontendRoot, '../public');
 const base = normalizeBase(process.env.DOCS_BASE ?? '/');
 
 function normalizeBase(value) {
@@ -26,9 +26,28 @@ async function filesBelow(directory, suffix) {
 function idToPublicPath(id) {
   const parts = id.split('/');
   if (id === 'index') return '';
-  if (parts.length === 2 && parts[1] === 'index') return parts[0];
-  const publicParts = parts.length >= 3 ? parts.slice(1) : parts;
+  if (parts.length < 2) return parts.join('/').replace(/\/index$/, '').replace(/^index$/, '');
+  const [discipline, category, ...rest] = parts;
+  let publicParts;
+  if (discipline === 'cs') {
+    publicParts = rest.length === 1 && rest[0] === 'index' ? [category === 'opensource' ? 'opensrc' : category] : rest;
+  } else {
+    publicParts = rest.length === 1 && rest[0] === 'index'
+      ? [discipline, category]
+      : [discipline, ...rest];
+  }
   return publicParts.join('/').replace(/\/index$/, '').replace(/^index$/, '');
+}
+
+const routeContracts = new Map([
+  ['cs/computer_sys/os/lec5', 'os/lec5'],
+  ['cs/tcs/index', 'tcs'],
+  ['psy/core/intro/lec1', 'psy/intro/lec1'],
+  ['mgnt/org/leadership/index', 'mgnt/leadership'],
+]);
+for (const [sourceId, expected] of routeContracts) {
+  const actual = idToPublicPath(sourceId);
+  if (actual !== expected) throw new Error(`路由契约错误：${sourceId} -> ${actual}，预期 ${expected}`);
 }
 
 function routeFile(publicPath) {
@@ -40,7 +59,7 @@ async function exists(file) {
 }
 
 const sourceFiles = await filesBelow(docsRoot, '.md');
-const sourcePublicFiles = (await filesBelow(docsPublicRoot)).filter((file) => path.basename(file) !== '.DS_Store');
+const sourcePublicFiles = (await filesBelow(publicRoot)).filter((file) => path.basename(file) !== '.DS_Store');
 const missingRoutes = [];
 for (const source of sourceFiles) {
   const id = path.relative(docsRoot, source).split(path.sep).join('/').replace(/\.md$/, '');
@@ -51,7 +70,7 @@ for (const source of sourceFiles) {
 const missingPublicAssets = [];
 const changedPublicAssets = [];
 for (const source of sourcePublicFiles) {
-  const relative = path.relative(docsPublicRoot, source);
+  const relative = path.relative(publicRoot, source);
   const target = path.join(distRoot, relative);
   if (!await exists(target)) {
     missingPublicAssets.push(relative);
@@ -61,7 +80,7 @@ for (const source of sourcePublicFiles) {
   if (!sourceContent.equals(targetContent)) changedPublicAssets.push(relative);
 }
 
-const learningPathSource = JSON.parse(await readFile(path.join(docsPublicRoot, 'rag-paths.json'), 'utf8'));
+const learningPathSource = JSON.parse(await readFile(path.join(publicRoot, 'rag-paths.json'), 'utf8'));
 const missingLearningPathTargets = new Set();
 for (const route of Object.values(learningPathSource.paths ?? {})) {
   for (const step of route.steps ?? []) {
@@ -104,6 +123,7 @@ for (const htmlFile of htmlFiles) {
 
 const result = {
   base,
+  routeContracts: routeContracts.size,
   sourceMarkdown: sourceFiles.length,
   sourcePublicAssets: sourcePublicFiles.length,
   generatedHtml: htmlFiles.length,

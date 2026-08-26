@@ -13,7 +13,7 @@ const { catalog, domain, contentHtml } = Astro.props;
 ---
 <AtlasLayout title={domain.label} description={domain.description}>
   <div class="atlas-shell">
-    <CatalogSidebar catalog={catalog} activeDomain={domain.slug} />
+    <CatalogSidebar catalog={catalog} activeDomain={domain.key} />
     <div class="atlas-main">
       <nav class="atlas-breadcrumb" aria-label="面包屑"><a href={withBasePath('/')}>Home</a><span>/</span><span aria-current="page">{domain.label}</span></nav>
       <header class:list={['atlas-hero', 'domain-hero', { 'has-hero-image': domain.heroImage }]}>

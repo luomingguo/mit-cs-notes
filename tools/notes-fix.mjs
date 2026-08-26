@@ -324,7 +324,7 @@ function fixBlank(body, log) {
   return out
 }
 
-/** 生成 / 补全 frontmatter。已有字段一律保留，只补缺的。 */
+/** 生成 / 补全 frontmatter，并移除可确定的历史冗余字段。 */
 async function buildFrontmatter(rel, meta, body, existing, docsDir, log) {
   const fm = { ...(existing ?? {}) }
   const h1 = body.match(/^#[ \t]+(.+)$/m)?.[1]?.trim() ?? ''
@@ -340,26 +340,55 @@ async function buildFrontmatter(rel, meta, body, existing, docsDir, log) {
         .replace(/\*\*([^*]*)\*\*/g, '$1')
         .replace(/\*([^*]*)\*/g, '$1')
         .replace(/`([^`]*)`/g, '$1')
-        .trim() || path.basename(rel, '.md')
+        .trim() || (lecM ? `第 ${lecM[1]} 讲（待补充）` : path.basename(rel, '.md'))
   }
-  if (!fm.course) {
-    fm.course = await courseName(docsDir, meta.lang, meta.category, meta.courseSlug, meta.courseSlug)
+
+  if ('kind' in fm) {
+    delete fm.kind
+    log('fm', '删除旧 kind 字段')
   }
-  if (!fm.course_id) {
+
+  // 领域 index 由路径确定职责，不伪装成课程页。
+  if (meta.isDomainIndex) {
+    for (const key of ['type', 'course', 'course_id', 'tags', 'status']) {
+      if (!(key in fm)) continue
+      delete fm[key]
+      log('fm', `领域 index 删除 ${key}`)
+    }
+    return fm
+  }
+
+  // 课程子页只维护自身事实；课程名和课号从 index.md 继承。
+  if (meta.isContentPage && !meta.isCourseIndex) {
+    for (const key of ['course', 'course_id']) {
+      if (!(key in fm)) continue
+      delete fm[key]
+      log('fm', `子页删除重复 ${key}`)
+    }
+  }
+
+  // 课程 index.md 是课程元数据唯一来源；子页通过目录继承，不重复写 course/course_id。
+  if (meta.isCourseIndex && !fm.course) {
+    fm.course = await courseName(docsDir, meta.lang, meta.discipline, meta.category, meta.courseSlug, meta.courseSlug)
+  }
+  if (meta.isCourseIndex && !fm.course_id) {
     // 课程名开头常是 "6.1810 操作系统工程"，也有 "18-746 存储系统" 这种。
     // 抽不出来就不写这个字段 —— 留空字符串会让 lint 报 frontmatter-field，
     // 反而看不出是「真缺」还是「这门课本来就没课号」。
-    const id = fm.course.match(/^(\d+[.\-][\dA-Za-z.]+)/)?.[1]
+    const id = fm.course?.match(/^(\d+[.\-][\dA-Za-z.]+)/)?.[1]
     if (id) fm.course_id = id
   }
   if (!fm.lecture && lecM) fm.lecture = Number(lecM[1])
-  if (!fm.kind) fm.kind = meta.kind ?? 'system'
-  if (!fm.tags) fm.tags = []
+  if (meta.inferredType && !fm.type) {
+    fm.type = meta.inferredType
+    log('fm', `补 type=${meta.inferredType}`)
+  }
+  if (meta.isContentPage && !fm.tags) fm.tags = []
   if (!fm.status) {
     const placeholder = /尚未补齐|占位页|TODO|待补充/.test(body)
     fm.status = bodyLen < 200 || placeholder ? 'stub' : /TODO|待补充/.test(body) ? 'draft' : 'complete'
   }
-  if (!existing) log('fm', `生成 frontmatter（kind=${fm.kind} status=${fm.status}）`)
+  if (!existing) log('fm', `生成 frontmatter（type=${fm.type ?? '-'} status=${fm.status}）`)
   return fm
 }
 
@@ -368,7 +397,7 @@ async function fixFile(file, docsDir) {
   const rel = path.relative(docsDir, file).split(path.sep).join('/')
   const meta = classify(rel)
   const raw = await fs.readFile(file, 'utf8')
-  if (!raw.trim()) return { rel, changes: [], skipped: '空文件' }
+  if (!raw.trim() && !meta.isContentPage) return { rel, changes: [], skipped: '空文件' }
 
   const changes = []
   const log = (stage, msg) => changes.push({ stage, msg })
@@ -404,7 +433,13 @@ async function fixFile(file, docsDir) {
 
 // ── main ───────────────────────────────────────────────────────────
 const docsDir = path.resolve(DOCS_DIR)
-const files = targets.length ? targets.map((t) => path.resolve(t)) : await walkNotes(docsDir)
+const files = targets.length
+  ? [...new Set((await Promise.all(targets.map(async (target) => {
+      const resolved = path.resolve(target)
+      const stat = await fs.stat(resolved)
+      return stat.isDirectory() ? walkNotes(resolved) : [resolved]
+    }))).flat())].sort()
+  : await walkNotes(docsDir)
 
 const byStage = new Map()
 let touched = 0
