@@ -43,7 +43,7 @@ source: https://65610.csail.mit.edu/
 
 | 字段 | 必填 | 说明 |
 |---|---|---|
-| `title` | ✅ | **不含 `Lec N` 前缀**，纯主题。VitePress 用它做 `<title>`，与 H1 并存不冲突 |
+| `title` | ✅ | **不含 `Lec N` 前缀**，纯主题。站点页面层用它生成 `<title>`，与正文 H1 并存不冲突 |
 | `course` | ✅ | 课程可读名，取自课程目录 `index.md` 的首个 H1 |
 | `course_id` | ✅ | MIT 课号，如 `'6.5610'`。加引号，否则 YAML 会当浮点数 |
 | `lecture` | | 讲次数字。非讲次页（`index` / `lab` / 专题页）省略 |
@@ -160,7 +160,7 @@ H1 正下方，引用块，一到两行：
 
 ## 四、语义容器
 
-用 VitePress 自定义容器，**不要写裸 HTML**。
+使用项目统一的 Markdown 语义容器，**不要写裸 HTML**。Astro 页面渲染与 RAG 清洗共同实现这套内容契约。
 
 ```markdown
 ::: definition 完美安全
@@ -193,13 +193,13 @@ $<t$ 份的联合分布与 $s$ 统计独立，不依赖任何计算假设。
 | `::: insight` | **我的理解**（见下一节） |
 | `::: pitfall` | 常见误区 / 踩坑 |
 
-VitePress 原生的 `tip` / `warning` / `danger` / `info` 保留，用于阅读提示，不与上面五个混用。
+`tip` / `warning` / `danger` / `info` 保留为通用阅读提示容器，不与上面五个语义容器混用。
 
 ### 为什么不能写裸 HTML
 
 库里现有 **960 处** `<div style="...">` 承载定义和例题，用了 8 种以上互斥的 inline style（`#4a90d9` 配 `padding: 10px 15px` 482 次，配 `padding: 0.6em 1em` 42 次，红色有 `#e05c5c` 和 `#d9534f` 两套，绿色有 `#eafbea` 和 `#eafaf0` 两套）。
 
-另有 63 处 `<div class="definition">` / `"corollary"` / `"example"` —— 而 `docs/.vitepress/config.mts` 的 `config: (md) => {}` 是空的，主题里也没有对应 CSS。**这些 class 在页面上完全没有样式，纯粹白写。**
+另有 63 处 `<div class="definition">` / `"corollary"` / `"example"`。这些裸 class 不属于项目的 Markdown 内容契约，页面渲染和 RAG 都无法可靠识别其语义。
 
 同时 `rag/src/chunk.ts` 的 `cleanForEmbedding()` 会把 HTML 标签剥成空格。所以现状是：结构信号在页面上看不见，在向量里也留不下。
 
@@ -324,7 +324,7 @@ alt 要写**这张图在说明什么**，不是文件名。当前 1475 处图片
 ## 本讲小结：<主题词>
 ```
 
-**样板：`docs/zh/security/apply_cryptography/lec12.md`**
+**样板：`docs/zh/cs/security/apply_cryptography/lec12.md`**
 
 「工程视角」这一节目前只有 8 个文件在用，但它是这套骨架里最值钱的一节 —— 把理论和实践显式分开，读者和检索都受益。
 
@@ -341,7 +341,7 @@ OS、数据库、分布式、存储、体系结构。
 ## 本讲小结：<主题词>
 ```
 
-**样板：`docs/zh/computer_sys/os/lec5.md`**
+**样板：`docs/zh/cs/computer_sys/os/lec5.md`**
 
 开篇的「本讲定位」是这篇的精华：
 
@@ -365,7 +365,7 @@ PostgreSQL 系列及后续的开源项目研读。
 ## 小结：<主题词>
 ```
 
-**样板：`docs/zh/opensource/postgresql/queries-04-index-scan.md`**
+**样板：`docs/zh/cs/opensource/postgresql/queries-04-index-scan.md`**
 
 `opensource/postgresql` 是全库最一致的一组（34 篇里 33 篇同模板），零图片、零裸代码块、零空行堆积。它做对的最关键一件事是**显式的跨篇回指**：
 
@@ -419,7 +419,7 @@ npm run notes:new -- --course postgresql --slug queries-05-nested-loop --title "
 
 # 检查
 npm run notes:lint                                    # 全库
-npm run notes:lint -- docs/zh/computer_sys/os/lec21.md  # 单篇
+npm run notes:lint -- docs/zh/cs/computer_sys/os/lec21.md  # 单篇
 npm run notes:lint -- --summary                       # 只看规则命中统计
 npm run notes:lint -- --level=error                   # 只看 error
 

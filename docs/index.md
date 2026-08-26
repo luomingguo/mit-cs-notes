@@ -1,5 +1,4 @@
 ---
-# https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
 hero:
@@ -17,29 +16,29 @@ features:
   - icon: 🛠️
     title: 编程与软件工程
     details: 软件构造、软件设计、Web技术与UI设计、软件性能工程等课程笔记
-    link: /zh/sw_eng/index
+    link: /zh/sw_eng/
   - icon: 🔤
     title: 编程语言
     details: 编译原理、动态语言工程、程序的结构与解释等课程笔记
-    link: /zh/language/index
+    link: /zh/language/
   - icon: 📐
     title: 理论计算机
     details: 算法导论、算法设计与分析、可计算性与复杂度理论等课程笔记
-    link: /zh/tcs/index
+    link: /zh/tcs/
   - icon: 🖥️
     title: 计算机系统
     details: 操作系统工程、计算机系统工程、数据库系统、分布式系统等课程笔记
-    link: /zh/computer_sys/index
+    link: /zh/computer_sys/
   - icon: 🏗️
     title: 计算机架构
     details: 计算结构、计算机体系结构、硬件安全设计等课程笔记
-    link: /zh/arch/index
+    link: /zh/arch/
   - icon: 🔒
     title: 安全与加密
     details: 安全与加密应用相关课程笔记
-    link: /zh/security/index
+    link: /zh/security/
   - icon: 🔍
     title: 开源项目解读
     details: Redis、Mysql、Golang编程语言等经典开源项目源码分析
-    link: /zh/opensrc/index
+    link: /zh/opensrc/
 ---

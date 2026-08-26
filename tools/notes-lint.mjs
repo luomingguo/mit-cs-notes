@@ -2,7 +2,7 @@
 // 按 NOTESTYLE.md 检查笔记。
 //
 //   npm run notes:lint                    全库
-//   npm run notes:lint -- docs/zh/os/...  指定文件
+//   npm run notes:lint -- docs/zh/cs/computer_sys/os/...  指定文件
 //   npm run notes:lint -- --summary       只出规则命中统计（改造前后对比用）
 //   npm run notes:lint -- --level=error   只看 error
 //   npm run notes:lint -- --max-errors=N  超过 N 个 error 退出码 1（CI 用）

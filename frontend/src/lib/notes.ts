@@ -80,7 +80,8 @@ const DOMAIN_LABELS: Record<string, string> = {
 };
 
 const SITE_BASE = normalizeBase(process.env.DOCS_BASE ?? '/');
-const SOURCE_CATEGORIES = new Set(['arch', 'computer_sys', 'index', 'language', 'opensource', 'security', 'sw_eng', 'tcs']);
+const SOURCE_CATEGORIES = new Set(['arch', 'computer_sys', 'index', 'language', 'opensource', 'opensrc', 'security', 'sw_eng', 'tcs']);
+const DISCIPLINE_SLUGS = new Set(['cs', 'psy', 'mgnt']);
 let gitUpdatedCache: Map<string, string> | null = null;
 
 function projectRoot(): string {
@@ -135,8 +136,14 @@ export function lectureOf(entry: NoteEntry): number | undefined {
   return typeof lecture === 'number' && Number.isFinite(lecture) ? lecture : undefined;
 }
 
+export function disciplineOf(id: string): string {
+  const parts = id.split('/');
+  return parts.length >= 2 ? parts[0] ?? '' : '';
+}
+
 export function categoryOf(id: string): string {
-  return id.split('/')[0] || 'index';
+  const parts = id.split('/');
+  return disciplineOf(id) ? parts[1] ?? '' : parts[0] || 'index';
 }
 
 export function canonicalDomainSlug(category: string): string {
@@ -144,11 +151,16 @@ export function canonicalDomainSlug(category: string): string {
 }
 
 export function courseSlugOf(id: string): string {
-  return id.split('/')[1] || id.split('/')[0] || 'notes';
+  const parts = id.split('/');
+  return disciplineOf(id) ? parts[2] || parts[1] || 'notes' : parts[0] || 'notes';
 }
 
 export function courseKeyOf(id: string): string {
-  return `${categoryOf(id)}/${courseSlugOf(id)}`;
+  return [disciplineOf(id), categoryOf(id), courseSlugOf(id)].filter(Boolean).join('/');
+}
+
+export function domainKeyOf(id: string): string {
+  return [disciplineOf(id), canonicalDomainSlug(categoryOf(id))].filter(Boolean).join('/');
 }
 
 export function domainLabelOf(id: string): string {
@@ -162,20 +174,33 @@ export function isRootIndex(entry: NoteEntry): boolean {
 
 export function isDomainIndex(entry: NoteEntry): boolean {
   const parts = entry.id.split('/');
-  return parts.length === 2 && parts[1] === 'index';
+  return parts.length === 3 && parts[2] === 'index';
 }
 
 export function isCourseIndex(entry: NoteEntry): boolean {
   const parts = entry.id.split('/');
-  return parts.length >= 3 && parts.at(-1) === 'index';
+  return parts.length >= 4 && parts.at(-1) === 'index';
 }
 
-/** Preserve the VitePress public rewrite: /zh/:category/:course/* -> /zh/:course/*. */
+function sourcePartsToPublicParts(parts: string[]): string[] {
+  if (parts.length < 2) return parts;
+  const [discipline, category = '', ...rest] = parts;
+  const publicDomain = canonicalDomainSlug(category);
+
+  // 计算机课程沿用迁移前的稳定 URL；其他学科保留学科前缀来隔离同名课程。
+  if (discipline === 'cs') {
+    if (rest.length === 1 && rest[0] === 'index') return [publicDomain];
+    return rest;
+  }
+  if (rest.length === 1 && rest[0] === 'index') return [discipline, publicDomain];
+  return [discipline, ...rest];
+}
+
+/** Stable public routes: cs keeps /zh/:course/*; other disciplines use /zh/:discipline/:course/*. */
 export function idToUrlPath(id: string): string {
   const parts = id.split('/');
   if (id === 'index') return '';
-  if (parts.length === 2 && parts[1] === 'index') return parts[0];
-  const publicParts = parts.length >= 3 ? parts.slice(1) : parts;
+  const publicParts = sourcePartsToPublicParts(parts);
   return publicParts.join('/').replace(/\/index$/, '').replace(/^index$/, '');
 }
 
@@ -187,7 +212,11 @@ export function idToHref(id: string): string {
 
 function resolvedContentAssetPath(resolved: string): string {
   const parts = resolved.split('/');
-  const publicParts = parts.length >= 3 ? parts.slice(1) : parts;
+  const [discipline, category = '', ...rest] = parts;
+  const publicDomain = canonicalDomainSlug(category);
+  const publicParts = parts.length === 3
+    ? discipline === 'cs' ? [publicDomain, ...rest] : [discipline, publicDomain, ...rest]
+    : sourcePartsToPublicParts(parts);
   return withBasePath(`/zh/${publicParts.join('/')}`);
 }
 
@@ -196,8 +225,19 @@ function canonicalAbsoluteHref(href: string): string {
   let hrefPath = match?.[1] ?? href;
   const suffix = match?.[2] ?? '';
   const parts = hrefPath.split('/').filter(Boolean);
-  if (parts[0] === 'zh' && parts.length >= 3 && SOURCE_CATEGORIES.has(parts[1])) {
-    hrefPath = `/${['zh', ...parts.slice(2)].join('/')}${hrefPath.endsWith('/') ? '/' : ''}`;
+  if (parts[0] === 'zh') {
+    const routeParts = parts.slice(1);
+    let sourceId = '';
+    if (routeParts.length >= 3 && DISCIPLINE_SLUGS.has(routeParts[0])) {
+      sourceId = routeParts.join('/');
+    } else if (routeParts.length >= 2 && SOURCE_CATEGORIES.has(routeParts[0])) {
+      sourceId = ['cs', ...routeParts].join('/');
+    }
+    if (sourceId) {
+      const publicPath = idToUrlPath(sourceId);
+      const directory = sourceId.endsWith('/index') || hrefPath.endsWith('/');
+      hrefPath = `/zh/${publicPath}${directory ? '/' : ''}`;
+    }
   }
   return `${withBasePath(hrefPath)}${suffix}`;
 }
@@ -322,22 +362,25 @@ export function buildTaxonomy(entries: NoteEntry[], currentId: string): NavDomai
   const byDomain = new Map<string, { notes: number; courses: Set<string> }>();
   for (const entry of entries) {
     if (entry.id.endsWith('/index') || !entry.id.includes('/')) continue;
-    const slug = canonicalDomainSlug(categoryOf(entry.id));
-    const bucket = byDomain.get(slug) ?? { notes: 0, courses: new Set<string>() };
+    const key = domainKeyOf(entry.id);
+    const bucket = byDomain.get(key) ?? { notes: 0, courses: new Set<string>() };
     bucket.notes += 1;
     bucket.courses.add(courseKeyOf(entry.id));
-    byDomain.set(slug, bucket);
+    byDomain.set(key, bucket);
   }
-  const currentDomain = canonicalDomainSlug(categoryOf(currentId));
+  const currentDomain = domainKeyOf(currentId);
   return [...byDomain.entries()]
-    .map(([slug, value]) => ({
-      slug,
-      label: DOMAIN_LABELS[slug] ?? slug.replaceAll('_', ' '),
-      href: withBasePath(`/zh/${slug}/`),
-      noteCount: value.notes,
-      courseCount: value.courses.size,
-      active: slug === currentDomain,
-    }))
+    .map(([key, value]) => {
+      const [discipline, slug] = key.split('/');
+      return {
+        slug: key,
+        label: DOMAIN_LABELS[slug] ?? slug.replaceAll('_', ' '),
+        href: idToHref(`${discipline}/${slug}/index`),
+        noteCount: value.notes,
+        courseCount: value.courses.size,
+        active: key === currentDomain,
+      };
+    })
     .sort((a, b) => Number(b.active) - Number(a.active) || a.label.localeCompare(b.label, 'zh'));
 }
 
@@ -441,7 +484,9 @@ export function lastUpdatedOf(entry: NoteEntry): string | null {
           continue;
         }
         if (!date || !line.startsWith('docs/zh/') || !line.endsWith('.md')) continue;
-        const id = line.slice('docs/zh/'.length, -'.md'.length);
+        const historicalId = line.slice('docs/zh/'.length, -'.md'.length);
+        const first = historicalId.split('/')[0];
+        const id = SOURCE_CATEGORIES.has(first) ? `cs/${historicalId}` : historicalId;
         if (!gitUpdatedCache.has(id)) gitUpdatedCache.set(id, date);
       }
     } catch {

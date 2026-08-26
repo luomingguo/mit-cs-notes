@@ -10,40 +10,40 @@ import path from 'node:path'
 export const DOCS_DIR = 'docs'
 
 // ── 课程目录 → kind 映射 ──────────────────────────────────────────
-// 键是 zh 之后的「分类/课程」两段。新增课程时在这里登记，
+// 键是 zh 之后的「学科/分类/课程」三段。新增课程时在这里登记，
 // 漏登记会被 lint 报出来，不会静默按错误的骨架检查。
 export const KIND_BY_COURSE = {
-  'tcs/maths_for_cs': 'theory',
-  'tcs/introduction_to_algorithms': 'theory',
-  'security/apply_cryptography': 'theory',
-  'security/foundation_of_security': 'theory',
-  'language/dynamic_language': 'theory',
-  'language/computer_language': 'theory',
-  'language/sicp': 'theory',
-  'language/introdution_to_cpp': 'system',
+  'cs/tcs/maths_for_cs': 'theory',
+  'cs/tcs/introduction_to_algorithms': 'theory',
+  'cs/security/apply_cryptography': 'theory',
+  'cs/security/foundation_of_security': 'theory',
+  'cs/language/dynamic_language': 'theory',
+  'cs/language/computer_language': 'theory',
+  'cs/language/sicp': 'theory',
+  'cs/language/introdution_to_cpp': 'system',
 
-  'arch/cca': 'system',
-  'arch/csa': 'system',
-  'arch/computation_structures': 'system',
-  'arch/llp': 'system',
-  'computer_sys/computer_sys_eng': 'system',
-  'computer_sys/database_system': 'system',
-  'computer_sys/dc_computing': 'system',
-  'computer_sys/distributed_system': 'system',
-  'computer_sys/mobile': 'system',
-  'computer_sys/network': 'system',
-  'computer_sys/os': 'system',
-  'computer_sys/storage': 'system',
-  'sw_eng/software_performance_engineer': 'system',
-  'sw_eng/multicore_programming': 'system',
-  'sw_eng/fundamentals_of_programming': 'system',
-  'sw_eng/algorithm_engineer': 'system',
+  'cs/arch/cca': 'system',
+  'cs/arch/csa': 'system',
+  'cs/arch/computation_structures': 'system',
+  'cs/arch/llp': 'system',
+  'cs/computer_sys/computer_sys_eng': 'system',
+  'cs/computer_sys/database_system': 'system',
+  'cs/computer_sys/dc_computing': 'system',
+  'cs/computer_sys/distributed_system': 'system',
+  'cs/computer_sys/mobile': 'system',
+  'cs/computer_sys/network': 'system',
+  'cs/computer_sys/os': 'system',
+  'cs/computer_sys/storage': 'system',
+  'cs/sw_eng/software_performance_engineer': 'system',
+  'cs/sw_eng/multicore_programming': 'system',
+  'cs/sw_eng/fundamentals_of_programming': 'system',
+  'cs/sw_eng/algorithm_engineer': 'system',
 
-  'opensource/postgresql': 'source',
+  'cs/opensource/postgresql': 'source',
 
-  'sw_eng/designftw': 'design',
-  'sw_eng/software_design': 'design',
-  'sw_eng/element_of_software_construction': 'design',
+  'cs/sw_eng/designftw': 'design',
+  'cs/sw_eng/software_design': 'design',
+  'cs/sw_eng/element_of_software_construction': 'design',
 }
 
 /** 无信息量的章节标题。命中即报 warning —— 它们在 embedText 的上下文头里不可分。 */
@@ -260,22 +260,24 @@ export async function walkNotes(dir) {
   return out.sort()
 }
 
-/** 从 docs 相对路径拆出 lang / category / courseSlug，规则同 corpus.ts。 */
+/** 从 docs 相对路径拆出 lang / discipline / category / courseSlug，规则同 corpus.ts。 */
 export function classify(relPath) {
   const segs = relPath.replace(/\.md$/, '').split('/')
   const lang = segs[0] ?? 'zh'
-  const category = segs.length >= 3 ? segs[1] : ''
-  const courseSlug = segs.length >= 4 ? segs[2] : segs[1] ?? ''
-  const courseKey = `${category}/${courseSlug}`
+  const discipline = segs.length >= 3 ? segs[1] : ''
+  const category = segs.length >= 4 ? segs[2] : ''
+  const courseSlug = segs.length >= 5 ? segs[3] : category || segs[1] || ''
+  const courseKey = [discipline, category, courseSlug].filter(Boolean).join('/')
   return {
     lang,
+    discipline,
     category,
     courseSlug,
     courseKey,
     kind: KIND_BY_COURSE[courseKey],
     // 课程 index.md、分类 index.md 不是正文页，规则放宽
     isIndex: segs.at(-1) === 'index',
-    isCourseRoot: segs.length <= 3,
+    isCourseRoot: segs.length <= 4,
   }
 }
 
@@ -284,16 +286,16 @@ export function classify(relPath) {
  * 与其改动站点页面，不如在这里定名。
  */
 const COURSE_NAME_OVERRIDE = {
-  'sw_eng/algorithm_engineer': '算法工程师训练',
-  'sw_eng/software_design': '软件设计',
+  'cs/sw_eng/algorithm_engineer': '算法工程师训练',
+  'cs/sw_eng/software_design': '软件设计',
 }
 
 /** 课程可读名：取课程目录 index.md 的首个 H1，与 corpus.ts 的 readCourseName 一致。 */
 const courseNameCache = new Map()
-export async function courseName(docsDir, lang, category, courseSlug, fallback) {
-  const override = COURSE_NAME_OVERRIDE[`${category}/${courseSlug}`]
+export async function courseName(docsDir, lang, discipline, category, courseSlug, fallback) {
+  const override = COURSE_NAME_OVERRIDE[`${discipline}/${category}/${courseSlug}`]
   if (override) return override
-  const dir = path.join(docsDir, lang, category, courseSlug)
+  const dir = path.join(docsDir, lang, discipline, category, courseSlug)
   if (courseNameCache.has(dir)) return courseNameCache.get(dir)
   let name = fallback
   try {

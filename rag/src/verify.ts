@@ -1,24 +1,26 @@
 /**
- * 用 docs/.vitepress/dist 的真实构建产物验证 mapUrl 与 slugifyHeading。
+ * 用 Astro 的真实构建产物验证 mapUrl 与 slugifyHeading。
  *
  * 为什么值得常驻：这两个函数一旦算错，问答给出的引用链接就会指向不存在的页面，
  * 而且是静默失败 —— 读者点进去只会看到 404，你不会收到任何报错。
- * 每次改 config.mts 的 rewrites 或升级 VitePress 后，跑一次 `npm run verify`。
+ * 每次修改公开路由或标题锚点规则后，跑一次 `npm run verify`。
  *
- * 用法：npm run verify         （需要先 npm run docs:build 生成 dist）
+ * 用法：npm run verify         （需要先从仓库根目录运行 npm run site:build）
  */
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { collectDocuments, extractHeadings } from './corpus.js'
+import { fileURLToPath } from 'node:url'
+import { collectDocuments, extractHeadings, mapUrl } from './corpus.js'
 import { chunkDocument } from './chunk.js'
 import { config } from './config.js'
 
+const here = path.dirname(fileURLToPath(import.meta.url))
 const DOCS = process.env.DOCS_DIR
   ? path.resolve(process.env.DOCS_DIR)
   : config.docsDir
 const DIST = process.env.DIST_DIR
   ? path.resolve(process.env.DIST_DIR)
-  : path.join(DOCS, '.vitepress/dist')
+  : path.join(here, '../../frontend/dist')
 
 async function distFileFor(url: string): Promise<string> {
   const clean = url.replace(/^\/+|\/+$/g, '')
@@ -39,9 +41,23 @@ async function main() {
   try {
     await fs.access(DIST)
   } catch {
-    console.error(`找不到 ${DIST}\n先跑 npm run docs:build 再来验证。`)
+    console.error(`找不到 ${DIST}\n先从仓库根目录运行 npm run site:build 再来验证。`)
     process.exit(2)
   }
+
+  const routeContracts = new Map([
+    ['zh/cs/computer_sys/os/lec5.md', '/zh/os/lec5'],
+    ['zh/cs/tcs/index.md', '/zh/tcs/'],
+    ['zh/psy/core/intro/lec1.md', '/zh/psy/intro/lec1'],
+    ['zh/mgnt/org/leadership/index.md', '/zh/mgnt/leadership/'],
+  ])
+  for (const [sourcePath, expected] of routeContracts) {
+    const actual = mapUrl(sourcePath)
+    if (actual !== expected) {
+      throw new Error(`路由契约错误：${sourcePath} -> ${actual}，预期 ${expected}`)
+    }
+  }
+  console.log(`路由契约:      ${routeContracts.size}/${routeContracts.size}\n`)
 
   const docs = await collectDocuments(DOCS)
   console.log(`收录 ${docs.length} 篇\n`)

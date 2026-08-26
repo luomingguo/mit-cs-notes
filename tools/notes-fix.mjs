@@ -343,7 +343,7 @@ async function buildFrontmatter(rel, meta, body, existing, docsDir, log) {
         .trim() || path.basename(rel, '.md')
   }
   if (!fm.course) {
-    fm.course = await courseName(docsDir, meta.lang, meta.category, meta.courseSlug, meta.courseSlug)
+    fm.course = await courseName(docsDir, meta.lang, meta.discipline, meta.category, meta.courseSlug, meta.courseSlug)
   }
   if (!fm.course_id) {
     // 课程名开头常是 "6.1810 操作系统工程"，也有 "18-746 存储系统" 这种。

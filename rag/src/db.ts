@@ -44,16 +44,16 @@ export async function applySchema(): Promise<void> {
 
 export async function upsertDocument(doc: SourceDoc): Promise<void> {
   await getPool().query(
-    `INSERT INTO documents (path, url, lang, course_slug, course, category, title, outline, chars, file_hash, kind, tags, status, updated_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13, now())
+    `INSERT INTO documents (path, url, lang, discipline, course_slug, course, category, title, outline, chars, file_hash, kind, tags, status, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14, now())
      ON CONFLICT (path) DO UPDATE SET
-       url=EXCLUDED.url, lang=EXCLUDED.lang, course_slug=EXCLUDED.course_slug,
+       url=EXCLUDED.url, lang=EXCLUDED.lang, discipline=EXCLUDED.discipline, course_slug=EXCLUDED.course_slug,
        course=EXCLUDED.course, category=EXCLUDED.category, title=EXCLUDED.title,
        outline=EXCLUDED.outline, chars=EXCLUDED.chars, file_hash=EXCLUDED.file_hash,
        kind=EXCLUDED.kind, tags=EXCLUDED.tags, status=EXCLUDED.status,
        updated_at=now()`,
     [
-      doc.path, doc.url, doc.lang, doc.courseSlug, doc.course,
+      doc.path, doc.url, doc.lang, doc.discipline, doc.courseSlug, doc.course,
       doc.category, doc.title, doc.outline, doc.chars, doc.fileHash,
       doc.kind, doc.tags, doc.status,
     ],
@@ -77,9 +77,14 @@ export async function existingDocHashes(): Promise<Map<string, string>> {
 export async function existingEmbeddings(
   docPath: string,
 ): Promise<Map<string, string>> {
+  // 目录迁移 zh/<领域>/... -> zh/cs/<领域>/... 不改变嵌入文本。
+  // 首次迁移入库时同时查旧主键，可复用同一文档的已有向量，避免全量重嵌；
+  // 本轮完成后 deleteMissingDocs 会清理旧路径记录。
+  const candidatePaths = [docPath]
+  if (docPath.startsWith('zh/cs/')) candidatePaths.push(docPath.replace(/^zh\/cs\//, 'zh/'))
   const { rows } = await getPool().query<{ content_hash: string; embedding: string | null }>(
-    'SELECT content_hash, embedding::text AS embedding FROM chunks WHERE doc_path = $1',
-    [docPath],
+    'SELECT content_hash, embedding::text AS embedding FROM chunks WHERE doc_path = ANY($1::text[])',
+    [candidatePaths],
   )
   const map = new Map<string, string>()
   for (const r of rows) if (r.embedding) map.set(r.content_hash, r.embedding)
@@ -222,6 +227,7 @@ export async function logAsk(entry: {
 
 export interface DocIndexRow {
   url: string
+  discipline: string
   course: string
   course_slug: string
   category: string
@@ -233,9 +239,9 @@ export interface DocIndexRow {
 /** 全站文档索引，喂给学习路径生成器 */
 export async function listDocumentIndex(lang = 'zh'): Promise<DocIndexRow[]> {
   const { rows } = await getPool().query<DocIndexRow>(
-    `SELECT url, course, course_slug, category, title, outline, chars
+    `SELECT url, discipline, course, course_slug, category, title, outline, chars
        FROM documents WHERE lang = $1
-      ORDER BY category, course_slug, path`,
+      ORDER BY discipline, category, course_slug, path`,
     [lang],
   )
   return rows

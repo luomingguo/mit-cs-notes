@@ -8,12 +8,13 @@ CREATE EXTENSION IF NOT EXISTS vector;
 -- 也用来判断哪些文件自上次 ingest 后变过。
 -- ============================================================
 CREATE TABLE IF NOT EXISTS documents (
-  path         TEXT PRIMARY KEY,        -- 相对 docs/ 的源码路径，如 zh/computer_sys/os/lec5.md
+  path         TEXT PRIMARY KEY,        -- 相对 docs/ 的源码路径，如 zh/cs/computer_sys/os/lec5.md
   url          TEXT NOT NULL,           -- 站点真实 URL，如 /zh/os/lec5（已应用 rewrites）
   lang         TEXT NOT NULL,           -- zh | en
+  discipline   TEXT NOT NULL DEFAULT '',-- cs | psy | mgnt；无学科层的全局页为空
   course_slug  TEXT NOT NULL,           -- os
   course       TEXT NOT NULL,           -- 6.1810 操作系统工程
-  category     TEXT NOT NULL,           -- computer_sys（config.mts 里的分类段）
+  category     TEXT NOT NULL,           -- computer_sys（源目录中的分类段）
   title        TEXT NOT NULL,           -- Lec 5 虚拟内存 & 页表
   outline      TEXT NOT NULL DEFAULT '',-- 二级标题拼接，给路径生成器看结构用
   chars        INTEGER NOT NULL DEFAULT 0,
@@ -88,9 +89,11 @@ CREATE OR REPLACE VIEW content_gaps AS
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS kind   TEXT NOT NULL DEFAULT '';
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS tags   TEXT[] NOT NULL DEFAULT '{}';
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'complete';
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS discipline TEXT NOT NULL DEFAULT '';
 
 CREATE INDEX IF NOT EXISTS documents_kind_idx ON documents (kind);
 CREATE INDEX IF NOT EXISTS documents_tags_idx ON documents USING gin (tags);
+CREATE INDEX IF NOT EXISTS documents_discipline_idx ON documents (discipline);
 
 -- block_kind：这一块落在哪种语义容器里。
 -- insight = 作者本人的判断，是这批笔记相对讲义的增量价值，检索时要能加权。

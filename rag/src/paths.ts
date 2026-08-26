@@ -23,10 +23,10 @@ import { listDocumentIndex, closePool, type DocIndexRow } from './db.js'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const OUT_FILE = path.join(here, '../data/paths.json')
 /**
- * 同时写一份到 docs/public/，让路径页变成纯静态资源。
+ * 同时写一份到仓库根 public/，让路径页变成纯静态资源。
  * 这样学习路径在 GitHub Pages 上也能用 —— 只有问答才依赖后端。
  */
-const PUBLIC_FILE = path.join(here, '../../docs/public/rag-paths.json')
+const PUBLIC_FILE = path.join(here, '../../public/rag-paths.json')
 
 interface Goal {
   slug: string
@@ -129,7 +129,7 @@ interface GeneratedPath {
 function buildCatalog(docs: DocIndexRow[]): string {
   const byCourse = new Map<string, DocIndexRow[]>()
   for (const d of docs) {
-    const key = `${d.category}/${d.course_slug}|${d.course}`
+    const key = `${d.discipline}/${d.category}/${d.course_slug}|${d.course}`
     const arr = byCourse.get(key) ?? []
     arr.push(d)
     byCourse.set(key, arr)

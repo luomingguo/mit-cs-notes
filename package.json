@@ -1,27 +1,22 @@
 {
+  "name": "mit-cs-notes",
+  "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "vitepress dev docs",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "NODE_OPTIONS=--max-old-space-size=4096 vitepress build docs",
-    "docs:preview": "vitepress preview docs",
+    "dev": "npm run site:dev",
+    "build": "npm run site:build",
+    "check": "npm run site:check",
+    "preview": "npm run site:preview",
+    "verify": "npm run site:verify",
+    "site:dev": "npm --prefix frontend run dev",
     "site:check": "npm --prefix frontend run check",
     "site:build": "npm --prefix frontend run build",
     "site:build:pages": "DOCS_BASE=/mit-cs-notes/ SITE_ORIGIN=https://luomingguo.github.io npm --prefix frontend run build",
+    "site:preview": "npm --prefix frontend run preview",
     "site:verify": "npm --prefix frontend run verify:dist && DIST_DIR=$PWD/frontend/dist npm --prefix rag run verify",
     "site:verify:pages": "DOCS_BASE=/mit-cs-notes/ npm --prefix frontend run verify:dist",
     "notes:lint": "node tools/notes-lint.mjs",
     "notes:fix": "node tools/notes-fix.mjs",
     "notes:new": "node tools/notes-new.mjs"
-  },
-  "devDependencies": {
-    "@shikijs/vitepress-twoslash": "^4.2.0",
-    "@vitejs/plugin-vue": "^6.0.7",
-    "markdown-it-container": "^4.0.0",
-    "markdown-it-mathjax3": "^4.3.2",
-    "vitepress": "2.0.0-alpha.17"
-  },
-  "dependencies": {
-    "vue-router": "^4.5.1"
   }
 }

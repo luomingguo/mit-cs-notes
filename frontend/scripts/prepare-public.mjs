@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const frontendRoot = fileURLToPath(new URL('../', import.meta.url));
 const repoRoot = path.resolve(frontendRoot, '..');
-const docsPublic = path.join(repoRoot, 'docs', 'public');
+const sharedPublic = path.join(repoRoot, 'public');
 const docsZh = path.join(repoRoot, 'docs', 'zh');
 const frontendStatic = path.join(frontendRoot, 'static');
 const targetRoot = path.join(frontendRoot, '.public');
@@ -40,7 +40,7 @@ async function stageTree(sourceRoot, targetPrefix, ownerPrefix) {
   }
 }
 
-await stageTree(docsPublic, '', 'docs/public');
+await stageTree(sharedPublic, '', 'public');
 await stageTree(frontendStatic, '', 'frontend/static');
 
 async function copyContentAssets(directory) {
@@ -53,10 +53,16 @@ async function copyContentAssets(directory) {
     if (item.name.endsWith('.md')) continue;
     const relative = path.relative(docsZh, absolute);
     const parts = relative.split(path.sep);
-    const publicParts = parts.length >= 3 ? parts.slice(1) : parts;
+    const [discipline, _category, ...rest] = parts;
+    let publicParts = parts;
+    if (parts.length === 3) {
+      publicParts = discipline === 'cs' ? [parts[1], ...rest] : [discipline, parts[1], ...rest];
+    } else if (parts.length > 3) {
+      publicParts = discipline === 'cs' ? rest : [discipline, ...rest];
+    }
     await stageAsset(absolute, path.join('zh', ...publicParts), `docs/zh/${relative}`);
   }
 }
 
 await copyContentAssets(docsZh);
-console.info(`[public] staged ${staged.size} assets from docs/public, frontend/static and docs/zh`);
+console.info(`[public] staged ${staged.size} assets from public, frontend/static and docs/zh`);

@@ -27,22 +27,25 @@ for (let i = 0; i < argv.length; i++) {
 }
 
 if (!flags.course) {
-  console.error('用法: npm run notes:new -- --course <课程目录名> --lecture <N> [--title 标题] [--en English]')
+  console.error('用法: npm run notes:new -- --course <课程目录名> --lecture <N> [--discipline cs] [--title 标题] [--en English]')
   console.error('\n可用课程：')
-  for (const k of Object.keys(KIND_BY_COURSE)) console.error(`  ${k.split('/')[1].padEnd(34)} ${KIND_BY_COURSE[k]}`)
+  for (const k of Object.keys(KIND_BY_COURSE)) console.error(`  ${(k.split('/').at(-1) ?? k).padEnd(34)} ${KIND_BY_COURSE[k]}`)
   process.exit(1)
 }
 
-const courseKey = Object.keys(KIND_BY_COURSE).find((k) => k.endsWith(`/${flags.course}`))
+const requestedDiscipline = String(flags.discipline ?? 'cs')
+const courseKey = Object.keys(KIND_BY_COURSE).find((k) =>
+  k.startsWith(`${requestedDiscipline}/`) && k.endsWith(`/${flags.course}`),
+)
 if (!courseKey) {
   console.error(C.red(`未知课程 "${flags.course}"，先在 tools/notes-lib.mjs 的 KIND_BY_COURSE 里登记`))
   process.exit(1)
 }
 
-const [category, slug] = courseKey.split('/')
+const [discipline, category, slug] = courseKey.split('/')
 const kind = flags.kind ?? KIND_BY_COURSE[courseKey]
 const docsDir = path.resolve(DOCS_DIR)
-const course = await courseName(docsDir, 'zh', category, slug, slug)
+const course = await courseName(docsDir, 'zh', discipline, category, slug, slug)
 const courseId = course.match(/^(\d+[.\-][\dA-Za-z.]+)/)?.[1]
 
 const title = flags.title ?? '待填标题'
@@ -55,7 +58,7 @@ if (!basename) {
   process.exit(1)
 }
 
-const file = path.join(docsDir, 'zh', category, slug, `${basename}.md`)
+const file = path.join(docsDir, 'zh', discipline, category, slug, `${basename}.md`)
 try {
   await fs.access(file)
   console.error(C.red(`${path.relative(process.cwd(), file)} 已存在，不覆盖`))

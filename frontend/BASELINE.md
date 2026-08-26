@@ -1,6 +1,6 @@
 # Astro 迁移与视觉验收基线
 
-本目录是独立 Astro 前端。它只读取 `../docs/**/*.md`，不修改 Markdown 源文件，也不依赖 VitePress 的 Layout、DOM 或 CSS。
+本目录是独立 Astro 前端。它只读取 `../docs/**/*.md`，不修改 Markdown 源文件，也不依赖任何已移除的旧前端布局、DOM 或 CSS。
 
 ## 已实现范围
 

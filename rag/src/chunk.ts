@@ -27,7 +27,7 @@ export type BlockKind = 'normal' | 'insight' | 'pitfall' | 'definition' | 'theor
 /**
  * 容器名 → 送进嵌入向量的中文前缀。
  *
- * 必须和 docs/.vitepress/config.mts 的 SEMANTIC_CONTAINERS 保持同名。
+ * 必须和 frontend/astro.config.mjs 的 CONTAINER_LABELS 保持同名。
  * 以前 cleanForEmbedding 把承载这些语义的 <div> 剥成空格，「这是定义」还是
  * 「这是作者的判断」在向量里完全看不出来；现在把它变成正文的一部分。
  */
@@ -82,7 +82,7 @@ function cleanForEmbedding(md: string): string {
       // 一样剥掉 —— 读者问「作者怎么看」时，靠的就是这个前缀能被召回。
       .replace(/^:::[ \t]*([a-z]+)[ \t]*(.*)$/gim, (line, name: string, title: string) => {
         const label = CONTAINER_LABEL[name.toLowerCase()]
-        if (!label) return '' // VitePress 内置的 tip/warning/raw 等，直接去壳
+        if (!label) return '' // 非检索语义的 tip/warning/raw 等只去壳，不写类型前缀
         return title.trim() ? `${label}（${title.trim()}）：` : `${label}：`
       })
       // 容器闭合行

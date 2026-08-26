@@ -3,12 +3,14 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 
 export interface SourceDoc {
-  /** 相对 docs/ 的源码路径，如 zh/computer_sys/os/lec5.md */
+  /** 相对 docs/ 的源码路径，如 zh/cs/computer_sys/os/lec5.md */
   path: string
-  /** 站点真实 URL，如 /zh/os/lec5（已应用 config.mts 的 rewrites） */
+  /** 站点真实 URL，如 /zh/os/lec5（已应用公开路由映射） */
   url: string
   lang: string
-  /** config.mts 里的分类段，如 computer_sys */
+  /** 学科目录，如 cs | psy | mgnt */
+  discipline: string
+  /** 源目录中的分类段，如 computer_sys */
   category: string
   /** 课程目录名，如 os */
   courseSlug: string
@@ -29,7 +31,7 @@ export interface SourceDoc {
 }
 
 /**
- * 复刻 VitePress（@mdit-vue/shared）的标题 slugify，用来生成 #锚点。
+ * 实现站点稳定的标题 slug 规则，用来生成 #锚点。
  *
  * 规则是拿 dist/ 里已构建的 HTML 反推并逐条验证过的：
  *   `## 页面管理`              -> 页面管理
@@ -99,7 +101,7 @@ function fenceRanges(body: string): Array<[number, number]> {
 export interface Heading {
   level: number
   text: string
-  /** 已按 VitePress 规则去重的锚点 */
+  /** 已按站点规则去重的锚点 */
   slug: string
   /** 在 body 中的字符偏移 */
   index: number
@@ -118,8 +120,8 @@ export function plainHeading(h: string): string {
 /**
  * 抽取标题并生成锚点。
  *
- * VitePress（markdown-it-anchor）遇到同名标题会追加 -1、-2 保证 id 唯一，
- * 这里必须复刻，否则同名小节的锚点会全部指向第一个。
+ * 站点遇到同名标题会追加 -1、-2 保证 id 唯一；这里必须使用同一规则，
+ * 否则同名小节的锚点会全部指向第一个。
  */
 export function extractHeadings(body: string): Heading[] {
   const clean = stripCodeFences(body)
@@ -149,26 +151,35 @@ export function extractHeadings(body: string): Heading[] {
 /**
  * 把源码路径映射成站点 URL。
  *
- * config.mts 里的 rewrites 规则是：
- *   "zh/:pkg/:subject/(.*)" -> "zh/:subject/(.*)"
- * 也就是 zh 之后第一段（分类）会被吃掉，且只在层级 >= 4 段时生效。
- * en/ 没有 rewrite 规则，原样映射。
+ * 公开路由规则是：计算机课程继续使用原有 /zh/:course/*；其他学科保留
+ * 学科前缀 /zh/:discipline/:course/*，避免不同学科的同名课程发生冲突。
+ * en/ 没有学科目录，原样映射。
  *
- * 已用 docs/.vitepress/dist 的实际产物验证：
- *   zh/computer_sys/os/lec5.md   -> /zh/os/lec5
- *   zh/opensource/postgresql/index.md -> /zh/postgresql/
- *   zh/tcs/index.md              -> /zh/tcs/   （只有 3 段，不触发 rewrite）
+ * 已用 Astro 的实际产物验证：
+ *   zh/cs/computer_sys/os/lec5.md        -> /zh/os/lec5
+ *   zh/cs/opensource/postgresql/index.md -> /zh/postgresql/
+ *   zh/cs/tcs/index.md                   -> /zh/tcs/
+ *   zh/psy/core/intro/lec1.md            -> /zh/psy/intro/lec1
  */
 export function mapUrl(relPath: string): string {
   const noExt = relPath.replace(/\.md$/, '')
   let segments = noExt.split('/')
 
-  // 只有 zh 命名空间、且深度足够（zh/分类/课程/文件）时才吃掉分类段。
   if (segments[0] === 'zh' && segments.length >= 4) {
-    segments = [segments[0], ...segments.slice(2)]
+    const [discipline = '', category = '', ...rest] = segments.slice(1)
+    const publicDomain = category === 'opensource' ? 'opensrc' : category
+    if (discipline === 'cs') {
+      segments = rest.length === 1 && rest[0] === 'index'
+        ? ['zh', publicDomain, 'index']
+        : ['zh', ...rest]
+    } else {
+      segments = rest.length === 1 && rest[0] === 'index'
+        ? ['zh', discipline, publicDomain, 'index']
+        : ['zh', discipline, ...rest]
+    }
   }
 
-  // index 收敛成目录 URL，跟 VitePress 的产出一致。
+  // index 收敛成目录 URL，跟 Astro 的公开路由一致。
   if (segments.at(-1) === 'index') {
     segments = segments.slice(0, -1)
     return `/${segments.join('/')}/`
@@ -268,13 +279,16 @@ export async function collectDocuments(docsDir: string): Promise<SourceDoc[]> {
 
       const segments = relPath.replace(/\.md$/, '').split('/')
       const lang = segments[0] ?? 'zh'
-      // zh/分类/课程/文件 -> category=分类, courseSlug=课程
-      // zh/分类/index     -> category=分类, courseSlug=分类
-      const category = segments.length >= 3 ? (segments[1] ?? '') : ''
+      // zh/学科/分类/课程/文件 -> discipline=学科, category=分类, courseSlug=课程
+      // zh/学科/分类/index     -> courseSlug=分类（领域索引的回退显示名）
+      const discipline = segments.length >= 3 ? (segments[1] ?? '') : ''
+      const category = segments.length >= 4 ? (segments[2] ?? '') : ''
       const courseSlug =
-        segments.length >= 4 ? (segments[2] ?? '') : (segments[1] ?? '')
+        segments.length >= 5 ? (segments[3] ?? '') : category || (segments[1] ?? '')
 
-      const courseDir = path.join(docsDir, lang, category, courseSlug)
+      const courseDir = segments.length >= 5
+        ? path.join(docsDir, lang, discipline, category, courseSlug)
+        : path.join(docsDir, lang, ...[discipline, category].filter(Boolean))
       let course = courseNameCache.get(courseDir)
       if (course === undefined) {
         course = await readCourseName(courseDir, courseSlug)
@@ -295,6 +309,7 @@ export async function collectDocuments(docsDir: string): Promise<SourceDoc[]> {
         path: relPath,
         url: mapUrl(relPath),
         lang,
+        discipline,
         category,
         courseSlug,
         course,

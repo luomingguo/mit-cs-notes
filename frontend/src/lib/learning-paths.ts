@@ -39,7 +39,7 @@ function projectRoot(): string {
     path.resolve(process.cwd(), '..'),
     fileURLToPath(new URL('../../../', import.meta.url)),
   ];
-  return candidates.find((candidate) => existsSync(path.join(candidate, 'docs', 'public'))) ?? candidates[0];
+  return candidates.find((candidate) => existsSync(path.join(candidate, 'public', 'rag-paths.json'))) ?? candidates[0];
 }
 
 function assertLearningPaths(value: unknown): asserts value is LearningPathsData {
@@ -65,7 +65,7 @@ function assertLearningPaths(value: unknown): asserts value is LearningPathsData
 
 export function loadLearningPaths(): Promise<LearningPathsData> {
   learningPathsPromise ??= (async () => {
-    const source = path.join(projectRoot(), 'docs', 'public', 'rag-paths.json');
+    const source = path.join(projectRoot(), 'public', 'rag-paths.json');
     const data: unknown = JSON.parse(await readFile(source, 'utf8'));
     assertLearningPaths(data);
     return data;
