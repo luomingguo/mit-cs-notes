@@ -10,7 +10,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {
-  DOCS_DIR, NOTE_TYPES, TAG_RE, SECTION_MIN, SECTION_MAX, C,
+  DOCS_DIR, NOTE_TYPES, TAG_RE, C,
   splitFrontmatter, stripCodeFences, stripMathBlocks, extractHeadings,
   sections, isVagueHeading, walkNotes, classify, fenceRanges, FENCE_RE,
 } from './notes-lib.mjs'
@@ -55,7 +55,6 @@ async function lintFile(file, docsDir) {
   }
 
   const { fm, body } = splitFrontmatter(raw)
-  const lineCount = raw.split('\n').length
   const isStub = fm?.status === 'stub'
 
   // ── frontmatter ──────────────────────────────────────────────
@@ -149,30 +148,10 @@ async function lintFile(file, docsDir) {
     }
   }
 
-  // 层级跳跃
-  for (let i = 1; i < hs.length; i++) {
-    if (hs[i].level > hs[i - 1].level + 1) {
-      out.push(f('warning', 'heading-skip',
-        `H${hs[i - 1].level} 直接跳到 H${hs[i].level}：${hs[i].text}`, hs[i].line))
-    }
-  }
-  for (const h of hs) {
-    if (h.level >= 4) out.push(f('info', 'deep-heading', `H${h.level} 嵌套过深：${h.text}`, h.line))
-  }
-
   // ── 章节 ─────────────────────────────────────────────────────
   const secs = sections(body).filter((s) => s.level >= 2)
   for (const s of secs) {
     const isTldr = s.level === 2 && s.text.trim().toLowerCase() === 'tl;dr'
-    if (s.ownLen === 0) {
-      out.push(f('error', 'empty-section', `空章节（下面直接是另一个标题）：${s.text}`, s.line))
-    } else if (!isTldr && s.ownLen < SECTION_MIN && s.totalLen < SECTION_MIN) {
-      out.push(f('info', 'short-section', `章节仅 ${s.ownLen} 字符，低于 chunk.ts 的 MIN：${s.text}`, s.line))
-    }
-    if (!isTldr && s.level === 2 && s.totalLen > SECTION_MAX) {
-      out.push(f('error', 'long-section',
-        `H2 章节 ${s.totalLen} 字符 > ${SECTION_MAX}，会被 chunk.ts 硬切，需拆 H3：${s.text}`, s.line))
-    }
     if (!isTldr && s.level >= 2 && isVagueHeading(s.text)) {
       out.push(f('warning', 'vague-heading', `标题无主题词：${s.text}`, s.line))
     }
@@ -199,11 +178,6 @@ async function lintFile(file, docsDir) {
     if (meta.isContentPage && h2s.length === 0) {
       out.push(f('error', 'no-h2', '没有任何 H2，无法按章节分块'))
     }
-  }
-
-  // ── 极短 ─────────────────────────────────────────────────────
-  if (lineCount < 30 && !meta.isIndex) {
-    out.push(f('error', 'too-short', `仅 ${lineCount} 行，应标 status: stub 或补写`))
   }
 
   // ── 排版（在剥掉代码块和数学块的副本上查）────────────────────

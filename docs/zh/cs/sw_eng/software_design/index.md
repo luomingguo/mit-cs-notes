@@ -1,540 +1,462 @@
 ---
-title: Introduction
+title: 6.1040 软件设计（Fall 2025）知识框架
 type: course
-course: 软件设计
-tags: []
+course: 6.1040 软件设计
+course_id: '6.1040'
+tags: [software-design, concept-design, modularity, human-ai-interaction, user-research]
 status: complete
+source: 'https://61040-fa25.github.io/'
 ---
-# Introduction
+# 6.1040 软件设计
 
-## Description
+## TL;DR
 
-这门课是关于设计的。你将学习如何设计适合用途的软件：满足用户需求，并且灵活、强大且易于使用。
+- 课程从真实需求出发，用概念设计描述用户可观察的行为，再用模块化与同步（Sync）组织概念之间的关系。
+- 一个概念由 purpose、principle、state 与 actions 共同定义；实现前先澄清行为语义，可以避免把界面、数据结构或代码偶然性误当成产品设计。
+- 推荐按“问题框架 → 概念与行为 → 模块化组合 → Web 与 AI 实现 → 用户和社会影响验证”的顺序学习，20 讲可映射到这条主线。
+- 课程涉及 Vue、Node、数据库和 LLM，但最终目标是形成可迁移的设计判断力，而不是绑定某一种技术栈。
 
-设计发生在技术与人之间的交汇点。这不仅仅是关于用户界面；课程的很大一部分内容是关于如何塑造用户体验的基本功能。
+## 课程信息
 
-课程教授的设计材料包括经典的用户界面设计（例如启发式评估）和数据建模材料，也包括前沿的功能塑造（概念设计）和伦理学（价值敏感设计）材料。
+本课程是关于**设计**的。你将学习如何设计出“符合目的”的软件：既能满足用户需求，又具备灵活性、强大功能且易于使用。设计发生在技术与人的交汇点上。然而，设计绝不仅仅关乎用户界面；本课程的很大一部分内容，是在探讨 **如何塑造用户所体验的底层功能**。
 
-这门课不是关于技术的，我们假设你已经熟练掌握了 TypeScript，对 HTML/CSS 有基本的了解，并且在 Node.js 中进行过一些编程。先修课程 6.1020（6.031）教授所有这些内容，并提供有用的复习笔记。
+课程讲授的设计材料不仅包含经典的传统内容，如：
 
-尽管如此，你还是会学习一些新工具和新技术，以确保你拥有成为熟练的 web 栈开发人员所需的所有工具。这些工具包括：用于维护代码库的 GitHub 和用于托管静态网站的 GitHub Pages；静态网站生成器 VitePress；用于部署 Node.js 的 Heroku；用于线框图制作的 Figma；用于持久存储的 MongoDB；以及前端响应式框架 Vue。
+1. **用户界面设计**（例如：以用户为中心的计算、概念模型的作用）；
+2. **状态与动作/数据建模**；
+3. **模块化**。
 
-## Schedule
+还包含更前沿的尖端内容，如：
 
-6.1040 Software Design
+4. **功能设计（基于概念）**；
+5. **使用大语言模型（LLM）进行软件设计**；
+6. **使用大语言模型生成代码**；
+7. **将 AI 智能体（AI Agents）作为组件融入系统**。
 
-## Preps
+尽管本课程的核心关注点并非技术，但你将学会成为一名熟练的 Web 全栈开发人员所需的所有工具。这些工具包括：
 
-**Prerequisites** are 6.1020 **Software Construction** (6.031) and 6.1200[J] **Mathematics for Computer Science** (6.042)
+- 用于维护代码库的 **GitHub**、
+- 用于托管静态网站的 **GitHub Pages**、
+- 用于后端开发的 **Node/Express**、
+- 用于部署 Node.js 的 **Heroku**、
+- 用于绘制原型图的 **Figma**、
+- 用于持久化存储的 **MongoDB**，
+- 以及一个前端响应式框架（ **Vue**）。
 
-### 1: Setting up Personal Website using Vitepress
+### 这门课符合行业标准吗？
 
-**Background**: In this prep, you will set up a personal website that will be a kind of design portfolio for all your work this term, including blog posts and (the non-code parts of) your assignments. To do this, you will use a *static site generator* called VitePress. There are several popular generators, each of which is based on a particular programming language or framework; Hugo, for example, uses the Go language. We have chosen VitePress because it uses Vue.js, the same front-end framework you’ll be using in your assignments.
+学生们有时会问，我们在课上讲授的设计方法是否是目前行业中使用的标准方法。**当然不是！** 如果它是的话，你在工作中就能学到，也就不需要一个 MIT 的学位了。或者换句话说：**教育的作用是塑造未来（包括你的未来！），而不是去重述过去。**
 
-**Purpose**: To set up your portfolio website using [VitePress](https://vitepress.dev/) and [Github Pages](https://docs.github.com/en/pages). By the end of this prep, you will have a working site that is deployed in Pages and accessible on the web.
+这门课确实会教你几种目前在行业中最行之有效的技术，但如果仅仅如此，那它将是一门相当平庸的课程。特别是，我们讲授“概念设计”，是为了赋予你更强大的能力，让你成为一名远比仅靠在岗摸索或参加 UX 训练营更优秀的设计师。
 
-### 2: Node.js and Express.js
+MIT 的课程有一个悠久的传统，即讲授源自科研的全新方法，而这些方法有时要在几十年后才会被工业界广泛采用。你们的一位讲师曾是初代 6.170 课程的 TA，当时该课程使用的编程语言是 **CLU**——这是最早的面向对象语言之一（由 Barbara Liskov 发明，她也因此等成就荣获图灵奖）。在那个时候，极少有程序员了解“对象”，直到几十年后，各种语言才开始具备 CLU 当时就有的特性。甚至当 Java 出现时，它的设计中还存在一些缺陷（例如“原始类型”和“对象类型”之间的区分），而这些缺陷在二十年前的 CLU 中就已经被消除了！
 
-### 3: MongoDB
+该讲师还曾担任 6.001 课程的分班讲师，当时的教材是《计算机程序的构造和解释》（SICP，俗称“巫师书”）。一些学生曾抱怨说，这门课是用 **Scheme** 讲授的——这是一种当时没人使用的函数式语言，而不是像 C 语言那样“实用”的语言。令人惊叹的是，现在 Scheme 已经诞生了大约 50 年（LISP 甚至更古老），而直到过去这几年，函数式语言才真正成为所有优秀的程序员都渴望了解和使用的语言。
 
-### 4: HTML + CSS
+关于这一点还有另一种视角：**虽然工业界的大多数人还没有学过概念设计，但最顶尖的那批人早就一直在使用这类思想了。** 概念设计诞生于对数百款应用程序的深入研究，从中提炼出它们或优秀或糟糕的经验教训。通过这种方式，它将那些工业界人士可能需要历经多年、不断试错才能习得的最佳实践，进行了沉淀并显性化。
 
-### 5: Vue.js
+###  先决条件
 
-## Assignments
+1. 6.1020 Software Construction
+2. 6.042 Mathematics for Computer Science
 
-Recitations are not assigned
+### 教材
 
-[Assignment 1: Social Media Needfinding](https://61040-fa23.github.io/assignments/assignment-1)
+[The Essence of Software — Why Concepts Matter for Great Design（Daniel Jackson）]()
 
-[Assignment 2: Divergent Design](https://61040-fa23.github.io/assignments/assignment-2)
+## 一、讲次索引
 
-[Assignment 3: Convergent Design](https://61040-fa23.github.io/assignments/assignment-3)
+「层」一列对应下面第三节的五层框架，用来在"按时间"和"按知识点"两种检索方式之间换算。
 
-[Assignment 4: Backend Design & Implementation](https://61040-fa23.github.io/assignments/assignment-4)
+| 讲                   | 标题                         | 核心问题                                                     | 层        |
+| -------------------- | ---------------------------- | ------------------------------------------------------------ | --------- |
+| [Lec 0](./lec0.md)   | 实用工具                     | VitePress / Figma / Node+Express / MongoDB / Vue 怎么用      | 工具      |
+| [Lec 1](./lec1.md)   | 开始设计（问题框架）         | 值得做的问题是什么，如何避开"自嗨"与错误需求？               | **L0**    |
+| [Lec 2](./lec2.md)   | 概念设计入门                 | 什么是概念？四要素、sync、杀手级概念                         | **L1**    |
+| [Lec 3](./lec3.md)   | 设计行为                     | 用 state / action / trace / invariant 建模，而不是先写页面或类 | **L1**    |
+| [Lec 4](./lec4.md)   | 模块化设计 I                 | 关注点分离；什么是糟糕的模块化（conflation）                 | **L2**    |
+| [Lec 5](./lec5.md)   | 模块化设计 II                | 分离 / 完整 / 独立三标准的案例检验                           | **L2**    |
+| [Lec 6](./lec6.md)   | 人机 AI 交互基础             | 锐边 vs 钝边；增强而非替代                                   | 横切      |
+| [Lec 7](./lec7.md)   | AI 功能设计 I                | prompt→completion 的四个鸿沟；心智模型与价值对齐             | 横切      |
+| [Lec 8](./lec8.md)   | AI 功能设计 II：超越聊天     | 结构化输入输出、agent 与混合主动权                           | 横切      |
+| [Lec 9](./lec9.md)   | LLM 代码架构                 | 推理调用、prompt 即接口、成本与安全                          | 横切      |
+| [Lec 10](./lec10.md) | 用 AI 编写概念代码           | 混乱 vs 幻觉；上下文工程                                     | **L3**    |
+| [Lec 11](./lec11.md) | 理解同步：架构、组成、工作流 | 扁平架构；因果矩阵；易读软件三原则                           | **L2/L3** |
+| [Lec 12](./lec12.md) | AI 辅助编程的当前实践        | 从 vibe coding 到 vibe engineering                           | **L3**    |
+| [Lec 13](./lec13.md) | 前端框架：响应式与 Vue       | `view = f(state)`                                            | **L3**    |
+| [Lec 14](./lec14.md) | 视觉设计                     | 布局 / 字体排印 / 色彩；界面自解释                           | **L3**    |
+| [Lec 15](./lec15.md) | 软件工程全景                 | 浏览器-服务器-数据库、session、JWT、安全边界                 | **L3**    |
 
-[Assignment 5: Frontend Design & Implementation](https://61040-fa23.github.io/assignments/assignment-5)
+| [Lec 16](./lec16.md) | 后端设计                     | 异步、filter/map/reduce ↔ SQL ↔ Mongo、`where` 管道、部署    | **L3**    |
+| [Lec 17](./lec17.md) | 用户测试                     | 观察真实使用；输出是设计迭代而非报告                         | **L4**    |
+| [Lec 18](./lec18.md) | 价值敏感设计                 | 技术从不中立；VSD 四标准                                     | **L4**    |
+| [Lec 19](./lec19.md) | 设计经验总结                 | 把方法迁移到行业架构语言                                     | 出口      |
+| [Lec 20](./lec20.md) | 项目展示（Project Fair）     | 期末项目完整时间线与各阶段交付物                             | 出口      |
 
-[Project 0: Team Formation](https://61040-fa23.github.io/assignments/assignment-p0)
+**推荐复习路径**：Lec 1 → 2 → 3 建立「问题—概念—行为」的链条；Lec 4 → 5 → 11 解决组合与耦合；Lec 6 → 9 与 Lec 10 → 16 把设计落到 AI 与 Web 实现；最后用 Lec 17 → 19 迭代和复盘。
 
-[Assignment 6: User Testing & Analysis](https://61040-fa23.github.io/assignments/assignment-6)
+---
 
-## Project
+## 二、主干：一句话与一张图
 
-[Project Overview](https://61040-fa23.github.io/assignments/assignment-p0-overview)
+**这门课的主张**：软件的质量不取决于代码，而取决于**概念**——一组有明确目的、可独立存在、可复用的功能单元；以及概念之间**显式而非隐式**的组合方式。
 
-[Project Phase 1: Impact Case](https://61040-fa23.github.io/assignments/assignment-p1)
+一句话串起 20 讲：
 
-[Project Phase 2: Divergent Design](https://61040-fa23.github.io/assignments/assignment-p2)
+> 先确认问题**值得做**（真实需求，非创造需求）→ 用**概念**表达行为（目的/原则/状态/动作）→ 用**模块化三标准**审查拆分，用 **sync** 组合而不耦合 → 落成**可读的代码与界面**（扁平架构 + 响应式前端 + AI 协作）→ 用**真实用户**与**社会影响**检验。
 
-[Project Phase 3: Convergent Design](https://61040-fa23.github.io/assignments/assignment-p3)
+```text
+        ┌──────────────────────────────────────────────┐
+        │  L4 检验层   用户测试(17) · 价值敏感设计(18)   │  ← 设计是假设，这里是证伪
+        ├──────────────────────────────────────────────┤
+        │  L3 实现层   Web架构(11,15) · 后端(16)         │
+        │              前端(13,14) · AI 编码(10,12)      │  ← 概念如何落地而不走形
+        ├──────────────────────────────────────────────┤
+        │  L2 结构层   模块化三标准(4,5) · Sync(2,11)    │  ← 概念之间的关系
+        ├──────────────────────────────────────────────┤
+        │  L1 表达层   概念四要素(2) · 状态/动作/不变量(3)│  ← 描述"行为"的语言
+        ├──────────────────────────────────────────────┤
+        │  L0 判断层   问题框架(1) · 九大失败模式(1)     │  ← 该不该做
+        └──────────────────────────────────────────────┘
+             横切轨道：人-AI 交互(6,7,8,9) 贯穿 L1–L4
+             出口：行业术语映射(19) · 期末项目时间线(20)
+```
 
-[Project Phase 4: Alpha Release](https://61040-fa23.github.io/assignments/assignment-p4)
+**为什么这样分层**：每一层解决的是不同性质的问题，且**上层依赖下层但不能替代下层**——再好的实现救不了错的问题（L0），再好的界面救不了过载的概念（L1/L2）。课程里几乎所有反例都是"跳过某一层"造成的。
 
-[Project Phase 5: Beta Release](https://61040-fa23.github.io/assignments/assignment-p5)
+---
 
-[Project Phase 6: User Testing & Final Release](https://61040-fa23.github.io/assignments/assignment-p6)
+## 三、五层各自的骨架
 
-## Textbook
+以下各层分别回答“该不该做、如何表达、如何组合、如何实现、如何验证”，并保留 AI 交互这一条横切轨道。
 
-### Vitepress
+### L0 判断层 —— 值不值得做（Lec 1）
 
-- [Vitepress Template](https://github.com/61040-fa23/vitepress-template)
-- [Vitepress Documentation](https://vitepress.dev/)
+| 部件         | 内容                                                         | 用途                             |
+| ------------ | ------------------------------------------------------------ | -------------------------------- |
+| 核心区分     | **真实需求 vs 创造需求**                                     | 判断项目选题的唯一标尺           |
+| 认知障碍     | 清醒梦（waking dream）+ 9 类认知偏差                         | 解释"为什么你会自信地看错"       |
+| 检验手法     | 找**冷漠信号**、找**"不不"信号**（must have 而非 nice to have） | 主动找反驳证据，而不是找支持证据 |
+| 失败模式     | 冷漠 / 创始人谬误 / 差异化不足 / 缺乏临界规模 / 过度野心 / 主动排斥 / 摩擦 / 忽视关键利益相关者 / 意外后果 | 9 条 checklist，逐条打分         |
+| 好项目三特征 | 简单专注 · 真实非玩具 · 某方面创新                           | 收敛阶段的标准                   |
 
-### Logistics
+**关键锚点**：Kathryn Schulz —「犯错的感觉和正确的感觉一模一样」。
+**向上连接**：失败模式中的"忽视关键利益相关者""意外后果"，在 Lec 18 被系统化为 VSD 的利益相关者/时间/普及性三个标准。
 
-- [6.1040 general feedback form](https://tinyurl.com/61040-fa23-feedback)
-- [Slack day request form](https://forms.gle/6sDjGKzDy5h9Rq3L9)
+---
 
-### Guides
+### L1 表达层 —— 用什么语言描述行为（Lec 2、3）
+
+**概念四要素**（必须背下来的骨架）：
+
+```text
+concept  Name [TypeParams]     ← 名字要精准且通用；类型参数保持不透明
+purpose  ...                   ← 灵魂：为谁创造什么价值（不是"存一张表"）
+principle ...                  ← 用户视角的故事：动作序列如何兑现 purpose
+state    集合 + 二元关系        ← 只记住支撑动作所需的事实
+actions  act(x): y             ← requires（前置） / effects（后置）
+```
+
+**Lec 3 给出的设计顺序**（这是可操作的流程，比四要素本身更重要）：
+`取名 → 写 purpose → 讲 principle 故事 → 从故事抽 actions → 最后倒推 state`
+
+**四个思维工具**：
+
+1. **动作不是"会失败的请求"** —— 概念层只描述有效发生的业务事件；不满足前置条件 = 该动作没有发生（UI 层去提示）。
+2. **Trace（动作历史）** —— 行为是动作序列，不是某张瞬时数据表。用 trace 问"取消后再删除会怎样"。
+3. **不变量（invariant）** —— 划分"好状态/坏状态"的谓词。验证靠两步归纳：初始状态满足 + 每个动作保持。**注意区别**：前置条件限制"能否执行"，不变量限制"执行后不能破坏什么"。
+4. **状态原子化为集合 + 二元关系** —— 而不是嵌套对象。好处：精确、可画 ER 图、可映射 schema，同时保留表示独立性。
+
+**自检清单**：动作够不够（生命周期完整？有撤销/补偿？）· 状态够不够（每个动作可判定？"by"和"for"是否要分开记？）
+
+---
+
+### L2 结构层 —— 概念之间的关系（Lec 4、5、11）
+
+**模块化三标准**（诊断工具，逐条问）：
+
+| 标准              | 好的表现                                 | 失败信号                    | 病名                                   |
+| ----------------- | ---------------------------------------- | --------------------------- | -------------------------------------- |
+| 分离 separation   | 一个概念只服务一个关注点                 | 不相关功能绑成一个动作/设置 | **conflation 混杂**（Lec 4 主线）      |
+| 完整 completeness | 同一关注点的状态、动作、规则在同一概念内 | 完成简单任务要到多处拼操作  | **fragmentation 碎片化**（Lec 5 主线） |
+| 独立 independence | 概念可单独理解、测试、演进               | A 不调用/窥探 B 就无法工作  | **dependency 依赖**                    |
+
+配套的三条判据（Lec 4）：**特异性**（purpose 与 concept 一一对应）· **冗余**（一个 purpose 被多个概念实现）· **过载**（一个概念承担多个 purpose）。
+
+**允许内部依赖的四条判据**（Rec 4，必须同时成立）：
+
+1. A 因使用 B 而**本质上更简单**；2. B 不因被 A 使用而更复杂（B 不能反向用 A）；3. 存在只含 B 不含 A 的有用子集；4. 不存在只含 A 不含 B 的有用子集。
+   → 一句话：依赖必须**单向、非对称**，被依赖者要能独立站住。
+   → **外部依赖 ≠ 内部依赖**：评论概念上依赖帖子，不代表代码里该直接调用。
+
+**Sync 的规则**：订阅**概念动作**，绝不持有对方引用、读写对方状态。
+
+```text
+sync Name
+when   某概念的 action 发生      ← 行为的原因
+where  查询获得的条件/绑定        ← 信息的原因
+then   触发另一概念的 action      ← 行为的效果
+```
+
+**因果矩阵**（Lec 11，本课最强的排查工具）：
+
+|                 | 行为 Behavioral | 信息 Informational |
+| :-------------: | :-------------: | :----------------: |
+| **原因 Cause**  |     `when`      |      `where`       |
+| **效果 Effect** |     `then`      |      概念动作      |
+
+四个格子对应四个唯一的排查入口：想知道"为什么发通知"→ 搜所有 sync 的 `when`；想知道"状态怎么被改的"→ 只可能是某个概念自己的 action。没有隐藏触发器。
+
+**扁平架构**：应用 = 概念列表 + Sync 列表。没有层级、没有主程序、没有串联一切的路由文件。关键一步是把"转发请求"本身抽成 **Requesting 概念**，路由退化为纯转发层。
+→ 由此自然满足**易读软件（legible software）**三原则：**增量性 · 完整性 · 透明性**（WYSIWID）。
+
+---
+
+### L3 实现层 —— 落地而不走形
+
+分四条支线，互相独立，按需查阅：
+
+**(a) Web 架构与安全（Lec 11、15、16）**
+
+- 演化三段：静态 HTML → 服务端渲染 → SPA。每一步都在移动"关注点"的位置。
+- REST：资源 + 标准 HTTP 方法。`DELETE /users/42` 而非 `POST /deleteUser?id=42`。
+- 状态分布：客户端状态（UI/暂存）· 服务器状态（可信身份与权限）· 数据库（持久）。
+- **安全铁律**：浏览器里的一切用户都可见可改，用户能绕过 UI 直接伪造请求。
+  - ❌ URL 传用户名 · ❌ 自增 session id · ❌ "必须先经过登录页"
+  - ✅ 随机不可预测 session id + 服务端每个敏感 API 独立鉴权
+- JWT 取舍：无状态但难撤销 → 短 access token + refresh token。
+- 客户端 vs 服务端数据放置的六维权衡表（查询速度/存储/启动时间/离线/扩展/隐私）。
+
+**(b) 后端与查询（Lec 16）**
+
+- 列表函数式 `filter / map / reduce` ↔ SQL `WHERE / 聚合 / JOIN` ↔ MongoDB 聚合管道 `$match / $group / $lookup+$unwind`。三者是同一思想的三种语法。
+- Sync 的 `where` 子句 = **对 frames 列表的函数管道**（Frames ⇒ Frames，本质是自然连接）。这是把上面这套查询思想用在了概念组合上。
+- 规范化 vs 嵌套：嵌套更简洁，但生产环境倾向规范化（关注点分离 + 减少写入冲突）。
+
+**(c) 前端与视觉（Lec 13、14）**
+
+- 响应式核心公式：**`view = f(state)`**。事件只改状态，框架据依赖图重渲染。反面是命令式直接操作 DOM → 状态散落、listener 互相触发甚至死循环。
+- Vue 分工：`ref/reactive`（单一事实来源）· 模板（状态→DOM）· `@event`（触发动作）· 组件（props 下传 / emits 上报）· 异步三态（loading/success/error）。
+  - **注意这里的同构**：props/emits 的"不跨层级隐式共享状态"，与概念的"不共享状态、只用 sync"是同一条原则在更小尺度上的体现。
+- 视觉设计三要素：**布局**（网格对齐 / 尺寸=层级 / 留白分组 / F 型扫描）· **字体排印**（字号 vs x 高度 / 字重建立层级 / 左对齐优于居中）· **色彩**（色调-饱和度-明度 / 同步对比 / 贝佐德效应 / 色彩和谐）。
+- 目标是**界面自解释（self-explanatory）**，不是"好看"。
+- 设计批评框架：**I like / I wish / What if**（期末 Peer Critique 用的是 I like / I wish / I wonder）。
+
+**(d) 与 AI 协作写代码（Lec 10、12）**
+
+- **两类"答错"的区分**（这是本讲最有价值的概念）：
+
+  - **混乱 confusion**：能力/记忆边界导致答错 → 人也会犯，不可能消除。
+  - **幻觉 hallucination**：上下文里已有正确证据，却否认或编造 → 没有忠实使用已给信息。
+  - 结论：模型进步会消灭前者中的一部分，但**上下文管理（context engineering）是开发者能直接改善的部分**。
+
+- **人与 LLM 共有的三种上下文失败模式**（非常好的类比结构）：
+
+  | 失败模式 | LLM 表现                    | 人类对应                     |
+  | -------- | --------------------------- | ---------------------------- |
+  | 信息过载 | 上下文稀释 context dilution | 认知负荷（内在/外在/促进性） |
+  | 信息分裂 | 多轮对话表现下降            | 分散注意效应 split-attention |
+  | 固着     | 被系统提示/早期指令锚定     | 锚定效应 anchoring           |
+
+- 课程的概念实现约定：**一个概念 = 一个 TypeScript class，不得 import 其他概念**；方法要么是动作（record 进 record 出），要么是查询（`_` 开头，返回 record 数组）。
+
+- vibe coding → **vibe engineering**：让 agent 参与调研、计划、文档、测试、审查，而不只是一次性生成大段代码。只合并"你能解释、能回滚、有测试支撑"的代码。
+
+---
+
+### L1.5 横切轨道 —— 人-AI 交互（Lec 6、7、8、9）
+
+这条轨道不属于任何单层，它是"把 AI 当作一个能力受限的参与者"来重新走一遍 L1–L4。
+
+**核心判据：锐边 vs 钝边**
+
+|                  | 定义                                 | 例子                                       | 设计策略         |
+| ---------------- | ------------------------------------ | ------------------------------------------ | ---------------- |
+| 钝边 rough-edged | 有许多可接受答案，80% 完成度仍有价值 | 写作、草稿、灵感、代码片段                 | 直接上           |
+| 锐边 sharp-edged | 只有完全正确才有价值                 | 高影响决策、一次性完整交付、强自主工具操作 | **先改造成钝边** |
+
+改造手法：把"替人下结论/执行"改为"为人补足信息或候选方案"——生成摘要、指出风险、列出备选、标出需复核处。
+
+**四个鸿沟 + 设计回应**（Lec 7，AI 功能的诊断清单）：
+
+| 鸿沟           | 回应                                               |
+| -------------- | -------------------------------------------------- |
+| 幻觉           | 显示引用/未知状态/核验入口，不自动执行             |
+| 上下文缺失     | 提供必要上下文，并告诉用户"模型此刻看到了什么"     |
+| 心智模型不匹配 | 界面准确表明能力、权限、记忆范围                   |
+| 缺少迭代可供性 | 提供编辑、重试、局部重做、回退，而非只留一个提问框 |
+
+**交接缝（seam）**：人和 AI 的失败多发生在交接处。每个"AI 做完交给人"的节点必须回答：交付物是什么？哪些是推测/未验证？人可以怎么拒绝或撤销？模型失败时流程怎么继续？
+→ 警句：**不要让 UI 开出 AI 无法兑现的支票。**
+
+**目标是 intelligence augmentation 而非替代**，且要同时防两个反向失败：**过度依赖 overreliance** 与 **算法厌恶 algorithm aversion**——目标不是"完全信任"，而是**信任程度与实际能力匹配**。
+（重要事实：106 项研究的元分析显示 `human + AI` 平均可能低于最佳单方，决策任务尤其容易亏损。）
+
+**从聊天到任务界面**（Lec 8）：结构化输入 · 结构化输出 · 渐进披露 · 人工确认（生成与执行分离）。四个模式：草稿伙伴 · 比较而非裁决 · 检索/工具增强 · 失败可见。
+
+**实现层（Lec 9）**：模型调用必须在服务端（API key + 鉴权 + 限流 + 成本）· prompt 是接口设计（角色/输入/输出格式/约束/示例/不确定时行为）· 模型输出永远是**不可信输入**，必须 schema 验证 · zero-shot vs few-shot（3–5 个好示例，须含边界情况）· temperature/top-k/top-p 是"质量—多样性—成本"旋钮而非"聪明度" · 迭代靠代表性测试集而非漂亮 demo。
+
+---
+
+### L4 检验层 —— 设计是假设，这里是证伪（Lec 17、18）
+
+设计完成后需要选择与阶段相匹配的方法验证假设，而不是只凭演示效果判断。
+
+**方法谱系与各自的位置**：
+
+| 方法       | 回答的问题                                 | 适用阶段                 | 主要局限                       |
+| ---------- | ------------------------------------------ | ------------------------ | ------------------------------ |
+| 启发式评估 | 是否违反通用可用性原则？                   | 原型完成后、用户测试前   | 假阳性；依赖评估者经验         |
+| 认知走查   | 新用户能否完成某个具体任务？               | 已有用户流程与任务设计时 | 只覆盖预设任务                 |
+| 问卷       | 用户偏好/态度是什么？                      | 任意                     | 说的 ≠ 做的；问卷设计本身很难  |
+| A/B 测试   | A 和 B 哪个指标更好？                      | 有流量后                 | **爬山式优化**，掩盖方向性问题 |
+| 用户测试   | 真实用户实际如何理解、行动与失败？         | 有可交互原型后           | 成本高                         |
+| 绿野仙踪   | 如果系统真能做到，用户会理解/需要/信任吗？ | 功能尚未实现或成本高时   | 不能证明真实系统可行           |
+
+**关键操作要点**：
+
+- 启发式评估：3–5 名评估者，**独立评估、最后才沟通**（避免锚定）。
+- 认知走查每步四问：知道要做某事？→ 发现正确动作并关联到目标？→ 从反馈判断做对了？→ 理解自己在朝大目标前进？发现问题后**假设它已修复，继续往下查**。
+- 用户测试：**think aloud**；主持人**少帮助、重观察**；每次介入都要记录（"需要帮助才能完成"本身就是设计问题）。
+- 伦理三段：研究前（知情同意、可随时退出、避免权力关系）· 研究中（**我们测试的是系统，不是你**）· 研究后（debrief、匿名化、限制访问、按期删除）。
+- 绿野仙踪的隐藏要求：**hooks 要对应未来真实的计算机接口**（如 `generateItinerary(destination, dates, preferences)`），否则原型无法被替换为真实系统。
+
+**价值敏感设计 VSD 四标准**（Lec 18）：
+
+| 标准       | 追问                                 | 标志性案例                                                   |
+| ---------- | ------------------------------------ | ------------------------------------------------------------ |
+| 利益相关者 | 谁受影响却不是目标用户？             | **Waze 效应**（车流被导入居民区）· **路缘坡效应** vs **残障小玩意** |
+| 时间       | 新奇期过后、真正融入社会时会怎样？   | 主动"不使用"（人脸识别立法）· **再挪用**（Excel 画像素画、TabFS） |
+| 普及性     | 所有人都用之后会产生什么系统性效应？ | **"更多邮件的悖论"**：每个人写得更快 → 总沟通负担反而上升    |
+| 价值       | 哪些价值在冲突，我优先保障哪个？     | 便利 vs 隐私、效率 vs 公平                                   |
+
+Ethical OS 八大风险区：虚假信息 · 成瘾/多巴胺经济 · 经济不平等 · 算法偏见 · 监视国家 · 数据控制与货币化 · 隐含信任 · 仇恨与犯罪行为者。
+其他可用框架：Consequence Scanning（best/worst/misuse case）· Ethical Data Canvas · Society Centered Design · Design Justice Network。
+
+---
+
+### 出口 —— 迁移与收官（Lec 19、20）
+
+**行业术语映射表**（把课程语言翻译成同事能听懂的话）：
+
+| 课程说法                         | 行业 buzz phrase                   | 对应关系                    |
+| -------------------------------- | ---------------------------------- | --------------------------- |
+| 前后端分离，API 返 JSON          | **无头架构 headless architecture** | 完全一致                    |
+| 概念各自持有状态，通过 sync 协调 | **模块化单体 modular monolith**    | 完全一致（微服务的减负版）  |
+| Sync 订阅动作而非直接调用        | **事件驱动架构 + 反腐层 ACL**      | ACL = Sync 在行业中的对应物 |
+
+**可以独立抽出使用的三个思想**（即使公司不采纳完整概念设计）：
+
+1. **视图分离 View Separation** —— 按目的划分而非按对象归组。RDB 的标准实践；OOP 里用 Mixin / ECS 补救。
+2. **无界多态 Unbounded Polymorphism** —— 类型参数完全泛型、不加约束。理论源头是 Wadler《Theorems for Free!》；工程对应是 DDD 的**限界上下文**。
+3. **抽象状态与动作 Abstract State & Actions** —— 把系统建模成自动机。形式化方法几十年的标准实践（Z、TLA+、Alloy、VDM、B）。
+
+**概念即模式语言**：Alexander《A Pattern Language》(1977) → GoF《Design Patterns》(1994) → 概念设计。
+四种命名概念的示范（可直接复用）：**SimpleNaming**（助记但难查找）· **GlobalId**（唯一但不助记）· **Namespacing**（作用域内唯一，保留可读性）· 对照组 **Foldering**（是容器不是命名机制）。Dropbox = 三者协作的整合案例。
+
+---
+
+## 四、反查表：遇到问题去哪一讲
+
+| 我遇到的问题                        | 去哪里                                                       |
+| ----------------------------------- | ------------------------------------------------------------ |
+| 不知道该做什么项目 / 怀疑需求是假的 | Lec 1（冷漠信号、"不不"信号、九大失败模式）                  |
+| 想给一个功能写规格，不知道从哪下笔  | Lec 3 的五步顺序：取名→purpose→principle→actions→state       |
+| 一个类/模块越写越大，什么都往里塞   | Lec 4 `UserAccount` 反例 + 特异性/冗余/过载三判据            |
+| 两个功能耦合了，改一个动另一个      | Lec 4（Facebook 标签、富士菜单、日历删除/取消）+ Lec 5 三标准 |
+| 该不该让 A 直接调用 B               | Rec 4 的四条依赖判据（lec7.md）                              |
+| "为什么系统会做这件事" / 排查因果   | Lec 11 因果矩阵四格                                          |
+| 想加一条业务规则又不想改老代码      | Lec 11 扁平架构 + sync（声明一次，处处生效）                 |
+
+| 前端状态乱了，界面不同步            | Lec 13 `view = f(state)`                                     |
+| 界面能用但难看/难懂                 | Lec 14 三要素 + 自解释目标                                   |
+| 不确定什么该放服务端                | Lec 15/16 安全铁律 + 六维权衡表                              |
+| 要不要给这个功能加 AI               | Lec 6 锐边/钝边判据 + 改造手法                               |
+| AI 功能做出来了但用户不信/用不对    | Lec 7 四个鸿沟 + Lec 8 交接缝设计问题                        |
+| 调 API、写 prompt、控成本           | Lec 9（服务端边界 + 上线检查清单五问）                       |
+| AI 写的代码越来越不可控             | Lec 10 上下文管理工作流 + Lec 12 可靠协作循环                |
+| 做完了，怎么知道设计对不对          | Lec 17 方法谱系表（按阶段选方法）                            |
+| 功能还没实现但想先验证              | Lec 17 绿野仙踪法（注意 hooks 要对应真实接口）               |
+| 这个产品会不会造成社会伤害          | Lec 18 VSD 四标准 + Ethical OS 八风险区                      |
+| 怎么跟同事解释我在干嘛              | Lec 19 行业术语映射表                                        |
+
+---
+
+## 五、贯穿全课的五条主线（跨讲的呼应关系）
+
+这五条线索是"个人知识拼图"最值钱的部分——它们说明这门课不是 20 个独立话题。
+
+1. **关注点分离**：Dijkstra(4) → 三标准（4,5） → 视图分离（19） → 前端 props/emits(14) → MongoDB 规范化（16） → 概念不得 import 彼此（10）。
+2. **显式优于隐式**：sync 而非直接调用（2,11） → 日历"删除并通知/不通知"变成显式选项（4） → 告知用户模型看到了什么上下文（7,8） → 结构化输出 + schema 验证（9） → 因果矩阵没有隐藏触发器（11）。
+3. **忽视间接利益相关者的代价**：Google Glass(1) → Facebook 标签（4） → Venmo 默认 sync(2) → Waze 效应 + 路缘坡（18）。
+4. **人和模型犯同一类错**：认知偏差（1） ↔ LLM 混乱（10）；认知负荷 ↔ 上下文稀释；锚定效应 ↔ 系统提示固着；启发式评估要求独立评估以防锚定（17）。
+5. **默认值即伦理决定**：Venmo 默认公开（2） → Facebook 标签默认可见范围（4） → AI 默认价值偏好（7） → VSD 价值冲突（18）。
+
+---
+
+## 六、查缺补漏：现有笔记的缺口
+
+按优先级排列。前四条会直接影响"遇到问题能不能提取到信息"。
+
+### 🔴 高优先级
+
+1. **缺一份「概念规格语法速查 + 概念库」**
+   课程反复使用 SSF 记号，但 20 个 lec 里没有任何一处完整写下语法定义（Lec 19 只提了一次"SSF"这个名字）。同时，散落在各讲的完整概念规格是**可直接复用的资产**，值得集中：
+   `Upvoting` `URL` `MeetingLink` `Reservation` `Borrowing` `Tagging` `Friending` `ImageQuality` `AspectRatio` `CalendarEvent` `Inviting` `PasswordAuth` `UserNaming` `Notification` `Profile` `Requesting` `SimpleNaming` `GlobalId` `Namespacing` `Foldering` `GiftRegistration` `PersonalAccessToken`
+   → 建议新建 `concepts-library.md`，每个概念一节，统一四要素格式。
+2. **Lec 8 与 Lec 5 严重偏薄**
+   - `lec8.md` 仅 46 行，"设计模式"四条只有标题级罗列，`agentic harness`、混合主动权只有一句话。这一讲是"AI 功能怎么做"的核心，缺内容会断链。
+   - `lec5.md` 仅 47 行，Zoom Reactions 与 Spotify 两个案例展开不足，而它们是"完整性/碎片化"标准的唯一实例。
+3. **`lec16.md` 的「在同步中使用查询」一节实际是空的**（只有两行标题级说明）。而 `where` 子句的 frames 管道机制是 Lec 11 因果矩阵落地的关键——Lec 11 讲了概念，Lec 16 本该讲机制，目前两边都不完整。
+
+### 🟡 中优先级
+
+5. **Recitation 覆盖不均**：Rec 1（GitHub/Markdown）、Rec 4（用户旅程/Figma）、Rec 8（视觉设计研究）整理得很充分；Rec 2（States and Actions）、Rec 3（Modularity Examples）、Rec 6（Backend/MongoDB）、Rec 9（Deploy）只有链接没有内容。Rec 2/3 尤其可惜——它们是 L1/L2 唯一的练习材料。
+
+6. **缺概念设计评分标准（rubric）的摘录**：Pset 1 提到有独立的 concept design rubric（PDF/MD 两版），这本该是**自查清单**，比笔记正文更实用，但没有摘录进来。
+
+### 🟢 低优先级 / 可选
+
+8. **Lec 12 与 Lec 13 偏薄**：Lec 12（AI 编码实践）32 行、Lec 13（Vue）33 行。Lec 12 内容易过时，薄一点合理；Lec 13 的 Vue 细节实际被 Lec 14 的 Rec 8 补上了，可考虑在两处加交叉引用说明。
+
+9. **缺一份「术语中英对照表」**：purpose / operational principle / invariant / conflation / fragmentation / synergy / affordance / seam / rough-edged / hill-climbing / reappropriation / curb-cut effect …… 目前散落各讲，检索时容易漏。
+
+## 七、文件结构
+
+课程根目录以 `index.md` 为唯一元数据来源，讲义直接放在根目录；概念库和术语表仍是明确标注的待建资产，不应被站点或 RAG 当成已完成内容。
+
+```text
+index.md                     ← 本文件：课程信息 + 讲次索引 + 知识框架 + 缺口清单（唯一入口）
+lec0.md … lec20.md           ← 讲次笔记（配套 Prep / Rec / Assignment 归入相关讲次）
+concepts-library.md          ← 概念库 + SSF 语法速查   [待建，见缺口 1]
+glossary.md                  ← 术语中英对照            [待建，可选，见缺口 9]
+source-courseware/fa25/      ← 原始 PDF 课件
+skills/concept-driven-prd/   ← 由本课方法沉淀出的 skill
+The Essence of Software…pdf  ← 教材
+```
+
+其中 `index.md` 与 `lec*.md` 是直接进入站点和检索流程的 Markdown 内容；`source-courseware/` 与教材 PDF 只作为可追溯来源。未来新增概念库或术语表时，应先补齐各自的 frontmatter、TL;DR 和内部链接，再把“待建”标记改成真实路径。
+
+这种划分保持课程归属、阅读页面与来源材料彼此独立，也避免为前端展示重复维护另一份课程清单。
+
+## 附录：外部资源
+
+**官方**
+
+- [Fall 2025 课程日程](https://61040-fa25.github.io/schedule)（作业与截止日期以此为准）
+
+**课程指南（fa23 版，方法部分仍适用）**
 
 - [Implementing Concepts in TypeScript](https://61040-fa23.github.io/pages/concept-implementations.html)
 - [Notes on Data Modeling](https://61040-fa23.github.io/pages/data-modeling.html)
 - [Final project deployment guidance](https://61040-fa23.github.io/pages/deployment.html)
-- [Final Project Domains](https://61040-fa23.github.io/pages/final-project-domains.html)
-- [Final Project Goals & Scope](https://61040-fa23.github.io/pages/final-project-outline.html)
+- [Final Project Domains](https://61040-fa23.github.io/pages/final-project-domains.html) · [Goals & Scope](https://61040-fa23.github.io/pages/final-project-outline.html)
 - [Git & GitHub & GitHub Classroom](https://61040-fa23.github.io/pages/git-github-classroom.html)
-- [What I wish I’d known about website builders](https://61040-fa23.github.io/pages/site-builders.html)
+- [What I wish I'd known about website builders](https://61040-fa23.github.io/pages/site-builders.html)
 
-### External Links
+**技术文档**
 
-- [Express.js official documentation](https://expressjs.com/)
-- [express-session official documentation](https://www.npmjs.com/package/express-session)
-- [Introduction to backend programming (MDN)](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Introduction)
-- [Express tutorial (MDN)](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs)
-
-# Lec 1 建立静态网站
-
-**静态网站（Static Sites）**
-
-> 静态网站是指用户通过浏览器只能读取内容而不能修改内容的网站。
->
-> 实现方式：
->
-> - 从头开始使用 HTML + CS
-> - 使用网站构建工具（Website Builders）：Wix、Squarespace 等，提供了一种非常简单和直观的方式来创建网站，无需编写代码
-> - 静态网站生成器: 将内容（如 Markdown 文件）转换为 HTML 文件的工具
-
-**内容管理系统（CMS）**
-
-> CMS（如 Drupal 或 WordPress）允许较大的用户群查看网站内容，但只有一小部分用户可以修改网站内容。
->
-> 静态网站通过常规的文件编辑机制编辑页面，而 CMS 则通过网站本身的编辑模式来编辑内容。
-
-**网站生成器（Static Site Generator）**
-
-> VitePress 将是我们用的框架，这个框架以 Vue.js 和 Node.js 为基础，风格可以用 CSS 和 Vue 来定制。
-
-**VitePress**
-
-> Frontmatter: 是关于一个网页的 metadata，它位于 markdown 文件的顶部，如图
->
-> ```markdown
-> ---
-> title: Blog 1
-> ---
-> ```
->
-> Layout：代表某种产生网页的方式，VitePress 有三种默认的方式： doc，page 和 home
->
-> Collection: 一个集合就是将一些文件视为一个集合，在集合目录里面，你可以用一个导出文件进行 export
-
-**练习**
-
-> Exercise: Adding an about me page 1.
->
-> Find a partner and introduce yourself! 2. Work together to add an about me page to your site (each  partner should make a page for themselves) a. Step 1: create a new file, `about.md` and navigate to `/about.html` on your site b. Step 2: add a bio (who you are, where you’re from, and what  you’re looking forward to in 6.1040) c. Step 3: add a profile picture to your page d. Step 4: add a link to your about me page to the navbar
->
-> Further Customization ● Further customization can be done by writing additional Vue or  CSS ● You can try playing around with this in a few weeks after  learning HTML + CSS!
-
-# Lec 2 价值敏感设计（VSD）
-
-学习目标
-
-- 价值敏感设计（Value-Sensitive Design）
-
-- 发散和收敛： 从功能到概念
-
-  - 理解“分歧/汇聚”的概念
-
-  - 通过进行分歧设计来进行实践
-
-  - 学习概念作为软件模块的基本概念
-
-  - 通过进行汇聚设计来进行实践
-
-  - 学习如何使用依赖图表达子集
-
--
-
-## 价值敏感设计
-
-主要是研究如何在設計資訊系統時如何將人的價值一併納入設計之中(an approach to account for human values in the design of information systems)。其初衷在於確保我們在設計一個系統、產品、或是服務之時，能夠給予直接和間接利害者（Stakeholder）正確且正向的價值，並減少其可能帶來的負面影響。VSD 的研究對象則是利害者，他們可以是直接和產品/服務/系統的人或團體，但也包含因為這些互動而被影響到的其他人或是團體，其所強調的是設計出可以盡可能給予所有利害者最大正向價值（Value）的產品，並同時針對其可能帶來的負向影響預先做出規劃和解決。
-
-价值敏感设计的 4**个标准**
-
-- Stakeholders 利益相关者： 直接利益相关者，间接利益相关者，非目标群青少年，能力的差异，转手，个人多职能
-  - 比如导航，给 direct Stakeholders 选择一条便捷的路线同时，可能给原本安静的街道邻居 indirect Stakeholders 带来麻烦
-  - 导航系统不仅要考虑一般驾驶员，还要考虑老年人，残疾人，驾驶经验不足者，确保能够适应不同的需求和能力。
-- Time 时间：受城市规划的长期视角启发，时间标准帮助设计师考虑其工作的长期影响——这些影响只会在技术经历了初期的新奇阶段并逐渐融入社会后才会显现出来。
-- Pervasiveness 普及性： 普及性标准强调了交互技术广泛采用后产生的系统性相互作用。技术可以在地理（例如，城市导航软件在城市地区的使用）、文化（例如，聋人社区内的短信交流）、人口统计学（例如，青少年在线社交网络）等方面变得普及；
-- Value 价值：价值标准强调技术对人类价值观的影响。我们对价值的使用源自价值敏感设计文献，“人或一群人在生活中认为重要的事物”[3]
-
-## 发散和收敛： 从功能到概念
-
-![截屏 2024-06-11 16.50.06](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66680fc8ad583.png)
-
-### 发散设计的技术
-
-- 头脑风暴
-
-  - 产生好的主意，需要合作，多接纳想法
-
-  **gap analysis**
-
-  what’s missing in existing apps?
-
-  **viability**
-
-  is critical mass needed?
-
-  who will generate content?
-
-  where will revenue come from?
-
-  **analogies**
-
-  are there similar apps or features？
-
-- 横向思考
-
-  - 生成争议性的创意：采用一个糟糕的想法并追求它 ，用来识别和挑战假设 专注于问题被忽视的方面
-
-- 搜寻灵感
-
-  - 在商店和图书馆翻阅书籍 沉迷于互联网的兔子洞 专注于不寻常的事物
-
-![截屏 2024-06-11 16.57.42](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66681191195dc.png)
-
-## 依赖的源头
-
-> [!IMPORTANT]
->
-> 如果依赖图展示了依赖关系，那独立的概念是什么呢？
->
-> **两种依赖**
->
-> 外部依赖： 使用的上下文角度看
->
-> 内部依赖： 软件组件本身角度
->
-> 这两种依赖是非耦合，他们呢之间没有任何依赖。
->
-> 内部依赖的例子： 调用另一个函数的函数：一个调用另一个函数的函数。引用另一个对象的类：一个引用另一个对象的类
-
-**允许内部依赖的标准**
-
-当下面条件都满足时，  我们说 A 允许“使用”B
-
-- 本质上 A 更加简单，因为它使用了 B
-- 本质上 B 不是更复杂，这是因为 B 不能使用 A
-- 有一个包含 B 但不包含 A 的子集
-- 没有一个包含 A 但不包含 B 的有用子集合
-
-![截屏 2024-06-11 20.55.13](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6668493d67a9b.png)
-
-## 原型图 wireframe
-
-![截屏 2024-06-11 21.13.55](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66684dd3db155.png)
-
-**定义**：What is a Wireframe? Wireframes are illustrations or other visual mockups that represent the skeletal framework of a website / other user interface
-
-**作用**
-
-Some important reasons:
-
- ● Faster Interaction Prototyping and Iterative Design
-
-​	 ○ Writing code for interfaces often takes more time than drawing what they look like
-
-​	○ To this end, allows rounds of feedback to be given before anything is set in stone in code
-
-● Better visualization of potential usage and interactions
-
- ● Potentially better consistency and more intentional use of repeated elements
-
-Our focus in this class is to use wireframes to dictate layout, functionality, and user experience
-
-● Color and aesthetic elements, though useful, are less important for the class
-
-● The goal is to convey your idea and provide a visualization and basic interactive flow that is concrete enough for the viewer to fill in the remaining details with their imagination to understand what the webpage will eventually look like and feel like
-
-But why learn wireframing if I'll just be writing software? ● Knowing how to wireframe will allow you to interface better with designers/PMs ○ Allows you to potentially contribute to ideating as well, since you might have more specific technical knowledge that can add new perspectives ● You never know when you might be put in a position where you have to wear a designer "hat" ○ E.g. sometimes it's helpful to be able to throw together a quick visualization of an idea that you want feedback for – being able to create it yourself allows you to shorten the time it takes to achieve this ○ E.g. In cases where you might not be working in big teams with specific designers (i.e. you're creating a personal portfolio website or working on some other personal project), being able to create wireframes can make it much easier to implement your vision and to separate the designing and coding steps of the project ● Wireframing is a kind of prototyping, and just like how you can test a design by building a minimum viable product (MVP) or paper prototype, you can test a design with wireframes ○ Conceptual design tends to be very abstract, and it can be hard to anticipate the problems that will arise during actual use. However, when you build a wireframe, it becomes more concrete, and you can more easily see and address these potential problems
-
-In industry settings, wireframes can be very detailed (high-fidelity), to the point where it's essentially visually identical to the eventual webpage that the engineer is supposed to build.
-
-Wireframing Tools Figma: Industry standard and what we'll be using in class this semester 6.1040 Fall 2023, Recitation 2 ● Besides just wireframing, it can also be used for graphic design, prototyping, charts/visualizations, etc. Other tools: Adobe XD, Whimsical, Penpot
-
-### Figma
-
-Setup Create a free account at https://www.figma.com/. If you use your student email to sign up, you can upgrade to an Education plan for free: https://www.figma.com/education/
-
-● Has the same benefits as a professional plan
-
-**Figma walkthrough**
-
- During recitation, we walked through basic Figma features by creating a simplified YouTube Homepage view using Figma.
-
-The final Figma file: https://www.figma.com/file/zoPLZDd6j9obwZCOasta8Z/R2-Wireframing-Intro?type=desig n&node-id=0%3A1&mode=design&t=unKXHEE2jJVExegj-1
-
-**Important concepts**
-
-● Frames: containers for designs, often used to denote pages ○ Can be contained within other frames ● Inserting and manipulating shapes and text ● Components ○ Main component: Defines properties of the component ○ Instances of a component: Copies of a component that you can reuse in your own designs. Changes to the main component will affect all instances of the component ● Layers: Each object is a layer, but these objects can be grouped into more conceptually "layer-like" things (this is confusing terminology) ● User interactions (Prototype > Interactions) ○ Used to dictate interactive flow, which is one of the things we want to display in wireframes for this class ○ A set of interactions creates a user flow ● Plugin
-
-### 相关链接
-
-● https://www.figma.com/blog/how-to-wireframe/
-
-● https://designlab.com/figma-101-course/introduction-to-figma/
-
-● Figma for Beginners video
-
-● Figma Documentation
-
- ● Components:  https://help.figma.com/hc/en-us/articles/360038662654-Guide-to-components-in-Figma
-
-● Prototyping, Interactions, Flows:  https://help.figma.com/hc/en-us/articles/360040314193-Guide-to-prototyping-in-Figma
-
-## 本讲小结
-
-软件不是中立的。
-
-软件开发涉及到一系列或多或少的设计选择和利弊权衡。
-
-每个设计决定都
-
-# Lec 3 概念设计基础
-
-# Lec 4 概念设计迁移
-
-# Lec5 服务设计
-
-# Lec6 数据设计
-
-# Lec 8 反应式编程 Reactive Programming
-
-![截屏 2024-06-12 06.04.18](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6668c9f0f14d1.png)
-
-```js
-import {Sidebar} from './Sidebar.html'
-ToggleBtn.addEventListener('click', (event)=>	{
-  const opacity = Sidebar.style.opacity;                               if (opacity == 0) Sidebar.style.opacity = 1;
-  else Sidebar.style.opacity = 0;
-})
-```
-
-# Lec 9 UI 交互设计
-
-# Lec 10 UI 虚拟设计
-
-# Lec11 视觉设计
-
-> [!IMPORTANT]
->
-> What is good visual design?
->
-> 让事物变得更加美观？
->
-> 是的！但如果能做到以下会更佳
->
-> 通过传达结构、相对重要性、关系来引导用户
->
-> 通过吸引用户进入您的应用程序、定位他们并显示要去哪里来调整用户的速度。
->
-> ![截屏 2024-06-12 15.56.36](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666954d1f261b.png)
->
-> ![截屏 2024-06-12 15.56.56](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6669550493fd5.png)
->
-> ![截屏 2024-06-12 16.01.47](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666955f842303.png)
->
-> 这里有几个关键点。
->
-> 1. **传达结构**：好的视觉设计应该能够清晰地展示界面的组织结构。例如，使用一致的布局、颜色和字体来区分不同部分，让用户能够快速理解页面的层次和组成。
-> 2. **相对重要性**：通过视觉元素的大小、颜色、对比度等来强调不同元素的重要性。例如，一个突出的按钮或标题应该在界面上更显眼，以引导用户的注意力。
-> 3. **关系**：视觉设计可以通过排列、对齐和间距来表达元素之间的关系。例如，相关的内容应该靠近，不相关的内容应该分开。
-> 4. **吸引用户**：好的视觉设计应该能够吸引用户的眼球，让他们愿意停留在界面上。这可以通过吸引人的颜色、图像、动画等来实现。
-> 5. **定位和导航**：视觉设计应该帮助用户快速定位所需的信息，并指导他们前进的方向。例如，导航菜单、按钮和链接应该清晰明了，让用户知道如何继续操作。
-
-> [!IMPORTANT]
->
-> **Gestalt 原则**是一组关于人类视觉感知的原则。
->
-> - **Prägnanz 法则**：这个法则强调，当人们面对复杂的形状或一组模糊的元素时，他们的大脑会选择以最简单的方式来解释它们。人们会自动地将这些形状中的多余细节去除，以形成一个统一的整体。这是一种快速且自动的过程，因为人类的大脑不喜欢混乱，而追求有序。
-> - **接近性**（Proximity）：我们倾向于将靠近的元素视为一组，而不是孤立的元素。
-> - **相似性**（Similarity）：相似的元素被视为属于同一组。
-> - **对称性**（Symmetry）：对称的形状更容易被理解和接受。
-> - **连续性**（Continuity）：我们倾向于将连续的线条视为一组，而不是断开的线条。
-> - **封闭性**（Closure）：即使形状不完整，我们也会自动补全缺失的部分，形成一个完整的形状。
-> - **连接性**（Connectedness）：靠近的元素被视为连接在一起的一组。
-> - **共同命运**（Common Fate）：移动在同一方向上的元素被视为一组。
-
-视觉设计的三要素
-
-> Layout 布局
->
-> ![截屏 2024-06-12 16.30.26](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66695caec027c.png)
->
-> ![截屏 2024-06-12 17.36.24](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696c2f7eea9.png)
->
-> ![截屏 2024-06-12 17.37.18](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696c592154a.png)
->
-> ![截屏 2024-06-12 17.37.40](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696c7236734.png)
->
-> ![截屏 2024-06-12 17.38.17](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696c9627ccf.png)
->
-> ![截屏 2024-06-12 17.39.09](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696cc863386.png)
-
-Design Critique
-
-> ![截屏 2024-06-12 17.40.14](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696d0ac3dfe.png)
->
-> ![截屏 2024-06-12 17.40.44](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66696d260b3b6.png)
-
-### 字型
-
-# Lec 12 评估设计
-
-![截屏 2024-06-12 15.37.19](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/66695045c1b7b.png)
-
-![截屏 2024-06-12 15.38.30](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/6669508a700e1.png)
-
-![截屏 2024-06-12 15.39.28](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666950c6ec6ce.png)
-
-> [!NOTE]
->
-> **Nielsen 的十大可用性原则**是一组用于评估用户界面设计的启发式规则，由 Jakob Nielsen 提出。这些原则旨在帮助设计师创建易于使用、直观且高效的界面。让我们一起来看看这十大原则吧：
->
-> 1. **系统状态可见**（Visibility of system status）：系统应该在用户操作后及时反馈，让用户知道自己当前所处的状态。例如，LinkedIn 在用户点击“添加好友”按钮后，按钮状态会改变，告知用户申请已发送成功。
-> 2. **系统与现实世界相匹配**（Match between system and the real world）：系统要符合用户的生活环境和认知习惯，使用用户熟悉的词语、概念等，而不是复杂难懂的术语或代码。例如，微信读书中的画线效果类似我们在书上用荧光笔划重点，网易云音乐运用黑胶唱片和唱针元素，切换歌曲时的动效类似换唱片的动作。
-> 3. **用户的控制性和自由度**（User control and freedom）：用户有选错功能（误操作）的可能性，所以要给他们留有撤销和重做的权力，也要有清晰的退出机制，让用户有一定的自由度。例如，淘宝首页进入聚划算页面，导航栏有明显的出口，点击可返回上一级页面，底部的广告条有明显的关闭按钮，用户可自由决定其是否显现。
-> 4. **一致性和标准化**（Consistency and standards）：同一个产品的设计语言和风格要一致，在不同页面或不同状态下，同一个功能要用相同的用语、图标，操作也要保持一致，这样用户才不会在页面跳转中产生疑惑。
-> 5. **预防错误**（Error prevention）：相比出现错误后给出信息提示，通过精心设计防止问题发生显然要更好。在用户动作发生之前，就要防止用户混淆或者错误选择。例如，美团的【红包/抵用券】页面自动将失效的券剔除出页面。
-> 6. [**识别而不是记忆-易取原则**（Recognition rather than recall）：尽量减少用户的记忆负荷，内容、动作和选项都应该是可见的。不要让用户在页面跳转时记信息。微信的【发红包】页面，输入金额后跳转到输入密码页时，金额数依然可见，不需要用户对上一页的内容进行记忆。
-> 7. **使用的灵活高效性**（Flexibility and efficiency of use）：系统要灵活适用于不同经验水平、不同产品诉求的用户。可适应用户界面，支付宝首页的应用排布，用户可自由添加、删除应用或调整应用的顺序。
-> 8. **审美和简约的设计**（Aesthetic and minimalist design）：页面中不应该包含无关紧要的信息。剔除和弱化与主流程无关的信息，去掉冗长的文字，能用图表信息展示的尽量使用图表，尽量减少用户在阅读过程中的压力。例如，ofo 首页征用很大面积去强调关键功能【扫码用车】，其他辅助功能相对减小面积
-> 9. **帮助用户识别诊断，并从错误中恢复**（Help users recognize, diagnose, and recover from errors）：当用户犯错时，系统应该清晰地告知用户发生了什么，提供解决方案，而不是仅仅报错。例如，支付宝在用户输入错误密码时，会提示“密码错误，请重新输入”，而不是简单地显示“错误”。
-> 10. **帮助和文档**（Help and documentation）：尽量设计一个不需要用户查阅文档就能使用的系统，但如果需要文档，也要提供清晰、易懂的帮助文档。例如，微信小程序开发者文档提供了详细的接口说明和示例代码，帮助开发者理解和使用微信小程序的功能
-
-# Lec 14 设计总结
-
-# Lec 15 设计的影响力
-
-## 设计的影响
-
-这些是《Ethical OS Toolkit》中提到的 8 个风险区（8 Risk Zones），这些风险区旨在帮助技术开发者识别和应对可能出现的社会风险和危害：
-
-1. **真相、虚假信息和宣传**：虚假信息的传播及其对公众认知和民主的影响。
-2. **成瘾与多巴胺经济**：利用心理触发机制设计的技术导致的成瘾问题。
-3. **经济和资产不平等**：技术可能加剧经济差距。
-4. **机器伦理与算法偏见**：人工智能和算法决策带来的伦理问题，包括偏见和歧视。
-5. **监视国家**：政府或公司广泛监视的影响。
-6. **数据控制与货币化**：与个人数据的控制、隐私和商业化相关的问题。
-7. **隐含信任与用户理解**：用户对技术的误解或过度信任可能导致的误用或伤害。
-8. **仇恨和犯罪行为者**：个人或群体利用技术实施或煽动有害或非法行为。
-
-![截屏 2024-06-12 14.48.21](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/666944c1a9178.png)
-
-> [!IMPORTANT]
->
-> “Entrepreneurs are the designers of companies. Great startup CEOs recognize  very early that their job is not to build a product, but to build a  company—defined by mission, values, and culture.”
->
-> 企业家是公司设计者。优秀的初创公司 CEO 很早就意识到，他们的工作不仅仅是开发产品，而是建立一家有使命、价值观和文化的公司
->
-> --Phin Barnes,
-
->[!NOTE]
->
->**Business Case for Responsible Tech**
->
->- Attract and Retain the best talent
->- Generate user loyalty
->- Build social capital
->- Prevent disasters that cost time, money, and  reputation.
->- Have a genuinely positive impact. Build  something you’re proud of.
-
-> 这段文字涵盖了多方面的主题和相关人物、组织以及框架，旨在提供一个全面的参考，涉及负责任的人工智能、算法偏见、内容审核、道德供应链、数据隐私与安全等。具体表达了以下几个方面：
->
-> 1. **深度探讨的主题**：
->    - **负责任的人工智能（Responsible AI）**：确保 AI 的开发和应用不会造成社会危害，并积极推动社会利益。
->    - **算法偏见（Algorithmic Bias）**：研究和解决算法中的系统性偏见问题，确保公平和公正。
->    - **内容审核（Content Moderation）**：如何管理和审核平台上的内容，防止有害信息传播。
->    - **道德供应链（Ethical Supply Chains）**：确保供应链的每个环节都符合道德标准。
->    - **数据隐私与安全（Data Privacy + Security）**：保护用户数据隐私，确保数据安全。
-> 2. **推荐关注的人物**：
->    - **Safiya Noble**：关注算法压迫问题。
->    - **Ruha Benjamin**：研究技术中的种族问题。
->    - **Kamal Sinclair**：未来建筑师协会成员。
->    - **Mimi Onuoha**：AI 人民指南的作者。
->    - **Ellen Pao**：包含项目的倡导者。
->    - **Joy Buolamwini**：算法正义联盟的创始人。
->    - **Eli Pariser**：公民信号的创始人。
->    - **Sarah Williams**：MIT 公民数据实验室成员。
->    - **Kathy Pham**：Mozilla 和哈佛的技术专家。
->    - **Wilneida Negron**：Coworker 的成员。
->    - **Rumman Chowdhury**：Parity AI 的创始人。
->    - **Shoshanna Ziboff**：监视资本主义的研究者。
-> 3. **相关组织**：
->    - **福特基金会（Ford Foundation）**：公共利益技术倡议。
->    - **哈佛伯克曼克莱因中心（Berkman Klein Center at Harvard）**。
->    - **Zebras Unite**：倡导替代性退出机制。
->    - **长期股票交易所（Long Term Stock Exchange）**。
->    - **BLab**。
->    - **Dev/Color**：支持黑人技术人员。
->    - **Code2040**：在硅谷建立多元化人才管道。
->    - **负责任创新实验室（Responsible Innovation Labs）**。
->    - **初创企业与社会倡议（Startups & Society Initiative）**。
->    - **All Tech is Human**。
-> 4. **框架**：
->    - **Ethical OS**。
->    - **Consequence Scanning**。
->    - **Ethical Data Canvas**。
->    - **社会中心设计（Society Centered Design）**。
->    - **设计正义网络（Design Justice Network）**。
->    - **Bcorp**。
-
-## 社会创新
-
-1. **社会创新的定义**：社会创新是创建和实施有效解决方案来应对重要社会和环境挑战的过程，旨在促进积极的社会变革。
-
-2. **有意义的问题**：
-
-   - 社会中的差距
-   - 限制尊严、公正、包容性和自主权的问题
-
-3. **有效解决方案**：
-
-   - 可行的解决方案
-   - 对受问题影响的人有明确且可衡量的附加值
-
-4. **社会创新问题**：
-
-   - 棘手问题（Wicked Problems）
-
-     ：存在于复杂系统中的问题，特点包括：
-
-     - 是另一个问题的症状
-     - 没有明确定义或单一根本原因
-     - 利益相关者有不同看法
-     - 没有固定的解决方案
-
-5. **影响案例模板**：
-
-   - 问题的重要性
-   - 解决方案
-   - 证明解决方案有效的指标
-
-6. **影响案例的作用**：
-
-   - 确保社会影响创业公司能产生有意义的社会影响
-   - 说服资助者、投资者、合作伙伴和其他利益相关者投入时间或资源
+- [VitePress 文档](https://vitepress.dev/) · [VitePress 模板仓库](https://github.com/61040-fa23/vitepress-template)
+- [Express.js 文档](https://expressjs.com/) · [express-session](https://www.npmjs.com/package/express-session)
+- [后端编程入门（MDN）](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Introduction) · [Express 教程（MDN）](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs)
+- [Vue 官方教程](https://vuejs.org/tutorial) · [Vuetify](https://vuetifyjs.com/en/)
