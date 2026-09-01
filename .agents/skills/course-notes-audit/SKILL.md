@@ -13,6 +13,12 @@ Audit exactly one course directory and give a decisive, evidence-backed result. 
 2. Read the repository `AGENTS.md` and `NOTESTYLE.md` completely before judging compliance. They are authoritative; do not preserve rules copied into this skill when the repository standard has changed.
 3. Preserve all existing worktree changes. This workflow is read-only: do not run `notes:fix`, edit Markdown, build the site, ingest RAG data, or apply database schema changes unless the user separately asks for them.
 
+## Editor-owned heading structure
+
+- Treat heading levels and section boundaries as editorial decisions. Do not report skipped levels, deep headings, headings with no standalone paragraph, or any heading arrangement as an audit finding.
+- Do not infer compliance, completeness, `status`, or RAG readiness from section length, document length, character counts, or line counts. The explicit TL;DR limits in `NOTESTYLE.md` are the only length contract.
+- Do not recommend promoting, demoting, splitting, or merging headings to satisfy chunk sizes. RAG parses H2–H6 individually, preserves H2/H3 ancestry in breadcrumbs, and may split long body text internally without changing Markdown.
+
 ## Audit workflow
 
 Run the deterministic contract audit from the skill directory:
@@ -38,6 +44,8 @@ The linter accepts a directory and recursively checks its Markdown files. Separa
 - blocking content errors;
 - mandatory migration rules such as `no-type`, `no-tags`, `no-tldr`, `course-metadata`, and `repeated-course-metadata`;
 - quality recommendations such as `code-heavy`, `vague-heading`, `image-alt`, and `no-insight`.
+
+Never classify legacy length or hierarchy rules such as `long-section`, `short-section`, `too-short`, `empty-section`, `heading-skip`, or `deep-heading` as findings; they are outside the current content contract.
 
 Do not call a course compliant merely because the linter process exits successfully; its normal mode reports findings without failing the process. Use the contract audit result and rule counts.
 

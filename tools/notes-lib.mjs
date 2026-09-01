@@ -32,10 +32,6 @@ export const HEADING_CANON = {
   'summary': '本讲小结',
 }
 
-// ── 章节长度阈值。必须和 rag/src/chunk.ts 的 TARGET/MAX/MIN 保持一致。 ──
-export const SECTION_MIN = 100
-export const SECTION_MAX = 1200
-
 // ── frontmatter ──────────────────────────────────────────────────
 
 /** 只有 --- 在第一行才算 frontmatter；正文里的 --- 是分隔线。与 corpus.ts 同规则。 */

@@ -49,9 +49,9 @@ jobs:
       - name: Install Astro frontend dependencies
         run: npm ci --prefix frontend
 
-      # 笔记规范检查（NOTESTYLE.md）。基线是当前的 error 数，只能降不能升 ——
-      # 存量问题（空章节、超长章节、待补写的短文）要人工处理，
-      # 这道门槛只保证新增的笔记不再引入同类问题。修完记得把这个数字调低。
+      # 笔记规范检查（NOTESTYLE.md）。基线是当前的 error 数，只能降不能升。
+      # 标题层级与内容长度由编辑者决定，不计入 error；这道门槛只阻止新增的
+      # 可解析性、元数据和确定性格式错误。修完存量问题后记得把数字调低。
       - name: Lint notes
         run: npm run notes:lint -- --summary --max-errors=1207
 
