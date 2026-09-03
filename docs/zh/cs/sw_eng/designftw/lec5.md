@@ -1,13 +1,20 @@
 ---
-title: 效率
+title: '效率'
 type: lecture
 lecture: 5
-tags: []
+tags: [human-performance, fitts-law, steering-law, goms, interaction-efficiency]
 status: complete
 ---
 # Lec 5 效率
 
-## 引言
+## TL;DR
+
+- 人的操作时间受感知、认知与运动处理阶段共同约束，练习会改变各阶段的熟练度和自动化程度。
+- 聚合、加速、预判、默认值、历史记录和自动补全通过减少决策或动作次数提升交互效率。
+- Fitts 定律与 Steering 定律刻画指向和轨迹任务，KLM 与 GOMS 则把复杂任务拆成可预测的操作序列。
+
+
+## 效率问题的决策成本
 
 ![image-20260506233453535](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260506233453535.png)
 
@@ -276,7 +283,7 @@ Mac 在这里可以算是“优秀设计案例”（Hall of Fame）：当子菜�
 > 再比如，这个例子
 > ![image-20260507015621340](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260507015621340.png)
 
-### 本讲小结
+### 指向与轨迹定律的结论
 
 我们已经借助这种闭环运动控制模型，来解释为什么 Fitts 定律在距离和目标大小上呈对数关系，而轨迹控制定律（steering law）则呈线性关系。
 
@@ -426,3 +433,7 @@ GOMS 是一个更丰富的模型，它考虑了用户在执行任务时的规划
 - S（Selection rules）选择规则
 
 GOMS 提供了一种用于任务分析和高层设计描述的语言： 它可以是抽象的，也可以是详细的； 可以是定性的，也可以是定量的。
+
+::: insight
+效率优化应先定位瓶颈属于感知、决策还是运动，再选择策略。盲目减少点击次数可能增加判断难度；真正的目标是降低整条任务路径的时间与认知成本。
+:::

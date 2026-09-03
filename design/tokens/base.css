@@ -1,0 +1,43 @@
+/* Base layer: reset, page defaults, prose, and the handful of brand utilities
+   that are cheaper as classes than as repeated declarations. */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--surface-page);color:var(--text-body);font:var(--type-body);text-wrap:pretty;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,h5,h6{margin:0;color:var(--text-heading);letter-spacing:var(--tracking-heading)}
+h1{font:var(--type-h1);letter-spacing:var(--tracking-display)}
+h2{font:var(--type-h2)}
+h3{font:var(--type-h3)}
+h4{font:var(--fw-semibold) var(--fs-h4)/var(--lh-heading) var(--font-sans)}
+p{margin:0 0 var(--space-7)}
+a{color:var(--text-link);text-decoration-line:underline;text-decoration-thickness:1px;text-underline-offset:.22em;text-decoration-color:color-mix(in oklab,var(--text-link) 38%,transparent);transition:color var(--dur-fast) var(--ease-tide),text-decoration-color var(--dur-fast) var(--ease-tide)}
+a:hover{color:var(--text-link-hover);text-decoration-color:currentColor}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--border-focus);outline-offset:2px;border-radius:var(--radius-xs)}
+small{font:var(--type-meta);color:var(--text-muted)}
+code,kbd,pre{font:var(--type-mono)}
+hr{border:0;border-top:1px solid var(--border-hairline);margin:var(--space-10) 0}
+img{max-width:100%;display:block}
+::selection{background:var(--ocean-200);color:var(--navy-900)}
+[data-theme="deep"] ::selection{background:var(--ocean-600);color:#fff}
+
+/* --- Utilities --- */
+.ap-page{background:var(--surface-page);background-image:var(--texture-paper)}
+.ap-shell{max-width:var(--page-max);margin:0 auto;padding-inline:var(--page-gutter)}
+.ap-narrow{max-width:var(--page-narrow);margin:0 auto}
+.ap-deep{background:var(--gradient-abyss);background-image:var(--gradient-abyss),var(--texture-chart);color:var(--text-body)}
+.ap-label{font:var(--type-label);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)}
+.ap-rule-gold{border:0;height:1px;background:linear-gradient(90deg,transparent,var(--rule-gold) 18%,var(--rule-gold) 82%,transparent);margin:var(--space-7) 0}
+/* The route: a dashed sea lane. Used for connectors, dividers, dropzones. */
+.ap-route{border:0;border-top:1px dashed var(--route-line)}
+.ap-route-v{border:0;border-left:1px dashed var(--route-line)}
+
+/* --- Prose: the reading column for 讲义 / notes --- */
+.ap-prose{max-width:var(--measure-prose);font:var(--type-body);color:var(--text-body)}
+.ap-prose>h2{margin:var(--space-11) 0 var(--space-6)}
+.ap-prose>h3{margin:var(--space-9) 0 var(--space-5)}
+.ap-prose>p{margin:0 0 var(--space-7)}
+.ap-prose>ul,.ap-prose>ol{margin:0 0 var(--space-7);padding-left:1.4em}
+.ap-prose li{margin-bottom:var(--space-3)}
+.ap-prose>blockquote{margin:var(--space-8) 0;padding:var(--space-2) 0 var(--space-2) var(--space-7);border-left:2px solid var(--rule-gold);color:var(--text-muted);font-style:italic}
+.ap-prose figcaption{font:var(--type-meta);color:var(--text-faint);margin-top:var(--space-4)}
+.ap-prose code:not(pre code){background:var(--surface-sunken);border:1px solid var(--border-hairline);border-radius:var(--radius-xs);padding:.1em .34em;font-size:.88em}
+.ap-prose pre{background:var(--navy-950);color:var(--paper-200);padding:var(--space-7);border-radius:var(--radius-sm);overflow:auto}

@@ -1,8 +1,8 @@
 ---
-title: 事件
+title: '事件'
 type: lecture
 lecture: 14
-tags: []
+tags: [dom-events, event-driven-programming]
 status: stub
 ---
 # Lec 14 事件

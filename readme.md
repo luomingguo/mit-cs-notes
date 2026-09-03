@@ -1,16 +1,16 @@
-# MIT CS Notes
+# Archipelago
 
-![MIT CS Notes — 计算机科学知识库](frontend/static/og-card.png)
 
-> 以 MIT EECS 公开课为主线，把课程讲义、代码实验与开源系统研读整理成可阅读、可检索、可持续维护的中文计算机科学知识库。
 
-[自建站点](https://notes.lobomiao.uk) · [GitHub Pages 镜像](https://luomingguo.github.io/mit-cs-notes/)
+> 把 MIT 公开课的学习笔记整理成一组彼此关联的学科岛屿，而不是互不相干的课程文件堆——目前以计算机科学为主，正逐步纳入心理学、管理学等领域。
+
+[自建站点](https://notes.lobomiao.uk) · [GitHub Pages 镜像](https://luomingguo.github.io/archipelago/)
 
 ## 项目定位
 
-MIT CS Notes 起源于个人公开课学习笔记，但目标不只是按课程陈列文件。项目希望保留课程脉络的同时，通过领域、课程、讲义、概念和内部链接组织内容，让读者能回答三个问题：这篇在讲什么、需要先读什么、接下来可以读什么。
+Archipelago（群岛）起源于个人公开课学习笔记，但目标不只是按课程陈列文件。项目希望保留课程脉络的同时，通过领域、课程、讲义、概念和内部链接组织内容，让读者能回答三个问题：这篇在讲什么、需要先读什么、接下来可以读什么——不同学科是各自独立的岛屿，内部链接和知识关系则是连接它们的航线。
 
-当前内容以中文为主，覆盖计算机系统、计算机架构、理论计算机科学、计算机安全、编程语言、软件工程、开源项目研读与知识索引。站点目录目前从真实 Markdown 自动生成，共收录 **462 篇正文、27 门课程、8 个领域**；这些数字会随内容更新而变化。
+当前内容以中文为主，覆盖计算机系统、计算机架构、理论计算机科学、计算机安全、编程语言、软件工程、开源项目研读与知识索引。站点目录目前从真实 Markdown 自动生成，共收录 **462 篇正文、27 门课程、8 个领域**；这些数字会随内容更新而变化。心理学、管理学等目录已在仓库中预留（`docs/zh/psy/` 等），但尚无正式笔记上线。
 
 这不是 MIT 官方项目，也不是课程讲义的逐字翻译。笔记包含个人整理、代码示例、习题记录和对不同课程之间联系的归纳，内容完整度以各文件的 `status` 标记为准。
 
@@ -81,7 +81,7 @@ npm run site:verify
 | `npm run preview` | 预览 Astro 静态产物 |
 | `npm run site:check` | 检查 Astro 与 TypeScript |
 | `npm run site:build` | 构建根路径版本到 `frontend/dist/` |
-| `npm run site:build:pages` | 构建 `/mit-cs-notes/` 子路径版本 |
+| `npm run site:build:pages` | 构建 `/archipelago/` 子路径版本 |
 | `npm run site:verify` | 检查静态路由、内部链接、资源及 RAG URL/锚点映射 |
 | `npm run site:verify:pages` | 检查 GitHub Pages 构建的 base 前缀与链接 |
 | `npm run notes:lint` | 按 `NOTESTYLE.md` 检查笔记结构与语义 |
@@ -109,7 +109,7 @@ npm run site:verify
 
 推送到 `release` 分支后，GitHub Actions 会检查笔记，并构建、验证 Astro 产物：
 
-- GitHub Pages 发布在 `/mit-cs-notes/` 子路径下，作为纯静态镜像；
+- GitHub Pages 发布在 `/archipelago/` 子路径下，作为纯静态镜像；
 - 自建站点发布在根路径下，并可接入独立部署的 RAG 服务；
 - 自建部署采用版本目录和原子软链切换，失败不会覆盖当前线上版本。
 
@@ -117,6 +117,6 @@ npm run site:verify
 
 ## English
 
-MIT CS Notes is a Chinese-first knowledge base built from personal study notes, code examples, and exercises for MIT EECS open courses and open-source systems. Markdown remains the single source of truth; an Astro frontend turns it into a searchable, responsive reading experience, while an optional RAG service provides source-grounded question answering on the self-hosted site.
+Archipelago is a Chinese-first knowledge base built from personal study notes, code examples, and exercises for MIT open courses and open-source systems. It is currently anchored in MIT EECS coursework, with other disciplines (psychology, management science) scaffolded for future growth. Markdown remains the single source of truth; an Astro frontend turns it into a searchable, responsive reading experience, while an optional RAG service provides source-grounded question answering on the self-hosted site.
 
 This is an independent personal project and is not affiliated with or endorsed by MIT.

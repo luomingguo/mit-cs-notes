@@ -1,17 +1,26 @@
 ---
-title: '动画 & 反馈'
+title: '动画与反馈'
 type: lecture
 lecture: 22
-tags: []
-status: complete
+tags: [animation, motion-design, interaction-feedback, web-accessibility]
+status: draft
 ---
-# Lec 22 动画 & 反馈
+# Lec 22 动画与反馈
+
+## TL;DR
+
+- 动作会快速吸引注意力，动画速度、位置变化和触发情境必须服务于用户当前任务。
+- 过渡在属性值变化之间插值，关键帧动画则能定义多个状态、迭代、方向和时间函数。
+- 高频操作中的装饰动画会累积等待成本，应保持简短并尊重减少动态效果等可访问性偏好。
+- 源笔记尚未展开 @property 的完整用法和动画可访问性实现，因此该讲仍为草稿。
+
+## 动画的任务边界
+
 
 本节主题关于
 
-- 何时以及为什么使用动画
-- 实现方式
-- 可访问性
+- 为什么 & 何时使用动画
+- 实现动画
 
 ## 理解动作
 
@@ -53,7 +62,7 @@ https://designftw.mit.edu/lectures/animation/videos/hierarchy-parentchild.mp4
 >
 > — NNGroup (“Animation for Attention and Comprehension”)
 
-![86926325541](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/86926325541.gif)
+![86926325541](/Users/mac/Downloads/gif/6.4500/86926325541.gif)
 
 > [!IMPORTANT]
 >
@@ -99,4 +108,64 @@ https://designftw.mit.edu/lectures/animation/videos/hierarchy-parentchild.mp4
 
 这个故事告诉我们： 不要妨碍用户。要考虑在一次典型访问中某个操作的出现频率， 对于高频使用的动画，应尽量保持非常简短。
 
-## 实现
+## 实现动画
+
+### 过渡
+
+![image-20260515031829173](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260515031829173.png)
+
+[`transition`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)  会在可能的情况下，让样式变化变得平滑。 他实际是[`transition-duration`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-duration)，[`transition-delay`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-delay)，[`transition-property`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-property)，[`transition-timing-function`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-timing-function)的简写形式。它至少需要一个持续时间，但也可以接受属性、延迟、缓动函数。
+
+![image-20260515032242823](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260515032242823.png)
+
+`transition` 以及它的各个长属性都支持逗号分隔列表，从而可以为不同属性创建具有不同参数的多个过渡效果。关键字的变化无法进行插值（interpolate），但长度、数值、颜色、变换等可以。
+
+对于自定义缓动函数，可以使用 `cubic-bezier()` 函数。[cubic-bezier.com](https://cubic-bezier.com) 可以帮助你以可视化方式生成这些曲线。
+
+小结： **Transitions 会把突然的值变化转换为平滑的变化**。
+
+### 动画
+
+如果我们想要更多的控制呢？ 动画。
+
+动画比过渡更加复杂，但能给我们更多的控制能力。
+
+我们使用 [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes)  规则来定义动画，使用[`animation`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation)属性将动画应用到元素上。而`animation` 属性实际上是以下属性的简写：
+
+- [`animation-name`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-name)：运行哪个动画？
+- [`animation-duration`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-duration)： 每次动画迭代持续多久？
+- [`animation-delay`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-delay)： 开始前是否需要延迟？
+- [`animation-iteration-count`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-iteration-count)： 播放多少次？（数字或 `infinite`）
+- [`animation-timing-function`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function)： 动画应如何随时间推进？
+- [`animation-direction`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-direction)： 某些迭代是否需要反向播放？
+- [`animation-fill-mode`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-fill-mode)： 在动画应用前后应如何表现？
+- [`animation-play-state`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-play-state)：动画是否暂停？
+
+![image-20260515033155268](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260515033155268.png)
+
+一个动画至少需要名称和持续时间才能播放。所有动画属性都支持逗号分隔的参数列表，从而可以在同一个元素上应用多个动画。
+
+我们可以通过 `animationstart`、`animationiteration` 和 `animationend` 事件来监控 CSS 动画的执行过程。
+
+```css
+@keyframes jump {
+	to { transform: translateY(-.4em); }
+}
+
+button:hover {
+	animation: jump 250ms 10 alternate;
+}
+
+```
+
+小结： **CSS 动画允许我们创建能够经过任意数量自定义状态的运动效果**。
+
+为了能够进行插值，所有中间值都必须能够用 CSS 表示
+
+![image-20260515133602401](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260515133602401.png)
+
+![74864443654068](/Users/mac/Downloads/gif/6.4500/74864443654068.gif)
+
+这里并没有真正发生动画，因为自定义属性默认是不能被动画化的。不过，我们可以通过 `@property` 规则来“教会”浏览器如何对它们进行动画处理。
+
+> 当前源笔记尚未展开 `@property` 的完整用法与动画可访问性实现。

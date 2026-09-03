@@ -1,0 +1,90 @@
+/* Archipelago colour system — every hue sampled from the brand badge.
+   Three worlds: the ABYSS (deep navy, night sea), the CHART (ocean blues,
+   the routes between islands), the PAPER (parchment, sail canvas, gold rule). */
+:root{
+  /* Abyss — deep sea / ink */
+  --navy-950:#04101f;--navy-900:#001a3d;--navy-800:#052a4e;--navy-700:#0b3a63;--navy-600:#12496f;
+  /* Chart — ocean */
+  --ocean-700:#0b4d7d;--ocean-600:#0f5c93;--ocean-500:#1e7bb8;--ocean-400:#4fa3ce;--ocean-300:#8fc6df;--ocean-200:#c6e1ec;--ocean-100:#e6f1f6;
+  /* Paper — parchment, sail, page edge */
+  --paper-50:#fdfbf5;--paper-100:#faf5e9;--paper-200:#f2ead9;--paper-300:#e5d9c3;--sand-400:#d8c4a5;--sand-500:#bda684;
+  /* Gold — the compass rule, the lit waypoint */
+  --gold-600:#a87c2c;--gold-500:#c79a3e;--gold-400:#e0bb6a;--gold-200:#f2dda9;
+  /* Warm horizon — sunset gradient in the badge */
+  --sunset-400:#f0b265;--sunset-300:#f9cf90;
+  /* Semantic hues */
+  --kelp-700:#245445;--kelp-600:#2f6b57;--kelp-200:#cfe2d8;
+  --coral-700:#933d2b;--coral-600:#b4503a;--coral-200:#f2d6cd;
+
+  /* ---- Semantic aliases: text ---- */
+  --text-strong:var(--navy-950);
+  --text-heading:var(--navy-900);
+  --text-body:#1c3049;
+  --text-muted:#5a6e85;
+  --text-faint:#8a9aab;
+  --text-inverse:var(--paper-100);
+  --text-inverse-muted:#9db4cd;
+  --text-link:var(--ocean-600);
+  --text-link-hover:var(--navy-800);
+  --text-link-visited:var(--ocean-700);
+  --text-accent:var(--gold-600);
+
+  /* ---- Semantic aliases: surfaces ---- */
+  --surface-page:var(--paper-100);
+  --surface-card:var(--paper-50);
+  --surface-raised:#fffdf8;
+  --surface-sunken:var(--paper-200);
+  --surface-deep:var(--navy-900);
+  --surface-deep-alt:var(--navy-800);
+  --surface-ocean:var(--ocean-600);
+  --surface-ghost-hover:rgba(0,26,61,.05);
+  --surface-ghost-press:rgba(0,26,61,.09);
+  --surface-scrim:rgba(4,16,31,.55);
+
+  /* ---- Semantic aliases: lines ---- */
+  --border-hairline:rgba(0,26,61,.12);
+  --border-subtle:rgba(0,26,61,.18);
+  --border-strong:rgba(0,26,61,.32);
+  --border-inverse:rgba(226,236,245,.22);
+  --border-focus:var(--ocean-500);
+  --rule-gold:var(--gold-500);
+  --route-line:rgba(0,26,61,.28);
+  --route-line-inverse:rgba(240,246,251,.5);
+
+  /* ---- Semantic aliases: states ---- */
+  --accent:var(--ocean-600);
+  --accent-hover:var(--ocean-700);
+  --accent-press:var(--navy-800);
+  --success:var(--kelp-600);
+  --danger:var(--coral-600);
+  --warning:var(--gold-600);
+  --waypoint:var(--gold-400);
+}
+
+/* Deep scope — navy sections, footers, hero bands, night mode of any component.
+   Put data-theme="deep" on the container; children inherit the flipped aliases. */
+[data-theme="deep"]{
+  --text-strong:#ffffff;
+  --text-heading:var(--paper-50);
+  --text-body:#dfe8f1;
+  --text-muted:#9db4cd;
+  --text-faint:#7590ad;
+  --text-inverse:var(--navy-900);
+  --text-link:var(--ocean-300);
+  --text-link-hover:#ffffff;
+  --text-link-visited:var(--ocean-300);
+  --text-accent:var(--gold-400);
+  --surface-page:var(--navy-900);
+  --surface-card:rgba(255,255,255,.05);
+  --surface-raised:var(--navy-800);
+  --surface-sunken:var(--navy-950);
+  --surface-ghost-hover:rgba(255,255,255,.08);
+  --surface-ghost-press:rgba(255,255,255,.14);
+  --border-hairline:rgba(226,236,245,.16);
+  --border-subtle:rgba(226,236,245,.24);
+  --border-strong:rgba(226,236,245,.4);
+  --accent:var(--ocean-400);
+  --accent-hover:var(--ocean-300);
+  --accent-press:var(--ocean-200);
+  --route-line:var(--route-line-inverse);
+}

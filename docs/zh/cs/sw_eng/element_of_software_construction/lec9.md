@@ -2,10 +2,20 @@
 title: 函数式编程
 type: lecture
 lecture: 9
-tags: []
+tags: [functional-programming, higher-order-function, iterator, map-reduce]
 status: complete
+source: 'https://web.mit.edu/6.102/www/sp24/classes/09-functional-programming/'
 ---
 # Lec 9 函数式编程
+
+## TL;DR
+
+- 一等函数可以像其他值一样被保存、传递和返回，高阶函数由此把循环、筛选和聚合等控制模式抽象成可组合操作。
+- 迭代器把遍历状态和数据结构分离，可迭代对象负责创建迭代器；修改正在遍历的集合会使简单契约迅速复杂化。
+- `map`、`filter` 和 `reduce` 分别表达逐项转换、条件选择和序列归约，同一模式也出现在集合处理、文件系统和关系数据库中。
+- 函数式风格通过不可变数据和显式数据流减少隐藏状态，但仍需为副作用、错误处理和性能边界选择合适抽象。
+
+## 一等函数与序列处理
 
 我们将探讨多种用于操作元素序列的设计模式，并展示如何将函数本身视为一等公民（即可在程序中自由传递和操作的值），这一理念的强大之处。我们将学习一下概念。
 
@@ -444,7 +454,7 @@ resultn = f(resultn-1, arr[0])
 
 如果操作符是非交换的（如字符串连接），左右顺序可能产生不同结果。
 
-![image-20251021035808391](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251021035808391.png)
+![reduce 从左向右与从右向左归约时的计算顺序](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251021035808391.png)
 
 ## 回到最初的例子
 
@@ -623,4 +633,6 @@ select max(pixels) from cameras where brand = "Nikon"
 - pixels 是 map（提取每行的 pixels 字段）
 - max 是 reduce
 
-## 本讲小结
+::: insight
+`map`、`filter` 和 `reduce` 的价值不在于少写几行循环，而在于限制每一步能做的事情：转换、选择和归约的意图被显式分开。只要回调避免隐藏副作用，这种约束就能让数据流更容易组合、测试和并行化。
+:::

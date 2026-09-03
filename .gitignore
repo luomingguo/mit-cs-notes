@@ -8,3 +8,7 @@ cache
 *.local
 *__pycache__
 .astro
+
+# Design Canvas preview caches and source uploads copied into design/assets.
+design/**/.thumbnail
+design/uploads/

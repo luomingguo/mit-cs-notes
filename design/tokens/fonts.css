@@ -1,0 +1,6 @@
+/* Archipelago webfonts — served from Google Fonts.
+   SUBSTITUTION NOTE: no font binaries were supplied with the brand. These are
+   the nearest freely-licensed matches to the logo's high-contrast bookish
+   serif wordmark. Swap the @import for local @font-face rules when the real
+   files arrive; the family tokens in typography.css are the only touch point. */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap");

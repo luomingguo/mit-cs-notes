@@ -169,7 +169,7 @@ export const config = {
     },
     /** 给 IP 加盐哈希，日志里不留原始 IP */
     get ipSalt(): string {
-      return opt('IP_SALT', 'mit-cs-notes')
+      return opt('IP_SALT', 'archipelago')
     },
     get corsOrigin(): string {
       return opt('CORS_ORIGIN', '*')

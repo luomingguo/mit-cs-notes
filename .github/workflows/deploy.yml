@@ -25,7 +25,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Build job（GitHub Pages 版本，站点挂在 /mit-cs-notes/ 子路径下）
+  # Build job（GitHub Pages 版本，站点挂在 /archipelago/ 子路径下）
   build:
     runs-on: ubuntu-latest
     steps:

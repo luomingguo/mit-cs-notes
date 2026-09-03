@@ -1,0 +1,22 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Navigation" subtitle="Breadcrumb, Tabs, SidebarNav, TableOfContents" -->
+<!doctype html><html lang="zh"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>html,body{margin:0}body{padding:22px;background:var(--surface-page);background-image:var(--texture-paper);font:var(--type-body)}.row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.col{display:flex;flex-direction:column;gap:14px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.lbl{font:var(--type-label);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint)}</style>
+</head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ArchipelagoDesignSystem_958ced;
+const { Breadcrumb, Tabs, SidebarNav, TableOfContents, Divider } = NS;
+function Demo(){const [tab,setTab]=React.useState("notes");return (<div className="col">
+<Breadcrumb items={[{label:"政治哲学",href:"#"},{label:"正义论导读",href:"#"},{label:"无知之幕"}]}/>
+<Tabs value={tab} onChange={setTab} items={[{value:"notes",label:"讲义",count:12},{value:"concepts",label:"概念",count:31},{value:"cites",label:"引用",count:8}]}/>
+<div style={{display:"grid",gridTemplateColumns:"250px 1fr",gap:28,marginTop:4}}>
+<SidebarNav active="justice" sections={[{title:"领域",items:[{value:"pp",label:"政治哲学",icon:"map",count:4},{value:"cs",label:"计算机系统",icon:"map",count:3}]},{title:"课程",items:[{value:"justice",label:"正义论导读",icon:"book-open",count:12,depth:1},{value:"algo",label:"算法导论",icon:"book-open",count:24,depth:1}]}]}/>
+<TableOfContents active="veil" items={[{id:"setup",label:"问题的设置",level:2},{id:"veil",label:"无知之幕",level:3},{id:"orig",label:"原初状态",level:3},{id:"crit",label:"两种反驳",level:2}]}/>
+</div>
+</div>);}
+ReactDOM.createRoot(document.getElementById("root")).render(<Demo/>);
+</script></body></html>

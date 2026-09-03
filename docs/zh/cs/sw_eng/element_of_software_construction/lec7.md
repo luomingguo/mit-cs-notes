@@ -2,10 +2,20 @@
 title: '抽象函数 & 表示不变式'
 type: lecture
 lecture: 7
-tags: []
+tags: [abstraction-function, representation-invariant, representation-exposure, immutability]
 status: complete
+source: 'https://web.mit.edu/6.102/www/sp24/classes/07-abstraction-functions-rep-invariants/'
 ---
 # Lec 7 抽象函数 & 表示不变式
+
+## TL;DR
+
+- 表示不变式定义哪些内部表示值合法，抽象函数则把每个合法表示映射为客户端理解的抽象值；二者共同解释实现如何满足 ADT 规格。
+- 创建者和生成者必须建立不变式，观察者和修改者必须保持不变式；`checkRep()` 可在运行时尽早暴露实现错误。
+- 表示暴露让客户端绕过 ADT 操作直接破坏内部状态，因此应使用私有字段、防御性复制和不可变表示隔离别名。
+- 把业务约束编码进 ADT 不变式，可以减少散落在调用点的前置条件，让非法状态更难进入系统。
+
+## 不变式与表示边界
 
 今天的阅读介绍了几个概念：
 
@@ -208,7 +218,7 @@ class CharSet {
 }
 ```
 
-![image-20251018033916224](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251018033916224.png)
+![抽象函数把具体表示空间映射到抽象值空间](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251018033916224.png)
 
 这个图有几个关键点：
 
@@ -242,7 +252,7 @@ class CharSet {
 
 如上图所示为例，RI("a")   = true、RI("ac")  = true、RI("acb") = true，但是 RI("aa")   = false、RI("abbc") = false
 
-![image-20251018034436459](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251018034436459.png)
+![表示不变式筛选合法表示值并交由抽象函数解释](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251018034436459.png)
 
 在代码中应该这样记录 AF 和 RI
 
@@ -469,7 +479,7 @@ static exclusiveOr(set1: SortedCharSet, set2: SortedCharSet): SortedCharSet;
 
 7. 迭代改进。当程序能正常工作后，再让它：更高效，更健壮，必要时重构
 
-## 本讲小结
+## 抽象函数与表示不变式的工程价值
 
 - 一个好的 ADT 必须能保持自己的不变式。
   - 创建者（creator）与生成者（producer）要建立不变式；
@@ -487,3 +497,7 @@ static exclusiveOr(set1: SortedCharSet, set2: SortedCharSet): SortedCharSet;
 | 防止 bug | ADT 自己维持不变式，不容易被外部代码破坏。 显式写出 rep invariant 并在运行时检查，可更早发现结构错误。 |
 | 易于理解 | rep invariant 与 abstraction function 明确地说明了“表示”与“抽象”之间的关系。 |
 | 易于修改 | 抽象与表示分离，使得表示可自由更改，而不影响使用者代码。     |
+
+::: insight
+表示不变式应在数据进入和离开抽象边界时被建立与检查，而不是靠所有调用者自觉维护。若某个约束需要在许多调用点重复判断，通常意味着它应该被提升为 ADT 的表示不变式，或者被编码进更精确的类型。
+:::

@@ -1,0 +1,24 @@
+/* Spacing & layout. Base unit 4px, with a wide top end — the brand breathes
+   like a printed atlas, not a dashboard. */
+:root{
+  --space-0:0;--space-1:2px;--space-2:4px;--space-3:6px;--space-4:8px;--space-5:12px;
+  --space-6:16px;--space-7:20px;--space-8:24px;--space-9:32px;--space-10:40px;
+  --space-11:56px;--space-12:72px;--space-13:96px;--space-14:128px;--space-15:176px;
+
+  /* Component insets */
+  --pad-control-y:9px;--pad-control-x:16px;
+  --pad-control-sm-y:5px;--pad-control-sm-x:11px;
+  --pad-control-lg-y:13px;--pad-control-lg-x:22px;
+  --pad-card:24px;--pad-card-lg:32px;--pad-field-y:10px;--pad-field-x:13px;
+
+  /* Layout frame */
+  --page-max:1240px;--page-narrow:760px;--page-gutter:32px;--page-gutter-sm:20px;
+  --rail-left:264px;--rail-right:232px;
+  --header-h:66px;
+  --grid-gap:24px;
+
+  --control-h-sm:30px; /* @kind spacing */
+  --control-h:38px; /* @kind spacing */
+  --control-h-lg:46px; /* @kind spacing */
+  --tap-min:44px; /* @kind spacing */
+}

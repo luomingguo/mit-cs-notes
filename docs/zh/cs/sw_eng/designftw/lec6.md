@@ -1,11 +1,20 @@
 ---
-title: CSS 的基本概念 I
+title: 'CSS 的基本概念 I'
 type: lecture
 lecture: 6
-tags: []
-status: complete
+tags: [css, document-flow, box-model, css-units, css-selectors]
+status: draft
 ---
 # Lec 6 CSS 的基本概念 I
+
+## TL;DR
+
+- CSS 规则通过选择器定位元素，并用声明控制文档流、盒模型、尺寸和视觉呈现。
+- 相对字体单位能让组件随文字尺度一起变化，比只调整字体而保留固定间距更适合响应式与可访问性需求。
+- 伪类描述元素状态或结构位置；源笔记停在“伪元素”标题，相关机制与使用边界尚待补充。
+
+## CSS 基础主题
+
 
 - 文档流
 - 盒子模型
@@ -219,3 +228,5 @@ h1 {
 ### 伪类
 
 ### 伪元素
+
+> 当前源笔记止于“伪元素”标题，该部分尚待补充。

@@ -2,10 +2,20 @@
 title: 互斥
 type: lecture
 lecture: 16
-tags: []
-status: stub
+tags: [mutual-exclusion, asynchronous-adt, race-condition, deadlock, cooperative-concurrency]
+status: complete
+source: 'https://web.mit.edu/6.102/www/sp24/classes/16-mutual-exclusion/'
 ---
 # Lec 16 互斥
+
+## TL;DR
+
+- 异步 ADT 的多个操作可能并发访问同一表示；若操作在不变式暂时失效时交错，竞态条件会破坏规格，互相等待则可能形成死锁。
+- JavaScript 的合作式并发只在 `await` 等让出点发生交错，因此可以通过检查这些边界推理哪些代码区间天然互斥。
+- 异步方法可以保存尚未解决的 Promise，把“资源暂不可用”的前置条件转换成等待协议，同时必须明确谁负责最终兑现或拒绝。
+- 抢占式线程需要锁、互斥量或信号量；数据库事务解决的是相似的共享状态原子性问题，但不属于本讲展开范围。
+
+## 异步 ADT 中的共享状态
 
 这篇阅读内容将并发和 Promise 的概念结合在一起， 探讨 异步 ADT 的上下文——一种具有异步操作的 ADT，这些操作可能并发运行，并访问相同的共享表示。
 
@@ -173,7 +183,7 @@ public async checkout(books: Array<Book>, user: User): Promise<void> {
     for (const book of books) {
         if (!this.inLibrary.has(book)) {
             // 书籍当前被借出
-            // TODO -- 等待某个方法
+            // 此处需要等待“书籍已归还”事件，后文将补全机制
         }
     }
 
@@ -189,7 +199,7 @@ public async checkout(books: Array<Book>, user: User): Promise<void> {
 
 操作的第一部分检查每本书是否在图书馆。如果都在，它立即进入第二部分，借出所有书籍并返回。
 
-但是，如果某本书当前被借出，那么我们就到了 TODO 处。我们必须想办法等待，直到书籍被归还。
+但是，如果某本书当前被借出，那么程序就会进入尚待实现的等待分支。我们必须想办法等待，直到书籍被归还。
 
 ## 创建并保持一个 Promise
 
@@ -275,3 +285,7 @@ TypeScript/JavaScript 程序运行在单一进程和单线程环境中，使用�
 另外，值得一提的是，另一种常见的并发访问共享数据的方法是使用数据库。数据库系统广泛应用于分布式客户端/服务器系统，如 Web 应用。数据库通过使用事务来避免竞争条件，从而为对数据库的一系列读写提供互斥。 数据库系统课程中，你可以深入了解事务。
 
 顺便说一下，TypeScript/JavaScript 并不是唯一支持使用 `async` 和 `await` 的合作式并发的语言。Python、Swift、Rust 和 C# 也支持这种方法。
+
+::: insight
+合作式并发中最实用的审查规则是：不要跨 `await` 暂时破坏共享表示不变式。若必须等待外部事件，应先把状态转换为一个明确、合法的“等待中”状态，并保证成功、失败和取消路径都会兑现或拒绝相应 Promise。
+:::

@@ -1,6 +1,6 @@
 ---
 name: course-notes-audit
-description: Audit one MIT CS Notes course directory for directory layout, frontmatter, type, tags, TL;DR, course metadata inheritance, content-lint findings, and RAG readiness. Use when the user supplies a course folder and asks whether its notes satisfy NOTESTYLE.md; report only unless fixes are explicitly requested.
+description: Audit one Archipelago course directory for directory layout, frontmatter, type, tags, TL;DR, course metadata inheritance, content-lint findings, and RAG readiness. Use when the user supplies a course folder and asks whether its notes satisfy NOTESTYLE.md; report only unless fixes are explicitly requested.
 ---
 
 # Course Notes Audit
@@ -74,11 +74,11 @@ State which checks were not run. In particular, a course-directory audit does no
 ## Invocation example
 
 ```text
-$course-notes-audit '/Users/mac/Documents/MIT/mit-cs-notes/docs/zh/cs/computer_sys/os'
+$course-notes-audit '/Users/mac/Documents/MIT/archipelago/docs/zh/cs/computer_sys/os'
 ```
 
 The equivalent UI form is:
 
 ```text
-[course-notes-audit] + '/Users/mac/Documents/MIT/mit-cs-notes/docs/zh/cs/computer_sys/os'
+[course-notes-audit] + '/Users/mac/Documents/MIT/archipelago/docs/zh/cs/computer_sys/os'
 ```

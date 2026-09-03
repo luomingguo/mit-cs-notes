@@ -1,5 +1,5 @@
 {
-  "name": "mit-cs-notes",
+  "name": "archipelago",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -11,10 +11,10 @@
     "site:dev": "npm --prefix frontend run dev",
     "site:check": "npm --prefix frontend run check",
     "site:build": "npm --prefix frontend run build",
-    "site:build:pages": "DOCS_BASE=/mit-cs-notes/ SITE_ORIGIN=https://luomingguo.github.io npm --prefix frontend run build",
+    "site:build:pages": "DOCS_BASE=/archipelago/ SITE_ORIGIN=https://luomingguo.github.io npm --prefix frontend run build",
     "site:preview": "npm --prefix frontend run preview",
     "site:verify": "npm --prefix frontend run verify:dist && DIST_DIR=$PWD/frontend/dist npm --prefix rag run verify",
-    "site:verify:pages": "DOCS_BASE=/mit-cs-notes/ npm --prefix frontend run verify:dist",
+    "site:verify:pages": "DOCS_BASE=/archipelago/ npm --prefix frontend run verify:dist",
     "notes:lint": "node tools/notes-lint.mjs",
     "notes:fix": "node tools/notes-fix.mjs",
     "notes:new": "node tools/notes-new.mjs"

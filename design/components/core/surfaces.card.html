@@ -1,0 +1,26 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Core · Surfaces" subtitle="Card, Callout, Badge, Tag, Divider" -->
+<!doctype html><html lang="zh"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>html,body{margin:0}body{padding:22px;background:var(--surface-page);background-image:var(--texture-paper);font:var(--type-body)}.row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.col{display:flex;flex-direction:column;gap:14px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.lbl{font:var(--type-label);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint)}</style>
+</head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ArchipelagoDesignSystem_958ced;
+const { Card, Callout, Badge, Tag, Divider } = NS;
+function Demo(){return (<div className="col">
+<div className="row"><Badge tone="ocean">讲义</Badge><Badge tone="gold" variant="outline" icon="anchor">前置</Badge><Badge tone="kelp">已整理</Badge><Badge tone="coral" variant="soft">待修订</Badge><Badge tone="neutral" uppercase>MIT 6.006</Badge><Badge tone="neutral" variant="solid">新</Badge>
+<span style={{width:1,height:18,background:"var(--border-hairline)"}}/>
+<Tag href="#">无知之幕</Tag><Tag active>分配正义</Tag><Tag size="sm">原初状态</Tag></div>
+<div className="grid2">
+<Card padding="md"><div className="lbl" style={{marginBottom:8}}>课程</div><div style={{font:"var(--fw-semibold) var(--fs-h4)/1.35 var(--font-display)",color:"var(--text-heading)"}}>正义论导读</div><p style={{font:"var(--fw-regular) var(--fs-meta)/1.75 var(--font-serif)",color:"var(--text-muted)",margin:"8px 0 0"}}>从功利主义到罗尔斯，十二讲的主线与分歧。</p></Card>
+<Card padding="md" interactive sheen><div className="lbl" style={{marginBottom:8}}>可交互 · hover 抬升 2px</div><div style={{font:"var(--fw-semibold) var(--fs-h4)/1.35 var(--font-display)",color:"var(--text-heading)"}}>无知之幕</div><p style={{font:"var(--fw-regular) var(--fs-meta)/1.75 var(--font-serif)",color:"var(--text-muted)",margin:"8px 0 0"}}>一个用于剥离个人处境的思想装置。</p></Card>
+</div>
+<Callout kind="prereq">先读《社会契约的三种版本》，再回到这一讲。</Callout>
+<Callout kind="next">接下来可以读诺齐克的反驳，或跳到分配正义的经济学一侧。</Callout>
+<Divider variant="gold" />
+</div>);}
+ReactDOM.createRoot(document.getElementById("root")).render(<Demo/>);
+</script></body></html>

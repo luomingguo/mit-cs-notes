@@ -1,17 +1,14 @@
 ---
-title: '回调函数 & GUI'
+title: 回调函数和GUI · 软件构造基础
 type: lecture
 lecture: 17
-tags: []
+tags: ['typescript']
 status: complete
 ---
+
 # Lec 17 回调函数 & GUI
 
-[toc]
-
-**目标**
-
-学习回调函数的概念，在这个回调中， 实现者调用由客户端提供的函数。
+**目标**：学习回调函数的概念，在这个回调中， 实现者调用由客户端提供的函数。
 
 **实现者**：指的是编写和执行主要程序逻辑的部分，通常是指库、框架或服务提供的代码。
 
@@ -144,7 +141,7 @@ interface `Promise<T>` {
 ```ts
 const promisedResponse: Promise<Response> = fetch('http://www.mit.edu/');
 
-const promisedText: Promise<string> = 
+const promisedText: Promise<string> =
   promisedResponse.then(function(response: Response): Promise<string> {
     const downloadingPromise: Promise<string> = response.text();
     return downloadingPromise;
@@ -367,7 +364,7 @@ drawButton.addEventListener('click', (event: MouseEvent) => {
 ```ts
 <div>
     Size:
-    <input type="number" id="sizeTextbox" value="10" min="1" max="50" maxlength="2"> 
+    <input type="number" id="sizeTextbox" value="10" min="1" max="50" maxlength="2">
     <input type="range" id="sizeSlider" value="10" min="1" max="50">
 </div>
 ```
@@ -387,10 +384,8 @@ sizeSlider.addEventListener('input', (event: ChangeEvent) => {
 
 **务必进行资源清理**。当程序不再需要监听时，应及时移除监听器。`EventTarget`的`addEventListener()`与`EventEmitter`的`on()/addListener()`都对应有移除方法`removeEventListener()`和`off()/removeListener()`。未能及时清理无用监听器将导致界面性能下降或产生异常行为。
 
-## 本讲小结
-
-- 回调是一等函数的典型应用，支持将函数像数据一样传递，返回和存储
-  - 回调可以是同步的，也可以是异步的
-- TypeScript/JavaScript 通过时间循环和事件队列机制来管理异步回调
-- GUI 事件采用监听器模式，各模块可监听不同事件并绑定回调函数
-- 监听器必须快速返回控制权，以避免形成循环监听
+## TL;DR
+回调是一等函数的典型应用，支持将函数像数据一样传递，返回和存储, 回调可以是同步的，也可以是异步的。
+TypeScript/JavaScript 通过时间循环和事件队列机制来管理异步回调。
+GUI 事件采用监听器模式，各模块可监听不同事件并绑定回调函数。
+监听器必须快速返回控制权，以避免形成循环监听。

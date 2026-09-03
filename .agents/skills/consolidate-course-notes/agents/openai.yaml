@@ -1,0 +1,4 @@
+interface:
+  display_name: "Consolidate Course Notes"
+  short_description: "将外部课程笔记归并为仓库唯一真源并安全建立可验证软链接"
+  default_prompt: "Use $consolidate-course-notes to merge this external course-notes directory into its canonical Archipelago course directory, then replace the old files with verified symlinks."

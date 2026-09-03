@@ -1,11 +1,20 @@
 ---
-title: '设计模式 & 函数式 JS'
+title: '设计模式与函数式 JavaScript'
 type: lecture
 lecture: 15
-tags: []
-status: complete
+tags: [design-patterns, user-interface-patterns, learnability]
+status: draft
 ---
-# Lec 15 设计模式 & 函数式 JS
+# Lec 15 设计模式与函数式 JavaScript
+
+## TL;DR
+
+- 设计模式沉淀经过重复验证的界面问题与解决思路，减少团队在常见问题上重复发明。
+- 用户大部分时间使用其他产品，因此遵循成熟惯例往往能借用已有经验并提高可学习性。
+- 模式是设计起点而不是不可修改的模板；源笔记尚未展开标题中的函数式 JavaScript 部分。
+
+## 设计模式的价值
+
 
 什么是设计模式？
 
@@ -38,3 +47,5 @@ status: complete
 - A nice collection of patterns described and explained at [UI Patterns](https://ui-patterns.com/patterns)
 - A [catalog](https://www.uxlibrary.org/explore/ui-design/ui-patterns-and-inspiration) of numerous UI pattern web sites on uxlibrary.org
 - Another [list of pattern sites](https://www.interaction-design.org/literature/article/10-great-sites-for-ui-design-patterns) at [interactiondesign.org](http://www.interaction-design.org/).
+
+> 当前源笔记只整理了界面设计模式，标题中的函数式 JavaScript 部分仍待补充。

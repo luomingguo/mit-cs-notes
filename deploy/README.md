@@ -4,7 +4,7 @@
 
 | 目标 | 地址 | base | 由谁发布 |
 |---|---|---|---|
-| GitHub Pages | https://luomingguo.github.io/mit-cs-notes/ | `/mit-cs-notes/` | `.github/workflows/deploy.yml` 的 `build` / `deploy` job |
+| GitHub Pages | https://luomingguo.github.io/archipelago/ | `/archipelago/` | `.github/workflows/deploy.yml` 的 `build` / `deploy` job |
 | 自建服务器 hk | https://notes.lobomiao.uk | `/` | 同一个 workflow 的 `deploy-hk` job |
 
 base 由 `DOCS_BASE` 环境变量控制。生产产物统一由 `frontend/` 的 Astro 构建生成。
@@ -63,10 +63,10 @@ gcloud iam service-accounts add-iam-policy-binding <COMPUTE_DEFAULT_SA> \
   --member="serviceAccount:gh-deploy-notes@<PROJECT>.iam.gserviceaccount.com" \
   --role="roles/iam.serviceAccountUser"
 
-# 只允许 luomingguo/mit-cs-notes 这个仓库冒充该服务账号
+# 只允许 luomingguo/archipelago 这个仓库冒充该服务账号
 gcloud iam service-accounts add-iam-policy-binding gh-deploy-notes@<PROJECT>.iam.gserviceaccount.com \
   --role="roles/iam.workloadIdentityUser" \
-  --member="principalSet://iam.googleapis.com/projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/github/attribute.repository/luomingguo/mit-cs-notes"
+  --member="principalSet://iam.googleapis.com/projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/github/attribute.repository/luomingguo/archipelago"
 ```
 
 自定义角色 `ghDeployIapSsh` 的权限（刻意不给 instanceAdmin，避免 CI 能删机器）：
