@@ -45,7 +45,7 @@ const { catalog, domain, contentHtml } = Astro.props;
         </section>
 
         <aside class="domain-facts">
-          <section><h2>CONCEPT INVENTORY</h2>{domain.tags.length ? <div class="catalog-tags">{domain.tags.map((tag) => <span>{tag}</span>)}</div> : <p>当前课程 frontmatter 暂无 tags。</p>}</section>
+          <section><h2>CONTENT TAGS</h2>{domain.tags.length ? <div class="catalog-tags">{domain.tags.slice(0, 6).map((tag) => <span>{tag}</span>)}{domain.tags.length > 6 && <span class="tag-overflow">+{domain.tags.length - 6}</span>}</div> : <p>当前内容 frontmatter 暂无 tags。</p>}</section>
           <section><h2>LEARNING RELATIONS</h2><p>尚无统一的 prerequisites / unlocks 结构化字段；不根据展示稿臆测依赖关系。</p></section>
         </aside>
       </div>

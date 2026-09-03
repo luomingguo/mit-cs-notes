@@ -3,6 +3,7 @@ import '@/styles/global.css';
 import { AskNotes } from '@/components/AskNotes';
 import { CommandPalette } from '@/components/CommandPalette';
 import { siteBase, withBasePath } from '@/lib/notes';
+import { MoonStar, Search } from 'lucide-react';
 
 interface Props {
   title: string;
@@ -19,7 +20,8 @@ const searchIndexUrl = withBasePath('/search-index.json');
 const ragEnabled = siteBase() === '/';
 const siteOrigin = process.env.SITE_ORIGIN ?? 'https://notes.lobomiao.uk';
 const ogImage = new URL(withBasePath('/og-card.png'), siteOrigin).href;
-const favicon = withBasePath('/img/note_logo.svg');
+const badge = withBasePath('/brand/archipelago-badge-64.png');
+const favicon = badge;
 ---
 <!doctype html>
 <html lang={language === 'zh' ? 'zh-CN' : 'en'}>
@@ -28,18 +30,18 @@ const favicon = withBasePath('/img/note_logo.svg');
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
-    <link rel="icon" href={favicon} type="image/svg+xml" />
+    <link rel="icon" href={favicon} type="image/png" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={`${title} · MIT CS Notes`} />
+    <meta property="og:title" content={`${title} · Archipelago`} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={ogImage} />
-    <title>{title} · MIT CS Notes</title>
+    <title>{title} · Archipelago</title>
     <script is:inline>
       (function () {
         try {
-          var saved = localStorage.getItem('mit-notes-theme');
+          var saved = localStorage.getItem('archipelago-theme') || localStorage.getItem('mit-notes-theme');
           var dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
           document.documentElement.classList.toggle('dark', dark);
         } catch (error) {}
@@ -49,13 +51,16 @@ const favicon = withBasePath('/img/note_logo.svg');
   <body>
     <a class="skip-link" href="#atlas-content">{language === 'zh' ? '跳到正文' : 'Skip to content'}</a>
     <header class="atlas-topbar">
-      <a class="brand atlas-brand" href={homeHref}><span>cs<span class="brand-dot">.</span>kb</span><small>knowledge base</small></a>
-      <button class="atlas-search search-open" type="button" aria-label={language === 'zh' ? '打开搜索' : 'Open search'}><span aria-hidden="true">⌕</span><span>{language === 'zh' ? '搜索领域、课程和讲义…' : 'Search domains, courses and notes…'}</span><kbd>⌘K</kbd></button>
+      <a class="brand atlas-brand" href={homeHref} aria-label="Archipelago 群岛首页">
+        <img src={badge} width="36" height="36" alt="" />
+        <span class="brand-copy"><strong>Archipelago</strong><small>群岛 · 公开课笔记</small></span>
+      </a>
+      <button class="atlas-search search-open" type="button" aria-label={language === 'zh' ? '打开搜索' : 'Open search'}><Search aria-hidden="true" /><span>{language === 'zh' ? '搜索领域、课程和讲义…' : 'Search domains, courses and notes…'}</span><kbd>⌘K</kbd></button>
       <nav class="atlas-links" aria-label={language === 'zh' ? '全站导航' : 'Site navigation'}>
         <a href={pathsHref}>{language === 'zh' ? '学习路径' : 'Learning paths'}</a>
         <a href={zhHref} aria-current={language === 'zh' ? 'page' : undefined}>中文</a>
         <a href={enHref} aria-current={language === 'en' ? 'page' : undefined}>EN</a>
-        <button class="theme-toggle" type="button" aria-label={language === 'zh' ? '切换深浅色' : 'Toggle color theme'}>◐</button>
+        <button class="theme-toggle" type="button" aria-label={language === 'zh' ? '切换深浅色' : 'Toggle color theme'}><MoonStar aria-hidden="true" /></button>
         <a href="https://github.com/luomingguo" rel="noreferrer">GitHub ↗</a>
       </nav>
     </header>
@@ -70,7 +75,7 @@ const favicon = withBasePath('/img/note_logo.svg');
         document.querySelectorAll('.theme-toggle').forEach(function (button) {
           button.addEventListener('click', function () {
             var dark = document.documentElement.classList.toggle('dark');
-            try { localStorage.setItem('mit-notes-theme', dark ? 'dark' : 'light'); } catch (error) {}
+            try { localStorage.setItem('archipelago-theme', dark ? 'dark' : 'light'); } catch (error) {}
           });
         });
       })();

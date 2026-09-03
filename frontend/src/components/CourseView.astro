@@ -51,7 +51,7 @@ const statusLabel = (value: unknown) => value === 'complete' ? '完成' : value 
           </div>
         </section>
         <aside class="domain-facts">
-          <section><h2>CONCEPT INVENTORY</h2>{course.tags.length ? <div class="catalog-tags">{course.tags.map((tag) => <span>{tag}</span>)}</div> : <p>课程 frontmatter 暂无 tags，未自动生成概念。</p>}</section>
+          <section><h2>CONTENT TAGS</h2>{course.tags.length ? <div class="catalog-tags">{course.tags.slice(0, 6).map((tag) => <span>{tag}</span>)}{course.tags.length > 6 && <span class="tag-overflow">+{course.tags.length - 6}</span>}</div> : <p>课程 frontmatter 暂无 tags，未自动生成概念。</p>}</section>
           <section><h2>PREREQUISITES / UNLOCKS</h2><p>当前内容没有统一结构化字段；课程正文中的真实说明保留在下方。</p></section>
         </aside>
       </div>

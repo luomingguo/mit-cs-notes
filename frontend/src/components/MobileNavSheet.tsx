@@ -23,14 +23,14 @@ export function MobileNavSheet({
       </SheetTrigger>
       <SheetContent side="left">
         <header className="border-b border-border px-5 py-5 pr-12">
-          <SheetTitle className="font-mono text-sm">课程导航</SheetTitle>
+          <SheetTitle className="font-display text-xl font-semibold text-foreground">课程导航</SheetTitle>
           <SheetDescription className="mt-1 text-xs text-muted-foreground">由 Markdown 目录与 frontmatter 自动生成</SheetDescription>
         </header>
         <div className="min-h-0 flex-1 overflow-y-auto p-4">
           <div className="mb-5">
             <div className="mb-2 font-mono text-[9px] tracking-[0.14em] text-faint">领域</div>
             {domains.map((domain) => (
-              <a href={domain.href} key={domain.slug} className={`flex items-center justify-between rounded-md px-2 py-1.5 text-[13px] ${domain.active ? 'bg-secondary text-foreground' : 'text-muted-foreground'}`}>
+              <a href={domain.href} key={domain.slug} aria-current={domain.active ? 'page' : undefined} className={`mobile-domain-link ${domain.active ? 'is-current' : ''}`}>
                 <span>{domain.label}</span><span className="font-mono text-[9px] text-faint">{domain.courseCount} 门</span>
               </a>
             ))}
@@ -39,7 +39,7 @@ export function MobileNavSheet({
           <nav aria-label="课程讲义">
             {lectures.map((lecture) => (
               <SheetClose asChild key={lecture.href}>
-                <a href={lecture.href} aria-current={lecture.current ? 'page' : undefined} className={`grid grid-cols-[24px_1fr] gap-2 rounded-md px-2 py-2 text-[13px] ${lecture.current ? 'bg-primary text-primary-foreground' : 'text-foreground/75 hover:bg-secondary'}`}>
+                <a href={lecture.href} aria-current={lecture.current ? 'page' : undefined} className={`mobile-lecture-link ${lecture.current ? 'is-current' : ''}`}>
                   <span className="font-mono text-[10px] opacity-70">{String(lecture.number ?? '').padStart(2, '0')}</span>
                   <span>{lecture.title}</span>
                 </a>
