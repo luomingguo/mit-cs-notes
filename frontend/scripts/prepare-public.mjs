@@ -42,6 +42,16 @@ async function stageTree(sourceRoot, targetPrefix, ownerPrefix) {
 
 await stageTree(sharedPublic, '', 'public');
 await stageTree(frontendStatic, '', 'frontend/static');
+await stageAsset(
+  path.join(repoRoot, 'design', 'assets', 'logo-archipelago-badge-64.png'),
+  path.join('brand', 'archipelago-badge-64.png'),
+  'design/assets/logo-archipelago-badge-64.png',
+);
+await stageAsset(
+  path.join(repoRoot, 'design', 'assets', 'logo-archipelago-badge-256.png'),
+  path.join('brand', 'archipelago-badge-256.png'),
+  'design/assets/logo-archipelago-badge-256.png',
+);
 
 async function copyContentAssets(directory) {
   for (const item of await readdir(directory, { withFileTypes: true })) {

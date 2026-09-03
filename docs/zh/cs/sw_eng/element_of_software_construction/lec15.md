@@ -2,12 +2,20 @@
 title: Promises 语法
 type: lecture
 lecture: 15
-tags: []
+tags: [promise, async-await, concurrency, error-handling]
 status: complete
+source: 'https://web.mit.edu/6.102/www/sp24/classes/15-promises/'
 ---
 # Lec 15 Promises 语法
 
-[toc]
+## TL;DR
+
+- Promise 表示一个已经开始但尚未必完成的计算，其状态只会从 pending 转为 fulfilled 或 rejected，完成后不可重置。
+- `async` 函数总是返回 Promise，`await` 暂停当前异步函数并把控制权交还运行时，因此代码外观顺序化但执行仍可能交错。
+- `Promise.all()`、`Promise.any()` 和 `Promise.race()` 分别表达全部成功、任一成功和最先结束等聚合策略，失败语义各不相同。
+- Promise 避免忙等待并改善组合性，但错误必须通过拒绝与异常传播显式处理，不能假设异步操作一定及时完成。
+
+## Promise 与异步计算
 
 本节讨论使用`Promise`进行并发计算。我们从最高层次的抽象开始，介绍 Promise 的抽象，以及`await`操作符和`async`函数声明，这些特性使得 TypeScript 能够非常类似同步编程的方式实现。随后我们将更深入底层。进一步理解 `Promise`、`await` 和 `async` 的运行机制。
 
@@ -383,7 +391,7 @@ async function getBalance(account: string): Promise<number> {
 
 你不需要使用 `Promise.reject()` 来创建一个拒绝的 Promise。只需要像使用 `return` 来使 Promise 完成一样，直接使用 `throw` 和异常对象来拒绝 Promise。
 
-## 本讲小结
+## Promise 如何支撑软件质量
 
 这篇阅读内容讨论了异步函数返回的 Promise。
 
@@ -400,3 +408,7 @@ async function getBalance(account: string): Promise<number> {
 1. **避免错误**。通过静态检查 Promise 类型，以及要求通过 `await` 将 Promise 转换为值，确保依赖异步计算的代码不能在所需值未准备好之前继续执行。
 2. **易于理解**。使用 `await` 将 Promise 转换为值使得异步代码看起来非常像直线型的同步代码。但像所有并发编程一样，Promise 和异步函数可能是微妙的，并可能产生意外的效果。
 3. **适应变化**。Promise 可以以其他并发技术（如线程和工作者）难以支持的方式进行组合和组合。
+
+::: insight
+`await` 只让异步代码看起来像顺序代码，并没有消除并发边界。每个 `await` 都可能让其他任务运行，因此在它前后跨越的可变状态、超时、取消和重复执行都应被视为接口设计问题，而不是实现细节。
+:::

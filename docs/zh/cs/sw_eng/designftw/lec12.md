@@ -1,17 +1,27 @@
 ---
-title: 现代 JS 和 DOM 的介绍
+title: '现代 JavaScript 和 DOM'
 type: lecture
 lecture: 12
-tags: []
+tags: [javascript, dom, type-coercion, scope, developer-tools]
 status: complete
 ---
-# Lec 12 现代 JS 和 DOM 的介绍
+# Lec 12 现代 JavaScript 和 DOM
+
+## TL;DR
+
+- JavaScript 与 Python 在表达能力上相近，但变量声明、作用域、对象模型、数字、相等性和类型转换规则存在关键差异。
+- DOM 把页面结构暴露为 JavaScript 可操作的对象，使程序状态、事件与视觉界面连接起来。
+- 模板字符串、展开与解构、数组方法和函数表达式提供了现代 JavaScript 的组合与数据处理基础。
+- 浏览器开发者工具用于观察运行时状态、网络和 DOM，是验证代码行为而非只读源码的核心环境。
+
+## JavaScript 学习资源
+
 
 阅读资料
 
 [JavaScript for Python Programmers](https://observablehq.com/@ballingt/javascript-for-python-programmers)
 
-## 介绍
+## JavaScript 与 DOM 的运行环境
 
 JavaScript  唯一能在浏览器中直接运行的客户端编程语言，由 Brendan Eich 在 10 天快速设计出来的语言，彼时是 1995 年。他能做：
 
@@ -718,3 +728,7 @@ Object.defineProperty
 - debugger（调试器）
 - profiler（性能分析）
 - REPL（交互环境）
+
+::: insight
+从 Python 转向 JavaScript 时，最危险的不是语法陌生，而是相似语法背后的语义不同。对作用域、相等性与类型转换保持显式，能避免代码“看起来正确”却在边界输入下失效。
+:::

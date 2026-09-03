@@ -10,11 +10,11 @@ const { catalog } = Astro.props;
   <div class="atlas-shell">
     <CatalogSidebar catalog={catalog} />
     <div class="atlas-main">
-      <header class="atlas-hero">
-        <p class="atlas-kicker">PERSONAL COMPUTER SCIENCE LIBRARY</p>
+      <header class="atlas-hero atlas-hero-home">
+        <p class="atlas-kicker">ARCHIPELAGO · 群岛</p>
         <h1>计算机科学知识库</h1>
         <p>把分散的课程讲义组织成可以按领域、课程和阅读顺序探索的长期技术知识库。</p>
-        <div class="atlas-stats">{catalog.totalNotes} 篇真实笔记 · {catalog.domains.length} 个领域 · {catalog.totalCourses} 门课程 · {catalog.tags.length} 个已标注概念</div>
+        <div class="atlas-stats">{catalog.totalNotes} 篇真实笔记 · {catalog.domains.length} 个领域 · {catalog.totalCourses} 门课程 · {catalog.tags.length} 个内容标签</div>
       </header>
 
       <section class="atlas-section" aria-labelledby="domains-heading">

@@ -2,10 +2,20 @@
 title: 规格
 type: lecture
 lecture: 4
-tags: []
+tags: [specification, precondition, postcondition, exception-handling, module]
 status: complete
+source: 'https://web.mit.edu/6.102/www/sp24/classes/04-specifications/'
 ---
 # Lec 4 规格
+
+## TL;DR
+
+- 规格是客户端与实现者之间的行为契约：前置条件限定合法调用，后置条件和副作用描述实现必须保证的结果。
+- 行为等价取决于客户端可观察的结果，而不是代码结构；只要满足同一规格，不同算法和数据表示就可以互换。
+- 测试必须遵循规格，不能依赖未承诺的行为；对可变参数、异常和特殊返回值的约定必须显式写入契约。
+- 模块规格由所有导出成员的规格组成，未导出实现细节应保持私有，以限制客户端依赖并保留修改自由。
+
+## 规格的学习目标
 
 规格目标
 
@@ -13,7 +23,7 @@ status: complete
 - 能够根据规格写测试
 - 理解如何处理异常
 
-## 1. 介绍
+## 1. 规格建立实现与客户端的契约
 
 规格（specifications）是团队合作的关键。没有规格，就不可能落实实现函数的责任。规格扮演着契约（contract）的角色： 实现者有责任遵守契约。规格对双方都提出了要求：当规格包含前提条件时，客户也有责任。
 
@@ -105,7 +115,7 @@ function find(arr: Array<number>, val: number): number {
 
 如果在调用函数时，前置条件不成立，那么实现方就不再受后置条件的约束。此时函数的行为是未定义的：它可以做任何事情，包括永远不返回、抛出未在规格中说明的异常、返回任意结果，甚至随意修改对象。
 
-![image-20250819065807250](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819065807250.png)
+![前置条件由客户端保证、后置条件由实现保证的责任边界](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20250819065807250.png)
 
 ## 5. TypeScript 的规格
 
@@ -328,7 +338,7 @@ effects:
 function sort(array: Array<string>): void { ... }
 ```
 
-![image-20251020235512991](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251020235512991.png)
+![可变 sort 操作的规格、实现与测试关系](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251020235512991.png)
 
 ## 10. 异常
 
@@ -517,3 +527,7 @@ Python 的模块机制也类似，只不过：
 
 - Python 没有显式的 `export` 声明；
 - 模块导出的内容通过**命名约定**（例如以下划线 `_` 开头的名称被视为内部实现）或特殊变量 `__all__` 来控制。
+
+::: insight
+规格本质上是在分配责任：前置条件由客户端保证，后置条件由实现保证。把一个条件放错一侧会直接改变 API 的可用性和实现成本；因此设计规格时应先问“谁最有能力可靠地检查并处理这个条件”，而不是照着当前代码描述一遍。
+:::

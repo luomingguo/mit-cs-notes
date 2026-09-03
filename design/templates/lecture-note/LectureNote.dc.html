@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="讲义 · Lecture note" description="Archipelago 阅读页：三栏海图布局，前置/后续航线与反向链接。" -->
+<helmet><script src="./ds-base.js"></script><style>@media print{body{background:#fff}}</style></helmet>
+<div style="min-height:100vh;background:var(--surface-page);background-image:var(--texture-paper);font:var(--type-body);color:var(--text-body)">
+<header style="position:sticky;top:0;z-index:30;height:var(--header-h);background:var(--surface-page);border-bottom:1px solid var(--border-hairline)">
+<div style="max-width:var(--page-max);margin:0 auto;height:100%;padding:0 var(--page-gutter);display:flex;align-items:center;gap:var(--space-10)">
+<a href="#" style="display:inline-flex;align-items:center;gap:var(--space-4);text-decoration:none"><img src="../../assets/logo-archipelago-badge-128.png" alt="Archipelago" style="width:32px;height:32px"><span style="font:var(--fw-semibold) 19px/1 var(--font-wordmark);color:var(--text-heading);letter-spacing:-0.01em">Archipelago</span></a>
+<nav style="display:flex;gap:var(--space-8);flex:1;font:var(--fw-regular) var(--fs-body-sm)/1.4 var(--font-sans)">
+<a href="#" style="text-decoration:none;color:var(--text-muted)">海图</a>
+<a href="#" style="text-decoration:none;color:var(--text-muted)">领域</a>
+<a href="#" style="text-decoration:none;color:var(--text-heading);font-weight:var(--fw-medium);border-bottom:2px solid var(--accent);padding-bottom:2px">讲义</a>
+<a href="#" style="text-decoration:none;color:var(--text-muted)">概念</a>
+</nav>
+<span style="font:var(--type-meta);color:var(--text-faint)">搜索 ⌘K</span>
+</div>
+</header>
+<div style="max-width:var(--page-max);margin:0 auto;padding:var(--space-10) var(--page-gutter) 0;display:grid;grid-template-columns:var(--rail-left) minmax(0,1fr) var(--rail-right);gap:var(--space-11)">
+<aside style="position:sticky;top:calc(var(--header-h) + var(--space-9));align-self:start">
+<div style="font:var(--type-label);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint);margin-bottom:var(--space-6);padding-left:var(--space-6)">正义论导读</div>
+<nav style="display:flex;flex-direction:column;gap:var(--space-2);font:var(--fw-regular) var(--fs-body-sm)/1.45 var(--font-sans)">
+<a href="#" style="padding:7px var(--space-6);border-radius:var(--radius-sm);text-decoration:none;color:var(--text-muted)">第 1 讲 · 功利主义的诱惑</a>
+<a href="#" style="padding:7px var(--space-6);border-radius:var(--radius-sm);text-decoration:none;color:var(--text-muted)">第 2 讲 · 契约论的复活</a>
+<a href="#" style="padding:7px var(--space-6);border-radius:var(--radius-sm);text-decoration:none;color:var(--text-heading);font-weight:var(--fw-medium);background:var(--surface-ghost-press);box-shadow:inset 2px 0 0 var(--accent)">第 3 讲 · 无知之幕</a>
+<a href="#" style="padding:7px var(--space-6);border-radius:var(--radius-sm);text-decoration:none;color:var(--text-muted)">第 4 讲 · 两个正义原则</a>
+<a href="#" style="padding:7px var(--space-6);border-radius:var(--radius-sm);text-decoration:none;color:var(--text-muted)">第 5 讲 · 诺齐克的反驳</a>
+</nav>
+</aside>
+<article>
+<nav style="display:flex;align-items:center;gap:var(--space-3);font:var(--type-meta);color:var(--text-muted)">
+<a href="#" style="color:var(--text-muted);text-decoration:none">政治哲学</a><span style="color:var(--text-faint)">›</span>
+<a href="#" style="color:var(--text-muted);text-decoration:none">正义论导读</a><span style="color:var(--text-faint)">›</span>
+<span style="color:var(--text-heading);font-weight:var(--fw-medium)">无知之幕</span>
+</nav>
+<h1 style="font:var(--type-h1);letter-spacing:var(--tracking-display);color:var(--text-heading);margin:var(--space-7) 0 var(--space-6)">无知之幕</h1>
+<div style="display:flex;align-items:center;gap:var(--space-6);font:var(--type-meta);color:var(--text-muted)">
+<span style="padding:2px var(--space-4);border-radius:var(--radius-xs);background:var(--ocean-100);border:1px solid rgba(15,92,147,.22);color:var(--ocean-700);font:var(--fw-medium) var(--fs-micro)/1.5 var(--font-sans)">第 3 讲</span>
+<span style="font-family:var(--font-mono);font-size:var(--fs-micro)">ER 22 · Harvard</span>
+<span style="color:var(--text-faint)">·</span><span>约 12 分钟</span>
+<span style="color:var(--text-faint)">·</span><span>三天前更新</span>
+</div>
+<hr style="border:0;height:1px;background:linear-gradient(90deg,var(--rule-gold),transparent 82%);margin:var(--space-8) 0">
+<p style="font:var(--fw-regular) var(--fs-lead)/1.75 var(--font-serif);color:var(--text-body);margin:0;max-width:var(--measure-lead)">这篇讲义梳理罗尔斯的「无知之幕」，以及它为什么不是一个思想实验的终点。</p>
+<div style="margin:var(--space-9) 0">
+<x-import component-from-global-scope="ArchipelagoDesignSystem_958ced.Callout" kind="prereq" hint-size="100%,96px">先读《社会契约的三种版本》，这一讲默认你已经接受了契约论的提问方式。</x-import>
+</div>
+<div style="max-width:var(--measure-prose)">
+<h2 style="font:var(--type-h2);color:var(--text-heading);margin:var(--space-11) 0 var(--space-6)">问题的设置</h2>
+<p style="margin:0 0 var(--space-7)">功利主义把正义交给一个加总：只要总量最大，分配方式可以再谈。罗尔斯不接受这个让步，于是他需要一个新的出发点——一个能让人在不知道自己是谁的情况下，仍然愿意签字的程序。</p>
+<h3 style="font:var(--type-h3);color:var(--text-heading);margin:var(--space-9) 0 var(--space-5)">无知之幕是什么</h3>
+<p style="margin:0 0 var(--space-7)">幕后的人知道社会的一般事实：经济学、心理学、稀缺。他们唯独不知道自己会落在哪里——性别、阶层、天赋、乃至对好生活的具体想法。</p>
+<blockquote style="margin:var(--space-8) 0;padding:var(--space-2) 0 var(--space-2) var(--space-7);border-left:2px solid var(--rule-gold);color:var(--text-muted);font-style:italic">正义的原则应当在一种没人能为自己量身定做的处境中被选出。</blockquote>
+<h2 style="font:var(--type-h2);color:var(--text-heading);margin:var(--space-11) 0 var(--space-6)">两种反驳</h2>
+<p style="margin:0 0 var(--space-7)">第一种认为「分配」这个提法本身已经假定了有一个可供分配的总量。第二种来自社群主义：幕后那个不知道自己看重什么的人，是否还算一个人？</p>
+</div>
+<div style="margin:var(--space-10) 0 0">
+<x-import component-from-global-scope="ArchipelagoDesignSystem_958ced.Callout" kind="next" hint-size="100%,96px">接下来可以读诺齐克的反驳，或者跳到分配正义的经济学一侧。</x-import>
+</div>
+<sc-if value="{{ showBacklinks }}" hint-placeholder-val="{{ true }}">
+<hr style="border:0;border-top:1px dashed var(--route-line);margin:var(--space-11) 0 var(--space-9)">
+<x-import component-from-global-scope="ArchipelagoDesignSystem_958ced.BacklinkList" items="{{ backlinks }}" hint-size="100%,260px"></x-import>
+</sc-if>
+</article>
+<aside style="position:sticky;top:calc(var(--header-h) + var(--space-9));align-self:start">
+<div style="font:var(--type-label);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint);margin-bottom:var(--space-6)">本页目录</div>
+<nav style="display:flex;flex-direction:column;gap:var(--space-4);font:var(--fw-regular) var(--fs-meta)/1.55 var(--font-sans)">
+<a href="#" style="text-decoration:none;color:var(--text-heading);font-weight:var(--fw-medium);border-left:1px solid var(--accent);padding:3px 0 3px var(--space-5)">问题的设置</a>
+<a href="#" style="text-decoration:none;color:var(--text-muted);border-left:1px solid var(--border-hairline);padding:3px 0 3px var(--space-7)">无知之幕是什么</a>
+<a href="#" style="text-decoration:none;color:var(--text-muted);border-left:1px solid var(--border-hairline);padding:3px 0 3px var(--space-5)">两种反驳</a>
+</nav>
+<hr style="border:0;border-top:1px dashed var(--route-line);margin:var(--space-9) 0">
+<div style="font:var(--type-label);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint);margin-bottom:var(--space-6)">本页概念</div>
+<div style="display:flex;flex-wrap:wrap;gap:var(--space-3)">
+<x-import component-from-global-scope="ArchipelagoDesignSystem_958ced.Tag" size="sm" href="#" hint-size="86px,22px">无知之幕</x-import>
+<x-import component-from-global-scope="ArchipelagoDesignSystem_958ced.Tag" size="sm" href="#" hint-size="86px,22px">原初状态</x-import>
+<x-import component-from-global-scope="ArchipelagoDesignSystem_958ced.Tag" size="sm" href="#" hint-size="86px,22px">持有正义</x-import>
+</div>
+</aside>
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900},&quot;showBacklinks&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;结构&quot;},&quot;backlinks&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;Array&lt;{course?:string,title:string,context?:string,href?:string}&gt;&quot;,&quot;section&quot;:&quot;结构&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      showBacklinks: this.props.showBacklinks ?? true,
+      backlinks: this.props.backlinks ?? [
+        { course: '正义论导读 · 第 5 讲', title: '诺齐克的反驳', context: '…他认为无知之幕本身已经预设了一种分配观。', href: '#' },
+        { course: '博弈论 · 第 9 讲', title: '不确定下的选择', context: '…把幕后的人当作一个极端风险厌恶的决策者来读。', href: '#' }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

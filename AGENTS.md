@@ -1,4 +1,4 @@
-# MIT CS Notes 项目协作说明
+# Archipelago 项目协作说明
 
 ## 角色与工作方式
 

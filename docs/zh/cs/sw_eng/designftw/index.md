@@ -1,14 +1,23 @@
 ---
-title: 6.4500 Web 设计：语言和用户接口
+title: '6.4500 Web 设计：语言和用户接口'
 type: course
-course: 6.4500 Web设计：语言和用户接口
+course: '6.4500 Web 设计：语言和用户接口'
 course_id: '6.4500'
-tags: []
+tags: [human-computer-interaction, usability, web-design, user-interface, front-end-development]
 status: complete
+source: https://designftw.mit.edu/
 ---
 # 6.4500 Web 设计：语言和用户接口
 
 https://designftw.mit.edu/
+
+
+## TL;DR
+
+- 课程把人机交互原则与 Web 实现放在同一条学习路径中，同时衡量可学习性、效率、安全性与视觉表达。
+- 技术主线从 HTML、CSS、JavaScript 和 DOM 延伸到异步编程、Web API、数据可视化、动效与响应式界面。
+- 设计主线通过需求发现、原型、用户测试、启发式评估和设计批评，把用户证据转化为可迭代的界面决策。
+- 实验与课程项目要求学习者同时验证代码行为和用户体验，而不是把设计与工程拆成两个孤立阶段。
 
 ## 课程介绍
 
@@ -16,7 +25,7 @@ https://designftw.mit.edu/
 
 6.1010 fundamentals of programming
 
-### 课程描述
+### 课程范围与教学方式
 
 你将学习用户界面设计核心原则：
 
@@ -174,7 +183,9 @@ https://designftw.mit.edu/
 
 ## 实验
 
-# Lec 1 介绍 & 总览
+## 课程内容
+
+### Lec 1 介绍 & 总览
 
 主题：
 
@@ -184,7 +195,7 @@ https://designftw.mit.edu/
 
 [lec1.md](./lec1.md)
 
-# Lec 2 Web 网页结构：HTML
+### Lec 2 Web 网页结构：HTML
 
 主题：
 
@@ -196,83 +207,83 @@ https://designftw.mit.edu/
 
 [lec2.md](./lec2.md)
 
-# Lec 3 易学性
+### Lec 3 易学性
 
 [lec3.md](./lec3.md)
 
-# Lec 4 图形设计
+### Lec 4 图形设计
 
 [lec4.md](./lec4.md)
 
-# Lec 5 高效性
+### Lec 5 高效性
 
 [lec5.md](./lec5.md)
 
-# Lec 6 CSS 的基本概念 I
+### Lec 6 CSS 的基本概念 I
 
 [lec6.md](./lec6.md)
 
-# Lec 7 安全性
+### Lec 7 安全性
 
 [lec7.md](./lec7.md)
 
-# Lec 8 CSS 的基本概念 II
+### Lec 8 CSS 的基本概念 II
 
 [lec8.md](./lec8.md)
 
-# Lec 9 启发式评估
+### Lec 9 启发式评估
 
 [lec9.md](./lec9.md)
 
-# Lec 10 布局
+### Lec 10 布局
 
 [lec10.md](./lec10.md)
 
-# Lec 11 原型和用户测试
+### Lec 11 原型和用户测试
 
 [lec11.md](./lec11.md)
 
-# Lec 12 现代 JS 和 DOM 的介绍
+### Lec 12 现代 JS 和 DOM 的介绍
 
 [JavaScript for Python Programmers](https://observablehq.com/@ballingt/javascript-for-python-programmers)
 
 [lec12.md](./lec12.md)
 
-# Lec 13 统一 Web 设计
+### Lec 13 统一 Web 设计
 
 [lec13.md](./lec13.md)
 
-# Lec 14 事件
+### Lec 14 事件
 
 [lec14.md](./lec14.md)
 
-# Lec 15 设计范式 & 函数式 JS
+### Lec 15 设计范式 & 函数式 JS
 
 [lec15.md](./lec15.md)
 
-# Lec 16 函数、类和 this
+### Lec 16 函数、类和 this
 
 [lec16.md](./lec16.md)
 
-# Lec 17 字体
+### Lec 17 字体
 
 [lec17.md](./lec17.md)
 
-# Lec 18 异步编程
+### Lec 18 异步编程
 
 [lec18.md](./lec18.md)
 
-# Lec 19 色彩
+### Lec 19 色彩
 
 [lec19.md](./lec19.md)
 
-# Lec 20 Web API
+### Lec 20 Web API
 
 浏览器有 UI 让用于与文档交互，也有 DOM API 让你的代码与文档交互。
 
 [lec20.md](./lec20.md)
 
-# Lec 21 路由 & 数据可视化
+### Lec 21 路由 & 数据可视化
 
 在引言部分，回答三个问题？
 
@@ -284,7 +295,7 @@ https://designftw.mit.edu/
 
 [lec21.md](./lec21.md)
 
-# Lec 22 动画 & 反馈
+### Lec 22 动画 & 反馈
 
 本节主题关于
 
@@ -294,7 +305,7 @@ https://designftw.mit.edu/
 
 [lec22.md](./lec22.md)
 
-# Lec 23 Web 标准
+### Lec 23 Web 标准
 
 本节关于几个问题的回答？
 
@@ -304,6 +315,6 @@ https://designftw.mit.edu/
 
 [lec23.md](./lec23.md)
 
-# Lec 24 面向 AI 系统的设计
+### Lec 24 面向 AI 系统的设计
 
 [lec24.md](./lec24.md)

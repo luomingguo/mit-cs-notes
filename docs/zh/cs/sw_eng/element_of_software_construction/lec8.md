@@ -2,10 +2,20 @@
 title: 用接口、泛型、枚举和函数定义 ADT
 type: lecture
 lecture: 8
-tags: []
-status: stub
+tags: [interface, subtyping, generics, enum, abstract-data-type]
+status: complete
+source: 'https://web.mit.edu/6.102/www/sp24/classes/08-interfaces-subtyping/'
 ---
 # Lec 8 用接口、泛型、枚举和函数定义 ADT
+
+## TL;DR
+
+- 接口把 ADT 的操作规格与具体实现分离，使客户端依赖稳定抽象，并允许多个实现通过同一静态类型互换。
+- 行为子类型要求子类型不加强前置条件、不削弱后置条件；仅有相同方法形状并不足以保证语义可替换。
+- TypeScript 的结构子类型使用方便，但编译器主要检查形状，无法自动验证方法规格和可变性承诺是否兼容。
+- 泛型用于定义一族类型安全的 ADT，枚举适合有限值集合，工厂函数则可以隐藏具体实现类和构造策略。
+
+## ADT 的多种实现工具
 
 本节将介绍实现抽象数据类型的各种方法，包括：
 
@@ -171,7 +181,7 @@ console.log(readonlyArr); // 打印：[1, 2, 3, 4]
 > ```ts
 > class MutableSquare implements MutableRectangle {
 >     private side: number;
->     // ... TODO implement setSize
+>     // 此处故意省略 setSize 实现，下面比较三种候选方案
 > }
 >
 > ```
@@ -739,7 +749,7 @@ fclose(f);                       // 关闭文件
 |              | Setter                     |                          |
 | 表示         | 私有字段                   |                          |
 
-## 本讲小结
+## 接口与子类型如何支撑软件质量
 
 TypeScript 接口帮助我们将抽象数据类型的概念形式化，把它定义为一组必须被类型支持的操作。
 
@@ -750,3 +760,7 @@ TypeScript 接口帮助我们将抽象数据类型的概念形式化，把它定
 - 易于理解。 客户端和维护者可以清楚地知道应在哪里查看 ADT 的规范。 接口不包含字段或实例方法的实现，因此实现细节不会混入规范，更容易理解。
 
 - 便于修改。 我们可以通过添加实现接口的类轻松增加新的实现。 如果使用工厂函数而非构造函数，客户端只会看到接口，这意味着可以在不修改客户端代码的情况下切换实现类。
+
+::: insight
+TypeScript 的接口证明“这个值具有哪些成员”，却不能证明“这些成员遵守什么行为契约”。因此结构子类型适合轻量组合，但涉及可变性、前后置条件或安全边界时，仍需规格、测试和封装来补足编译器无法表达的语义。
+:::

@@ -1,0 +1,23 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Knowledge" subtitle="ConceptLink preview, NoteCard, CourseCard, DomainCard, BacklinkList" -->
+<!doctype html><html lang="zh"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>html,body{margin:0}body{padding:22px;background:var(--surface-page);background-image:var(--texture-paper);font:var(--type-body)}.row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.col{display:flex;flex-direction:column;gap:14px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.lbl{font:var(--type-label);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint)}</style>
+</head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ArchipelagoDesignSystem_958ced;
+const { ConceptLink, NoteCard, CourseCard, DomainCard, BacklinkList } = NS;
+function Demo(){return (<div className="col" style={{gap:18}}>
+<p style={{font:"var(--type-body)",color:"var(--text-body)",margin:0,maxWidth:"34em"}}>罗尔斯让立约者站在<ConceptLink label="无知之幕" source="正义论导读 · 第 3 讲" summary="一个用于剥离个人处境的思想装置，而不是一个结论。">无知之幕</ConceptLink>之后，于是问题从「我想要什么」变成「任何人都能接受什么」。（hover 查看预览）</p>
+<div className="grid2">
+<NoteCard lecture="第 3 讲" course="正义论导读" title="无知之幕" summary="梳理这个思想装置的作用，以及它为什么不是论证的终点。" concepts={["原初状态","分配正义"]} readingTime="约 12 分钟" updated="三天前更新" href="#"/>
+<CourseCard code="ER 22" institution="Harvard" title="正义论导读" domain="政治哲学" summary="从功利主义到罗尔斯，十二讲的主线与分歧。" noteCount={12} conceptCount={31} progress="已整理 8 / 12" href="#"/>
+</div>
+<DomainCard name="政治哲学" latin="Political philosophy" summary="从社会契约到分配正义：这片海域关心的是权力凭什么正当。" concepts={["无知之幕","自然状态","分配正义"]} courseCount={4} noteCount={46} href="#"/>
+<BacklinkList items={[{course:"正义论导读 · 第 5 讲",title:"诺齐克的反驳",context:"…他认为无知之幕本身已经预设了一种分配观。",href:"#"},{course:"经济学与伦理 · 第 2 讲",title:"效用与公平的取舍",context:"…把无知之幕当作一种风险态度来读。",href:"#"}]}/>
+</div>);}
+ReactDOM.createRoot(document.getElementById("root")).render(<Demo/>);
+</script></body></html>

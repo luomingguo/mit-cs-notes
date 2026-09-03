@@ -38,7 +38,7 @@ export function CommandGroup({ className, ...props }: React.ComponentProps<typeo
 export function CommandItem({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Item>) {
   return (
     <CommandPrimitive.Item
-      className={cn('relative flex cursor-default select-none items-center rounded-lg px-3 py-2.5 outline-none data-[selected=true]:bg-secondary', className)}
+      className={cn('relative flex cursor-default select-none items-center rounded-sm border-l-2 border-l-transparent px-3 py-2.5 outline-none data-[selected=true]:border-l-primary data-[selected=true]:bg-[var(--surface-ghost-hover)]', className)}
       {...props}
     />
   );

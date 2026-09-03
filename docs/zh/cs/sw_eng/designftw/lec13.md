@@ -1,8 +1,8 @@
 ---
-title: 统一 Web 设计
+title: '统一 Web 设计'
 type: lecture
 lecture: 13
-tags: []
+tags: [inclusive-design, web-accessibility]
 status: stub
 ---
 # Lec 13 统一 Web 设计

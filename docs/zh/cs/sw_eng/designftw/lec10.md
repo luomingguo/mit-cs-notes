@@ -1,11 +1,20 @@
 ---
-title: 布局
+title: '布局'
 type: lecture
 lecture: 10
-tags: []
+tags: [css-layout, positioning, anchor-positioning, css-grid, responsive-design]
 status: complete
 ---
 # Lec 10 布局
+
+## TL;DR
+
+- 定位适合脱离或相对常规文档流放置元素，但应避免让绝对坐标承担整个页面结构。
+- 锚定定位把浮层与触发元素建立显式关系，减少手工计算位置和视口边界的代码。
+- Web 网格必须随容器和内容伸缩，CSS Grid 等布局原语比固定画布更能表达二维对齐关系。
+
+## Web 布局机制
+
 
 - 定位
 - 浮动元素
@@ -135,3 +144,7 @@ body {
 ![image-20260513091742408](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260513091742408.png)
 
 定义命名区域是指定网格布局的另一种方式。`grid-area` 可以让你把一个元素分配到某个命名区域中。之后，只需要修改网格模板，就可以重新排列网格中的元素！
+
+::: insight
+布局技术的选择应跟随关系：文档流表达顺序，Grid 表达二维轨道，定位表达覆盖或锚定。先确认元素之间的关系，再选 CSS 机制，通常比从坐标和像素开始更稳定。
+:::

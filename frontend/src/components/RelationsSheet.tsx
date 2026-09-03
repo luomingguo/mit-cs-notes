@@ -27,7 +27,7 @@ export function RelationsSheet({
       </SheetTrigger>
       <SheetContent side="right">
         <header className="border-b border-border px-5 py-5 pr-12">
-          <SheetTitle className="font-mono text-sm">本页目录与关系</SheetTitle>
+          <SheetTitle className="font-display text-xl font-semibold text-foreground">本页目录与关系</SheetTitle>
           <SheetDescription className="mt-1 text-xs text-muted-foreground">仅显示能从真实内容推导的信息</SheetDescription>
         </header>
         <div className="min-h-0 flex-1 overflow-y-auto p-5">
@@ -47,8 +47,8 @@ export function RelationsSheet({
             <p className="rail-note">来自课程目录顺序，不代表阅读进度。</p>
           </section>
           <section className="rail-section">
-            <h2 className="rail-label">相关概念</h2>
-            {tags.length ? <div className="tag-list">{tags.map((tag) => <span key={tag}>{tag}</span>)}</div> : <p className="rail-empty">frontmatter 暂无 tags，未自动臆测概念。</p>}
+            <h2 className="rail-label">内容标签</h2>
+            {tags.length ? <div className="tag-list">{tags.slice(0, 6).map((tag) => <span key={tag}>{tag}</span>)}{tags.length > 6 && <span className="tag-overflow">+{tags.length - 6}</span>}</div> : <p className="rail-empty">frontmatter 暂无 tags，未自动臆测概念。</p>}
           </section>
           <section className="rail-section">
             <h2 className="rail-label">反向链接 · {backlinks.length}</h2>

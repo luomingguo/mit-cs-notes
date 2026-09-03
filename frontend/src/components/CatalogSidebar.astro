@@ -27,6 +27,6 @@ const { catalog, activeDomain } = Astro.props;
   </section>
   <section class="catalog-filter-section">
     <h2 class="nav-label">REAL TAGS · {catalog.tags.length}</h2>
-    {catalog.tags.length ? <div class="catalog-tags">{catalog.tags.slice(0, 12).map((tag) => <span>{tag}</span>)}</div> : <p class="catalog-empty">frontmatter 暂无可汇总 tags。</p>}
+    {catalog.tags.length ? <div class="catalog-tags">{catalog.tags.slice(0, 6).map((tag) => <span>{tag}</span>)}{catalog.tags.length > 6 && <span class="tag-overflow">+{catalog.tags.length - 6}</span>}</div> : <p class="catalog-empty">frontmatter 暂无可汇总 tags。</p>}
   </section>
 </aside>

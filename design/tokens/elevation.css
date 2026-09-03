@@ -1,0 +1,32 @@
+/* Radii, borders, shadows, and the brand's paper/chart surface treatments. */
+:root{
+  --radius-xs:2px;--radius-sm:4px;--radius-md:8px;--radius-lg:14px;--radius-xl:22px;--radius-pill:999px;
+  --radius-card:var(--radius-md);
+  --radius-media:var(--radius-sm);
+
+  --border-w:1px; /* @kind spacing */
+  --border-w-thick:2px; /* @kind spacing */
+
+  /* Shadows are cool-tinted and shallow: paper on a table, not glass in space */
+  --shadow-hairline:0 0 0 1px var(--border-hairline);
+  --shadow-1:0 1px 2px rgba(4,16,31,.06),0 2px 8px -3px rgba(4,16,31,.10);
+  --shadow-2:0 1px 2px rgba(4,16,31,.05),0 12px 24px -10px rgba(4,16,31,.16);
+  --shadow-3:0 2px 4px rgba(4,16,31,.06),0 28px 60px -18px rgba(4,16,31,.30);
+  --shadow-inset-top:inset 0 1px 0 rgba(255,255,255,.6);
+  --shadow-inset-field:inset 0 1px 2px rgba(4,16,31,.07);
+  --shadow-focus:0 0 0 3px rgba(30,123,184,.28);
+  --shadow-focus-inverse:0 0 0 3px rgba(143,198,223,.35);
+
+  /* Chart texture: a faint latitude/longitude grid for deep bands */
+  --texture-chart:repeating-linear-gradient(0deg,rgba(143,198,223,.055) 0 1px,transparent 1px 48px),repeating-linear-gradient(90deg,rgba(143,198,223,.055) 0 1px,transparent 1px 48px); /* @kind other */
+  /* Paper tooth: two crossed hairline gradients, no image asset needed */
+  --texture-paper:repeating-linear-gradient(122deg,rgba(0,26,61,.022) 0 1px,transparent 1px 3px); /* @kind other */
+  /* Depth soundings: the ocean gradient under hero bands */
+  --gradient-abyss:linear-gradient(178deg,var(--navy-800) 0%,var(--navy-900) 46%,var(--navy-950) 100%);
+  --gradient-horizon:linear-gradient(180deg,var(--sunset-300) 0%,var(--ocean-400) 38%,var(--ocean-700) 100%);
+  --gradient-shoal:linear-gradient(180deg,var(--paper-100) 0%,var(--paper-200) 100%);
+  /* Protection gradient for text over imagery */
+  --gradient-scrim:linear-gradient(0deg,rgba(4,16,31,.86) 0%,rgba(4,16,31,.55) 45%,rgba(4,16,31,0) 100%); /* @kind other */
+
+  --blur-veil:saturate(140%) blur(14px); /* @kind other */
+}

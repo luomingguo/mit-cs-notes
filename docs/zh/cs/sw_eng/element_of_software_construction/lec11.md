@@ -2,10 +2,20 @@
 title: 递归数据类型
 type: lecture
 lecture: 11
-tags: []
-status: complete
+tags: [recursive-data-type, immutable-list, recursion, algebraic-data-type]
+status: draft
+source: 'https://web.mit.edu/6.102/www/sp24/classes/11-recursive-data-types/'
 ---
 # Lec 11 递归数据类型
+
+## TL;DR
+
+- 递归数据类型由基本变体和引用自身的递归变体组成，列表、树和表达式都可以用这种有限定义描述无限多个结构值。
+- 不可变链表可写成 `Empty + Cons(first, rest)`；接口定义共同操作，两个实现类分别承载基本情况和递归情况。
+- 处理递归数据的函数通常镜像数据定义：每个变体对应一个分支，递归分支调用更小子结构，基本分支负责终止。
+- 当前笔记已建立不可变链表的类型与实现，但在“递归数据类型的函数”处中断，完整递归操作示例仍待补充。
+
+## 递归数据类型的学习目标
 
 本节我们将探讨递归定义的类型、如何指定此类类型的操作以及如何实现它们。我们的主要示例是*immutable lists*。
 
@@ -133,7 +143,7 @@ function empty<Element>(): ImList<Element> {
 
 ```
 
-![image-20251020084047715](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251020084047715.png)
+![Empty 与 Cons 两种变体实现不可变链表接口](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20251020084047715.png)
 
 实际使用示例
 
@@ -261,3 +271,11 @@ class Cons<Element> implements ImList<Element> {
 这种看待数据类型的方式——把数据类型理解为由具体变体构成的递归定义——不仅能优雅地处理列表、树等递归或无限结构，还能为描述**在这些数据类型上定义的操作**提供一种自然的方式：每个变体对应函数的一个分支。
 
 首先，看看数据类型定义如何映射到抽象接口与具体实现：
+
+::: insight
+递归函数最稳妥的设计起点是数据定义本身：基本变体对应终止分支，递归变体只处理当前一层并把更小子结构交给递归调用。若函数分支与数据变体无法一一对应，往往意味着类型定义或操作职责还不够清晰。
+:::
+
+## 尚待补充的递归操作示例
+
+当前来源笔记在这里中断，尚未给出递归函数如何分别处理 `Empty` 与 `Cons` 的完整实现，也缺少对终止性、结构递归和测试策略的展开。补充时应继续沿用不可变链表，并连接下一讲的[文法与解析](./lec12.md)。

@@ -87,9 +87,10 @@ export function CommandPalette({ index = [], indexUrl }: { index?: SearchItem[];
               <Button
                 key={value}
                 type="button"
-                variant={filter === value ? 'default' : 'outline'}
+                variant="ghost"
                 size="sm"
-                className="h-7 rounded-full px-3 font-mono text-[10px] tracking-wide"
+                aria-pressed={filter === value}
+                className="search-filter h-7 rounded-sm px-3 font-sans text-[11px]"
                 onClick={() => setFilter(value)}
               >
                 {label}
@@ -101,21 +102,21 @@ export function CommandPalette({ index = [], indexUrl }: { index?: SearchItem[];
             <CommandGroup>
               <AnimatePresence initial={false} mode="popLayout">
                 {results.map((item) => (
-                  <motion.div key={item.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>
+                  <motion.div key={item.id} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.14, ease: [0.22, 0.61, 0.36, 1] }}>
                     <CommandItem value={item.id} onSelect={() => go(item.href)}>
                       {item.type === 'course' ? <Library className="mr-3 size-4 text-muted-foreground" /> : item.type === 'domain' ? <Boxes className="mr-3 size-4 text-muted-foreground" /> : <BookOpen className="mr-3 size-4 text-muted-foreground" />}
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-medium">{item.title}</div>
                         <div className="mt-0.5 truncate font-mono text-[10px] text-muted-foreground">{item.excerpt}</div>
                       </div>
-                      <span className="ml-3 rounded-full border border-border px-2 py-0.5 font-mono text-[9px] text-muted-foreground">{item.typeLabel}</span>
+                      <span className="result-badge ml-3">{item.typeLabel}</span>
                     </CommandItem>
                   </motion.div>
                 ))}
               </AnimatePresence>
             </CommandGroup>
           </CommandList>
-          <footer className="flex gap-4 border-t border-border bg-sidebar px-4 py-2 font-mono text-[9px] text-faint">
+          <footer className="flex gap-4 border-t border-border bg-[var(--surface-sunken)] px-4 py-2 font-mono text-[9px] text-faint">
             <span>↑↓ 选择</span><span>↵ 打开</span><span>esc 关闭</span>
           </footer>
         </Command>

@@ -1,0 +1,26 @@
+/* Motion. Everything moves like water under a hull: it starts, it settles, it
+   never bounces. No spring overshoot anywhere in the brand. */
+:root{
+  --dur-instant:90ms; /* @kind other */
+  --dur-fast:140ms; /* @kind other */
+  --dur-base:220ms; /* @kind other */
+  --dur-slow:340ms; /* @kind other */
+  --dur-tide:560ms; /* @kind other */
+  --ease-tide:cubic-bezier(.22,.61,.36,1); /* @kind other */
+  --ease-out-soft:cubic-bezier(.16,1,.3,1); /* @kind other */
+  --ease-in-out-sea:cubic-bezier(.5,0,.2,1); /* @kind other */
+  --transition-control:background-color var(--dur-fast) var(--ease-tide),color var(--dur-fast) var(--ease-tide),border-color var(--dur-fast) var(--ease-tide),box-shadow var(--dur-fast) var(--ease-tide); /* @kind other */
+  --transition-lift:transform var(--dur-base) var(--ease-out-soft),box-shadow var(--dur-base) var(--ease-out-soft); /* @kind other */
+  --lift-hover:translateY(-2px); /* @kind other */
+  --press-scale:.985; /* @kind other */
+}
+@media (prefers-reduced-motion:reduce){
+  :root{
+    --dur-instant:0ms; /* @kind other */
+    --dur-fast:0ms; /* @kind other */
+    --dur-base:0ms; /* @kind other */
+    --dur-slow:0ms; /* @kind other */
+    --dur-tide:0ms; /* @kind other */
+    --lift-hover:none; /* @kind other */
+  }
+}

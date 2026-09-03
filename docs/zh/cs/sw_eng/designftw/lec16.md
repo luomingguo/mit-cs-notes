@@ -1,11 +1,18 @@
 ---
-title: 函数、类和 this
+title: '函数、类和 this'
 type: lecture
 lecture: 16
-tags: []
+tags: [javascript, first-class-functions, closures, object-oriented-programming, this-binding]
 status: complete
 ---
 # Lec 16 函数、类和 this
+
+## TL;DR
+
+- JavaScript 函数是一等值，可作为参数、返回值和闭包保存词法环境，从而组合高阶操作。
+- map、filter 与 reduce 描述数据变换意图，类、继承和访问器则组织对象状态与接口。
+- this 在运行时由调用方式决定，bind 可固定接收者；模块用于控制命名空间并显式暴露依赖。
+
 
 ## 函数与参数
 
@@ -268,7 +275,7 @@ let result = numbers
 
 需要注意其性能影响：这段代码实际上遍历了 3 次数组，而一个精心设计的循环版本只需要遍历一次， 不过，从算法复杂度来看，这两种方式都是 O(N)。
 
-### 本讲小结
+### 函数式数组处理的权衡
 
 从软件工程上讲， `map`、`filter`、`reduce` 这些函数用来描述“你想做什么”，而不是“你如何去做”。 这种方式让开发者的意图更加清晰，从而让其他开发者更容易理解和修改代码。同时，它也允许系统在不改变代码的情况下，替换底层实现以提升效率。
 
@@ -673,7 +680,7 @@ logContext2.call(document); // logs {foo: 1}
 
 `.bind()` 返回的是什么类型的函数？
 
-### 本讲小结
+### this 绑定的适用边界
 
 - this 是灵活的、始终存在的，并且是在运行时动态解析的，但这种灵活性也可能成为“坑”（容易出错的点）。
 
@@ -801,3 +808,7 @@ import { obj as square } from './modules/square.js';
 - 任何名字都可以被导出——包括 `let`、`function`、`const` 定义的内容
 - 使用 `as` 进行重命名，可以避免不同模块之间的命名冲突
 - 每个模块只会执行一次，即使它被多次导入也是如此
+
+::: insight
+闭包保存的是变量绑定，而 this 取决于调用点；二者经常同时出现在回调中，却遵循不同规则。区分这两个来源，是理解 JavaScript 状态与上下文问题的关键。
+:::

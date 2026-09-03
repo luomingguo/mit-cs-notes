@@ -1,11 +1,20 @@
 ---
-title: 字体
+title: '字体'
 type: lecture
 lecture: 17
-tags: []
-status: complete
+tags: [typography, readability, visual-hierarchy, responsive-typography]
+status: draft
 ---
 # Lec 17 字体
+
+## TL;DR
+
+- 字体选择会传递语气与情感，应与内容情境匹配，而不能仅按个人偏好决定。
+- 字重、字号、间距、层级、对齐、颜色和响应式尺度共同影响阅读体验。
+- 源笔记目前只展开字体种类与使用情境，其余排版主题仍待整理。
+
+## Web 排版要素
+
 
 - 字体、样式、字重
 - 字号
@@ -22,3 +31,5 @@ status: complete
 ![image-20260513150538801](https://tc-1258979383.cos.ap-guangzhou.myqcloud.com/image-20260513150538801.png)
 
 通常，只有看到字体使用不当的例子，才能更好地理解使用合适字体的重要性。Comic Sans 可能是世界上最令人讨厌的字体，而大规模的误用正是其主要原因之一。Comic Sans 的设计初衷是营造一种轻松随意的氛围（事实上，它最初是为 Microsoft Bob 程序中类似漫画的对话框而设计的），因此将其用于严肃正式的内容，尤其是在涉及敏感话题时，是非常不合适的。
+
+> 当前源笔记只展开了字体种类，字号、间距、层级、对齐、颜色和响应式排版仍待补充。
